@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Ceník</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { neutral: tailwind.colors.neutral, fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber, sky: tailwind.colors.sky, emerald: tailwind.colors.emerald } } } }
+  </script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:.75rem}
+    .btn-primary{background:#e879f9}
+    .btn-primary:hover{background:#db58f6}
+    .btn-light{background:#fff;color:#111}
+    .btn-light:hover{background:#f3f3f3}
+    .btn-outline{border:1px solid rgba(255,255,255,.2)}
+    .tag{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.1);padding:.25rem .5rem;border-radius:.5rem;background:rgba(38,38,38,.9)}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html?utm_source=pricing&utm_medium=nav&utm_campaign=back_home" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-2">
+        <a href="index.html?utm_source=pricing&utm_medium=topnav&utm_campaign=back_home" class="btn btn-light">Zpět na katalog</a>
+        <a href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=topnav&utm_campaign=signup" class="btn btn-primary">Založit kartu</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- BREADCRUMB -->
+  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
+    <div class="max-w-7xl mx-auto px-4 py-2 text-sm">
+      <a class="text-white/70 hover:text-white" href="index.html?utm_source=pricing&utm_medium=breadcrumb&utm_campaign=nav">Katalog</a>
+      <span class="mx-2 text-white/40">/</span>
+      <span class="text-white">Ceník</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
+    <div class="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-6 items-center">
+      <div>
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Ceník <span class="text-fuchsia-400">pro tvůrce</span></h1>
+        <p class="mt-3 text-white/70 max-w-2xl">Vyber si tarif, propoj účty a dostaň se výš ve výpisu. Roční platby jsou zvýhodněné (získej až 2 měsíce zdarma).</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#plans" class="btn btn-primary">Zobrazit tarify</a>
+          <a href="#faq" class="btn btn-outline">FAQ</a>
+        </div>
+        <div class="mt-6 flex gap-2 text-sm">
+          <span class="tag"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověření účtů</span>
+          <span class="tag"><i data-lucide="trending-up" class="w-3 h-3"></i> Priorita ve výpisu</span>
+          <span class="tag"><i data-lucide="users" class="w-3 h-3"></i> Nabídky od značek</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold mb-2">Shrnutí výhod</div>
+        <ul class="list-disc ml-5 text-sm text-white/80 space-y-1">
+          <li>Veřejná karta a přímé poptávky od firem</li>
+          <li>Ověření IG/TikTok/YouTube přes OAuth</li>
+          <li>Kurátorské výběry a promo možnosti</li>
+          <li>Základní/pokročilá analytika dle tarifu</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BILLING TOGGLE -->
+  <section class="border-b border-white/10 bg-neutral-900/20">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
+      <div>
+        <div class="text-white/80 text-sm">Účtování</div>
+        <div class="text-lg font-extrabold">Měsíčně vs. Ročně</div>
+      </div>
+      <div id="billingToggle" data-state="monthly" class="flex items-center gap-2">
+        <button id="billMonthly" class="btn btn-light">Měsíčně</button>
+        <button id="billYearly" class="btn btn-outline">Ročně <span class="ml-1 text-emerald-300 text-xs">(2 měsíce zdarma)</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section id="plans">
+    <div class="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-4">
+      <!-- Free -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-sm font-semibold text-white/80">Free</div>
+        <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="0" data-yearly="0">0</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-white/80">
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Veřejná karta</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> 1 kategorie</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Příjem poptávek</li>
+        </ul>
+        <a href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=pricing_cta&utm_campaign=signup" class="btn btn-primary mt-5">Založit kartu</a>
+      </div>
+      <!-- Pro -->
+      <div class="card p-5 border-fuchsia-400/40 ring-1 ring-inset ring-fuchsia-400/20">
+        <div class="text-sm font-semibold text-fuchsia-300 flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> Pro (doporučeno)</div>
+        <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="249" data-yearly="2490">249</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-white/80">
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Vše z Free</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Propojení IG/TT/YT (OAuth)</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Priorita ve výpisech</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Základní analytika</li>
+        </ul>
+        <a href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=pricing_cta&utm_campaign=upgrade_pro" class="btn btn-primary mt-5">Aktivovat Pro</a>
+      </div>
+      <!-- Premium -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-sm font-semibold text-white/80">Premium</div>
+        <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="699" data-yearly="6990">699</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+        <ul class="mt-4 space-y-2 text-sm text-white/80">
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Vše z Pro</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Pokročilá analytika + reporty</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Top badge & kurátorské výběry</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Přednostní podpora</li>
+        </ul>
+        <a href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=pricing_cta&utm_campaign=upgrade_premium" class="btn btn-primary mt-5">Jít do Premium</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="border-t border-white/10 bg-neutral-900/20">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-6">Srovnání funkcí</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-white/60">
+              <th class="py-2 pr-4">Funkce</th>
+              <th class="py-2 pr-4">Free</th>
+              <th class="py-2 pr-4">Pro</th>
+              <th class="py-2 pr-4">Premium</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            <tr><td class="py-2 pr-4">Veřejná karta</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td class="py-2 pr-4">Kategorie</td><td>1</td><td>3</td><td>Neomezeně</td></tr>
+            <tr><td class="py-2 pr-4">Propojení IG/TT/YT (OAuth)</td><td>–</td><td>✓</td><td>✓</td></tr>
+            <tr><td class="py-2 pr-4">Priorita ve výpisu</td><td>–</td><td>✓</td><td>✓✓</td></tr>
+            <tr><td class="py-2 pr-4">Analytika</td><td>Základní</td><td>Rozšířená</td><td>Pokročilá + reporty</td></tr>
+            <tr><td class="py-2 pr-4">Top badge & výběry</td><td>–</td><td>–</td><td>✓</td></tr>
+            <tr><td class="py-2 pr-4">Podpora</td><td>Standard</td><td>Rychlá</td><td>Přednostní</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">Časté dotazy</h2>
+      <div class="space-y-3">
+        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
+          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Je Free opravdu zdarma?</span></summary>
+          <div class="pt-2 text-white/70 text-sm">Ano. Free je trvale zdarma. Placené tarify odemykají ověření účtů, prioritu a pokročilé funkce.</div>
+        </details>
+        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
+          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Co znamená ověření účtů?</span></summary>
+          <div class="pt-2 text-white/70 text-sm">Bezpečné propojení tvých účtů (OAuth) – stahujeme pouze agregované veřejné statistiky.</div>
+        </details>
+        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
+          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Mohu přejít na roční tarif kdykoliv?</span></summary>
+          <div class="pt-2 text-white/70 text-sm">Ano, přepnout lze kdykoliv; roční platba je zvýhodněná.</div>
+        </details>
+      </div>
+      <div class="mt-6">
+        <a href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=faq_cta&utm_campaign=signup" class="btn btn-primary"><i data-lucide="user-plus" class="w-4 h-4"></i> Založit kartu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
+      <div>
+        <div class="font-bold text-white">Kartao.cz</div>
+        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
+      </div>
+      <div class="space-y-1">
+        <div class="text-white/80 font-medium">Odkazy</div>
+        <a class="block hover:text-white" href="index.html?utm_source=pricing&utm_medium=footer&utm_campaign=back_home">Katalog</a>
+        <a class="block hover:text-white" href="kartao-pro-tvurce.html#form?utm_source=pricing&utm_medium=footer&utm_campaign=signup">Pro tvůrce</a>
+        <a class="block hover:text-white" href="kartao-pro-firmy.html#brief?utm_source=pricing&utm_medium=footer&utm_campaign=brief">Pro firmy</a>
+      </div>
+      <div class="space-y-1">
+        <div class="text-white/80 font-medium">Právo</div>
+        <a class="block hover:text-white" href="#">Podmínky</a>
+        <a class="block hover:text-white" href="#">Ochrana soukromí</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      lucide.createIcons();
+      const billing = document.getElementById('billingToggle');
+      const btnM = document.getElementById('billMonthly');
+      const btnY = document.getElementById('billYearly');
+      function setBilling(mode){
+        billing.dataset.state = mode;
+        const monthly = mode==='monthly';
+        btnM.classList.toggle('btn-light', monthly);
+        btnM.classList.toggle('btn-outline', !monthly);
+        btnY.classList.toggle('btn-light', !monthly);
+        btnY.classList.toggle('btn-outline', monthly);
+        document.querySelectorAll('.js-price').forEach(el=>{
+          const val = monthly ? el.dataset.monthly : el.dataset.yearly;
+          el.textContent = Number(val).toLocaleString('cs-CZ');
+        });
+        document.querySelectorAll('.js-period').forEach(el=>{ el.textContent = monthly ? ' / měs.' : ' / rok'; });
+      }
+      btnM.addEventListener('click', ()=> setBilling('monthly'));
+      btnY.addEventListener('click', ()=> setBilling('yearly'));
+      setBilling('monthly');
+
+      // Sanity testy (rychlé)
+      console.assert(document.querySelectorAll('#plans .card').length===3, 'Na stránce mají být 3 tarify');
+      setBilling('yearly');
+      const anyYear = [...document.querySelectorAll('#plans .js-price')].some(n=> n.textContent.includes('2 490') || n.textContent.includes('6 990'));
+      console.assert(anyYear, 'Roční ceny se promítly');
+      setBilling('monthly');
+    });
+  </script>
+</body>
+</html>
