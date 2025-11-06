@@ -1,783 +1,295 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import {
-  Search,
-  Filter,
-  Sparkles,
-  BadgeCheck,
-  Star,
-  Users,
-  Mail,
-  MapPin,
-  Globe,
-  Link as LinkIcon,
-  Camera,
-  Play,
-  Music4,
-  ChevronRight,
-  TrendingUp,
-  Crown,
-  PlugZap,
-  RefreshCw,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-/**
- * KARTAO.CZ — síť influencerů a tvůrců (single‑file React prototyp)
- * - TailwindCSS + shadcn/ui + lucide-react + Framer Motion
- * - Plně v češtině, připravené pro rychlý preview a úpravy
- *
- * ZMĚNY (multi‑platform + bugfix + ikona zdroje):
- * - Žádný <SelectItem value=""> — používáme "all".
- * - Metriky pouze z připojených účtů (Instagram/YouTube/TikTok).
- * - Filtry/řazení respektují zvolenou platformu; u „Vše“ se bere maximum z připojených platforem.
- * - Karta ukazuje vedle počtu sledujících malou ikonu platformy, ze které číslo pochází.
- * - Detail profilu má tři boxy (IG/YT/TT) s mock „Propojit“ a „Aktualizovat“.
- * - Přidány runtime testy (console.assert).
- */
-
-const PLATFORMS = [
-  { id: "instagram", label: "Instagram", icon: Camera },
-  { id: "tiktok", label: "TikTok", icon: Music4 },
-  { id: "youtube", label: "YouTube", icon: Play },
-];
-
-const CATEGORIES = [
-  "Fashion",
-  "Beauty",
-  "Fitness",
-  "Lifestyle",
-  "Gaming",
-  "Tech",
-  "Food",
-  "Travel",
-  "Auto",
-  "Music",
-];
-
-const CITIES = ["Praha", "Brno", "Ostrava", "Plzeň", "Olomouc", "Zlín", "Hradec Králové", "České Budějovice"];
-
-// Metriky jsou prázdné dokud se účet nepřipojí (connected:false) — pro IG, YT, TT
-const MOCK = [
-  {
-    id: "1",
-    name: "Marie Novotná",
-    handle: "@mariemakeup",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop",
-    cover: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
-    city: "Praha",
-    category: "Beauty",
-    platforms: ["instagram", "tiktok"],
-    price: 12000,
-    rating: 4.8,
-    verified: true,
-    engagement: 4.2,
-    metrics: {
-      instagram: { connected: false, followers: null, updatedAt: null },
-      youtube: { connected: false, followers: null, updatedAt: null },
-      tiktok: { connected: false, followers: null, updatedAt: null },
-    },
-    links: [
-      { label: "Instagram", url: "#" },
-      { label: "TikTok", url: "#" },
-      { label: "Portfolio", url: "#" },
-    ],
-    gallery: [
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=600&auto=format&fit=crop",
-    ],
-    bio: "Beauty & lifestyle tvůrkyně. Spolupráce s DM, Notino, Sephora. Otevřeno novým kampaním.",
-  },
-  {
-    id: "2",
-    name: "Adam Král",
-    handle: "@adamfit",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
-    cover: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1200&auto=format&fit=crop",
-    city: "Brno",
-    category: "Fitness",
-    platforms: ["instagram", "youtube"],
-    price: 8000,
-    rating: 4.6,
-    verified: true,
-    engagement: 5.1,
-    metrics: {
-      instagram: { connected: false, followers: null, updatedAt: null },
-      youtube: { connected: false, followers: null, updatedAt: null },
-      tiktok: { connected: false, followers: null, updatedAt: null },
-    },
-    links: [
-      { label: "Instagram", url: "#" },
-      { label: "YouTube", url: "#" },
-      { label: "Tréninky", url: "#" },
-    ],
-    gallery: [
-      "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1434754205268-ad3b5f549b11?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=600&auto=format&fit=crop",
-    ],
-    bio: "Fitness, zdraví a výživa. Spolupráce: GymBeam, MyProtein. Videa 2× týdně.",
-  },
-  {
-    id: "3",
-    name: "Lukáš Procházka",
-    handle: "@lukas_plays",
-    avatar: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400&auto=format&fit=crop",
-    cover: "https://images.unsplash.com/photo-1605369059929-6f369e12a1f3?q=80&w=1200&auto=format&fit=crop",
-    city: "Ostrava",
-    category: "Gaming",
-    platforms: ["tiktok", "youtube"],
-    price: 15000,
-    rating: 4.7,
-    verified: false,
-    engagement: 6.3,
-    metrics: {
-      instagram: { connected: false, followers: null, updatedAt: null },
-      youtube: { connected: false, followers: null, updatedAt: null },
-      tiktok: { connected: false, followers: null, updatedAt: null },
-    },
-    links: [
-      { label: "TikTok", url: "#" },
-      { label: "YouTube", url: "#" },
-      { label: "Discord", url: "#" },
-    ],
-    gallery: [
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop",
-    ],
-    bio: "Gaming videa, livestreamy a e-sport. Otevřeno sponzoringu a product placementu.",
-  },
-  {
-    id: "4",
-    name: "Eliška Dvořáková",
-    handle: "@elitravels",
-    avatar: "https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop",
-    cover: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop",
-    city: "Plzeň",
-    category: "Travel",
-    platforms: ["instagram"],
-    price: 6000,
-    rating: 4.5,
-    verified: true,
-    engagement: 3.8,
-    metrics: {
-      instagram: { connected: false, followers: null, updatedAt: null },
-      youtube: { connected: false, followers: null, updatedAt: null },
-      tiktok: { connected: false, followers: null, updatedAt: null },
-    },
-    links: [
-      { label: "Instagram", url: "#" },
-      { label: "Blog", url: "#" },
-    ],
-    gallery: [
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1519681391401-22d216bb9170?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=600&auto=format&fit=crop",
-    ],
-    bio: "Cestování chytře a za málo. Spolupráce s aerolinkami a hotely.",
-  },
-];
-
-function formatFollowers(n) {
-  if (typeof n !== "number") return null;
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
-  return `${n}`;
-}
-
-export default function KartaoApp() {
-  // výchozí "all" místo prázdného řetězce
-  const [q, setQ] = useState("");
-  const [platform, setPlatform] = useState("all");
-  const [category, setCategory] = useState("all");
-  const [city, setCity] = useState("all");
-  const [maxPrice, setMaxPrice] = useState(null);
-  const [minFollowers, setMinFollowers] = useState(null);
-  const [sort, setSort] = useState("relevance");
-  const [selected, setSelected] = useState(null);
-  const [premiumOnly, setPremiumOnly] = useState(false);
-
-  const getPlatformFollowers = (item, p) => {
-    if (p === "all") {
-      // NOVĚ: součet napříč připojenými platformami
-      return ["instagram", "youtube", "tiktok"].reduce((sum, k) => {
-        const m = item.metrics?.[k];
-        return sum + (m && m.connected && typeof m.followers === "number" ? m.followers : 0);
-      }, 0);
-    }
-    const m = item.metrics?.[p];
-    return m && m.connected && typeof m.followers === "number" ? m.followers : 0;
-  };
-
-  const filtered = useMemo(() => {
-    let list = [...MOCK];
-
-    if (q.trim()) {
-      const s = q.toLowerCase();
-      list = list.filter((i) =>
-        [i.name, i.handle, i.city, i.category].some((v) => v.toLowerCase().includes(s))
-      );
-    }
-    if (platform !== "all") list = list.filter((i) => i.platforms.includes(platform));
-    if (category !== "all") list = list.filter((i) => i.category === category);
-    if (city !== "all") list = list.filter((i) => i.city === city);
-    if (maxPrice != null) list = list.filter((i) => i.price <= maxPrice);
-    if (minFollowers != null) {
-      list = list.filter((i) => getPlatformFollowers(i, platform) >= minFollowers);
-    }
-    if (premiumOnly) list = list.filter((i) => i.verified || getPlatformFollowers(i, platform) > 100000);
-
-    switch (sort) {
-      case "followers": {
-        list.sort((a, b) => getPlatformFollowers(b, platform) - getPlatformFollowers(a, platform));
-        break;
-      }
-      case "priceLow":
-        list.sort((a, b) => a.price - b.price);
-        break;
-      case "rating":
-        list.sort((a, b) => b.rating - a.rating);
-        break;
-      default:
-        list.sort((a, b) => (b.verified ? 1 : 0) - (a.verified ? 1 : 0) || b.engagement - a.engagement);
-    }
-
-    return list;
-  }, [q, platform, category, city, maxPrice, minFollowers, premiumOnly, sort] /* deps */ );
-
-  // --- Jednoduché "testy" (runtime assertions) ---
-  useEffect(() => {
-    // 1) Dataset
-    console.assert(Array.isArray(MOCK) && MOCK.length === 4, "Test: dataset length should be 4");
-
-    // 2) Žádný SelectItem nesmí mít value=""
-    const NO_EMPTY_VALUE_ALLOWED = true;
-    console.assert(NO_EMPTY_VALUE_ALLOWED, "Test: no empty SelectItem values (static) passed");
-
-    // 3) Followers na všech platformách startují odpojené
-    const allDisconnectedIG = MOCK.every((i) => i.metrics?.instagram?.connected === false);
-    const allDisconnectedYT = MOCK.every((i) => i.metrics?.youtube?.connected === false);
-    const allDisconnectedTT = MOCK.every((i) => i.metrics?.tiktok?.connected === false);
-    console.assert(allDisconnectedIG && allDisconnectedYT && allDisconnectedTT, "Test: all profiles start disconnected on all platforms");
-
-    // 4) Řazení podle followers se nesesype, i když jsou null
-    const sortedIG = [...MOCK].sort((a, b) => (b.metrics?.instagram?.followers ?? 0) - (a.metrics?.instagram?.followers ?? 0));
-    console.assert(sortedIG.length === MOCK.length, "Test: followers sort stable with nulls");
-
-    // 5) getPlatformFollowers — očekávané chování
-    const sample = {
-      metrics: {
-        instagram: { connected: true, followers: 120000 },
-        youtube: { connected: false, followers: 500000 },
-        tiktok: { connected: true, followers: 90000 },
-      },
-    };
-    console.assert(getPlatformFollowers(sample, "instagram") === 120000, "Test: IG followers when connected");
-    console.assert(getPlatformFollowers(sample, "youtube") === 0, "Test: YT returns 0 when disconnected");
-    console.assert(getPlatformFollowers(sample, "tiktok") === 90000, "Test: TT followers when connected");
-    console.assert(getPlatformFollowers(sample, "all") === 210000, "Test: ALL returns SUM across connected platforms");
-    // 6) Další testy pro součet
-    const none = { metrics: { instagram: { connected:false, followers: 50 }, youtube:{ connected:false, followers: 60 }, tiktok:{ connected:false, followers: 70 } } };
-    console.assert(getPlatformFollowers(none, "all") === 0, "Test: ALL returns 0 when none connected");
-    const partial = { metrics: { instagram: { connected:true, followers: 10 }, youtube:{ connected:false, followers: 20 }, tiktok:{ connected:true, followers: 30 } } };
-    console.assert(getPlatformFollowers(partial, "all") === 40, "Test: ALL sums only connected platforms");
-  }, []);
-
-  return (
-    <TooltipProvider>
-    <div className="min-h-screen bg-neutral-950 text-white">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-lg shadow-fuchsia-500/20">
-              <Crown className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-              <div className="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-2">
-            <Button variant="secondary" className="bg-white text-neutral-900 hover:bg-white/90">Pro firmy</Button>
-            <Button className="bg-fuchsia-500 hover:bg-fuchsia-600">Založit kartu</Button>
-          </div>
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Statický náhled</title>
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Pomocné utility pro statický náhled */
+    .card { @apply overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/60; }
+    .badge { @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-neutral-800 px-2 py-1 text-xs; }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+      <div class="flex items-center gap-3">
+        <div class="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 shadow-lg shadow-fuchsia-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2.1 7L12 16l-6.6 4L7.5 13 2 9h7z"/></svg>
         </div>
-      </header>
-
-      {/* HERO + SEARCH */}
-      <section className="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl md:text-5xl font-extrabold tracking-tight"
-          >
-            Najdi toho pravého influencera. <span className="text-fuchsia-400">Rychle a chytře.</span>
-          </motion.h1>
-          <p className="mt-3 text-white/70 max-w-2xl">
-            Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.
-          </p>
-
-          <div className="mt-6 grid gap-3 md:grid-cols-6">
-            <div className="md:col-span-3">
-              <div className="relative">
-                <Input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Hledat podle jména, oboru, města…"
-                  className="pl-10 bg-neutral-900 border-white/10 text-white placeholder:text-white/40"
-                />
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/50" />
-              </div>
-            </div>
-
-            {/* Platforma */}
-            <Select value={platform} onValueChange={setPlatform}>
-              <SelectTrigger className="bg-neutral-900 border-white/10">
-                <SelectValue placeholder="Platforma" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-900 text-white border-white/10">
-                <SelectItem value="all">Vše</SelectItem>
-                {PLATFORMS.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Kategorie */}
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="bg-neutral-900 border-white/10">
-                <SelectValue placeholder="Kategorie" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-900 text-white border-white/10 max-h-60 overflow-auto">
-                <SelectItem value="all">Vše</SelectItem>
-                {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Město */}
-            <Select value={city} onValueChange={setCity}>
-              <SelectTrigger className="bg-neutral-900 border-white/10">
-                <SelectValue placeholder="Město" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-900 text-white border-white/10">
-                <SelectItem value="all">Celá ČR</SelectItem>
-                {CITIES.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Řazení */}
-            <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="bg-neutral-900 border-white/10">
-                <SelectValue placeholder="Řazení" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-900 text-white border-white/10">
-                <SelectItem value="relevance">Relevance</SelectItem>
-                <SelectItem value="followers">Nejvíc followerů (API)</SelectItem>
-                <SelectItem value="priceLow">Nejnižší cena</SelectItem>
-                <SelectItem value="rating">Nejlepší hodnocení</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button className="bg-fuchsia-500 hover:bg-fuchsia-600 md:col-span-1"><Filter className="w-4 h-4 mr-2"/>Pokročilé</Button>
-          </div>
-
-          {/* Pokročilé filtry */}
-          <div className="mt-3 grid gap-3 md:grid-cols-4">
-            <Input
-              type="number"
-              min={0}
-              placeholder="Max rozpočet na post (Kč)"
-              className="bg-neutral-900 border-white/10"
-              onChange={(e) => setMaxPrice(Number(e.target.value) || null)}
-            />
-            <Input
-              type="number"
-              min={0}
-              placeholder="Min. followeři (jen z API)"
-              className="bg-neutral-900 border-white/10"
-              onChange={(e) => setMinFollowers(Number(e.target.value) || null)}
-            />
-            <label className="flex items-center gap-2 text-sm text-white/80">
-              <Checkbox checked={premiumOnly} onCheckedChange={(v) => setPremiumOnly(Boolean(v))} />
-              Pouze prémiové (ověřené / 100k+ z API)
-            </label>
-            <div className="flex items-center gap-2 text-sm text-white/60">
-              <Sparkles className="w-4 h-4"/> Tip: Pro přesné počty propojte účty v detailu karty
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* RESULTS */}
-      <section>
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 text-white/70 text-sm">
-              <Users className="w-4 h-4"/> <span>Nalezeno</span> <span className="font-semibold text-white">{filtered.length}</span>
-              <span>tvůrců</span>
-            </div>
-            <div className="hidden md:flex items-center gap-2 text-xs">
-              {PLATFORMS.map(({ id, label, icon: Icon }) => (
-                <Badge key={id} variant="outline" className={`bg-neutral-900 border-white/10 text-white/80 gap-1 ${platform===id?"ring-1 ring-fuchsia-500":""}`}>
-                  <Icon className="w-3.5 h-3.5"/> {label}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((i) => (
-                <InfluencerCard key={i.id} data={i} onOpen={() => setSelected(i)} platform={platform} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* PRO FIRMY */}
-      <section className="border-t border-white/10 bg-neutral-900/30">
-        <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Pro firmy a agentury</h2>
-            <p className="text-white/70 mt-2">Zadejte kampaň a získejte nabídky od vhodných tvůrců během hodin. Kurátorské seznamy, ověřené statistiky a escrow platby.</p>
-            <div className="flex gap-2 mt-4">
-              <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30"><BadgeCheck className="w-3 h-3 mr-1"/> Ověření tvůrci</Badge>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30"><TrendingUp className="w-3 h-3 mr-1"/> Záruka výkonu</Badge>
-            </div>
-            <div className="mt-6 flex gap-3">
-              <Button size="lg" className="bg-fuchsia-500 hover:bg-fuchsia-600">Zadat kampaň</Button>
-              <Button size="lg" variant="secondary" className="bg-white text-neutral-900 hover:bg-white/90">Domluvit demo</Button>
-            </div>
-          </div>
-          <div>
-            <PitchCard />
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
-          <div>
-            <div className="font-bold text-white">Kartao.cz</div>
-            <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
-          </div>
-          <div className="space-y-1">
-            <div className="text-white/80 font-medium">Odkazy</div>
-            <a className="block hover:text-white" href="#">Pro tvůrce</a>
-            <a className="block hover:text-white" href="#">Pro firmy</a>
-            <a className="block hover:text-white" href="#">Ceník</a>
-          </div>
-          <div className="space-y-1">
-            <div className="text-white/80 font-medium">Právo</div>
-            <a className="block hover:text-white" href="#">Podmínky</a>
-            <a className="block hover:text-white" href="#">Ochrana soukromí</a>
-          </div>
-        </div>
-      </footer>
-
-      {/* DETAIL SLIDE-OVER */}
-      {selected && <DetailSlide data={selected} onClose={() => setSelected(null)} />}
-    </div>
-    </TooltipProvider>
-  );
-}
-
-function InfluencerCard({ data, onOpen, platform }) {
-  const PlatformIcon = ({ id }) => {
-    const p = PLATFORMS.find((x) => x.id === id);
-    const Icon = p?.icon || Camera;
-    return <Icon className="w-4 h-4" />;
-  };
-
-  const pickFollowers = () => {
-    if (platform === "all") {
-      const parts = ["instagram","youtube","tiktok"].map((pid) => {
-        const m = data.metrics?.[pid];
-        const val = m && m.connected && typeof m.followers === "number" ? m.followers : 0;
-        return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
-      });
-      const sum = parts.reduce((s, p) => s + p.val, 0);
-      const updatedAt = parts
-        .map((p) => p.updatedAt ? new Date(p.updatedAt).getTime() : 0)
-        .reduce((a, b) => Math.max(a, b), 0);
-      return { mode: "sum", parts, val: sum, updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null };
-    }
-    const m = data.metrics?.[platform];
-    if (m && m.connected && typeof m.followers === "number") return { mode: "single", pid: platform, val: m.followers, updatedAt: m.updatedAt };
-    return { mode: "none", pid: null, val: null, updatedAt: null };
-  };
-      const best = connected.sort((a,b)=> b.m.followers - a.m.followers)[0];
-      return { pid: best.pid, val: best.m.followers, updatedAt: best.m.updatedAt };
-    }
-    const m = data.metrics?.[platform];
-    if (m && m.connected && typeof m.followers === "number") return { pid: platform, val: m.followers, updatedAt: m.updatedAt };
-    return { pid: null, val: null, updatedAt: null };
-  };
-
-  const pick = pickFollowers();
-  const val = pick.val;
-  const followersFormatted = formatFollowers(val);
-  const sourcePlatform = pick.mode === "single" && pick.pid ? PLATFORMS.find(p=>p.id===pick.pid) : null;
-  const SourceIcon = sourcePlatform ? (sourcePlatform.icon || Camera) : null;
-  const srcLabel = sourcePlatform?.label;
-  
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-      <Card className="overflow-hidden bg-neutral-900/60 border-white/10">
-        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${data.cover})` }} />
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3 -mt-10">
-            <img src={data.avatar} alt={data.name} className="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-lg leading-tight">{data.name}</h3>
-                {data.verified && (
-                  <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30"><BadgeCheck className="w-3 h-3 mr-1"/> Ověřeno</Badge>
-                )}
-              </div>
-              <div className="text-white/60 text-sm">{data.handle} • {data.category}</div>
-              <div className="flex items-center gap-3 mt-2 text-sm text-white/70">
-                {followersFormatted ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="flex items-center gap-1 cursor-pointer" onClick={onOpen} role="button" tabIndex={0} onKeyDown={(e)=>{ if(e.key==='Enter') onOpen(); }}>
-                        {pick.mode === 'single' ? (
-                          SourceIcon && <SourceIcon className="w-4 h-4"/>
-                        ) : (
-                          <span className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>
-                        )}
-                        {followersFormatted}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {pick.mode === 'single' ? (
-                        <div className="text-xs">Zdroj: {srcLabel || '—'}{pick.updatedAt ? ` • aktualizováno: ${new Date(pick.updatedAt).toLocaleString('cs-CZ')}` : ''}</div>
-                      ) : (
-                        <div className="text-xs space-y-0.5">
-                          <div className="font-medium">Součet napříč platformami</div>
-                          {pick.parts.map(({ pid, val }) => (
-                            <div key={pid}>{(PLATFORMS.find(p=>p.id===pid)?.label)||pid}: {val ? formatFollowers(val) : '—'}</div>
-                          ))}
-                        </div>
-                      )}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Badge variant="outline" className="bg-neutral-800/60 border-white/10 text-white/60 gap-1 cursor-pointer" onClick={onOpen} role="button" tabIndex={0}>
-                    <PlugZap className="w-3.5 h-3.5"/> {platform !== "all" ? `${(PLATFORMS.find(p=>p.id===platform)?.label)||"Platforma"} nepřipojen` : "Účty nepřipojeny"}
-                  </Badge>
-                )}
-                <span className="flex items-center gap-1"><Star className="w-4 h-4"/>{data.rating}</span>
-                <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/>{data.city}</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-white/70 text-sm mt-3 line-clamp-2">{data.bio}</p>
-
-          <div className="flex flex-wrap gap-2 mt-3">
-            {data.platforms.map((p) => (
-              <Badge key={p} variant="outline" className="bg-neutral-800 border-white/10 text-white/80 gap-1">
-                <PlatformIcon id={p} /> {PLATFORMS.find((x) => x.id===p)?.label}
-              </Badge>
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-white/70">od <span className="text-white font-semibold">{data.price.toLocaleString("cs-CZ")} Kč</span> / post</div>
-            <div className="flex gap-2">
-              <Button variant="secondary" className="bg-white text-neutral-900 hover:bg-white/90" onClick={onOpen}>
-                Zobrazit kartu <ChevronRight className="w-4 h-4 ml-1"/>
-              </Button>
-              <Button className="bg-fuchsia-500 hover:bg-fuchsia-600">Chci spolupráci</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
-function DetailSlide({ data, onClose }) {
-  // Lokální mock propojení pro IG / YT / TT: simuluje OAuth + načtení followers
-  const [state, setState] = useState({
-    instagram: { connected: data.metrics?.instagram?.connected ?? false, followers: data.metrics?.instagram?.followers, updatedAt: data.metrics?.instagram?.updatedAt },
-    youtube:   { connected: data.metrics?.youtube?.connected ?? false,   followers: data.metrics?.youtube?.followers,   updatedAt: data.metrics?.youtube?.updatedAt },
-    tiktok:    { connected: data.metrics?.tiktok?.connected ?? false,    followers: data.metrics?.tiktok?.followers,    updatedAt: data.metrics?.tiktok?.updatedAt },
-  });
-  const [loading, setLoading] = useState(null); // platform id or null
-
-  const connectPlatform = (pid) => {
-    setLoading(pid);
-    setTimeout(() => {
-      const base = Math.floor(30000 + Math.random() * 400000); // 30k–430k
-      setState((prev) => ({
-        ...prev,
-        [pid]: { connected: true, followers: base, updatedAt: new Date().toISOString() },
-      }));
-      setLoading(null);
-    }, 700);
-  };
-  const refreshPlatform = (pid) => {
-    if (!state[pid]?.connected) return;
-    setLoading(pid);
-    setTimeout(() => {
-      const jitter = Math.floor((Math.random() - 0.5) * 3000);
-      setState((prev) => ({
-        ...prev,
-        [pid]: { ...prev[pid], followers: Math.max(0, (prev[pid].followers || 0) + jitter), updatedAt: new Date().toISOString() },
-      }));
-      setLoading(null);
-    }, 500);
-  };
-
-  const platformRow = (pid, label) => {
-    const m = state[pid] || {};
-    const Icon = PLATFORMS.find(p=>p.id===pid)?.icon || Camera;
-    return (
-      <div className="p-3 rounded-xl border border-white/10 bg-neutral-900/50">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-white/70 text-xs flex items-center gap-2"><Icon className="w-4 h-4"/> {label}</div>
-            <div className="text-lg font-bold">{formatFollowers(m.followers) ?? "—"}</div>
-            <div className="text-xs text-white/50">{m.connected ? `Aktualizováno: ${m.updatedAt ? new Date(m.updatedAt).toLocaleString("cs-CZ") : "—"}` : "Nepřipojeno"}</div>
-          </div>
-          <div className="flex gap-2">
-            {!m.connected ? (
-              <Button onClick={() => connectPlatform(pid)} disabled={loading===pid} className="bg-emerald-500 hover:bg-emerald-600">
-                <PlugZap className="w-4 h-4 mr-2"/> Propojit
-              </Button>
-            ) : (
-              <>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30"><BadgeCheck className="w-3 h-3 mr-1"/> Ověřeno</Badge>
-                <Button onClick={() => refreshPlatform(pid)} disabled={loading===pid} variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                  <RefreshCw className="w-4 h-4 mr-2"/> Aktualizovat
-                </Button>
-              </>
-            )}
-          </div>
+        <div>
+          <div class="text-lg font-extrabold tracking-tight">Kartao.cz</div>
+          <div class="-mt-0.5 text-xs text-white/60">Síť influencerů a tvůrců</div>
         </div>
       </div>
-    );
-  };
+      <div class="hidden items-center gap-2 md:flex">
+        <button class="rounded-xl bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-white/90">Pro firmy</button>
+        <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Založit kartu</button>
+      </div>
+    </div>
+  </header>
 
-  return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <motion.aside
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 260, damping: 30 }}
-        className="absolute right-0 top-0 h-full w-full sm:w-[560px] bg-neutral-950 border-l border-white/10 overflow-y-auto"
-      >
-        <div className="p-4 border-b border-white/10 flex items-center justify-between sticky top-0 bg-neutral-950/80 backdrop-blur">
-          <div className="font-bold">Karta influencera</div>
-          <Button variant="secondary" className="bg-white text-neutral-900 hover:bg-white/90" onClick={onClose}>Zavřít</Button>
+  <!-- HERO + SEARCH -->
+  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
+    <div class="mx-auto max-w-7xl px-4 py-12">
+      <h1 class="text-3xl font-extrabold tracking-tight md:text-5xl">Najdi toho pravého influencera. <span class="text-fuchsia-400">Rychle a chytře.</span></h1>
+      <p class="mt-3 max-w-2xl text-white/70">Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.</p>
+
+      <div class="mt-6 grid gap-3 md:grid-cols-7">
+        <div class="relative md:col-span-3">
+          <input type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full rounded-xl border border-white/10 bg-neutral-900 px-10 py-2 text-sm placeholder:text-white/40" />
+          <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
+        <select class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm">
+          <option>Vše</option>
+          <option>Instagram</option>
+          <option>TikTok</option>
+          <option>YouTube</option>
+        </select>
+        <select class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm">
+          <option>Součet (Σ)</option>
+          <option>Maximum (MAX)</option>
+        </select>
+        <select class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm">
+          <option>Vše</option>
+          <option>Fashion</option>
+          <option>Beauty</option>
+          <option>Fitness</option>
+          <option>Lifestyle</option>
+          <option>Gaming</option>
+          <option>Tech</option>
+          <option>Food</option>
+          <option>Travel</option>
+          <option>Auto</option>
+          <option>Music</option>
+        </select>
+        <select class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm">
+          <option>Celá ČR</option>
+          <option>Praha</option>
+          <option>Brno</option>
+          <option>Ostrava</option>
+          <option>Plzeň</option>
+          <option>Olomouc</option>
+          <option>Zlín</option>
+          <option>Hradec Králové</option>
+          <option>České Budějovice</option>
+        </select>
+        <select class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm">
+          <option>Relevance</option>
+          <option>Nejvíc followerů (API)</option>
+          <option>Nejnižší cena</option>
+          <option>Nejlepší hodnocení</option>
+        </select>
+        <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Pokročilé</button>
+      </div>
 
-        <div className="p-4">
-          <div className="h-40 rounded-xl bg-cover bg-center" style={{ backgroundImage: `url(${data.cover})` }} />
-          <div className="flex items-start gap-3 -mt-10 p-2">
-            <img src={data.avatar} alt={data.name} className="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-xl leading-tight">{data.name}</h3>
-                {data.verified && (
-                  <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30"><BadgeCheck className="w-3 h-3 mr-1"/> Ověřeno</Badge>
-                )}
+      <!-- Pokročilé (staticky) -->
+      <div class="mt-3 grid gap-3 md:grid-cols-4">
+        <input type="number" placeholder="Max rozpočet na post (Kč)" class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm" />
+        <input type="number" placeholder="Min. followeři (jen z API)" class="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm opacity-60" disabled />
+        <label class="flex items-center gap-2 text-sm text-white/80"><input type="checkbox" class="h-4 w-4 rounded border-white/10 bg-neutral-900"/> Pouze prémiové (ověřené / 100k+ z API)</label>
+        <div class="flex items-center gap-2 text-sm text-white/60"><svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M16 7H8"/><path d="M14 11H10"/><path d="M16 15H8"/></svg> Tip: Pro přesné počty propojte účty v detailu karty</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS (staticky 4 karty) -->
+  <section>
+    <div class="mx-auto max-w-7xl px-4 py-8">
+      <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm text-white/70">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>
+          <span>Nalezeno</span> <span class="font-semibold text-white">4</span> <span>tvůrců</span>
+        </div>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Card 1 -->
+        <article class="card">
+          <div class="h-32 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop')"></div>
+          <div class="p-4">
+            <div class="-mt-10 flex items-start gap-3">
+              <img class="h-16 w-16 rounded-2xl object-cover ring-2 ring-neutral-900" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop" alt="Marie Novotná"/>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-bold leading-tight">Marie Novotná</h3>
+                  <span class="badge bg-fuchsia-500/20 text-fuchsia-300">✔ Ověřeno</span>
+                </div>
+                <div class="text-sm text-white/60">@mariemakeup • Beauty</div>
+                <div class="mt-2 flex items-center gap-3 text-sm text-white/70">
+                  <span class="inline-flex items-center gap-1"><span class="inline-flex h-4 w-4 items-center justify-center rounded bg-white/10 text-[10px] font-bold">Σ</span> 210k</span>
+                  <span class="inline-flex items-center gap-1">★ 4.8</span>
+                  <span class="inline-flex items-center gap-1">📍 Praha</span>
+                </div>
               </div>
-              <div className="text-white/60 text-sm">{data.handle} • {data.category} • {data.city}</div>
+            </div>
+            <p class="mt-3 line-clamp-2 text-sm text-white/70">Beauty & lifestyle tvůrkyně. Spolupráce s DM, Notino, Sephora. Otevřeno novým kampaním.</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="badge">📷 Instagram</span>
+              <span class="badge">🎵 TikTok</span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="text-sm text-white/70">od <span class="font-semibold text-white">12 000 Kč</span> / post</div>
+              <div class="flex gap-2">
+                <button class="rounded-xl bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-white/90">Zobrazit kartu</button>
+                <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Chci spolupráci</button>
+              </div>
             </div>
           </div>
+        </article>
 
-          <p className="text-white/80 text-sm mt-2">{data.bio}</p>
-
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {data.gallery.map((src, idx) => (
-              <img key={idx} src={src} className="rounded-lg object-cover w-full h-28" />
-            ))}
-          </div>
-
-          <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-            <Stat label="Hodnocení" value={`${data.rating}`} />
-            <Stat label="Engagement" value={`${data.engagement}%`} />
-            <Stat label="Město" value={`${data.city}`} />
-          </div>
-
-          {/* Per‑platform metriky */}
-          <div className="mt-4 grid grid-cols-1 gap-3">
-            {platformRow("instagram", "Instagram followers")}
-            {platformRow("youtube", "YouTube subscribers")}
-            {platformRow("tiktok", "TikTok followers")}
-          </div>
-
-          <div className="mt-6 p-3 rounded-xl border border-white/10 bg-neutral-900/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-white/70 text-sm">Ceník od</div>
-                <div className="text-xl font-bold">{data.price.toLocaleString("cs-CZ")} Kč / post</div>
+        <!-- Card 2 -->
+        <article class="card">
+          <div class="h-32 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1200&auto=format&fit=crop')"></div>
+          <div class="p-4">
+            <div class="-mt-10 flex items-start gap-3">
+              <img class="h-16 w-16 rounded-2xl object-cover ring-2 ring-neutral-900" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop" alt="Adam Král"/>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-bold leading-tight">Adam Král</h3>
+                  <span class="badge bg-fuchsia-500/20 text-fuchsia-300">✔ Ověřeno</span>
+                </div>
+                <div class="text-sm text-white/60">@adamfit • Fitness</div>
+                <div class="mt-2 flex items-center gap-3 text-sm text-white/70">
+                  <span class="inline-flex items-center gap-1"><span class="inline-flex h-4 w-4 items-center justify-center rounded bg-white/10 text-[10px] font-bold">Σ</span> 180k</span>
+                  <span class="inline-flex items-center gap-1">★ 4.6</span>
+                  <span class="inline-flex items-center gap-1">📍 Brno</span>
+                </div>
               </div>
-              <Button className="bg-fuchsia-500 hover:bg-fuchsia-600"><Mail className="w-4 h-4 mr-2"/> Poslat nabídku</Button>
+            </div>
+            <p class="mt-3 line-clamp-2 text-sm text-white/70">Fitness, zdraví a výživa. Spolupráce: GymBeam, MyProtein. Videa 2× týdně.</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="badge">📷 Instagram</span>
+              <span class="badge">▶ YouTube</span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="text-sm text-white/70">od <span class="font-semibold text-white">8 000 Kč</span> / post</div>
+              <div class="flex gap-2">
+                <button class="rounded-xl bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-white/90">Zobrazit kartu</button>
+                <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Chci spolupráci</button>
+              </div>
             </div>
           </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card">
+          <div class="h-32 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1605369059929-6f369e12a1f3?q=80&w=1200&auto=format&fit=crop')"></div>
+          <div class="p-4">
+            <div class="-mt-10 flex items-start gap-3">
+              <img class="h-16 w-16 rounded-2xl object-cover ring-2 ring-neutral-900" src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400&auto=format&fit=crop" alt="Lukáš Procházka"/>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-bold leading-tight">Lukáš Procházka</h3>
+                </div>
+                <div class="text-sm text-white/60">@lukas_plays • Gaming</div>
+                <div class="mt-2 flex items-center gap-3 text-sm text-white/70">
+                  <span class="inline-flex items-center gap-1"><span class="inline-flex h-4 w-4 items-center justify-center rounded bg-white/10 text-[10px] font-bold">Σ</span> 90k</span>
+                  <span class="inline-flex items-center gap-1">★ 4.7</span>
+                  <span class="inline-flex items-center gap-1">📍 Ostrava</span>
+                </div>
+              </div>
+            </div>
+            <p class="mt-3 line-clamp-2 text-sm text-white/70">Gaming videa, livestreamy a e-sport. Otevřeno sponzoringu a product placementu.</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="badge">🎵 TikTok</span>
+              <span class="badge">▶ YouTube</span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="text-sm text-white/70">od <span class="font-semibold text-white">15 000 Kč</span> / post</div>
+              <div class="flex gap-2">
+                <button class="rounded-xl bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-white/90">Zobrazit kartu</button>
+                <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Chci spolupráci</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="card">
+          <div class="h-32 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop')"></div>
+          <div class="p-4">
+            <div class="-mt-10 flex items-start gap-3">
+              <img class="h-16 w-16 rounded-2xl object-cover ring-2 ring-neutral-900" src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop" alt="Eliška Dvořáková"/>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-bold leading-tight">Eliška Dvořáková</h3>
+                  <span class="badge bg-fuchsia-500/20 text-fuchsia-300">✔ Ověřeno</span>
+                </div>
+                <div class="text-sm text-white/60">@elitravels • Travel</div>
+                <div class="mt-2 flex items-center gap-3 text-sm text-white/70">
+                  <span class="inline-flex items-center gap-1"><span class="inline-flex h-4 w-4 items-center justify-center rounded bg-white/10 text-[10px] font-bold">Σ</span> 0</span>
+                  <span class="inline-flex items-center gap-1">★ 4.5</span>
+                  <span class="inline-flex items-center gap-1">📍 Plzeň</span>
+                </div>
+              </div>
+            </div>
+            <p class="mt-3 line-clamp-2 text-sm text-white/70">Cestování chytře a za málo. Spolupráce s aerolinkami a hotely.</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="badge">📷 Instagram</span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="text-sm text-white/70">od <span class="font-semibold text-white">6 000 Kč</span> / post</div>
+              <div class="flex gap-2">
+                <button class="rounded-xl bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-white/90">Zobrazit kartu</button>
+                <button class="rounded-xl bg-fuchsia-500 px-3 py-2 text-sm font-medium hover:bg-fuchsia-600">Chci spolupráci</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRO FIRMY -->
+  <section class="border-t border-white/10 bg-neutral-900/30">
+    <div class="mx-auto grid max-w-7xl items-center gap-6 px-4 py-10 md:grid-cols-2">
+      <div>
+        <h2 class="text-2xl font-extrabold tracking-tight md:text-3xl">Pro firmy a agentury</h2>
+        <p class="mt-2 text-white/70">Zadejte kampaň a získejte nabídky od vhodných tvůrců během hodin. Kurátorské seznamy, ověřené statistiky a escrow platby.</p>
+        <div class="mt-4 flex gap-2">
+          <span class="badge bg-fuchsia-500/20 text-fuchsia-300">✔ Ověření tvůrci</span>
+          <span class="badge bg-amber-500/20 text-amber-300">↗ Záruka výkonu</span>
         </div>
-      </motion.aside>
+        <div class="mt-6 flex gap-3">
+          <button class="rounded-xl bg-fuchsia-500 px-4 py-2 font-medium hover:bg-fuchsia-600">Zadat kampaň</button>
+          <button class="rounded-xl bg-white px-4 py-2 font-medium text-neutral-900 hover:bg-white/90">Domluvit demo</button>
+        </div>
+      </div>
+      <div class="card p-6 text-sm text-white/80">
+        <div class="mb-3 flex items-center gap-2"><svg class="h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2.1 7L12 16l-6.6 4L7.5 13 2 9h7z"/></svg><span class="font-semibold">Proč Kartao</span></div>
+        <ul class="space-y-2">
+          <li class="flex items-start gap-2">✔ Ověření tvůrců a metriky</li>
+          <li class="flex items-start gap-2">★ Recenze po dokončení spolupráce</li>
+          <li class="flex items-start gap-2">🌐 Multiplatformní profily a odkazy</li>
+          <li class="flex items-start gap-2">👥 Kurátorské výběry a top karty týdne</li>
+        </ul>
+      </div>
     </div>
-  );
-}
+  </section>
 
-function Stat({ label, value }) {
-  return (
-    <div className="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
-      <div className="text-white/60 text-xs">{label}</div>
-      <div className="font-semibold">{value}</div>
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="mx-auto grid max-w-7xl gap-6 px-4 py-8 text-sm text-white/60 md:grid-cols-3">
+      <div>
+        <div class="text-white font-bold">Kartao.cz</div>
+        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
+      </div>
+      <div class="space-y-1">
+        <div class="font-medium text-white/80">Odkazy</div>
+        <a class="block hover:text-white" href="#">Pro tvůrce</a>
+        <a class="block hover:text-white" href="#">Pro firmy</a>
+        <a class="block hover:text-white" href="#">Ceník</a>
+      </div>
+      <div class="space-y-1">
+        <div class="font-medium text-white/80">Právo</div>
+        <a class="block hover:text-white" href="#">Podmínky</a>
+        <a class="block hover:text-white" href="#">Ochrana soukromí</a>
+      </div>
     </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
-      <Sparkles className="w-6 h-6 mx-auto"/>
-      <div className="font-semibold mt-2">Zkuste upravit filtry</div>
-      <div className="text-white/60 text-sm">Nenašli jsme žádné tvůrce pro zadaná kritéria.</div>
-    </div>
-  );
-}
-
-function PitchCard() {
-  return (
-    <Card className="bg-neutral-900/60 border-white/10 overflow-hidden">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Crown className="w-5 h-5 text-amber-400"/> Proč Kartao</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm text-white/80">
-        <div className="flex items-start gap-2"><BadgeCheck className="w-4 h-4 mt-0.5 text-fuchsia-300"/> Ověření tvůrců a metriky</div>
-        <div className="flex items-start gap-2"><Star className="w-4 h-4 mt-0.5 text-amber-300"/> Recenze po dokončení spolupráce</div>
-        <div className="flex items-start gap-2"><Globe className="w-4 h-4 mt-0.5 text-sky-300"/> Multiplatformní profily a odkazy</div>
-        <div className="flex items-start gap-2"><Users className="w-4 h-4 mt-0.5 text-emerald-300"/> Kurátorské výběry a top karty týdne</div>
-      </CardContent>
-    </Card>
-  );
-}
+  </footer>
+</body>
+</html>
