@@ -7,19 +7,7 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            neutral: tailwind.colors.neutral,
-            fuchsia: tailwind.colors.fuchsia,
-            amber: tailwind.colors.amber,
-            sky: tailwind.colors.sky,
-            emerald: tailwind.colors.emerald
-          }
-        }
-      }
-    }
+    tailwind.config = { theme: { extend: { colors: { neutral: tailwind.colors.neutral, fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber, sky: tailwind.colors.sky, emerald: tailwind.colors.emerald } } } }
   </script>
   <!-- Lucide icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -53,8 +41,8 @@
         </div>
       </div>
       <div class="hidden md:flex items-center gap-2">
-        <button class="btn btn-light">Pro firmy</button>
-        <button class="btn btn-primary">Založit kartu</button>
+        <a href="kartao-pro-firmy.html#brief" class="btn btn-light">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html#form" class="btn btn-primary">Založit kartu</a>
       </div>
     </div>
   </header>
@@ -171,7 +159,7 @@
     </div>
   </section>
 
-  <!-- PRO FIRMY -->
+  <!-- PRO FIRMY (zůstává na indexu jako promo) -->
   <section class="border-t border-white/10 bg-neutral-900/30">
     <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
       <div>
@@ -182,8 +170,8 @@
           <span class="tag"><i data-lucide="trending-up" class="w-3 h-3"></i> Záruka výkonu</span>
         </div>
         <div class="mt-6 flex gap-3">
-          <button class="btn btn-primary">Zadat kampaň</button>
-          <button class="btn btn-light">Domluvit demo</button>
+          <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Zadat kampaň</a>
+          <a class="btn btn-light" href="kartao-pro-firmy.html#faq">Domluvit demo</a>
         </div>
       </div>
       <div>
@@ -199,6 +187,60 @@
       </div>
     </div>
   </section>
+  <!-- CENÍK (rozšířený s přepínačem měsíčně/ročně) -->
+  <section id="cenik" class="border-t border-white/10 bg-neutral-900/20">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Ceník pro tvůrce</h2>
+        <a href="kartao-pro-tvurce.html#cenik?utm_source=home&utm_medium=pricing_link&utm_campaign=pricing" class="text-sm text-white/70 hover:text-white flex items-center gap-1"><i data-lucide="link" class="w-4 h-4"></i> Podrobný ceník</a>
+      </div>
+
+      <!-- Billing toggle -->
+      <div id="billingToggle" data-state="monthly" class="mb-6 flex items-center gap-2">
+        <button id="billMonthly" class="btn btn-light">Měsíčně</button>
+        <button id="billYearly" class="btn btn-outline">Ročně <span class="ml-1 text-emerald-300 text-xs">(2 měsíce zdarma)</span></button>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <!-- Free -->
+        <div class="card p-5 flex flex-col">
+          <div class="text-sm font-semibold text-white/80">Free</div>
+          <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="0" data-yearly="0">0</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Veřejná karta</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> 1 kategorie</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Příjem poptávek</li>
+          </ul>
+          <a href="kartao-pro-tvurce.html#form?utm_source=home&utm_medium=pricing_cta&utm_campaign=signup" class="btn btn-primary mt-5">Založit kartu</a>
+        </div>
+        <!-- Pro -->
+        <div class="card p-5 border-fuchsia-400/40 ring-1 ring-inset ring-fuchsia-400/20">
+          <div class="text-sm font-semibold text-fuchsia-300 flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> Pro (doporučeno)</div>
+          <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="249" data-yearly="2490">249</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Vše z Free</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Propojení IG/TT/YT (OAuth)</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Priorita ve výpisech</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Základní analytika</li>
+          </ul>
+          <a href="kartao-pro-tvurce.html#form?utm_source=home&utm_medium=pricing_cta&utm_campaign=upgrade_pro" class="btn btn-primary mt-5">Aktivovat Pro</a>
+        </div>
+        <!-- Premium -->
+        <div class="card p-5 flex flex-col">
+          <div class="text-sm font-semibold text-white/80">Premium</div>
+          <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="699" data-yearly="6990">699</span> Kč<span class="text-base text-white/60 font-normal js-period"> / měs.</span></div>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Vše z Pro</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Pokročilá analytika + reporty</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Top badge & kurátorské výběry</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Přednostní podpora</li>
+          </ul>
+          <a href="kartao-pro-tvurce.html#form?utm_source=home&utm_medium=pricing_cta&utm_campaign=upgrade_premium" class="btn btn-primary mt-5">Jít do Premium</a>
+        </div>
+      </div>
+      <p class="text-xs text-white/50 mt-4">U ročního tarifu je účtována jednorázová částka za 12 měsíců. Ceny jsou orientační pro MVP.</p>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="border-t border-white/10">
@@ -209,9 +251,9 @@
       </div>
       <div class="space-y-1">
         <div class="text-white/80 font-medium">Odkazy</div>
-        <a class="block hover:text-white" href="#">Pro tvůrce</a>
-        <a class="block hover:text-white" href="#">Pro firmy</a>
-        <a class="block hover:text-white" href="#">Ceník</a>
+        <a class="block hover:text-white" href="kartao-pro-tvurce.html">Pro tvůrce</a>
+        <a class="block hover:text-white" href="kartao-pro-firmy.html">Pro firmy</a>
+        <a class="block hover:text-white" href="#cenik">Ceník</a>
       </div>
       <div class="space-y-1">
         <div class="text-white/80 font-medium">Právo</div>
@@ -259,10 +301,7 @@
     /* ==========================
        STAV + URL SYNC
     ========================== */
-    const state = {
-      q: '', platform: 'all', mode: 'sum', category: 'all', city: 'all', sort: 'relevance',
-      maxPrice: null, minFollowers: null, premiumOnly: false, page: 1, pageSize: 12, infinite: false
-    };
+    const state = { q: '', platform: 'all', mode: 'sum', category: 'all', city: 'all', sort: 'relevance', maxPrice: null, minFollowers: null, premiumOnly: false, page: 1, pageSize: 12, infinite: false };
 
     function readQS(){
       const qs = new URLSearchParams(location.search);
@@ -423,13 +462,13 @@
           </div>
           <p class="text-white/70 text-sm mt-3 line-clamp-2">${data.bio}</p>
           <div class="flex flex-wrap gap-2 mt-3">
-            ${data.platforms.map(p=> `<span class="tag"><i data-lucide="${PLATFORMS.find(x=>x.id===p)?.icon||'camera'}" class="w-4 h-4"></i> ${PLATFORMS.find(x=>x.id===p)?.label||p}</span>`).join('')}
+            ${data.platforms.map(p=> `<span class=\"tag\"><i data-lucide=\"${PLATFORMS.find(x=>x.id===p)?.icon||'camera'}\" class=\"w-4 h-4\"></i> ${PLATFORMS.find(x=>x.id===p)?.label||p}</span>`).join('')}
           </div>
           <div class="mt-4 flex items-center justify-between">
             <div class="text-sm text-white/70">od <span class="text-white font-semibold">${data.price.toLocaleString('cs-CZ')} Kč</span> / post</div>
             <div class="flex gap-2">
               <button class="btn btn-light js-open">Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-              <button class="btn btn-primary">Chci spolupráci</button>
+              <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Chci spolupráci</a>
             </div>
           </div>
         </div>`;
@@ -492,31 +531,11 @@
           ${platformRow('youtube','YouTube subscribers', data)}
           ${platformRow('tiktok','TikTok followers', data)}
         </div>
-        <form id="leadForm" class="mt-6 p-3 rounded-xl border border-white/10 bg-neutral-900/50 space-y-3">
-          <div class="font-semibold">Poslat nezávaznou poptávku</div>
-          <div class="grid grid-cols-1 gap-3">
-            <input name="company" placeholder="Firma / Značka" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-            <input name="name" placeholder="Vaše jméno" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-            <input name="email" type="email" placeholder="E‑mail" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-            <input name="budget" type="number" placeholder="Rozpočet (Kč)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-            <textarea name="message" placeholder="Zdravím, máme zájem o spolupráci s ${data.name}…" class="min-h-24 rounded-xl bg-neutral-900 border border-white/10 p-3 text-sm outline-none"></textarea>
-            <input type="hidden" name="influencerId" value="${data.id}"/>
-            <input type="hidden" name="influencerName" value="${data.name}"/>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="text-xs text-white/60">Odešleme na e‑mail / API (mock).</div>
-            <button type="submit" class="btn btn-primary"><i data-lucide="mail" class="w-4 h-4"></i> Odeslat poptávku</button>
-          </div>
-        </form>
+        <div class="mt-6 flex items-center justify-end gap-2">
+          <a href="kartao-pro-firmy.html#brief" class="btn btn-primary"><i data-lucide="mail" class="w-4 h-4"></i> Poptejte spolupráci</a>
+        </div>
       `;
       lucide.createIcons();
-      document.getElementById('leadForm').addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const payload = Object.fromEntries(fd.entries());
-        console.log('Poptávka odeslána:', payload);
-        alert('Děkujeme, poptávka byla zaznamenána (mock).');
-      });
       ov.classList.remove('hidden');
       setTimeout(()=> drawer.classList.add('active'), 0);
     }
@@ -540,40 +559,10 @@
               <div class="text-xs text-white/50">${connected? 'Aktualizováno: '+ updatedAt : 'Nepřipojeno'}</div>
             </div>
             <div class="flex gap-2">
-              ${!connected ? `<button data-action="connect" data-pid="${pid}" class="btn" style="background:#10b981"><i data-lucide="plug-zap" class="w-4 h-4"></i> Propojit</button>` : `<span class="tag" style="background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.3);color:#86efac"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span><button data-action="refresh" data-pid="${pid}" class="btn btn-outline"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Aktualizovat</button>`}
+              ${!connected ? `<span class="tag text-white/60"><i data-lucide="plug-zap" class="w-3.5 h-3.5"></i> Účet není připojen</span>` : `<span class="tag" style="background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.3);color:#86efac"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>`}
             </div>
           </div>
         </div>`;
-    }
-
-    function wireDrawerButtons(data){
-      // Delegace pro connect/refresh
-      document.getElementById('drawerBody').addEventListener('click', (e)=>{
-        const t = e.target.closest('[data-action]');
-        if(!t) return;
-        const action = t.getAttribute('data-action');
-        const pid = t.getAttribute('data-pid');
-        const idx = MOCK.findIndex(x=>x.id===data.id);
-        if(idx<0) return;
-        if(action==='connect'){
-          t.disabled = true;
-          setTimeout(()=>{
-            const base = Math.floor(30000 + Math.random()*400000);
-            MOCK[idx].metrics[pid] = { connected:true, followers: base, updatedAt: new Date().toISOString() };
-            openDetail(MOCK[idx]); // re-render
-          }, 700);
-        }
-        if(action==='refresh'){
-          t.disabled = true;
-          setTimeout(()=>{
-            const jitter = Math.floor((Math.random()-.5)*3000);
-            const prev = MOCK[idx].metrics[pid].followers || 0;
-            MOCK[idx].metrics[pid].followers = Math.max(0, prev + jitter);
-            MOCK[idx].metrics[pid].updatedAt = new Date().toISOString();
-            openDetail(MOCK[idx]);
-          }, 500);
-        }
-      });
     }
 
     function closeDetail(){
@@ -655,5 +644,37 @@
       console.assert(typeof state.infinite === 'boolean', 'Test infinite boolean');
     });
   </script>
+<script>
+  // === Pricing toggle (měsíčně/ročně) ===
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const billing = document.getElementById('billingToggle');
+    if(!billing) return;
+    const btnM = document.getElementById('billMonthly');
+    const btnY = document.getElementById('billYearly');
+    function setBilling(mode){
+      billing.dataset.state = mode;
+      const monthly = mode==='monthly';
+      btnM.classList.toggle('btn-light', monthly);
+      btnM.classList.toggle('btn-outline', !monthly);
+      btnY.classList.toggle('btn-light', !monthly);
+      btnY.classList.toggle('btn-outline', monthly);
+      document.querySelectorAll('.js-price').forEach(el=>{
+        const val = monthly ? el.dataset.monthly : el.dataset.yearly;
+        el.textContent = Number(val).toLocaleString('cs-CZ');
+      });
+      document.querySelectorAll('.js-period').forEach(el=>{ el.textContent = monthly ? ' / měs.' : ' / rok'; });
+    }
+    btnM?.addEventListener('click', ()=> setBilling('monthly'));
+    btnY?.addEventListener('click', ()=> setBilling('yearly'));
+    setBilling('monthly');
+
+    // Pricing sanity tests
+    console.assert(document.querySelectorAll('#cenik .js-price').length===3, 'Pricing cards present');
+    setBilling('yearly');
+    const anyYear = [...document.querySelectorAll('#cenik .js-price')].some(n=> n.textContent.includes('2,490') || n.textContent.includes('6,990'));
+    console.assert(anyYear, 'Yearly prices applied');
+    setBilling('monthly');
+  });
+</script>
 </body>
 </html>
