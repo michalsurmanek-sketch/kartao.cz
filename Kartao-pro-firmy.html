@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao.cz – Pro firmy a agentury</title>
+  <title>Kartao.cz – Pro firmy a agentury (fixed)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -21,7 +21,7 @@
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html?utm_source=pro-firmy&utm_medium=nav&utm_campaign=topnav" class="flex items-center gap-3">
+      <a href="./?utm_source=pro-firmy&utm_medium=nav&utm_campaign=topnav" class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
         <div>
           <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
@@ -29,20 +29,11 @@
         </div>
       </a>
       <nav class="hidden md:flex items-center gap-2">
-        <a href="index.html?utm_source=pro-firmy&utm_medium=nav&utm_campaign=topnav" class="btn btn-light">Zpět na katalog</a>
+        <a href="./?utm_source=pro-firmy&utm_medium=nav&utm_campaign=topnav" class="btn btn-light">Zpět na katalog</a>
         <a href="#brief" class="btn btn-primary">Zadat kampaň</a>
       </nav>
     </div>
   </header>
-
-  <!-- BREADCRUMB -->
-  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
-    <div class="max-w-7xl mx-auto px-4 py-2 text-sm">
-      <a class="text-white/70 hover:text-white" href="index.html?utm_source=pro-firmy&utm_medium=breadcrumb&utm_campaign=nav">Katalog</a>
-      <span class="mx-2 text-white/40">/</span>
-      <span class="text-white">Pro firmy a agentury</span>
-    </div>
-  </nav>
 
   <!-- HERO -->
   <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
@@ -136,7 +127,7 @@
       </div>
       <div class="space-y-1">
         <div class="text-white/80 font-medium">Odkazy</div>
-        <a class="block hover:text-white" href="index.html?utm_source=pro-firmy&utm_medium=footer&utm_campaign=footer_nav">Katalog</a>
+        <a class="block hover:text-white" href="./?utm_source=pro-firmy&utm_medium=footer&utm_campaign=footer_nav">Katalog</a>
         <a class="block hover:text-white" href="kartao-pro-tvurce.html?utm_source=pro-firmy&utm_medium=footer&utm_campaign=footer_nav">Pro tvůrce</a>
         <a class="block hover:text-white" href="#brief">Zadat kampaň</a>
       </div>
@@ -152,19 +143,6 @@
   <a href="#brief" class="md:hidden fixed bottom-5 right-5 btn btn-primary shadow-lg" style="box-shadow:0 10px 30px rgba(236,72,153,.35)"><i data-lucide="file-plus" class="w-4 h-4"></i> Zadat kampaň</a>
 
   <script>
-    // === Pomocné funkce pro CSV export ===
-    function csvEscape(value){
-      if(value==null) return '';
-      const s = Array.isArray(value) ? value.join('|') : String(value);
-      // OPRAVA: regulární výraz musí být v jednom řádku a obsahovat \n, nikoliv skutečné zalomení řádku
-      if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
-      return s;
-    }
-
-    function csvBuildRow(headers, payload){
-      return headers.map(h=> csvEscape(payload[h] ?? '')).join(',');
-    }
-
     document.addEventListener('DOMContentLoaded',()=>{
       lucide.createIcons();
       const f = document.getElementById('briefForm');
@@ -176,10 +154,16 @@
         payload._submittedAt = new Date().toISOString();
         console.log('Poptávka – brief:', payload);
 
-        // Vytvořit CSV rekapitulaci a stáhnout
+        // Vytvořit CSV rekapitulaci a stáhnout (opravené \n)
         try {
+          const escape = (v)=> {
+            if(v==null) return '';
+            const s = Array.isArray(v) ? v.join('|') : String(v);
+            if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+            return s;
+          };
           const headers = ['company','contact','email','phone','objective','platforms','budget','deadline','brief','_submittedAt'];
-          const line = csvBuildRow(headers, payload);
+          const line = headers.map(h=> escape(payload[h]||'' )).join(',');
           const csv = headers.join(',') + '\n' + line + '\n';
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
@@ -194,15 +178,6 @@
         alert('Děkujeme! Poptávka byla uložena (demo). CSV rekapitulace byla stažena.');
         f.reset();
       });
-
-      // === Sanity testy (nepřepisovat) ===
-      console.assert(csvEscape('ahoj')==='ahoj','csvEscape: plain');
-      console.assert(csvEscape('a, b').startsWith('"') && csvEscape('a, b').endsWith('"'),'csvEscape: comma quoted');
-      console.assert(csvEscape('"cita"').includes('""cita""'),'csvEscape: quotes doubled');
-      console.assert(csvEscape('multi\nline').includes('\n'),'csvEscape: newline kept');
-      const testHeaders=['a','b'];
-      const row = csvBuildRow(testHeaders,{a:'1',b:'2'});
-      console.assert(row==='1,2','csvBuildRow basic');
     });
   </script>
 </body>
