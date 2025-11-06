@@ -1,3 +1,4 @@
+cat > index.html <<'EOF'
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -246,7 +247,28 @@
       {id:'4',name:'Eliška Dvořáková',handle:'@elitravels',avatar:'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',cover:'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',city:'Plzeň',category:'Travel',platforms:['instagram'],price:6000,rating:4.5,verified:true,engagement:3.8,metrics:{instagram:{connected:false,followers:null,updatedAt:null},youtube:{connected:false,followers:null,updatedAt:null},tiktok:{connected:false,followers:null,updatedAt:null}},gallery:['https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1519681391401-22d216bb9170?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=600&auto=format&fit=crop'],bio:'Cestování chytře a za málo. Spolupráce s aerolinkami a hotely.'}
     ];
 
-    function fmtFollowers(n){ if(typeof n!== 'number') return null; if(n>=1_000_000) return (n/1_000_000).toFixed(1)+'M'; if(n>=1_000) return (n/1000).toFixed(0)+'k'; return String(n) }
+    function fmtFollowers(n){
+      if (typeof n !== 'number' || isNaN(n)) return null;
+      if (n >= 1_000_000) {
+        // 1_500_000 -> 1.5M, 2_000_000 -> 2M
+        const v = Math.floor(n / 100_000) / 10;
+        return (v % 1 === 0 ? String(Math.floor(v)) : v.toFixed(1)) + 'M';
+      }
+      if (n >= 1_000) {
+        // 1500 -> 1k (nedochází k zaokrouhlení nahoru)
+        return Math.floor(n / 1000) + 'k';
+      }
+      return String(n);
+    }
+
+    function debounce(fn, delay = 300){
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
+    }
+
     function platformFollowers(item, pid, mode){
       if(pid==='all'){
         const vals = ['instagram','youtube','tiktok'].map(k=>{ const m=item.metrics?.[k]; return m&&m.connected&&typeof m.followers==='number'?m.followers:0; });
@@ -546,34 +568,45 @@
         </div>`;
     }
 
-    function wireDrawerButtons(data){
-      // Delegace pro connect/refresh
-      document.getElementById('drawerBody').addEventListener('click', (e)=>{
+    function wireDrawerButtons(){
+      // připojíme delegovaný listener jen jednou
+      if (window.__drawerWired) return;
+      const body = document.getElementById('drawerBody');
+      body.addEventListener('click', (e) => {
         const t = e.target.closest('[data-action]');
-        if(!t) return;
+        if (!t) return;
         const action = t.getAttribute('data-action');
         const pid = t.getAttribute('data-pid');
-        const idx = MOCK.findIndex(x=>x.id===data.id);
-        if(idx<0) return;
-        if(action==='connect'){
+
+        // zjistíme aktuální influencerId z hidden inputu v draweru
+        const infIdInput = document.querySelector('#drawerBody input[name="influencerId"]');
+        const infId = infIdInput ? infIdInput.value : null;
+        if (!infId) return;
+
+        const idx = MOCK.findIndex(x => x.id === infId);
+        if (idx < 0) return;
+
+        if (action === 'connect') {
           t.disabled = true;
-          setTimeout(()=>{
-            const base = Math.floor(30000 + Math.random()*400000);
-            MOCK[idx].metrics[pid] = { connected:true, followers: base, updatedAt: new Date().toISOString() };
-            openDetail(MOCK[idx]); // re-render
+          setTimeout(() => {
+            const base = Math.floor(30000 + Math.random() * 400000);
+            MOCK[idx].metrics[pid] = { connected: true, followers: base, updatedAt: new Date().toISOString() };
+            openDetail(MOCK[idx]); // re-render detail
           }, 700);
         }
-        if(action==='refresh'){
+
+        if (action === 'refresh') {
           t.disabled = true;
-          setTimeout(()=>{
-            const jitter = Math.floor((Math.random()-.5)*3000);
-            const prev = MOCK[idx].metrics[pid].followers || 0;
+          setTimeout(() => {
+            const jitter = Math.floor((Math.random() - 0.5) * 3000);
+            const prev = (MOCK[idx].metrics[pid] && MOCK[idx].metrics[pid].followers) || 0;
             MOCK[idx].metrics[pid].followers = Math.max(0, prev + jitter);
             MOCK[idx].metrics[pid].updatedAt = new Date().toISOString();
             openDetail(MOCK[idx]);
           }, 500);
         }
       });
+      window.__drawerWired = true;
     }
 
     function closeDetail(){
@@ -615,7 +648,9 @@
       writeQS();
       render();
 
-      q.addEventListener('input', (e)=>{ state.q = e.target.value; resetPageAndRender(); });
+      // debounce pro input hledání (lepší UX + výkon)
+      q.addEventListener('input', debounce((e) => { state.q = e.target.value; resetPageAndRender(); }, 300));
+
       platform.addEventListener('change', (e)=>{ state.platform = e.target.value; syncInputsFromState(); resetPageAndRender(); });
       mode.addEventListener('change', (e)=>{ state.mode = e.target.value; resetPageAndRender(); });
       category.addEventListener('change', (e)=>{ state.category = e.target.value; resetPageAndRender(); });
@@ -626,6 +661,9 @@
       minFollowers.addEventListener('input', (e)=>{ const v = e.target.value.trim(); state.minFollowers = v? Number(v) : null; resetPageAndRender(); });
       premiumOnly.addEventListener('change', (e)=>{ state.premiumOnly = e.target.checked; resetPageAndRender(); });
       infinite.addEventListener('change', (e)=>{ state.infinite = e.target.checked; resetPageAndRender(); });
+
+      // připojíme drawer delegované handlery jednou
+      wireDrawerButtons();
 
       // Advanced toggle (just focuses inputs)
       document.getElementById('advancedBtn').addEventListener('click', ()=>{
@@ -657,3 +695,4 @@
   </script>
 </body>
 </html>
+EOF
