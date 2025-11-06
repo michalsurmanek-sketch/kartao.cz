@@ -1,31 +1,136 @@
-<!DOCTYPE html><html lang="cs"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ochrana soukromí – Kartao.cz</title>
-<link rel="icon" href="/favicon.svg">
-<script src="https://cdn.tailwindcss.com"></script>
-</head><body class="bg-neutral-950 text-white">
-  <header class="max-w-5xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-extrabold">Ochrana soukromí</h1>
-    <p class="text-white/60 mt-2">Poslední aktualizace: 1. 11. 2025</p>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Ochrana soukromí</title>
+  <link rel="icon" href="/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:.75rem}
+    .btn-primary{background:#e879f9}
+    .btn-primary:hover{background:#db58f6}
+    .btn-light{background:#fff;color:#111}
+    .btn-light:hover{background:#f3f3f3}
+    .btn-outline{border:1px solid rgba(255,255,255,.2)}
+    .prose p{margin:0 0 1em}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-2">
+        <a href="kartao-pro-tvurce.html#form" class="btn btn-primary">Založit kartu</a>
+      </nav>
+    </div>
   </header>
-  <main class="max-w-5xl mx-auto px-4 pb-16 prose prose-invert">
-    <h2>Jaké údaje zpracováváme</h2>
+
+  <!-- BREADCRUMB -->
+  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
+    <div class="max-w-7xl mx-auto px-4 py-2 text-sm">
+      <a class="text-white/70 hover:text-white" href="index.html">Katalog</a>
+      <span class="mx-2 text-white/40">/</span>
+      <span class="text-white">Ochrana soukromí</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Ochrana soukromí</h1>
+      <p class="mt-3 text-white/70 max-w-3xl">Jak zpracováváme osobní údaje uživatelů Kartao.cz (tvůrců a firem). Dokument je rámcový – uprav dle skutečného provozovatele a zpracovatelů.</p>
+      <div class="text-xs text-white/50 mt-3">Poslední aktualizace: <span id="updated"></span></div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-12 prose prose-invert">
+    <h2>1. Správce a kontakty</h2>
+    <p><strong>Správce:</strong> Provozovatel webu Kartao.cz (doplnit název, IČ, sídlo). Kontakt: <em>privacy@kartao.cz</em>.</p>
+
+    <h2>2. Jaké údaje zpracováváme</h2>
     <ul>
-      <li>Kontaktní údaje a obsah karty tvůrce (jméno, bio, odkazy).</li>
-      <li>Veřejné statistiky z propojených účtů (followers) – na základě souhlasu.</li>
+      <li>Identifikační a kontaktní údaje (jméno/profil, e‑mail, město, obor) z formulářů.</li>
+      <li>Veřejné metriky propojených účtů (počet sledujících apod.) – pouze po tvém souhlasu.</li>
+      <li>Komunikační záznamy a poptávky mezi firmami a tvůrci.</li>
+      <li>Technické údaje (IP, logy, cookies) pro bezpečnost a statistiku.</li>
     </ul>
-    <h2>Účel a právní základ</h2>
-    <p>Propojení značek a tvůrců, zobrazení profi karet, vyřizování poptávek – souhlas a oprávněný zájem.</p>
-    <h2>Doba uchování</h2>
-    <p>Po dobu trvání registrace, případně dle zákonných povinností.</p>
-    <h2>Práva subjektů údajů</h2>
-    <p>Právo na přístup, opravu, výmaz, omezení, přenositelnost a námitku. Kontakt: <em>tvoje-kontakt@domena.cz</em>.</p>
-    <p class="text-white/60 mt-8 text-sm">Nejedná se o právní radu. Uprav podle reálného provozovatele a zpracovatelů.</p>
+
+    <h2>3. Účely a právní základy</h2>
+    <ul>
+      <li><strong>Provoz služby</strong> (zobrazení karet, poptávky) – plnění smlouvy / oprávněný zájem.</li>
+      <li><strong>Propojení účtů IG/TT/YT</strong> – souhlas; lze kdykoli odvolat a účty odpojit.</li>
+      <li><strong>Marketing</strong> (newsletter, promo) – souhlas, s možností odhlášení.</li>
+      <li><strong>Bezpečnost a statistika</strong> – oprávněný zájem.</li>
+    </ul>
+
+    <h2>4. Cookies</h2>
+    <p>Používáme nutné cookies (funkční) a měřicí/marketingové cookies pouze s tvým souhlasem. Spravuj je v nastavení prohlížeče nebo banneru.</p>
+
+    <h2>5. Doba uchování</h2>
+    <p>Po dobu trvání registrace, resp. po dobu nutnou k plnění povinností a obraně práv. Údaje zpracovávané na základě souhlasu uchováváme do jeho odvolání.</p>
+
+    <h2>6. Příjemci a předávání</h2>
+    <p>Můžeme využívat zpracovatele (hosting, analytika, e‑mailing). Seznam poskytujeme na vyžádání. Údaje nepředáváme mimo EU bez odpovídajících záruk.</p>
+
+    <h2>7. Tvá práva</h2>
+    <ul>
+      <li>Přístup, oprava, výmaz, omezení, přenositelnost, námitka.</li>
+      <li>Odvolání souhlasu (neovlivní zákonnost minulého zpracování).</li>
+      <li>Stížnost u ÚOOÚ (<a class="underline" href="https://www.uoou.cz/">uoou.cz</a>).</li>
+    </ul>
+
+    <h2>8. Bezpečnost</h2>
+    <p>Zavádíme přiměřená technická a organizační opatření (šifrování přenosu TLS, omezení přístupů, logování incidentů). Přesto žádný systém není absolutně bezpečný.</p>
+
+    <h2>9. Kontakt a uplatnění práv</h2>
+    <p>Napiš na <em>privacy@kartao.cz</em> (uprav dle provozovatele). Odpověď obvykle do 30 dnů.</p>
+
+    <div class="card p-4 mt-10">
+      <div class="font-semibold mb-1">Rychlé shrnutí</div>
+      <p class="text-white/70 text-sm">Údaje používáme hlavně k provozu karet a propojování firem a tvůrců. Propojení sociálních účtů je dobrovolné a kdykoli odpojitelné.</p>
+    </div>
   </main>
+
+  <!-- FOOTER -->
   <footer class="border-t border-white/10">
-    <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-white/60">
-      <a class="hover:text-white" href="/index.html">Domů</a> ·
-      <a class="hover:text-white" href="/podminky.html">Podmínky</a>
+    <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
+      <div>
+        <div class="font-bold text-white">Kartao.cz</div>
+        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
+      </div>
+      <div class="space-y-1">
+        <div class="text-white/80 font-medium">Odkazy</div>
+        <a class="block hover:text-white" href="index.html">Katalog</a>
+        <a class="block hover:text-white" href="kartao-cenik.html">Ceník</a>
+        <a class="block hover:text-white" href="kartao-pro-tvurce.html#form">Založit kartu</a>
+      </div>
+      <div class="space-y-1">
+        <div class="text-white/80 font-medium">Právo</div>
+        <a class="block hover:text-white" href="podminky.html">Podmínky</a>
+        <a class="block hover:text-white" href="ochrana-soukromi.html">Ochrana soukromí</a>
+      </div>
     </div>
   </footer>
-</body></html>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      lucide.createIcons();
+      const d = new Date();
+      const pad = n=> String(n).padStart(2,'0');
+      const ds = `${pad(d.getDate())}. ${pad(d.getMonth()+1)}. ${d.getFullYear()}`;
+      document.getElementById('updated').textContent = ds;
+    });
+  </script>
+</body>
+</html>
