@@ -52,31 +52,6 @@
       </div>
     </div>
   </header>
-  (function () {
-    const btn = document.getElementById('loginBtn');
-    const modal = document.getElementById('loginModal');
-    const closeEls = modal.querySelectorAll('[data-close]');
-    const creator = document.getElementById('loginCreator');
-    const company = document.getElementById('loginCompany');
-
-    function show() { modal.classList.remove('hidden'); }
-    function hide() { modal.classList.add('hidden'); }
-
-    btn.addEventListener('click', show);
-    closeEls.forEach(el => el.addEventListener('click', hide));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-
-    creator.addEventListener('click', () => {
-      localStorage.setItem('user_type', 'creator');
-      hide();
-      window.location.href = 'creator-dashboard.html';
-    });
-    company.addEventListener('click', () => {
-      localStorage.setItem('user_type', 'company');
-      hide();
-      window.location.href = 'firm-dashboard.html';
-    });
-  })();
 </script>
 <!-- === /KARTAO: Přihlášení === -->
  
