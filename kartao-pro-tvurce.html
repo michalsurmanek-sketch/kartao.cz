@@ -1,187 +1,136 @@
+<!-- =============================
+FILE: creator-dashboard.html
+============================= -->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao.cz – Pro tvůrce</title>
+  <title>Kartao – Dashboard tvůrce</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:.75rem}
+    .card{background-color:rgba(23,23,23,.7);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:.75rem}
     .btn-primary{background:#e879f9}
     .btn-primary:hover{background:#db58f6}
-    .btn-light{background:#fff;color:#111}
-    .btn-light:hover{background:#f3f3f3}
     .btn-outline{border:1px solid rgba(255,255,255,.2)}
-    .tag{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.1);padding:.25rem .5rem;border-radius:.5rem;background:rgba(38,38,38,.9)}
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white">
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/70 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html?utm_source=pro-tvurce&utm_medium=nav&utm_campaign=topnav" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
-        <div>
-          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
-        </div>
-      </a>
-      <nav class="hidden md:flex items-center gap-2">
-        <a href="index.html?utm_source=pro-tvurce&utm_medium=nav&utm_campaign=topnav" class="btn btn-light">Zpět na katalog</a>
-        <a href="#form" class="btn btn-primary">Založit kartu</a>
-      </nav>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-4 h-4"></i></div>
+        <div class="font-bold">Kartao – Tvůrce</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="btn btn-outline">⟵ Zpět na web</a>
+        <button id="logout" class="btn">Odhlásit</button>
+      </div>
     </div>
   </header>
 
-  <!-- BREADCRUMB -->
-  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
-    <div class="max-w-7xl mx-auto px-4 py-2 text-sm">
-      <a class="text-white/70 hover:text-white" href="index.html?utm_source=pro-tvurce&utm_medium=breadcrumb&utm_campaign=nav">Katalog</a>
-      <span class="mx-2 text-white/40">/</span>
-      <span class="text-white">Pro tvůrce</span>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
-    <div class="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-6 items-center">
-      <div>
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Pro tvůrce <span class="text-fuchsia-400">– získej víc spoluprací</span></h1>
-        <p class="mt-3 text-white/70 max-w-2xl">Vytvoř si kartu zdarma, propoj účty a nech se vyhledat značkami. Ověřené statistiky, nabídky napřímo a priorita ve výpisech.</p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a href="#form" class="btn btn-primary">Založit kartu zdarma</a>
-          <a href="cenik.html" class="btn btn-outline">Ceník & balíčky</a>
-        </div>
-        <div class="mt-6 flex gap-2 text-sm">
-          <span class="tag"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověření účtů</span>
-          <span class="tag"><i data-lucide="trending-up" class="w-3 h-3"></i> Priorita ve výpisu</span>
-          <span class="tag"><i data-lucide="users" class="w-3 h-3"></i> Nabídky od značek</span>
-        </div>
-      </div>
-      <div class="card p-4">
-        <div class="font-semibold mb-2">Jak to funguje</div>
-        <ol class="list-decimal ml-5 text-sm text-white/80 space-y-2">
-          <li>Založíš kartu – vyplníš základní info a obor.</li>
-          <li>Propojíš - Instagram / TikTok / YouTube → získáš odznak ověření.</li>
-          <li>Přijímáš poptávky a domlouváš podmínky spolupráce.</li>
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  <!-- FORMULÁŘ -->
-  <section id="form" class="border-b border-white/10 bg-neutral-900/30">
-    <div class="max-w-3xl mx-auto px-4 py-12">
-      <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">Založit kartu</h2>
-      <p class="text-white/70 mb-6">Po odeslání vytvoříme záznam (demo) a automaticky stáhneme <strong>CSV rekapitulaci</strong> přihlášky. Potvrzení uvidíš i v konzoli.</p>
-      <form id="creatorForm" class="grid md:grid-cols-2 gap-3">
+  <main class="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-3 gap-6">
+    <!-- Profil karta -->
+    <section class="lg:col-span-2 card p-4">
+      <h2 class="text-xl font-bold mb-3">Můj profil</h2>
+      <form id="creatorProfile" class="grid md:grid-cols-2 gap-3">
         <input name="name" required placeholder="Jméno / profil" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
         <input name="email" type="email" required placeholder="E‑mail" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="city" placeholder="Město (volit.)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="category" placeholder="Kategorie (např. Beauty)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="instagram" placeholder="Instagram URL (volit.)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 md:col-span-2"/>
-        <textarea name="bio" placeholder="Krátké bio" class="min-h-24 rounded-xl bg-neutral-900 border border-white/10 p-3 text-sm md:col-span-2"></textarea>
-        <label class="md:col-span-2 flex items-center gap-2 text-xs text-white/70"><input type="checkbox" required class="accent-fuchsia-500"/> Souhlasím se zpracováním údajů.</label>
-        <div class="md:col-span-2 flex items-center justify-between mt-1">
-          <div class="text-xs text-white/60">Po odeslání se automaticky stáhne CSV rekapitulace.</div>
-          <button class="btn btn-primary" type="submit">Vytvořit kartu</button>
+        <input name="city" placeholder="Město" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
+        <input name="category" placeholder="Kategorie (Beauty, Fitness…)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
+        <textarea name="bio" placeholder="Krátké bio" class="md:col-span-2 min-h-24 rounded-xl bg-neutral-900 border border-white/10 p-3 text-sm"></textarea>
+        <div class="md:col-span-2 flex items-center justify-between mt-2">
+          <div class="text-xs text-white/60">Uloží se lokálně (demo). Napojení na API přidáme.</div>
+          <button class="btn btn-primary" type="submit">Uložit profil</button>
         </div>
       </form>
-    </div>
-  </section>
+    </section>
 
-  <!-- Sticky FAB CTA (mobil) -->
-  <a href="#form" class="md:hidden fixed bottom-5 right-5 btn btn-primary shadow-lg" style="box-shadow:0 10px 30px rgba(236,72,153,.35)"><i data-lucide="user-plus" class="w-4 h-4"></i> Založit kartu</a>
+    <!-- Statistika -->
+    <aside class="card p-4">
+      <h3 class="font-semibold mb-2">Statistiky</h3>
+      <div class="text-sm text-white/70">Followeři (demo)</div>
+      <div class="mt-2 grid grid-cols-3 gap-2 text-center">
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">IG</div><div id="sIG" class="font-bold">—</div></div>
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">TT</div><div id="sTT" class="font-bold">—</div></div>
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">YT</div><div id="sYT" class="font-bold">—</div></div>
+      </div>
+      <div class="mt-3 text-xs text-white/50">Přesné hodnoty se načtou po propojení účtů.</div>
+    </aside>
 
-  <!-- FAQ -->
-  <section id="faq" class="bg-neutral-900/20">
-    <div class="max-w-7xl mx-auto px-4 py-12">
-      <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">FAQ pro tvůrce</h2>
-      <div class="space-y-3">
-        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
-          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Je to opravdu zdarma?</span></summary>
-          <div class="pt-2 text-white/70 text-sm">Ano, balíček Free je zdarma. Pro a Premium přidávají ověření účtů, prioritu a další funkce.</div>
-        </details>
-        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
-          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Jak funguje ověření účtů?</span></summary>
-          <div class="pt-2 text-white/70 text-sm">Po vytvoření karty své účty bezpečně propojíš (OAuth). Stahujeme jen veřejné statistiky (followers).</div>
-        </details>
-        <details class="group border border-white/10 rounded-xl bg-neutral-900/50 p-3">
-          <summary class="cursor-pointer list-none font-medium"><span class="group-open:text-fuchsia-300">Mohu skrýt počet followerů?</span></summary>
-          <div class="pt-2 text-white/70 text-sm">Ano, zobrazení lze skrýt; přesná čísla pak uvidí jen ověřené firmy v soukromém náhledu.</div>
-        </details>
+    <!-- Propojení účtů -->
+    <section class="lg:col-span-2 card p-4">
+      <h2 class="text-xl font-bold mb-3">Propojit účty</h2>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
+          <div class="flex items-center justify-between"><span class="text-sm">Instagram</span><i data-lucide="camera" class="w-4 h-4"></i></div>
+          <input id="igUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
+          <button id="connectIG" class="mt-2 btn btn-primary w-full">Propojit</button>
+        </div>
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
+          <div class="flex items-center justify-between"><span class="text-sm">TikTok</span><i data-lucide="music-4" class="w-4 h-4"></i></div>
+          <input id="ttUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
+          <button id="connectTT" class="mt-2 btn btn-primary w-full">Propojit</button>
+        </div>
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
+          <div class="flex items-center justify-between"><span class="text-sm">YouTube</span><i data-lucide="play" class="w-4 h-4"></i></div>
+          <input id="ytUrl" placeholder="URL kanálu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
+          <button id="connectYT" class="mt-2 btn btn-primary w-full">Propojit</button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FOOTER -->
-  <footer class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
-      <div>
-        <div class="font-bold text-white">Kartao.cz</div>
-        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
-      </div>
-      <div class="space-y-1">
-        <div class="text-white/80 font-medium">Odkazy</div>
-        <a class="block hover:text-white" href="index.html?utm_source=pro-tvurce&utm_medium=footer&utm_campaign=footer_nav">Katalog</a>
-        <a class="block hover:text-white" href="#cenik">Ceník</a>
-        <a class="block hover:text-white" href="#form">Založit kartu</a>
-      </div>
-      <div class="space-y-1">
-        <div class="text-white/80 font-medium">Právo</div>
-        <a class="block hover:text-white" href="#">Podmínky</a>
-        <a class="block hover:text-white" href="#">Ochrana soukromí</a>
-      </div>
-    </div>
-  </footer>
+    <!-- Nabídky spolupráce (inbox) -->
+    <section class="card p-4">
+      <h2 class="text-xl font-bold mb-3">Nabídky</h2>
+      <div id="offers" class="space-y-2 text-sm"></div>
+    </section>
+  </main>
 
   <script>
-    // === CSV util funkce (stejná logika jako Pro firmy) ===
-    function csvEscape(value){
-      if(value==null) return '';
-      const s = Array.isArray(value) ? value.join('|') : String(value);
-      if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
-      return s;
-    }
-    function csvBuildRow(headers, payload){ return headers.map(h=> csvEscape(payload[h] ?? '')).join(','); }
+    // Guard – povol jen pro user_type=creator (jinak pošli na index)
+    const t = localStorage.getItem('user_type');
+    if(t && t !== 'creator'){ location.href = 'index.html'; }
 
-    document.addEventListener('DOMContentLoaded',()=>{
-      lucide.createIcons();
-      const f = document.getElementById('creatorForm');
-      f.addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const data = new FormData(f);
-        const payload = Object.fromEntries(data.entries());
-        payload._submittedAt = new Date().toISOString();
-        console.log('Pro tvůrce – nová karta (payload):', payload);
-        try {
-          const headers = ['name','email','city','category','instagram','bio','_submittedAt'];
-          const line = csvBuildRow(headers, payload);
-          const csv = headers.join(',') + '\n' + line + '\n';
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          const ts = new Date();
-          const pad = (n)=> String(n).padStart(2,'0');
-          const fname = `kartao-signup-${ts.getFullYear()}${pad(ts.getMonth()+1)}${pad(ts.getDate())}-${pad(ts.getHours())}${pad(ts.getMinutes())}.csv`;
-          a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
-          URL.revokeObjectURL(url);
-        } catch(err){ console.warn('CSV export selhal:', err); }
-        alert('Díky! Kartu jsme založili (demo). CSV rekapitulace byla stažena.');
-        f.reset();
-      });
+    function n(x){return x.toLocaleString('cs-CZ')}
 
-      // Sanity testy – nezávislé (neměnit)
-      console.assert(csvEscape('ahoj')==='ahoj','csvEscape: plain');
-      console.assert(csvEscape('a, b').startsWith('"') && csvEscape('a, b').endsWith('"'),'csvEscape: comma quoted');
-      console.assert(csvEscape('"cita"').includes('""cita""'),'csvEscape: quotes doubled');
-      console.assert(csvEscape('multi\nline').includes('\n'),'csvEscape: newline kept');
-      const testHeaders=['a','b'];
-      const row = csvBuildRow(testHeaders,{a:'1',b:'2'});
-      console.assert(row==='1,2','csvBuildRow basic');
+    // Demo ukládání profilu
+    document.getElementById('creatorProfile').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const data = Object.fromEntries(fd.entries());
+      localStorage.setItem('creator_profile', JSON.stringify(data));
+      alert('Profil uložen (demo).');
     });
+
+    // Demo propojení účtů → vygeneruj náhodné počty
+    const rnd = () => Math.floor(1000 + Math.random()*50000);
+    const setStats = (ig, tt, yt) => { sIG.textContent=n(ig); sTT.textContent=n(tt); sYT.textContent=n(yt); };
+    connectIG.onclick = ()=> setStats(rnd(), sTT.textContent.replace(/\s/g,'')||rnd(), sYT.textContent.replace(/\s/g,'')||rnd());
+    connectTT.onclick = ()=> setStats(sIG.textContent.replace(/\s/g,'')||rnd(), rnd(), sYT.textContent.replace(/\s/g,'')||rnd());
+    connectYT.onclick = ()=> setStats(sIG.textContent.replace(/\s/g,'')||rnd(), sTT.textContent.replace(/\s/g,'')||rnd(), rnd());
+
+    // Demo nabídky
+    const offers = [
+      {brand:'GymBeam', budget:15000, note:'IG Reels + story', status:'Nová'},
+      {brand:'Notino', budget:12000, note:'1× YT Short + 3× IG story', status:'Nová'}
+    ];
+    document.getElementById('offers').innerHTML = offers.map(o=>
+      `<div class="p-3 rounded-lg bg-neutral-900/60 border border-white/10 flex items-center justify-between">
+         <div>
+           <div class="font-semibold">${o.brand}</div>
+           <div class="text-white/60 text-xs">${o.note}</div>
+         </div>
+         <div class="text-sm">${n(o.budget)} Kč</div>
+       </div>`
+    ).join('');
+
+    // Odhlášení
+    document.getElementById('logout').addEventListener('click', ()=>{ localStorage.removeItem('user_type'); location.href='index.html'; })
+
+    document.addEventListener('DOMContentLoaded', ()=>{ lucide.createIcons(); });
   </script>
 </body>
 </html>
