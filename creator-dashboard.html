@@ -211,9 +211,12 @@ FILE: firm-dashboard.html
   </main>
 
   <script>
-    // Guard – povol jen pro user_type=company (jinak na index)
-    const t2 = localStorage.getItem('user_type');
-    if(t2 && t2 !== 'company'){ location.href = 'index.html'; }
+    (function(){
+  const token = localStorage.getItem('auth_token');
+  const role  = localStorage.getItem('user_type');
+  if (!token || role !== 'creator') location.href = 'login.html';
+  })();
+
 
     const fmt = (x)=> Number(x).toLocaleString('cs-CZ');
 
