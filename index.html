@@ -46,6 +46,65 @@
       </div>
     </div>
   </header>
+ <!-- === KARTAO: Přihlášení (Tvůrce / Firma) === -->
+<button id="loginBtn"
+  class="fixed bottom-5 left-5 z-50 rounded-full px-4 py-3 shadow-lg
+         bg-sky-500 text-white text-sm font-medium
+         active:scale-95 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-white/30">
+  Přihlásit se
+</button>
+
+<!-- Modal přihlášení -->
+<div id="loginModal" class="hidden fixed inset-0 z-50">
+  <div class="absolute inset-0 bg-black/70" data-close></div>
+  <div class="relative max-w-sm mx-auto mt-24 bg-neutral-900 border border-white/10 rounded-xl p-5">
+    <div class="flex items-start justify-between gap-3">
+      <h3 class="text-lg font-semibold">Přihlášení</h3>
+      <button class="text-white/70 hover:text-white" data-close aria-label="Zavřít">✕</button>
+    </div>
+    <p class="text-sm text-white/70 mt-2">Vyber typ účtu:</p>
+    <div class="mt-4 grid gap-3">
+      <button id="loginCreator"
+              class="w-full bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 rounded text-sm">
+        Jsem tvůrce
+      </button>
+      <button id="loginCompany"
+              class="w-full bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded text-sm">
+        Jsem firma
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const btn = document.getElementById('loginBtn');
+    const modal = document.getElementById('loginModal');
+    const closeEls = modal.querySelectorAll('[data-close]');
+    const creator = document.getElementById('loginCreator');
+    const company = document.getElementById('loginCompany');
+
+    function show() { modal.classList.remove('hidden'); }
+    function hide() { modal.classList.add('hidden'); }
+
+    btn.addEventListener('click', show);
+    closeEls.forEach(el => el.addEventListener('click', hide));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+
+    creator.addEventListener('click', () => {
+      localStorage.setItem('user_type', 'creator');
+      hide();
+      window.location.href = 'creator-dashboard.html';
+    });
+    company.addEventListener('click', () => {
+      localStorage.setItem('user_type', 'company');
+      hide();
+      window.location.href = 'firm-dashboard.html';
+    });
+  })();
+</script>
+<!-- === /KARTAO: Přihlášení === -->
+ 
 <!-- === KARTAO: ADMIN SNIPPET (vložit před </body>) === -->
 
 
