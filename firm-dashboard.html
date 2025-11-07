@@ -90,11 +90,12 @@ FILE: creator-dashboard.html
   </main>
 
   <script>
-    // Guard – povol jen pro user_type=creator (jinak pošli na index)
-    const t = localStorage.getItem('user_type');
-    if(t && t !== 'creator'){ location.href = 'index.html'; }
+    //(function(){
+  const token = localStorage.getItem('auth_token');
+  const role  = localStorage.getItem('user_type');
+  if (!token || role !== 'company') location.href = 'login.html';
+})();
 
-    function n(x){return x.toLocaleString('cs-CZ')}
 
     // Demo ukládání profilu
     document.getElementById('creatorProfile').addEventListener('submit', (e)=>{
