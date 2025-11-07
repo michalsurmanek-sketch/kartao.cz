@@ -43,22 +43,13 @@
       <div class="hidden md:flex items-center gap-2">
         <a href="kartao-pro-firmy.html#brief" class="btn btn-light">Pro firmy</a>
         <a href="kartao-pro-tvurce.html#form" class="btn btn-primary">Založit kartu</a>
-        <a href="login.html" class="ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-sky-500 text-white hover:bg-sky-600 transition">
+        <!-- === KARTAO: Přihlášení (Tvůrce / Firma) === -->
+        <a id="loginBtn" class="ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-sky-500 text-white hover:bg-sky-600 transition">
         <i data-lucide="user" class="w-4 h-4"></i>
         </a>
-
-
       </div>
     </div>
   </header>
- <!-- === KARTAO: Přihlášení (Tvůrce / Firma) === -->
-<button id="loginBtn"
-  class="fixed top 0 right 0 z-50 flex items-center justify-center rounded-full p-3 shadow-lg
-  bg-sky-500 text-white
-  active:scale-95 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-white/30">
-
-  <i data-lucide="user" class="w-5 h-5"></i>
-</button>
 <!-- Modal přihlášení -->
 <div id="loginModal" class="hidden fixed inset-0 z-50">
   <div class="absolute inset-0 bg-black/70" data-close></div>
