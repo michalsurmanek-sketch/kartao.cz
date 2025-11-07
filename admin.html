@@ -7,19 +7,47 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-neutral-950 text-white min-h-screen">
-  <div class="max-w-3xl mx-auto p-6">
+  <div class="max-w-5xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-4">Kartao Admin Panel</h1>
+
+    <!-- LOGIN -->
     <div id="login" class="space-y-3">
       <p class="text-white/80">Zadej admin klíč pro získání přístupu:</p>
       <input id="adminKey" type="password" placeholder="Admin klíč" class="w-full p-2 rounded bg-neutral-800 border border-white/20" />
       <button id="loginBtn" class="bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 rounded">Přihlásit se</button>
     </div>
 
+    <!-- PANEL -->
     <div id="panel" class="hidden">
-      <div class="flex justify-between items-center mt-6 mb-4">
-        <h2 class="text-2xl font-semibold">Čekající karty</h2>
-        <button id="refreshBtn" class="text-sm border border-white/20 px-3 py-1 rounded">↻ Aktualizovat</button>
+      <div class="flex flex-col gap-3 mt-6 mb-4">
+        <div class="flex flex-col md:flex-row gap-3 md:items-end">
+          <div class="grow">
+            <label class="text-xs text-white/60">Hledat podle e‑mailu nebo ID</label>
+            <input id="q" type="text" placeholder="např. name@example.com nebo 8p3f..." class="w-full p-2 rounded bg-neutral-800 border border-white/20" />
+          </div>
+          <div>
+            <label class="text-xs text-white/60">Stav</label>
+            <select id="status" class="p-2 rounded bg-neutral-800 border border-white/20">
+              <option value="pending" selected>Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button id="refreshBtn" class="text-sm border border-white/20 px-3 py-2 rounded">↻ Aktualizovat</button>
+            <button id="clearBtn" class="text-sm border border-white/20 px-3 py-2 rounded">✕ Vyčistit</button>
+            <button id="approveSelectedBtn" class="text-sm bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded">✔ Schválit vybrané</button>
+            <button id="rejectSelectedBtn" class="text-sm bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded">✖ Zamítnout vybrané</button>
+            <button id="exportCsvBtn" class="text-sm border border-white/20 px-3 py-2 rounded">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-white/60">
+          <label class="inline-flex items-center gap-2"><input id="selectAll" type="checkbox" class="accent-fuchsia-500"> Označit vše na stránce</label>
+          <span id="selectedCount" class="text-white/50">Vybráno: 0</span>
+        </div>
+        <p class="text-xs text-white/50">Tip: Přepni stav na „Approved“ pro přehled schválených karet. Hledání je case‑insensitive a podporuje částečnou shodu e‑mailu. ID se hledá přesnou shodou. Hromadné akce pracují s aktuálně zobrazeným seznamem a tvým výběrem.</p>
       </div>
+
       <div id="creatorsList" class="space-y-2"></div>
     </div>
   </div>
@@ -28,8 +56,26 @@
     const apiBase = 'https://api.kartao.cz';
     let token = localStorage.getItem('admin_jwt') || '';
 
+    // Stav UI
+    let currentList = []; // naposledy zobrazený (filtrovaný) seznam
+    const selected = new Set(); // vybraná ID
+
+    // ===== Helpers =====
+    function showPanel() {
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('panel').classList.remove('hidden');
+    }
+    function showLogin() {
+      document.getElementById('panel').classList.add('hidden');
+      document.getElementById('login').classList.remove('hidden');
+    }
+    function updateSelectedCount(){
+      document.getElementById('selectedCount').textContent = `Vybráno: ${selected.size}`;
+    }
+
     async function login() {
-      const key = document.getElementById('adminKey').value;
+      const key = (document.getElementById('adminKey').value || '').trim();
+      if(!key) { alert('Zadej admin klíč'); return; }
       const res = await fetch(`${apiBase}/admin/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -39,39 +85,103 @@
       if(out.token) {
         token = out.token;
         localStorage.setItem('admin_jwt', token);
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('panel').classList.remove('hidden');
+        showPanel();
         loadCreators();
       } else {
         alert('Neplatný klíč');
       }
     }
 
-    async function loadCreators() {
-      const res = await fetch(`${apiBase}/admin/creators?status=pending`, {
+    async function fetchByStatus(status) {
+      const res = await fetch(`${apiBase}/admin/creators?status=${encodeURIComponent(status)}` ,{
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const list = await res.json();
+      if(res.status === 401) { localStorage.removeItem('admin_jwt'); token=''; showLogin(); throw new Error('Unauthorized'); }
+      return res.json();
+    }
+
+    function renderList(list) {
+      currentList = Array.isArray(list) ? list : [];
       const container = document.getElementById('creatorsList');
       container.innerHTML = '';
-      if (!Array.isArray(list) || list.length === 0) {
-        container.innerHTML = '<p class="text-white/60">Žádné čekající karty.</p>';
+
+      // Po každém renderu synchronizuj „označit vše“ podle stavu výběru
+      const pageIds = new Set(currentList.map(c => String(c.id)));
+      const allSelected = currentList.length > 0 && [...pageIds].every(id => selected.has(id));
+      document.getElementById('selectAll').checked = allSelected;
+
+      if (currentList.length === 0) {
+        container.innerHTML = '<p class="text-white/60">Nic nenalezeno.</p>';
+        updateSelectedCount();
         return;
       }
-      list.forEach(c => {
+
+      currentList.forEach(c => {
+        const idStr = String(c.id);
         const div = document.createElement('div');
-        div.className = 'p-3 border border-white/10 rounded flex justify-between items-center';
+        div.className = 'p-3 border border-white/10 rounded flex justify-between items-center gap-3';
         div.innerHTML = `
-          <div>
-            <div class="font-semibold">${c.name || '(bez jména)'} – ${c.city || ''}</div>
-            <div class="text-sm text-white/60">${c.email}</div>
+          <div class="flex items-start gap-3">
+            <input type="checkbox" class="rowChk mt-1 accent-fuchsia-500" data-id="${idStr}" ${selected.has(idStr) ? 'checked' : ''}>
+            <div>
+              <div class="font-semibold">${escapeHtml(c.name || '(bez jména)')} ${c.city ? '– ' + escapeHtml(c.city) : ''}</div>
+              <div class="text-sm text-white/60">${escapeHtml(c.email || '')}</div>
+              <div class="text-xs text-white/40">ID: ${escapeHtml(idStr)} • Stav: ${escapeHtml(c.status || '')}${c.created_at ? ' • Vytvořeno: ' + escapeHtml(c.created_at) : ''}</div>
+            </div>
           </div>
-          <div class="flex gap-2">
-            <button class="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-sm" onclick="approve('${c.id}')">Schválit</button>
-            <button class="bg-rose-500 hover:bg-rose-600 px-3 py-1 rounded text-sm" onclick="reject('${c.id}')">Zamítnout</button>
-          </div>`;
+          <div class="flex gap-2">${actionButtons(c)}</div>`;
         container.appendChild(div);
       });
+
+      // navěs checkboxy
+      container.querySelectorAll('.rowChk').forEach(chk => {
+        chk.addEventListener('change', (e)=>{
+          const id = e.target.getAttribute('data-id');
+          if(e.target.checked) selected.add(id); else selected.delete(id);
+          updateSelectedCount();
+        });
+      });
+
+      updateSelectedCount();
+    }
+
+    function actionButtons(c){
+      if(c.status === 'pending'){
+        return `
+          <button class="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-sm" onclick="approve('${c.id}')">Schválit</button>
+          <button class="bg-rose-500 hover:bg-rose-600 px-3 py-1 rounded text-sm" onclick="reject('${c.id}')">Zamítnout</button>`;
+      }
+      if(c.status === 'approved'){
+        return `<button class="bg-rose-500 hover:bg-rose-600 px-3 py-1 rounded text-sm" onclick="reject('${c.id}')">Zamítnout</button>`;
+      }
+      return `<button class="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-sm" onclick="approve('${c.id}')">Schválit</button>`;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (ch)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[ch]));
+    }
+
+    // Debounce search
+    let debounceTimer;
+    function debounce(fn, wait=250){
+      clearTimeout(debounceTimer); debounceTimer = setTimeout(fn, wait);
+    }
+
+    async function loadCreators() {
+      const status = (document.getElementById('status').value || 'pending');
+      const q = (document.getElementById('q').value || '').toLowerCase().trim();
+
+      let list = await fetchByStatus(status);
+
+      // Klientská filtrace: email (contains, case-insensitive) nebo ID (přesná shoda)
+      if(q){
+        list = (list || []).filter((c)=>{
+          const idMatch = (String(c.id) || '').toLowerCase() === q;
+          const emailMatch = (c.email || '').toLowerCase().includes(q);
+          return idMatch || emailMatch;
+        })
+      }
+      renderList(list);
     }
 
     async function approve(id) {
@@ -80,6 +190,7 @@
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      selected.delete(String(id));
       loadCreators();
     }
 
@@ -89,17 +200,67 @@
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      selected.delete(String(id));
       loadCreators();
     }
 
+    // ===== Hromadné akce =====
+    async function approveSelected(){
+      if(selected.size === 0){ alert('Není nic vybráno.'); return; }
+      if(!confirm(`Schválit ${selected.size} vybraných karet?`)) return;
+      for(const id of selected){
+        await fetch(`${apiBase}/admin/creators/${id}/approve`, { method:'PATCH', headers:{ 'Authorization': `Bearer ${token}` }});
+      }
+      selected.clear();
+      loadCreators();
+    }
+    async function rejectSelected(){
+      if(selected.size === 0){ alert('Není nic vybráno.'); return; }
+      if(!confirm(`Zamítnout ${selected.size} vybraných karet?`)) return;
+      for(const id of selected){
+        await fetch(`${apiBase}/admin/creators/${id}/reject`, { method:'PATCH', headers:{ 'Authorization': `Bearer ${token}` }});
+      }
+      selected.clear();
+      loadCreators();
+    }
+
+    function exportCSV(){
+      if(!currentList || currentList.length === 0){ alert('Není co exportovat.'); return; }
+      const header = ['id','email','name','city','category','status','created_at'];
+      const rows = currentList.map(c => header.map(h => (c[h] ?? '')).map(val => `"${String(val).replace(/"/g,'""')}"`).join(','));
+      const csv = [header.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `kartao-creators-${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Events
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('refreshBtn').addEventListener('click', loadCreators);
+    document.getElementById('clearBtn').addEventListener('click', ()=>{ document.getElementById('q').value=''; loadCreators(); });
+    document.getElementById('status').addEventListener('change', ()=>{ selected.clear(); loadCreators(); });
+    document.getElementById('q').addEventListener('input', ()=>debounce(loadCreators, 250));
 
-    if(token) {
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('panel').classList.remove('hidden');
-      loadCreators();
-    }
+    document.getElementById('approveSelectedBtn').addEventListener('click', approveSelected);
+    document.getElementById('rejectSelectedBtn').addEventListener('click', rejectSelected);
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+
+    document.getElementById('selectAll').addEventListener('change', (e)=>{
+      const check = e.target.checked;
+      currentList.forEach(c => {
+        const id = String(c.id);
+        if(check) selected.add(id); else selected.delete(id);
+      })
+      // přeznačit checkboxy na stránce
+      document.querySelectorAll('.rowChk').forEach(ch => { ch.checked = check; });
+      updateSelectedCount();
+    });
+
+    // Auto-login if token
+    if(token) { showPanel(); loadCreators(); }
   </script>
 </body>
 </html>
