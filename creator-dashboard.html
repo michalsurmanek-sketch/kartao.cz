@@ -90,6 +90,84 @@ FILE: creator-dashboard.html
   </main>
 
   <script>
+    <script>
+// Pomocné
+function slugify(s){
+  return String(s||'').toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'') // odháčkovat
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'profil';
+}
+function uid(){ return (crypto?.randomUUID && crypto.randomUUID()) || ('id-' + Math.random().toString(36).slice(2)); }
+
+// Výchozí šablona karty z profilu (demo)
+function createCardFromProfile(profile, metricsMap){
+  const now = Date.now();
+  const slug = slugify(profile.name || profile.handle || 'profil');
+  const avatar = profile.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.name||'K')}`;
+  const cover  = profile.cover  || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
+  const category = profile.category || 'Lifestyle';
+  const city = profile.city || 'Praha';
+  const price = Number(profile.price||0) > 0 ? Number(profile.price) : 6000;
+
+  // metricsMap očekává např.: { instagram: { connected:true, followers:12345 }, ... }
+  const platforms = ['instagram','tiktok','youtube','facebook'];
+  const metrics = {};
+  platforms.forEach(p=>{
+    const m = metricsMap?.[p] || {};
+    metrics[p] = {
+      connected: !!m.connected,
+      followers: Number.isFinite(m.followers) ? Number(m.followers) : null,
+      updatedAt: m.updatedAt || null
+    };
+  });
+
+  return {
+    id: uid(),
+    slug,
+    name: profile.name || 'Nový tvůrce',
+    handle: profile.handle || '@' + slug,
+    city, category,
+    bio: profile.bio || '',
+    avatar, cover,
+    price,
+    rating: 4.6,
+    verified: false,
+    platforms: platforms.filter(p=> metrics[p]?.connected) /* jen připojené – klidně nech "vše" */,
+    metrics,
+    gallery: profile.gallery || [],
+    createdAt: now,
+    updatedAt: now
+  };
+}
+
+// DEMO: akce „Založit kartu“ – uloží do LocalStorage a přesměruje na veřejnou URL
+document.getElementById('creatorProfile')?.addEventListener('submit', (e)=>{
+  // existující uložení profilu nech – jen po uložení přidej:
+  setTimeout(()=>{
+    const profile = JSON.parse(localStorage.getItem('creator_profile')||'{}');
+
+    // v demu naplníme jen IG (pokud zadal URL); v produkci sem přijde serverem vrácená data z OAuth sync
+    const metrics = {
+      instagram: profile.ig_followers ? {connected:true, followers:Number(profile.ig_followers), updatedAt: new Date().toISOString()} : {connected:false},
+      tiktok:    {connected:false},
+      youtube:   {connected:false},
+      facebook:  {connected:false}
+    };
+
+    const card = createCardFromProfile(profile, metrics);
+    const list = JSON.parse(localStorage.getItem('cards')||'[]');
+    list.unshift(card);
+    localStorage.setItem('cards', JSON.stringify(list));
+
+    // pro rychlé testy – přidáme i do datasetu listingu na homepage (pokud běží na stejném originu)
+    try {
+      localStorage.setItem('MOCK_APPEND', JSON.stringify(card));
+    } catch(_){}
+
+    // redirect na veřejnou URL karty (pro demoverzi zkusíme stránku s parametrem)
+    location.href = 'index.html?k=' + encodeURIComponent(card.slug);
+  }, 10);
+});
     // Guard – povol jen pro user_type=creator (jinak pošli na index)
     const t = localStorage.getItem('user_type');
     if(t && t !== 'creator'){ location.href = 'index.html'; }
