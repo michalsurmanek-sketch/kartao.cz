@@ -151,6 +151,7 @@
 
         <select id="platform" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
           <option value="all">Vše</option>
+          <option value="facebook">Facebook</option>
           <option value="instagram">Instagram</option>
           <option value="tiktok">TikTok</option>
           <option value="youtube">YouTube</option>
@@ -324,7 +325,7 @@
     function fmtFollowers(n){ if(typeof n!== 'number') return null; if(n>=1_000_000) return (n/1_000_000).toFixed(1)+'M'; if(n>=1_000) return (n/1000).toFixed(0)+'k'; return String(n) }
     function platformFollowers(item, pid, mode){
       if(pid==='all'){
-        const vals = ['instagram','youtube','tiktok'].map(k=>{ const m=item.metrics?.[k]; return m&&m.connected&&typeof m.followers==='number'?m.followers:0; });
+        const vals = ['facebook,instagram','youtube','tiktok'].map(k=>{ const m=item.metrics?.[k]; return m&&m.connected&&typeof m.followers==='number'?m.followers:0; });
         return mode==='max'? Math.max(0,...vals) : vals.reduce((a,b)=>a+b,0);
       }
       const m=item.metrics?.[pid];
@@ -339,7 +340,7 @@
     function readQS(){
       const qs = new URLSearchParams(location.search);
       if(qs.get('q')) state.q = qs.get('q');
-      const pf = qs.get('platform'); if(['all','instagram','tiktok','youtube'].includes(pf)) state.platform = pf;
+      const pf = qs.get('platform'); if(['all','facebook,instagram','tiktok','youtube'].includes(pf)) state.platform = pf;
       const md = qs.get('mode'); if(['sum','max'].includes(md)) state.mode = md;
       const cat = qs.get('category'); if(['all','Fashion','Beauty','Fitness','Lifestyle','Gaming','Tech','Food','Travel','Auto','Music'].includes(cat)) state.category = cat;
       const city = qs.get('city'); if(['all','Praha','Brno','Ostrava','Plzeň','Olomouc','Zlín','Hradec Králové','České Budějovice'].includes(city)) state.city = city;
