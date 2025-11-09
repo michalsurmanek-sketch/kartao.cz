@@ -459,6 +459,80 @@
   </div>
     <script src="data-model.js"></script>
   <script>
+    <script>
+// Inicializace ikon po načtení
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+});
+
+(function(){
+  const body = document.body;
+  const menuBtn = document.getElementById('menuBtn');
+  const overlay = document.getElementById('mobileOverlay');
+  const panel = document.getElementById('mobileNav');
+  const closeBtn = document.getElementById('closeBtn');
+  const backdrop = document.getElementById('backdrop');
+
+  let lastFocused = null;
+  let startX = null;
+
+  const getFocusables = () => panel.querySelectorAll(
+    'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  function lockScroll(){ body.style.overflow = 'hidden'; }
+  function unlockScroll(){ body.style.overflow = ''; }
+
+  function openMenu(){
+    lastFocused = document.activeElement;
+    overlay.classList.remove('hidden');
+    lockScroll();
+    requestAnimationFrame(() => {
+      panel.classList.remove('translate-x-full');
+      const f = getFocusables()[0];
+      if (f) f.focus();
+    });
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeMenu(){
+    panel.classList.add('translate-x-full');
+    menuBtn.setAttribute('aria-expanded','false');
+    setTimeout(()=> {
+      overlay.classList.add('hidden');
+      unlockScroll();
+      if (lastFocused) lastFocused.focus();
+    }, 200);
+  }
+
+  menuBtn.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  backdrop.addEventListener('click', closeMenu);
+
+  // Klávesnice (ESC + focus trap)
+  document.addEventListener('keydown', (e)=>{
+    if(overlay.classList.contains('hidden')) return;
+    if(e.key === 'Escape') return closeMenu();
+    if(e.key === 'Tab'){
+      const f = Array.from(getFocusables());
+      if(!f.length) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+  });
+
+  // Swipe zavření (tahem doprava)
+  panel.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
+  panel.addEventListener('touchmove', (e)=>{
+    if(startX === null) return;
+    const dx = e.touches[0].clientX - startX;
+    if(dx > 80){ startX = null; closeMenu(); }
+  }, {passive:true});
+  panel.addEventListener('touchend', ()=>{ startX = null; }, {passive:true});
+})();
+</script>
+
     // === API BASE URL pro KARTAO ===
     const apiBase = 'https://kartao-api.onrender.com';
 
