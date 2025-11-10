@@ -1,4 +1,4 @@
-
+<!doctype html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
@@ -10,28 +10,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root { --bg:#0b0b0c; --fg:#ffffff; --muted:#b7b7c0; --card:#141416; --link:#60a5fa; }
-    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--fg)}
+    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:transparent;color:var(--fg);backdrop-filter:blur(16px);}
     .wrap{max-width:860px;margin:auto;padding:40px 20px}
     .card{background:var(--card);border:1px solid #26262a;border-radius:16px;padding:28px}
-    h1{font-size:2rem;margin:0 0 12px} h2{font-size:1.25rem;margin:24px 0 8px}
+    h1{font-size:2rem;margin:0 0 12px;color:#f472b6;} h2{font-size:1.25rem;margin:24px 0 8px}
     p,li{line-height:1.65;color:var(--muted)} a{color:var(--link);text-decoration:none}
     header{border-bottom:1px solid #26262a;background:#0e0e11} header .inner{max-width:980px;margin:auto;padding:14px 20px;display:flex;gap:14px;align-items:center}
     .brand{font-weight:800;letter-spacing:.2px}
     nav a{opacity:.9;margin-right:16px}
     footer{border-top:1px solid #26262a;color:#9aa0a6}
-    .footer-inner{max-width:980px;margin:auto;padding:24px 20px;font-size:.95rem}
+    .footer-inner{max-width:980px;margin:0 auto;padding:24px 20px;font-size:.95rem;text-align:center;}
     .tag{display:inline-block;font-size:.8rem;color:#a1a1aa;border:1px solid #2d2d33;border-radius:999px;padding:4px 10px;margin-top:6px}
   </style>
 </head>
 <body>
-  <header>
-    <div class="inner">
-      <div class="brand">KARTAO.cz</div>
-      <nav>
-        <a href="/podminky">Pravidla a podmínky</a>
-        <a href="/cookies">Zásady cookies</a>
-      </nav>
-    </div>
   </header>
   <main class="wrap">
     <article class="card">
@@ -84,9 +76,10 @@
   </main>
   <footer>
     <div class="footer-inner">
-      © <span id="y"></span> KARTAO.cz · <a href="/ochrana-osobnich-udaju">GDPR</a> · <a href="/podminky">Podmínky</a> · <a href="/cookies">Cookies</a> · <a href="#" onclick="return openCookieSettings()">Nastavení cookies</a>
+      © <span id="y"></span><a href="/ochrana-osobnich-udaju"> GDPR</a> · <a href="/podminky">Podmínky</a> · <a href="/cookies">Cookies</a></a>
     </div>
   </footer>
-  <script>document.getElementById('y').textContent=new Date().getFullYear();function openCookieSettings(){alert('Otevřít okno nastavení cookies (napojte na CMP).');return false}</script>
+  <script>document.getElementById('y').textContent=new Date().getFullYear();function openCookieSettings(){alert('Otevřít okno nastavení cookies (napojte na CMP).');return false}  document.addEventListener('click', function(e){ if(!e.target.closest('.card')){ window.location.href = 'index.html'; }});
+</script>
 </body>
 </html>
