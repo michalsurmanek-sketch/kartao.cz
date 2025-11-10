@@ -38,9 +38,12 @@
   </script>
 </head>
 
-<body class="min-h-screen bg-transparent flex items-center justify-center relative">
+<body class="min-h-screen bg-transparent flex items-center justify-center relative overflow-hidden">
+  <!-- Hlavní stránka na pozadí s rozmazáním -->
+  <iframe src="index.html" class="fixed inset-0 w-full h-full blur-md brightness-75 -z-10"></iframe>
+
   <!-- backdrop (průhledné pozadí stránky) -->
-  <div id="overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-0"></div>
+  <div id="overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-0"></div>
 
   <!-- MODÁL -->
   <div id="modal" class="relative z-10 w-full max-w-sm">
