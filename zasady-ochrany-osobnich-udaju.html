@@ -1,0 +1,92 @@
+
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ochrana osobních údajů | KARTAO.cz</title>
+  <meta name="description" content="Zásady ochrany osobních údajů (GDPR) pro KARTAO.cz – síť influencerů a tvůrců." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0b0c; --fg:#ffffff; --muted:#b7b7c0; --card:#141416; --link:#60a5fa; }
+    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--fg)}
+    .wrap{max-width:860px;margin:auto;padding:40px 20px}
+    .card{background:var(--card);border:1px solid #26262a;border-radius:16px;padding:28px}
+    h1{font-size:2rem;margin:0 0 12px} h2{font-size:1.25rem;margin:24px 0 8px}
+    p,li{line-height:1.65;color:var(--muted)} a{color:var(--link);text-decoration:none}
+    header{border-bottom:1px solid #26262a;background:#0e0e11} header .inner{max-width:980px;margin:auto;padding:14px 20px;display:flex;gap:14px;align-items:center}
+    .brand{font-weight:800;letter-spacing:.2px}
+    nav a{opacity:.9;margin-right:16px}
+    footer{border-top:1px solid #26262a;color:#9aa0a6}
+    .footer-inner{max-width:980px;margin:auto;padding:24px 20px;font-size:.95rem}
+    .tag{display:inline-block;font-size:.8rem;color:#a1a1aa;border:1px solid #2d2d33;border-radius:999px;padding:4px 10px;margin-top:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <div class="brand">KARTAO.cz</div>
+      <nav>
+        <a href="/podminky">Pravidla a podmínky</a>
+        <a href="/cookies">Zásady cookies</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <article class="card">
+      <h1>Ochrana osobních údajů (GDPR)</h1>
+      <div class="tag">Poslední aktualizace: <strong>DD. MM. RRRR</strong></div>
+      <p><strong>Správce:</strong> <em>{{Provozovatel / jméno}}</em>, IČO <em>{{XXXXXX}}</em>, se sídlem <em>{{adresa}}</em>, e‑mail: <a href="mailto:privacy@kartao.cz">privacy@kartao.cz</a></p>
+
+      <h2>Jaké údaje zpracováváme</h2>
+      <ul>
+        <li>Účet: jméno, e‑mail, hash hesla, profil, IČO/DIČ (u firem), odkazy na sítě.</li>
+        <li>Přihlášení přes třetí strany: Google/Facebook identifikátory.</li>
+        <li>Kampaně: poptávky, rozpočty, reporting.</li>
+        <li>Platby: fakturační a transakční údaje (platební údaje spravuje brána).</li>
+        <li>Technické: IP, logy, cookies, identifikátory zařízení.</li>
+      </ul>
+
+      <h2>Účely a právní základy</h2>
+      <ul>
+        <li>Poskytnutí služby – plnění smlouvy (čl. 6/1b GDPR).</li>
+        <li>Účetnictví a daně – právní povinnost (čl. 6/1c GDPR).</li>
+        <li>Bezpečnost – oprávněný zájem (čl. 6/1f GDPR).</li>
+        <li>Marketing a analytika – na základě souhlasu (čl. 6/1a GDPR).</li>
+      </ul>
+
+      <h2>Doba uchování</h2>
+      <p>Po dobu trvání účtu a poté typicky <em>{{36 měsíců}}</em>, účetní doklady <em>{{10 let}}</em>.</p>
+
+      <h2>Příjemci a zpracovatelé</h2>
+      <ul>
+        <li>Hosting a autentizace: Google Firebase (Google Ireland Ltd.).</li>
+        <li>E‑mailing: {{SendGrid/Mailgun}}.</li>
+        <li>Platební brána: {{Comgate/Stripe/ČSOB}}.</li>
+        <li>Analytika a souhlasy: {{Google Analytics 4 / CMP}}.</li>
+        <li>Sociální sítě: Meta, Google.</li>
+      </ul>
+      <p>Přenosy mimo EU na základě SCC. Uzavíráme DPA se zpracovateli.</p>
+
+      <h2>Práva subjektů údajů</h2>
+      <p>Přístup, oprava, výmaz, omezení, přenositelnost, námitka, odvolání souhlasu. Kontaktujte nás na <a href="mailto:privacy@kartao.cz">privacy@kartao.cz</a>. Dozor: ÚOOÚ.</p>
+
+      <h2>Bezpečnost</h2>
+      <p>HTTPS, hash hesel, řízení přístupů, logování, aktualizace systémů.</p>
+
+      <h2>Mladiství</h2>
+      <p>Služba je určena uživatelům od <em>{{16/18}}</em> let; mladší jen se souhlasem zákonného zástupce.</p>
+
+      <h2>Kontakty</h2>
+      <p>Support: <a href="mailto:support@kartao.cz">support@kartao.cz</a> · Obchod: <a href="mailto:obchod@kartao.cz">obchod@kartao.cz</a></p>
+    </article>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      © <span id="y"></span> KARTAO.cz · <a href="/ochrana-osobnich-udaju">GDPR</a> · <a href="/podminky">Podmínky</a> · <a href="/cookies">Cookies</a> · <a href="#" onclick="return openCookieSettings()">Nastavení cookies</a>
+    </div>
+  </footer>
+  <script>document.getElementById('y').textContent=new Date().getFullYear();function openCookieSettings(){alert('Otevřít okno nastavení cookies (napojte na CMP).');return false}</script>
+</body>
+</html>
