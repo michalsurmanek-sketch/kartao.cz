@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root { --bg:#0b0b0c; --fg:#ffffff; --muted:#b7b7c0; --card:#141416; --link:#60a5fa; }
-    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:transparent;color:var(--fg);backdrop-filter:blur(16px);}
+    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:rgba(0,0,0,0.35);color:var(--fg);backdrop-filter:blur(16px);}
     .wrap{max-width:860px;margin:auto;padding:40px 20px}
     .card{background:var(--card);border:1px solid #26262a;border-radius:16px;padding:28px}
     h1{font-size:2rem;margin:0 0 12px;color:#f472b6;} h2{font-size:1.25rem;margin:24px 0 8px}
@@ -74,11 +74,6 @@
       <p>Support: <a href="mailto:support@kartao.cz">support@kartao.cz</a> · Obchod: <a href="mailto:obchod@kartao.cz">obchod@kartao.cz</a></p>
     </article>
   </main>
-  <footer>
-    <div class="footer-inner">
-      © <span id="y"></span><a href="/ochrana-osobnich-udaju"> GDPR</a> · <a href="/podminky">Podmínky</a> · <a href="/cookies">Cookies</a></a>
-    </div>
-  </footer>
   <script>document.getElementById('y').textContent=new Date().getFullYear();function openCookieSettings(){alert('Otevřít okno nastavení cookies (napojte na CMP).');return false}  document.addEventListener('click', function(e){ if(!e.target.closest('.card')){ window.location.href = 'index.html'; }});
 </script>
 </body>
