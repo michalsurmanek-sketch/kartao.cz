@@ -6,7 +6,7 @@
   <title>Přihlášení</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Skript pro zavření modálu při kliknutí na pozadí nebo křížek
+    // Skript pro zavření modálu a návrat na hlavní stránku index.html
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('modal');
       const overlay = document.getElementById('overlay');
@@ -17,8 +17,7 @@
       const registerBtn = document.getElementById('registerWindowBtn');
 
       function closeModal() {
-        modal.classList.add('hidden');
-        overlay.classList.add('hidden');
+        window.location.href = 'index.html'; // Přesměrování na hlavní stránku po zavření
       }
 
       overlay.addEventListener('click', closeModal);
@@ -40,9 +39,6 @@
 </head>
 
 <body class="min-h-screen bg-transparent flex items-center justify-center relative">
-  <!-- Hlavní stránka na pozadí -->
-  <iframe src="index.html" class="fixed inset-0 w-full h-full -z-10"></iframe>
-
   <!-- backdrop (průhledné pozadí stránky) -->
   <div id="overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-0"></div>
 
