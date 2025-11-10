@@ -1,76 +1,109 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao – Přihlášení</title>
+  <title>Přihlášení</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    .card{background:rgba(23,23,23,.75);border:1px solid rgba(255,255,255,.12);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.65rem 1rem;border-radius:.75rem}
-    .btn-primary{background:#8b5cf6} .btn-primary:hover{background:#e879f9}
-    .btn-outline{border:1px solid rgba(255,255,255,.25)}
-    .field{background:#0a0a0a;border:1px solid rgba(255,255,255,.15);border-radius:.75rem;padding:.65rem .85rem}
-  </style>
-</head>
-<body class="min-h-screen grid place-items-center bg-neutral-950 text-white px-4 py-10">
-  <main class="w-full max-w-md card p-6">
-   <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">Najdi toho pravého influencera. <span class="text-fuchsia-400">Rychle a chytře.</span></h2>
-    <form id="loginForm" class="space-y-3">
-      <div>
-        <body class="min-h-screen grid place-items-center bg-neutral-950 text-white px-4 py-10">
-  <main class="w-full max-w-md card p-6">
-    <h1 class="text-xl font-bold mb-4">Přihlášení do Kartao</h1>
-        <label class="text-xs text-white/60">E-mail</label>
-        <input id="email" type="email" required class="w-full field" placeholder="např. jana@firma.cz" />
-      </div>
-      <div>
-        <label class="text-xs text-white/60">Heslo</label>
-        <input id="password" type="password" required minlength="4" class="w-full field" placeholder="••••" />
-      </div>
-      <div>
-        <label class="text-xs text-white/60">Role</label>
-        <select id="role" class="w-full field">
-          <option value="creator">Tvůrce</option>
-          <option value="company">Firma</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-
-      <button class="btn btn-primary w-full">Přihlásit</button>
-    </form>
-
-    <div class="grid gap-2 sm:grid-cols-2 mt-4">
-      <button id="demoCreator" class="btn btn-outline">Demo: Tvůrce</button>
-      <button id="demoCompany" class="btn btn-outline">Demo: Firma</button>
-    </div>
-  </main>
-
   <script>
-    function token(){ return 'tok_' + Math.random().toString(36).slice(2); }
-    function go(role){
-      if(role==='creator') location.href='creator-dashboard.html';
-      else if(role==='company') location.href='firm-dashboard.html';
-      else location.href='admin.html';
-    }
-    function saveAuth(email, role){
-      localStorage.setItem('auth_token', token());
-      localStorage.setItem('auth_user', JSON.stringify({ email, role }));
-      localStorage.setItem('user_type', role);
-    }
+    // Skript pro zavření modálu při kliknutí na pozadí nebo křížek
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('modal');
+      const overlay = document.getElementById('overlay');
+      const closeBtn = document.getElementById('closeBtn');
+      const loginForm = document.getElementById('loginForm');
+      const loginBtn = document.getElementById('loginWindowBtn');
+      const registerForm = document.getElementById('registerForm');
+      const registerBtn = document.getElementById('registerWindowBtn');
 
-    document.getElementById('loginForm').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const role  = document.getElementById('role').value;
-      saveAuth(email, role);
-      go(role);
+      function closeModal() {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+      }
+
+      overlay.addEventListener('click', closeModal);
+      closeBtn.addEventListener('click', closeModal);
+
+      // Otevření přihlašovacího formuláře
+      loginBtn.addEventListener('click', () => {
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.add('hidden');
+      });
+
+      // Otevření registračního formuláře
+      registerBtn.addEventListener('click', () => {
+        registerForm.classList.toggle('hidden');
+        loginForm.classList.add('hidden');
+      });
     });
-
-    document.getElementById('demoCreator').onclick = ()=>{ saveAuth('creator@demo.cz','creator'); go('creator'); };
-    document.getElementById('demoCompany').onclick = ()=>{ saveAuth('firma@demo.cz','company'); go('company'); };
   </script>
+</head>
+  
+<body class="min-h-screen bg-transparent flex items-center justify-center relative">
+  <!-- backdrop (průhledné pozadí stránky) -->
+  <div id="overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-0"></div>
+
+  <!-- MODÁL -->
+  <div id="modal" class="relative z-10 w-full max-w-sm">
+    <div class="bg-white/95 backdrop-saturate-150 rounded-2xl shadow-2xl ring-1 ring-black/5 p-6 relative">
+      <!-- Zavírací křížek (vizuální) -->
+      <button id="closeBtn" aria-label="Zavřít"
+        class="absolute -right-2 -top-2 w-9 h-9 grid place-items-center rounded-full bg-white shadow-md ring-1 ring-black/10 text-gray-500 hover:text-gray-700">
+        ×
+      </button>
+      <h2 class="text-2xl font-semibold text-center mb-2 tracking-tight">Registrujte se nebo se…</h2>
+      <p class="text-center text-gray-500 text-sm mb-4">Pro pokračování se registrujte nebo přihlaste</p>
+
+      <!-- FACEBOOK -->
+      <button class="w-full bg-[#1877F2] hover:bg-[#1564d9] text-white py-2.5 rounded-md font-medium mb-2">
+        Pokračovat přes Facebook
+      </button>
+
+      <!-- GOOGLE -->
+      <button class="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-md font-medium flex items-center justify-center gap-2 mb-4">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-4 h-4" />
+        Pokračovat pomocí Googlu
+      </button>
+
+      <!-- nebo -->
+      <div class="flex items-center my-3 select-none">
+        <hr class="flex-grow border-gray-300" />
+        <span class="px-2 text-gray-400 text-sm">nebo</span>
+        <hr class="flex-grow border-gray-300" />
+      </div>
+
+      <!-- Přihlášení -->
+      <button id="loginWindowBtn" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2.5 rounded-md font-medium mb-2">
+        Přihlásit se
+      </button>
+
+      <!-- OKNO PŘIHLÁŠENÍ -->
+      <form id="loginForm" class="hidden mt-3 space-y-3">
+        <input type="email" placeholder="E-mail" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <input type="password" placeholder="Heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md font-medium">Odeslat</button>
+      </form>
+
+      <!-- Registrace -->
+      <button id="registerWindowBtn" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-md font-medium mt-3">
+        Registrace
+      </button>
+
+      <!-- OKNO REGISTRACE -->
+      <form id="registerForm" class="hidden mt-3 space-y-3">
+        <input type="text" placeholder="Jméno a příjmení" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <input type="email" placeholder="E-mail" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <input type="password" placeholder="Heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <input type="password" placeholder="Potvrdit heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md font-medium">Registrovat</button>
+      </form>
+
+      <p class="text-xs text-gray-400 text-center mt-4 leading-tight">
+        Registrací souhlasíte s našimi
+        <a href="#" class="text-pink-600 hover:underline">Pravidly a podmínkami</a> užití
+        a <a href="#" class="text-pink-600 hover:underline">Zásadami o ochraně osobních údajů</a>.
+      </p>
+    </div>
+  </div>
 </body>
 </html>
-
