@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz — Magazín</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- HLAVIČKA -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
+          <i data-lucide="newspaper" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Magazín Kartao</div>
+          <div class="text-xs text-white/60 -mt-0.5">Novinky a inspirace</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="index.html" class="text-white/70 hover:text-white">Domů</a>
+        <span class="text-white/40">/</span>
+        <span class="text-white">Magazín</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="border-b border-white/10 bg-gradient-to-b from-fuchsia-600/10 to-transparent">
+    <div class="max-w-7xl mx-auto px-4 py-12 text-center">
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">Magazín Kartao.cz</h1>
+      <p class="text-white/70 max-w-2xl mx-auto">Články, tipy a case-studies o světě influencerů, spoluprací a trendů v marketingu.</p>
+    </div>
+  </section>
+
+  <!-- GRID ČLÁNKŮ -->
+  <section class="max-w-7xl mx-auto px-4 py-12">
+    <div id="magGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- PATIČKA -->
+  <footer class="border-t border-white/10 text-center py-6 text-sm text-white/60">
+    © <span id="year"></span> Kartao.cz — Magazín.
+  </footer>
+
+  <script>
+    const articles = [
+      {title:"Jak vybrat ideálního tvůrce pro e-shop", tag:"Průvodce", date:"10. 11. 2025", img:"https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=800&auto=format&fit=crop", url:"clanek-vyber-tvurce.html"},
+      {title:"Case study: 3× ROI s mikroinfluencery", tag:"Case study", date:"05. 11. 2025", img:"https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=800&auto=format&fit=crop", url:"case-roi-micro.html"},
+      {title:"Trendy 2026: TikTok Shop a affiliate", tag:"Trendy", date:"01. 11. 2025", img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop", url:"trendy-2026.html"},
+      {title:"Jak správně nacenit spolupráci", tag:"Finance", date:"02. 11. 2025", img:"https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop", url:"naceneni-spoluprace.html"},
+      {title:"TOP 10 influencerů v Česku 2025", tag:"Žebříček", date:"09. 11. 2025", img:"https://images.unsplash.com/photo-1551836022-4c4c79ecde51?q=80&w=800&auto=format&fit=crop", url:"top10-2025.html"}
+    ];
+
+    const grid = document.getElementById('magGrid');
+    for(const a of articles){
+      grid.insertAdjacentHTML('beforeend', `
+        <article class="glass rounded-2xl overflow-hidden group">
+          <div class="aspect-[16/9] overflow-hidden">
+            <img src="${a.img}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-[1.05] transition"/>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-2 text-xs text-white/60">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10">${a.tag}</span>
+              <span>•</span>
+              <time>${a.date}</time>
+            </div>
+            <h3 class="mt-2 font-bold leading-tight">${a.title}</h3>
+            <div class="mt-3 flex items-center justify-between">
+              <a href="${a.url}" class="flex items-center gap-1 text-sm underline underline-offset-4 decoration-white/30 hover:decoration-white">
+                Číst více <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+      `);
+    }
+
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
