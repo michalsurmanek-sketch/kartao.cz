@@ -181,7 +181,7 @@
         `);
       }
 
-      for(let i=sliced.length; i<limit; i++){
+      if (sliced.length < limit) {
         grid.insertAdjacentHTML('beforeend', `
           <article class="glass rounded-2xl p-4 border-dashed hover:bg-white/[0.06] transition">
             <div class="flex items-center gap-3">
@@ -190,11 +190,11 @@
               </div>
               <div>
                 <h3 class="font-bold">Místo volné</h3>
-                <div class="text-xs text-white/60">VIP pozice #${i+1}</div>
+                <div class="text-xs text-white/60">VIP pozice #${sliced.length + 1}</div>
               </div>
             </div>
             <p class="mt-4 text-sm text-white/60">Získejte zvýraznění, přednostní poptávky a vyšší viditelnost.</p>
-            <div class="mt-4">
+            <div class="mt-4 text-center">
               <a href="#vip-apply" class="rounded-xl px-3 py-2 font-semibold text-neutral-900 vip-badge text-sm inline-flex items-center gap-2">
                 <i data-lucide="sparkles" class="w-4 h-4"></i> Požádat o místo
               </a>
