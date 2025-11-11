@@ -47,6 +47,14 @@
 /* pulzující kroužek – decentní aura */
 .logo-badge.pulse::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(251,191,36,.35);animation:softPulse 2.8s ease-out infinite}
 @keyframes softPulse{0%{box-shadow:0 0 0 0 rgba(251,191,36,.35)}100%{box-shadow:0 0 0 14px rgba(251,191,36,0)}}
+@keyframes crownGlow {
+    0%   { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }   /* žlutá */
+    50%  { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }  /* růžová + záře */
+    100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }   /* zpět na žlutou */
+  }
+  .crown-glow {
+    animation: crownGlow 1.8s ease-in-out infinite;
+  }
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white">
@@ -534,7 +542,7 @@
         <div class="mt-6 flex gap-3">
           <a class="btn btn-light" href="kartao-pro-firmy.html#brief">Zadat kampaň</a>
           <a class="btn btn-light" href="kartao-pro-firmy.html#faq">Vybrat Tvůrce</a>
-          <a class="btn btn-light" href="kartao-pro-firmy.html#faq">VIP<i data-lucide="crown" class="w-5 h-5 text-amber-400"></i></a>
+          <a class="btn btn-light" href="kartao-pro-firmy.html#faq"><i data-lucide="crown" class="w-5 h-5 text-amber-400 crown-glow"></i></a>
         </div>
       </div>
       <div>
