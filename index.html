@@ -1080,5 +1080,29 @@
     setBilling('monthly');
   });
 </script>
+  <!-- ŠIPKA NAHORU - KARTAO STYLE -->
+<button id="scrollTopBtn" 
+  class="hidden fixed bottom-6 right-6 w-12 h-12 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 
+         text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
+  <i data-lucide="arrow-up" class="w-5 h-5"></i>
+</button>
+
+<script>
+  // Zobrazení šipky po scrollu
+  const scrollBtn = document.getElementById("scrollTopBtn");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+      scrollBtn.classList.remove("hidden");
+    } else {
+      scrollBtn.classList.add("hidden");
+    }
+  });
+
+  // Scroll nahoru
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
 </body>
 </html>
