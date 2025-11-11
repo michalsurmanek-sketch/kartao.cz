@@ -1,113 +1,147 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Přihlášení</title>
-  <header>
-  <button id="login-google" class="btn btn-light">
-    Přihlásit se přes Google
-  </button>
-</header>
-
+  <title>Kartao.cz – Přihlášení</title>
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Nastavení společného continueUrl (po úspěšném přihlášení se vrať na index.html)
-    const CONTINUE_URL = (location.origin ? location.origin : '') + '/index.html';
-    const AUTH_HANDLER = 'https://kartao-cz.firebaseapp.com/__/auth/handler';
-    const AUTH_URL = AUTH_HANDLER + '?continueUrl=' + encodeURIComponent(CONTINUE_URL);
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('modal');
-      const overlay = document.getElementById('overlay');
-      const closeBtn = document.getElementById('closeBtn');
-      const loginForm = document.getElementById('loginForm');
-      const loginBtn = document.getElementById('loginWindowBtn');
-      const registerForm = document.getElementById('registerForm');
-      const registerBtn = document.getElementById('registerWindowBtn');
-
-      function closeModal() {
-        window.location.href = 'index.html';
-      }
-
-      overlay.addEventListener('click', closeModal);
-      closeBtn.addEventListener('click', closeModal);
-
-      loginBtn.addEventListener('click', () => {
-        loginForm.classList.toggle('hidden');
-        registerForm.classList.add('hidden');
-      });
-
-      registerBtn.addEventListener('click', () => {
-        registerForm.classList.toggle('hidden');
-        loginForm.classList.add('hidden');
-      });
-
-      document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        window.location.href = AUTH_URL;
-      });
-
-      document.getElementById('registerForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        window.location.href = AUTH_URL;
-      });
-    });
+    tailwind.config = { theme: { extend: { colors: { fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber, neutral: tailwind.colors.neutral, rose: tailwind.colors.rose, emerald: tailwind.colors.emerald } } } }
   </script>
+  <style>
+    /* jemný stín */
+    .shadow-soft{ box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    /* zakázat scroll, když je modal otevřený */
+    body.modal-open{ overflow: hidden; }
+  </style>
 </head>
-<body class="min-h-screen bg-transparent flex items-center justify-center relative overflow-hidden">
-  <iframe src="index.html" class="fixed inset-0 w-full h-full blur-md brightness-75 -z-10"></iframe>
-  <div id="overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-0"></div>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- Rozmazané pozadí reálně ukazuje index.html přes iframe, aby bylo vidět, co je pod loginem -->
+  <div class="fixed inset-0 -z-10">
+    <iframe src="index.html" class="w-full h-full opacity-60 blur-sm" style="filter: blur(4px);"></iframe>
+  </div>
 
-  <div id="modal" class="relative z-10 w-full max-w-sm">
-    <div class="bg-white/95 backdrop-saturate-150 rounded-2xl shadow-2xl ring-1 ring-black/5 p-6 relative">
-      <button id="closeBtn" aria-label="Zavřít" class="absolute -right-2 -top-2 w-9 h-9 grid place-items-center rounded-full bg-white shadow-md ring-1 ring-black/10 text-gray-500 hover:text-gray-700">×</button>
-
-      <h2 class="text-2xl font-semibold text-center mb-2 tracking-tight">Registrujte se nebo se…</h2>
-      <p class="text-center text-gray-500 text-sm mb-4">Pro pokračování se registrujte nebo přihlaste</p>
-
-      <a href="#" id="fbLink" class="block w-full bg-[#1877F2] hover:bg-[#1564d9] text-white py-2.5 rounded-md font-medium mb-2 text-center">Pokračovat přes Facebook</a>
-      <a href="#" id="googleLink" class="block w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 py-2.5 rounded-md font-medium flex items-center justify-center gap-2 mb-4">
-        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-4 h-4" /> Pokračovat pomocí Googlu
-      </a>
-
-      <div class="flex items-center my-3 select-none">
-        <hr class="flex-grow border-gray-300" />
-        <span class="px-2 text-gray-400 text-sm">nebo</span>
-        <hr class="flex-grow border-gray-300" />
+  <!-- OVERLAY + MODAL -->
+  <div id="overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm grid place-items-center p-4">
+    <div id="modal" class="w-full max-w-md rounded-2xl bg-neutral-900/95 border border-white/10 shadow-soft">
+      <!-- Hlavička -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="font-extrabold tracking-tight">Kartao.cz</div>
+            <div class="text-xs text-white/60">Registrujte se nebo se přihlaste</div>
+          </div>
+        </div>
+        <button id="closeBtn" class="rounded-lg px-2 py-1 text-white/70 hover:text-white focus:outline-none" aria-label="Zavřít">✕</button>
       </div>
 
-      <button id="loginWindowBtn" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2.5 rounded-md font-medium mb-2">Přihlásit se</button>
+      <!-- Tělo modalu -->
+      <div class="px-5 py-5">
+        <!-- OAuth tlačítka -->
+        <div class="space-y-3">
+          <!-- FACEBOOK – připraveno, ale vypnuto, dokud nenapojíš ve Firebase -->
+          <button id="login-facebook" disabled class="w-full py-3 rounded-xl bg-[#1877F2] disabled:opacity-40 font-semibold">Pokračovat přes Facebook</button>
 
-      <form id="loginForm" class="hidden mt-3 space-y-3">
-        <input type="email" placeholder="E-mail" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <input type="password" placeholder="Heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md font-medium">Přihlásit se</button>
-        <a href="#" id="forgotLink" class="block text-right text-xs text-pink-600 hover:underline">Zapomněli jste heslo?</a>
-      </form>
+          <!-- GOOGLE -->
+          <button id="login-google" class="w-full py-3 rounded-xl bg-white text-neutral-900 font-semibold">
+            Pokračovat pomocí Googlu
+          </button>
+        </div>
 
-      <button id="registerWindowBtn" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-md font-medium mt-3">Registrace</button>
+        <!-- Dělítko -->
+        <div class="my-5 flex items-center gap-3 text-white/40">
+          <div class="flex-1 h-px bg-white/10"></div>
+          <span>nebo</span>
+          <div class="flex-1 h-px bg-white/10"></div>
+        </div>
 
-      <form id="registerForm" class="hidden mt-3 space-y-3">
-        <input type="text" placeholder="Jméno a příjmení" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <input type="email" placeholder="E-mail" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <input type="password" placeholder="Heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <input type="password" placeholder="Potvrdit heslo" required class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500" />
-        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-md font-medium">Registrovat</button>
-      </form>
+        <!-- EMAIL LOGIN -->
+        <form id="emailLogin" class="space-y-3" onsubmit="return false;">
+          <input id="email" type="email" required placeholder="E‑mail" class="w-full rounded-xl bg-neutral-950 border border-white/10 px-3 py-2" />
+          <input id="password" type="password" required placeholder="Heslo" class="w-full rounded-xl bg-neutral-950 border border-white/10 px-3 py-2" />
+          <button id="btnEmailLogin" class="w-full py-3 rounded-xl bg-rose-500 font-semibold">Přihlásit se</button>
+          <button id="btnEmailRegister" class="w-full py-3 rounded-xl border border-white/10 font-semibold">Registrace</button>
+        </form>
 
-      <p class="text-xs text-gray-400 text-center mt-4 leading-tight">
-        Registrací souhlasíte s našimi
-        <a href="pravidla-podminky.html" class="text-pink-600 hover:underline">Obchodními podmínkami</a>
-        a <a href="ochrana-osobnich-udaju.html" class="text-pink-600 hover:underline">Zásadami o ochraně osobních údajů</a>.
-      </p>
+        <p class="mt-4 text-xs text-white/50">Pokračováním souhlasíte s našimi <a href="obchodni-podminky.html" class="underline">Obchodními podmínkami</a> a <a href="ochrana-osobnich-udaju.html" class="underline">Zásadami ochrany osobních údajů</a>.</p>
+      </div>
     </div>
   </div>
 
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+
+  <!-- Firebase SDK (compat pro jednodušší zápis) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script>
-    document.getElementById('fbLink').setAttribute('href', AUTH_URL);
-    document.getElementById('googleLink').setAttribute('href', AUTH_URL);
-    document.getElementById('forgotLink').setAttribute('href', AUTH_URL);
+    // 1) DOPLŇ SVŮJ KONFIG Z Nastavení projektu → Aplikace → Konfigurace
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY",
+      authDomain: "kartao-cz.firebaseapp.com",
+      projectId: "kartao-cz",
+      appId: "PASTE_YOUR_APP_ID",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // 2) Vždy preferuj popup (řeší tvůj problém s chybějícím stavem u redirectu)
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+    function getReturnUrl(){
+      const p = new URLSearchParams(location.search);
+      return p.get('returnUrl') || 'index.html';
+    }
+
+    async function loginGoogle(){
+      try{
+        const res = await auth.signInWithPopup(googleProvider);
+        // Přihlášen → návrat
+        location.href = getReturnUrl();
+      }catch(err){
+        // Fallback – když popup blokuje prohlížeč
+        if(err && err.code === 'auth/popup-blocked'){ await auth.signInWithRedirect(googleProvider); return; }
+        alert('Google přihlášení selhalo: ' + err.message);
+      }
+    }
+
+    async function emailLogin(){
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+      try{
+        await auth.signInWithEmailAndPassword(email, pass);
+        location.href = getReturnUrl();
+      }catch(err){
+        alert('Přihlášení selhalo: ' + err.message);
+      }
+    }
+
+    async function emailRegister(){
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+      try{
+        await auth.createUserWithEmailAndPassword(email, pass);
+        location.href = getReturnUrl();
+      }catch(err){
+        alert('Registrace selhala: ' + err.message);
+      }
+    }
+
+    // 3) Ovládání UI
+    document.body.classList.add('modal-open');
+    document.getElementById('overlay').addEventListener('click', (e)=>{
+      if(e.target.id === 'overlay'){ location.href = 'index.html'; }
+    });
+    document.getElementById('closeBtn').addEventListener('click', ()=> location.href = 'index.html');
+
+    document.getElementById('login-google').addEventListener('click', loginGoogle);
+    document.getElementById('btnEmailLogin').addEventListener('click', emailLogin);
+    document.getElementById('btnEmailRegister').addEventListener('click', emailRegister);
   </script>
 </body>
 </html>
