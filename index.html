@@ -18,6 +18,14 @@
   <!-- Lucide icons (UMD; defer vystaví window.lucide a umožní createIcons) -->
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
+     .logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
+    .logo-badge svg{filter:drop-shadow(0 2px 6px rgba(255,255,255,.08));transition:transform .3s ease}
+    .logo-badge:hover{transform:translateY(-1px) scale(1.02)}
+    .logo-badge:hover svg{transform:translateY(-.5px) rotate(-2deg)}
+    .logo-badge::after{content:"";position:absolute;inset:-60%;pointer-events:none;opacity:.18;background:conic-gradient(from 0deg,transparent 0 72%, #fff 73% 76%, transparent 77%);animation:spinShine 6s linear infinite}
+    @keyframes spinShine{to{transform:rotate(360deg)}}
+    .logo-badge.pulse::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(251,191,36,.35);animation:softPulse 2.8s ease-out infinite}
+    @keyframes softPulse{0%{box-shadow:0 0 0 0 rgba(251,191,36,.35)}100%{box-shadow:0 0 0 14px rgba(251,191,36,0)}}
     .icon-badge{
   display:grid;place-items:center;width:2rem;height:2rem;border-radius:0.75rem;
   background-image:linear-gradient(135deg,#db58f6,#ffb347);
@@ -658,68 +666,54 @@
     <!-- Middle columns -->
     <!-- Sloupec 1: O Kartao -->
 <div>
-  <button type="button" class="w-full sm:w-auto font-semibold mb-2 sm:mb-4 flex items-center justify-between sm:justify-start gap-2 group" aria-expanded="false" aria-controls="col-about">
-    <span class="flex items-center gap-2">
-      <span class="icon-badge bg-gradient-to-tr from-amber-400 to-yellow-200 shadow-md"><i data-lucide="sparkles" class="w-4 h-4 text-neutral-900"></i></span>
-      O Kartao
-    </span>
-    <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform group-aria-expanded:rotate-180"></i>
-  </button>
-  <ul id="col-about" class="mobile-collapsible hidden sm:block space-y-2 text-white/70">
-    <li><a class="hover:text-white" href="kartao-o-nas.html">O nás</a></li>
-    <li><a class="hover:text-white" href="kartao-magazin.html">Magazín</a></li>
-    <li><a class="hover:text-white" href="kartao-kontakt.html">Kontakt</a></li>
-  </ul>
-</div>
-
+        <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-fuchsia-400" aria-expanded="false" aria-controls="oKartao">
+          <span class="flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i>O Kartao</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+        </button>
+        <ul id="oKartao" class="space-y-2 text-white/70 hidden sm:block">
+          <li><a class="hover:text-white transition" href="kartao-o-nas.html">O nás</a></li>
+          <li><a class="hover:text-white transition" href="kartao-magazin.html">Magazín</a></li>
+          <li><a class="hover:text-white transition" href="kartao-kontakt.html">Kontakt</a></li>
+        </ul>
+      </div>
 <!-- Sloupec 2: Pro firmy -->
 <div>
-  <button type="button" class="w-full sm:w-auto font-semibold mb-2 sm:mb-4 flex items-center justify-between sm:justify-start gap-2 group" aria-expanded="false" aria-controls="col-firmy">
-    <span class="flex items-center gap-2">
-      <span class="icon-badge bg-gradient-to-tr from-sky-400 to-blue-500 shadow-md"><i data-lucide="briefcase" class="w-4 h-4 text-neutral-900"></i></span>
-      Pro firmy
-    </span>
-    <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform group-aria-expanded:rotate-180"></i>
-  </button>
-  <ul id="col-firmy" class="mobile-collapsible hidden sm:block space-y-2 text-white/70">
-    <li><a class="hover:text-white" href="kartao-pro-firmy.html">Jak zadat kampaň</a></li>
-    <li><a class="hover:text-white" href="kartao-cenik.html">Ceník</a></li>
-    <li><a class="hover:text-white" href="kartao-faq.html">FAQ</a></li>
-  </ul>
-</div>
-
+        <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-amber-400" aria-expanded="false" aria-controls="proFirmy">
+          <span class="flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5"></i>Pro firmy</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+        </button>
+        <ul id="proFirmy" class="space-y-2 text-white/70 hidden sm:block">
+          <li><a class="hover:text-white transition" href="kartao-pro-firmy.html">Jak zadat kampaň</a></li>
+          <li><a class="hover:text-white transition" href="kartao-cenik.html">Ceník</a></li>
+          <li><a class="hover:text-white transition" href="kartao-faq.html">FAQ</a></li>
+        </ul>
+      </div>
 <!-- Sloupec 3: Pro tvůrce -->
 <div>
-  <button type="button" class="w-full sm:w-auto font-semibold mb-2 sm:mb-4 flex items-center justify-between sm:justify-start gap-2 group" aria-expanded="false" aria-controls="col-tvurci">
-    <span class="flex items-center gap-2">
-      <span class="icon-badge bg-gradient-to-tr from-fuchsia-500 to-pink-400 shadow-md"><i data-lucide="camera" class="w-4 h-4 text-neutral-900"></i></span>
-      Pro tvůrce
-    </span>
-    <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform group-aria-expanded:rotate-180"></i>
-  </button>
-  <ul id="col-tvurci" class="mobile-collapsible hidden sm:block space-y-2 text-white/70">
-    <li><a class="hover:text-white" href="kartao-zalozit-kartu.html">Založit kartu</a></li>
-    <li><a class="hover:text-white" href="kartao-podminky-tvurcu.html">Podmínky</a></li>
-    <li><a class="hover:text-white" href="kartao-faq-tvurci.html">FAQ</a></li>
-  </ul>
-</div>
+        <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-fuchsia-400" aria-expanded="false" aria-controls="proTvurce">
+          <span class="flex items-center gap-2"><i data-lucide="camera" class="w-5 h-5"></i>Pro tvůrce</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+        </button>
+        <ul id="proTvurce" class="space-y-2 text-white/70 hidden sm:block">
+          <li><a class="hover:text-white transition" href="kartao-zalozit-kartu.html">Založit kartu</a></li>
+          <li><a class="hover:text-white transition" href="kartao-podminky-tvurcu.html">Podmínky</a></li>
+          <li><a class="hover:text-white transition" href="kartao-faq-tvurci.html">FAQ</a></li>
+        </ul>
+      </div>
 
 <!-- Sloupec 4: Newsletter -->
 <div>
-  <button type="button" class="w-full sm:w-auto font-semibold mb-2 sm:mb-4 flex items-center justify-between sm:justify-start gap-2 group" aria-expanded="false" aria-controls="col-news">
-    <span class="flex items-center gap-2">
-      <span class="icon-badge bg-gradient-to-tr from-sky-400 to-cyan-300 shadow-md"><i data-lucide="mail" class="w-4 h-4 text-neutral-900"></i></span>
-      Novinky e-mailem
-    </span>
-    <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform group-aria-expanded:rotate-180"></i>
-  </button>
-  <div id="col-news" class="mobile-collapsible hidden sm:block">
-    <form class="grid grid-cols-1 md:grid-cols-[1fr_auto] items-stretch gap-2 w-full">
-      <input type="email" required placeholder="Váš e-mail" class="w-full min-w-0 max-w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
-      <button type="submit" class="w-full md:w-auto whitespace-nowrap rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium">Odebírat</button>
-    </form>
-    <p class="text-white/50 text-xs mt-2">Odesláním souhlasíte se zpracováním osobních údajů.</p>
-  </div>
+        <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-sky-400" aria-expanded="false" aria-controls="novinky">
+          <span class="flex items-center gap-2"><i data-lucide="mail" class="w-5 h-5"></i>Novinky</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+        </button>
+        <div id="novinky" class="hidden sm:block">
+          <form class="grid grid-cols-[1fr_auto] gap-2">
+            <inp ut type="email" placeholder="Váš e‑mail" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+            <button class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium">Odebírat</button>
+          </form>
+          <p class="text-xs text-white/50 mt-2">Souhlasím se zpracováním osobních údajů.</p>
+        </div>
 </div>
 
 
