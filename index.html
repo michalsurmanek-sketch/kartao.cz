@@ -361,6 +361,46 @@
 </div>
 
 <script>
+  <script>
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const menuBackdrop = document.getElementById('menuBackdrop');
+  const menuPanel = document.getElementById('menuPanel');
+  const menuClose = document.getElementById('menuClose');
+
+  function openMenu() {
+    mobileMenu.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      menuBackdrop.classList.remove('opacity-0');
+      menuPanel.classList.remove('translate-x-full');
+    });
+    menuToggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    menuBackdrop.classList.add('opacity-0');
+    menuPanel.classList.add('translate-x-full');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    setTimeout(() => mobileMenu.classList.add('hidden'), 200);
+  }
+
+  menuToggle?.addEventListener('click', openMenu);
+  menuClose?.addEventListener('click', closeMenu);
+  mobileMenu.addEventListener('click', (e) => { if (e.target === menuBackdrop) closeMenu(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) closeMenu(); });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) lucide.createIcons();
+    const items = document.querySelectorAll('[data-gradient-icon]');
+    const n = items.length;
+    items.forEach((el, i) => {
+      const pos = n === 1 ? 0 : Math.round((i / (n - 1)) * 100);
+      el.style.setProperty('--pos', pos + '%');
+    });
+  });
+
   (function () {
     const apiBase = 'https://api.kartao.cz';
     const ENABLE_LOCAL_TEST = true;
