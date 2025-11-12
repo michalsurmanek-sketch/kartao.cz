@@ -102,7 +102,35 @@
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
     </div>
-  </header>
+   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+        <i data-lucide="crown" class="w-5 h-5 animate-crown-glow"></i>
+      </div>
+      <div>
+        <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+        <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+      </div>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6">
+      <a href="index.html#tvurci" class="text-white/80 hover:text-white transition">Tvůrci</a>
+      <a href="kartao-pro-firmy.html#brief" class="text-white/80 hover:text-white transition">Zadat kampaň</a>
+      <a href="magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
+      <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
+      <a href="vip.html" class="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
+        <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
+        <span class="font-bold">VIP</span>
+      </a>
+    </nav>
+
+    <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+      <span class="sr-only">Otevřít menu</span>
+    </button>
+  </div>
+</header>
 
   <!-- MOBILE OVERLAY + NAV -->
   <div id="mobileOverlay" class="fixed inset-0 z-50 hidden" aria-hidden="true">
