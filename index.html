@@ -1201,6 +1201,22 @@
   scrollBtn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+  
+    window.addEventListener('DOMContentLoaded',()=>{ if(window.lucide?.createIcons) window.lucide.createIcons(); });
+
+    const buttons=document.querySelectorAll('footer button[aria-controls]');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const id=btn.getAttribute('aria-controls');
+        const panel=document.getElementById(id);
+        const open=btn.getAttribute('aria-expanded')==='true';
+        btn.setAttribute('aria-expanded',!open);
+        panel.classList.toggle('hidden');
+        const icon=btn.querySelector('[data-lucide="chevron-down"]');
+        if(icon) icon.style.transform=open?'':'rotate(180deg)';
+      });
+    });
+  
 </script>
 
 </body>
