@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>O nás – Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-text {
+      background: linear-gradient(to right, #fbbf24, #e879f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-neutral-950 text-white">
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Logo + claim -->
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex gap-6 text-sm text-white/80">
+        <a href="index.html" class="hover:text-white">Domů</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
+        <a href="magazin.html" class="hover:text-white">Magazín</a>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+        <a href="o-nas.html" class="text-amber-400 font-semibold">O nás</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-16">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-6 gradient-text">O projektu Kartao.cz</h1>
+    <p class="text-white/70 text-lg leading-relaxed mb-10">
+      Kartao.cz je interaktivní síť influencerů a firem, která propojuje kreativní tvůrce se značkami. Naším cílem je usnadnit spolupráci,
+      poskytnout jasná data o dosahu a umožnit efektivní propagaci bez zbytečných prostředníků.
+    </p>
+
+    <section class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-3 text-amber-400">Naše mise</h2>
+        <p class="text-white/70 leading-relaxed">
+          Pomáháme českým i slovenským značkám oslovit nové publikum prostřednictvím autentických tvůrců. Zároveň dáváme influencerům
+          férové podmínky a přístup k nástrojům, které jim umožní růst.
+        </p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-3 text-fuchsia-400">Proč vzniklo Kartao.cz</h2>
+        <p class="text-white/70 leading-relaxed">
+          V reklamním světě chyběla transparentnost a jednoduchost. Kartao.cz vzniklo jako odpověď na potřebu propojit svět influencerů
+          a marketingu do přehledného, férového a moderního systému.
+        </p>
+      </div>
+    </section>
+
+    <section class="mt-16">
+      <h2 class="text-3xl font-bold mb-4">Náš tým</h2>
+      <p class="text-white/70 mb-6">Jsme malý tým nadšenců, designérů, vývojářů a marketérů. Spojuje nás vášeň pro digitální svět a chuť měnit způsob, jakým značky spolupracují s tvůrci.</p>
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="text-center bg-white/5 rounded-xl border border-white/10 p-4">
+          <img src="https://picsum.photos/seed/founder/200" class="w-24 h-24 rounded-full mx-auto mb-3" alt="zakladatel"/>
+          <div class="font-semibold">Michal Šurmánek</div>
+          <div class="text-sm text-white/60">Zakladatel & designér</div>
+          <a href="mailto:info@kartao.cz" class="text-amber-400 text-sm block mt-2 hover:underline">info@kartao.cz</a>
+        </div>
+        <div class="text-center bg-white/5 rounded-xl border border-white/10 p-4">
+          <img src="https://picsum.photos/seed/marketing/200" class="w-24 h-24 rounded-full mx-auto mb-3" alt="marketing"/>
+          <div class="font-semibold">Lucie Nováková</div>
+          <div class="text-sm text-white/60">Marketing & komunikace</div>
+          <a href="mailto:marketing@kartao.cz" class="text-fuchsia-400 text-sm block mt-2 hover:underline">marketing@kartao.cz</a>
+        </div>
+        <div class="text-center bg-white/5 rounded-xl border border-white/10 p-4">
+          <img src="https://picsum.photos/seed/dev/200" class="w-24 h-24 rounded-full mx-auto mb-3" alt="vývojář"/>
+          <div class="font-semibold">Tomáš Dvořák</div>
+          <div class="text-sm text-white/60">Vývojář systému</div>
+          <a href="mailto:dev@kartao.cz" class="text-amber-400 text-sm block mt-2 hover:underline">dev@kartao.cz</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 text-center text-white/60 py-8 mt-20 text-sm">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+      <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+      <span class="hidden md:block">•</span>
+      <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+      <span class="hidden md:block">•</span>
+      <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+    </div>
+    © 2025 Kartao.cz – Síť influencerů a tvůrců
+  </footer>
+</body>
+</html>
