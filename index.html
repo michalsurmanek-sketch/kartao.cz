@@ -42,14 +42,26 @@
     }
   </script>
 
-  <!-- Lucide ikony -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide ikony (UMD; doporučená varianta) -->
+<script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <script>
-    tailwind.config = { theme: { extend: { colors: { neutral: tailwind.colors.neutral, fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber, sky: tailwind.colors.sky, emerald: tailwind.colors.emerald } } } }
-  </script>
-  <!-- Lucide icons (UMD; defer vystaví window.lucide a umožní createIcons) -->
-  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<!-- Tailwind konfigurace -->
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          neutral: tailwind.colors.neutral,
+          fuchsia: tailwind.colors.fuchsia,
+          amber: tailwind.colors.amber,
+          sky: tailwind.colors.sky,
+          emerald: tailwind.colors.emerald
+        }
+      }
+    }
+  }
+</script>
+
   <style>
      .logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
     .logo-badge svg{filter:drop-shadow(0 2px 6px rgba(255,255,255,.08));transition:transform .3s ease}
