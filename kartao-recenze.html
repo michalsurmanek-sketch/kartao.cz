@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recenze firem – Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-text{background:linear-gradient(90deg,#e879f9,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .shadow-soft{box-shadow:0 4px 24px rgba(232,121,249,.25),0 2px 10px rgba(251,191,36,.15)}
+  </style>
+</head>
+<body class="bg-neutral-950 text-white">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Logo + claim -->
+      <a href="index.html" class="flex items-center gap-3 no-underline">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex gap-6 text-sm text-white/80">
+        <a href="index.html" class="hover:text-white">Domů</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
+        <a href="magazin.html" class="hover:text-white">Magazín</a>
+        <a href="o-nas.html" class="hover:text-white">O nás</a>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+        <a href="recenze-firmy.html" class="text-amber-400 font-semibold">Recenze</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-7xl mx-auto px-4 pt-12 pb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+    <div>
+      <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">Recenze od firem</h1>
+      <p class="text-white/70 mt-3 max-w-2xl">
+        Jak se spolupracovalo značkám, které už přes Kartao.cz zadaly kampaně. Reálné výsledky, stručná zpětná vazba.
+      </p>
+    </div>
+    <div class="text-sm text-white/60 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 max-w-sm">
+      <div class="font-semibold text-white flex items-center gap-2">
+        <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+        Hodnocení platforem
+      </div>
+      <div class="mt-1 flex items-baseline gap-2">
+        <div class="text-2xl font-bold">4,8</div>
+        <div class="text-xs uppercase tracking-wide text-white/50">z 5</div>
+      </div>
+      <div class="text-xs text-white/50 mt-1">Souhrnné hodnocení firem za posledních 12 měsíců.</div>
+    </div>
+  </section>
+
+  <!-- Filtry / přepínače -->
+  <section class="max-w-7xl mx-auto px-4 pb-4">
+    <div class="flex flex-wrap gap-3 items-center text-sm">
+      <span class="text-white/60">Filtrovat:</span>
+      <button class="px-3 py-1 rounded-full bg-neutral-900 border border-white/20 text-white text-xs uppercase tracking-wide">Vše</button>
+      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">E‑shop</button>
+      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Gastro</button>
+      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Služby</button>
+      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Lokalita Brno / Praha</button>
+    </div>
+  </section>
+
+  <!-- Recenze karty -->
+  <main class="max-w-7xl mx-auto px-4 pb-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Karta 1 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">ES</div>
+        <div>
+          <div class="font-semibold">E‑shop s módou</div>
+          <div class="text-xs text-white/60">Kampaň: Reels + stories</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Potřebovali jsme rychle oslovit nové zákazníky před sezónou. Kartao nám našlo několik menších tvůrců,
+        kteří přivedli kvalitní návštěvnost. Výsledkem byl nárůst objednávek o cca 23 % během měsíce.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">5/5</span></span>
+        </div>
+        <span>Rozpočet: 40 000 Kč</span>
+      </footer>
+    </article>
+
+    <!-- Karta 2 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">GA</div>
+        <div>
+          <div class="font-semibold">Gastro – burger bar</div>
+          <div class="text-xs text-white/60">Kampaň: TikTok + Instagram</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Hledali jsme lokální tvůrce pro Brno. Kampaň byla jednoduchá – ochutnávka a upřímná recenze.
+        Během víkendu nám přišlo tolik lidí, že jsme museli posílit směnu. Líbí se nám, že Kartao řeší i smlouvy a podmínky.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">4,8/5</span></span>
+        </div>
+        <span>Rozpočet: 25 000 Kč</span>
+      </footer>
+    </article>
+
+    <!-- Karta 3 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">SL</div>
+        <div>
+          <div class="font-semibold">Lokální služba – fit studio</div>
+          <div class="text-xs text-white/60">Kampaň: dlouhodobé ambasadorství</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Z testovací spolupráce vzniklo půlroční partnerství. Tvůrkyně se stala tváří našeho studia a
+        přivedla nám nové klientky z Instagramu. Oceňujeme přehledný reporting a jasně nastavené podmínky.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">5/5</span></span>
+        </div>
+        <span>Rozpočet: 60 000 Kč</span>
+      </footer>
+    </article>
+
+    <!-- Karta 4 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">SA</div>
+        <div>
+          <div class="font-semibold">SaaS nástroj pro firmy</div>
+          <div class="text-xs text-white/60">Kampaň: B2B edukace</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Potřebovali jsme vysvětlit složitější produkt jednoduchým jazykem. Tvůrci z B2B segmentu nám natočili edukativní videa,
+        která používáme dodnes. Překvapil nás počet relevantních poptávek.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">4,7/5</span></span>
+        </div>
+        <span>Rozpočet: 80 000 Kč</span>
+      </footer>
+    </article>
+
+    <!-- Karta 5 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">TR</div>
+        <div>
+          <div class="font-semibold">Cestovní kancelář</div>
+          <div class="text-xs text-white/60">Kampaň: obsah z dovolené</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Influencer natočil sérii videí přímo z destinace. Lidé se ptali na konkrétní zájezdy, které jsme měli v nabídce.
+        Kartao nám pomohlo nastavit jasné podmínky, aby všechno proběhlo v pohodě.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">4,9/5</span></span>
+        </div>
+        <span>Rozpočet: 120 000 Kč</span>
+      </footer>
+    </article>
+
+    <!-- Karta 6 -->
+    <article class="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+      <header class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-neutral-900 grid place-items-center text-sm font-bold">ST</div>
+        <div>
+          <div class="font-semibold">Stavební firma</div>
+          <div class="text-xs text-white/60">Kampaň: YouTube + real‑time stories</div>
+        </div>
+      </header>
+      <p class="text-white/70 text-sm flex-1">
+        „Nečekali jsme, že stavebnictví bude pro social tak zajímavé. Série videí z realizace zakázek přinesla nové poptávky
+        a pomohla nám ukázat kvalitu práce lidským způsobem.“
+      </p>
+      <footer class="mt-4 flex items-center justify-between text-xs text-white/60">
+        <div class="flex items-center gap-1">
+          <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+          <span>Hodnocení spolupráce: <span class="text-white">4,6/5</span></span>
+        </div>
+        <span>Rozpočet: 70 000 Kč</span>
+      </footer>
+    </article>
+  </main>
+
+  <!-- CTA sekce -->
+  <section class="border-t border-white/10 bg-white/5">
+    <div class="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <h2 class="text-2xl font-bold">Chcete být další spokojená značka?</h2>
+        <p class="text-white/70 text-sm mt-2 max-w-xl">Pošlete nám nezávazné zadání kampaně. Ozveme se s návrhem spolupráce a ukázkou vhodných tvůrců.</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="kartao-pro-firmy.html#brief" class="px-4 py-2 rounded-xl bg-amber-400 text-neutral-950 font-semibold hover:bg-amber-300">Zadat kampaň</a>
+        <a href="kontakt.html" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:text-white">Kontaktovat tým</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/10 text-center text-white/60 py-8 text-sm">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+      <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+      <span class="hidden md:block">•</span>
+      <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+      <span class="hidden md:block">•</span>
+      <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+    </div>
+    © 2025 Kartao.cz – Síť influencerů a tvůrců
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons()</script>
+</body>
+</html>
