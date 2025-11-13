@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kontakt – Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-text {background: linear-gradient(90deg,#e879f9,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .shadow-soft {box-shadow: 0 4px 24px rgba(232,121,249,.25), 0 2px 10px rgba(251,191,36,.15)}
+  </style>
+</head>
+<body class="bg-neutral-950 text-white">
+  <!-- Topbar / Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Logo + claim (sjednoceno) -->
+      <a href="index.html" class="flex items-center gap-3 no-underline">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex gap-6 text-sm text-white/80">
+        <a href="index.html" class="hover:text-white">Domů</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
+        <a href="magazin.html" class="hover:text-white">Magazín</a>
+        <a href="o-nas.html" class="hover:text-white">O nás</a>
+        <a href="kontakt.html" class="text-amber-400 font-semibold">Kontakt</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-7xl mx-auto px-4 pt-12 pb-6">
+    <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">Kontaktujte nás</h1>
+    <p class="text-white/70 mt-3 max-w-2xl">Máte dotaz, chcete zadat kampaň nebo řešíte technický problém? Dejte nám vědět – ozveme se co nejdřív.</p>
+  </section>
+
+  <!-- Content -->
+  <main class="max-w-7xl mx-auto px-4 pb-16 grid md:grid-cols-2 gap-8">
+    <!-- Card: Kontaktní údaje -->
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+      <h2 class="text-2xl font-bold mb-4 text-amber-400">Kontaktní údaje</h2>
+      <ul class="space-y-3 text-white/80">
+        <li>📍 Brno, Česká republika</li>
+        <li>✉️ E‑mail: <a href="mailto:info@kartao.cz" class="text-amber-400 hover:underline">info@kartao.cz</a></li>
+        <li>📞 Telefon: <a href="tel:+420777123456" class="text-fuchsia-400 hover:underline">+420 777 123 456</a></li>
+      </ul>
+      <div class="flex gap-3 mt-5 text-white/70">
+        <a href="https://instagram.com/kartao.cz" target="_blank" class="hover:text-white" aria-label="Instagram"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+        <a href="https://facebook.com/kartao.cz" target="_blank" class="hover:text-white" aria-label="Facebook"><i data-lucide="facebook" class="w-6 h-6"></i></a>
+        <a href="https://youtube.com/@kartao" target="_blank" class="hover:text-white" aria-label="YouTube"><i data-lucide="youtube" class="w-6 h-6"></i></a>
+        <a href="https://tiktok.com/@kartao.cz" target="_blank" class="hover:text-white" aria-label="TikTok"><i data-lucide="tiktok" class="w-6 h-6"></i></a>
+      </div>
+    </div>
+
+    <!-- Card: Formulář -->
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+      <h2 class="text-2xl font-bold mb-4 text-fuchsia-400">Kontaktní formulář</h2>
+      <form class="space-y-4" onsubmit="event.preventDefault();this.reset();document.getElementById('sent').classList.remove('hidden')">
+        <input type="text" placeholder="Vaše jméno" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
+        <input type="email" placeholder="Váš e‑mail" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
+        <textarea rows="4" placeholder="Zpráva" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required></textarea>
+        <button type="submit" class="w-full py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 font-semibold text-neutral-950 hover:opacity-90 transition">Odeslat zprávu</button>
+        <p id="sent" class="hidden text-sm text-emerald-400">Děkujeme! Zpráva byla odeslána.</p>
+      </form>
+    </div>
+  </main>
+
+  <!-- Newsletter + Footer -->
+  <section class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-[1fr_auto] items-center gap-6">
+      <div>
+        <div class="text-xl font-semibold">Novinky e‑mailem</div>
+        <div class="text-white/60 text-sm">Žádný spam. Jen podstatné novinky a tipy pro značky i tvůrce.</div>
+      </div>
+      <form class="flex gap-2" onsubmit="event.preventDefault();">
+        <input type="email" required placeholder="Váš e‑mail" class="min-w-[240px] rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" />
+        <button class="rounded-xl px-4 py-2 font-semibold bg-fuchsia-500 hover:bg-fuchsia-600">Odebírat</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/10 text-center text-white/60 py-8 text-sm">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+      <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+      <span class="hidden md:block">•</span>
+      <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+      <span class="hidden md:block">•</span>
+      <a href="kontakt.html" class="text-white">Kontakt</a>
+    </div>
+    © 2025 Kartao.cz – Síť influencerů a tvůrců
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons()</script>
+</body>
+</html>
