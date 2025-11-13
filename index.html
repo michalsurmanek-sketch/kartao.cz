@@ -18,8 +18,7 @@
   <!-- Lucide icons (UMD; defer vystaví window.lucide a umožní createIcons) -->
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
-    .light-mode {background: #ffffff !important;color: #000 !important;}
-    .logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
+     .logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
     .logo-badge svg{filter:drop-shadow(0 2px 6px rgba(255,255,255,.08));transition:transform .3s ease}
     .logo-badge:hover{transform:translateY(-1px) scale(1.02)}
     .logo-badge:hover svg{transform:translateY(-.5px) rotate(-2deg)}
@@ -112,11 +111,6 @@
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white">
-<button id="themeToggle" class="w-20 h-10 rounded-full flex items-center bg-neutral-800 p-1 transition">
-  <div id="themeThumb" class="w-8 h-8 bg-white rounded-full grid place-items-center shadow-md transition">
-    <i id="themeIcon" data-lucide="sun" class="w-5 h-5 text-black"></i>
-  </div>
-</button>
 
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -140,7 +134,7 @@
           <span class="font-bold">VIP</span>
         </a>
       </nav>
-      <body class="min-h-screen bg-neutral-950 text-white transition">
+      
       <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
         <i data-lucide="menu" class="w-6 h-6"></i>
         <span class="sr-only">Otevřít menu</span>
@@ -302,39 +296,6 @@
     </div>
   </div>
 <script>
-  const toggle = document.getElementById("themeToggle");
-const thumb = document.getElementById("themeThumb");
-const icon = document.getElementById("themeIcon");
-
-toggle.addEventListener("click", () => {
-  document.body.classList.toggle("light-mode");
-
-  if (document.body.classList.contains("light-mode")) {
-    // světlo
-    toggle.classList.remove("bg-neutral-800");
-    toggle.classList.add("bg-neutral-200");
-
-    thumb.classList.add("translate-x-10", "bg-white");
-    thumb.classList.remove("bg-neutral-900");
-
-    icon.setAttribute("data-lucide", "sun");
-    icon.classList.remove("text-white");
-    icon.classList.add("text-black");
-  } else {
-    // tma (Kartao)
-    toggle.classList.add("bg-neutral-800");
-    toggle.classList.remove("bg-neutral-200");
-
-    thumb.classList.remove("translate-x-10");
-    thumb.classList.add("bg-neutral-900");
-
-    icon.setAttribute("data-lucide", "moon");
-    icon.classList.add("text-white");
-    icon.classList.remove("text-black");
-  }
-
-  lucide.createIcons();
-});
     const menuToggle = document.getElementById('menuToggle');
     const mobileMenu = document.getElementById('mobileMenu');
     const menuBackdrop = document.getElementById('menuBackdrop');
