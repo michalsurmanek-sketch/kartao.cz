@@ -4,14 +4,47 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao.cz – síť influencerů</title>
+
+  <!-- Popis pro vyhledávače -->
+  <meta name="description" content="Kartao.cz – síť influencerů a tvůrců. Propojujeme značky a tvůrce. Najdi influencera rychle a chytře.">
+
   <meta name="theme-color" content="#0f172a" />
+
+  <!-- Open Graph -->
   <meta property="og:title" content="Kartao.cz – síť influencerů" />
   <meta property="og:description" content="Propojujeme značky a tvůrce. Najdi influencera rychle a chytře." />
   <meta property="og:image" content="/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.kartao.cz/" />
+  <meta property="og:locale" content="cs_CZ" />
+
+  <link rel="canonical" href="https://www.kartao.cz/" />
+
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            neutral: tailwind.colors.neutral,
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide ikony -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <script>
     tailwind.config = { theme: { extend: { colors: { neutral: tailwind.colors.neutral, fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber, sky: tailwind.colors.sky, emerald: tailwind.colors.emerald } } } }
   </script>
