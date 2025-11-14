@@ -692,37 +692,43 @@
     </div>
   </section>
   <!-- FOOTER -->
-    <!-- =============== FOOTER START =============== -->
-  <footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40">
-    <!-- Top CTA -->
-    <div class="max-w-7xl mx-auto px-4 py-10">
-      <div class="rounded-2xl border border-white/10 bg-neutral-900/40 p-6 md:p-8">
-        <div class="flex flex-col md:flex-row items-center md:items-center gap-6 justify-between">
-          <div class="flex items-center gap-4">
-            <div class="logo-badge pulse w-12 h-12 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
-              <i data-lucide="crown" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <div class="text-xl font-extrabold tracking-tight">Kartao.cz</div>
-              <div class="text-white/60 text-sm -mt-0.5">Síť influencerů a tvůrců</div>
-            </div>
+  <!-- =============== FOOTER START =============== -->
+<footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40">
+
+  <!-- Top CTA -->
+  <div class="max-w-7xl mx-auto px-4 py-[1px]">
+    <div class="rounded-2xl border border-white/10 bg-neutral-900/40 p-6 md:p-8">
+      <div class="flex flex-col md:flex-row items-center md:items-center gap-6 justify-between">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-4">
+          <div class="logo-badge pulse w-12 h-12 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+            <i data-lucide="crown" class="w-6 h-6"></i>
           </div>
-    <!-- kontejner nad footer hlavní stránka -->
-          <div class="flex flex-row sm:flex-row items-stretch gap-3">
-            <a href="kartao-pro-firmy.html" class="px-4 py-2 rounded-full bg-white text-neutral-900 font-medium hover:opacity-90 transition text-center">Pro firmy</a>
-            <a href="kartao-zalozit-kartu.html" class="px-4 py-2 rounded-full bg-fuchsia-500 text-white font-medium hover:bg-fuchsia-600 transition text-center">Založit kartu</a>
+          <div>
+            <div class="text-xl font-extrabold tracking-tight">Kartao.cz</div>
+            <div class="text-white/60 text-sm -mt-0.5">Síť influencerů a tvůrců</div>
           </div>
         </div>
+
+        <!-- CTA tlačítka -->
+        <div class="flex flex-row sm:flex-row items-stretch gap-3">
+          <a href="kartao-pro-firmy.html" class="px-4 py-2 rounded-full bg-white text-neutral-900 font-medium hover:opacity-90 transition text-center">Pro firmy</a>
+          <a href="kartao-zalozit-kartu.html" class="px-4 py-2 rounded-full bg-fuchsia-500 text-white font-medium hover:bg-fuchsia-600 transition text-center">Založit kartu</a>
+        </div>
+
       </div>
     </div>
+  </div>
 
-    <!-- Middle columns -->
-    <body class="bg-neutral-950 text-white">
-  <footer class="relative border-t border-white/10 bg-neutral-950">
+
+  <!-- Middle columns -->
+  <div class="relative border-t border-white/10 bg-neutral-950">
     <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-fuchsia-500 via-amber-400 to-fuchsia-500 opacity-75"></div>
 
     <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Rozbalovací sekce O Kartao -->
+
+      <!-- O Kartao -->
       <div>
         <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-fuchsia-400" aria-expanded="false" aria-controls="oKartao">
           <span class="flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i>O Kartao</span>
@@ -735,7 +741,7 @@
         </ul>
       </div>
 
-      <!-- Rozbalovací sekce Pro firmy -->
+      <!-- Pro firmy -->
       <div>
         <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-amber-400" aria-expanded="false" aria-controls="proFirmy">
           <span class="flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5"></i>Pro firmy</span>
@@ -748,7 +754,7 @@
         </ul>
       </div>
 
-      <!-- Rozbalovací sekce Pro tvůrce -->
+      <!-- Pro tvůrce -->
       <div>
         <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-3 text-fuchsia-400" aria-expanded="false" aria-controls="proTvurce">
           <span class="flex items-center gap-2"><i data-lucide="camera" class="w-5 h-5"></i>Pro tvůrce</span>
@@ -756,89 +762,86 @@
         </button>
         <ul id="proTvurce" class="space-y-2 text-white/70 hidden sm:block">
           <li><a class="hover:text-white transition" href="kartao-zalozit-kartu.html">Založit kartu</a></li>
-          <li><a class="hover:text-white transition" href="kartao-cenik.html">Cenik</a></li>
+          <li><a class="hover:text-white transition" href="kartao-cenik.html">Ceník</a></li>
           <li><a class="hover:text-white transition" href="kartao-faq.html">FAQ</a></li>
         </ul>
       </div>
-<!-- Rozbalovací sekce Novinky -->
-     <div>
+
+      <!-- Novinky -->
+      <div>
         <button class="w-full sm:w-auto flex justify-between items-center font-bold mb-1 text-sky-400" aria-expanded="false" aria-controls="novinky">
           <span class="flex items-center gap-2"><i data-lucide="mail" class="w-5 h-5"></i>Novinky</span>
           <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
         </button>
         <div id="novinky" class="hidden sm:block">
           <form class="grid grid-cols-1 md:grid-cols-[1fr_auto] items-stretch gap-2 w-full">
-            <input type="email" required autocomplete="email" placeholder="Váš e‑mail" class="w-full min-w-0 max-w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
+            <input type="email" required autocomplete="email" placeholder="Váš e-mail" class="w-full min-w-0 max-w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
             <button type="submit" class="w-full md:w-auto whitespace-nowrap rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium">Odebírat</button>
           </form>
           <p class="text-xs text-white/50 mt-2">Souhlasím se zpracováním osobních údajů.</p>
         </div>
       </div>
+
     </div>
     
-  <!Sjednocujeme značky, tvůrce a komunity do jednoho světa plného inspirace. ✨>
-    
-     <div class="mt-6 pt-4 border-t border-white/10">
-            <div class="text-xs uppercase tracking-wider text-white/50 text-center mb-3">Sleduj nás</div>
-            
-            <div class="mx-auto max-w-xs sm:max-w-sm rounded-2xl p-2 bg-gradient-to-r from-fuchsia-500/15 via-pink-500/10 to-amber-400/15 border border-white/10">
-              <div id="socialRow" class="flex justify-center items-center gap-3">
-                <a href="#" aria-label="Facebook" title="Facebook"
-                   data-gradient-icon
-                   class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 
-                          [background-size:300%_100%] [background-position:var(--pos,0%)_0] hover:[background-position:100%_0] transition">
-                  <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
-                    <i data-lucide="facebook" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-                  </span>
-                </a>
-                <a href="#" aria-label="Instagram" title="Instagram"
-                   data-gradient-icon
-                   class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 
-                          [background-size:300%_100%] [background-position:var(--pos,0%)_0] hover:[background-position:100%_0] transition">
-                  <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
-                    <i data-lucide="instagram" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-                  </span>
-                </a>
-                <a href="#" aria-label="YouTube" title="YouTube"
-                   data-gradient-icon
-                   class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 
-                          [background-size:300%_100%] [background-position:var(--pos,0%)_0] hover:[background-position:100%_0] transition">
-                  <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
-                    <i data-lucide="youtube" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-                  </span>
-                </a>
-                <a href="#" aria-label="TikTok" title="TikTok"
-                   data-gradient-icon
-                   class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 
-                          [background-size:300%_100%] [background-position:var(--pos,0%)_0] hover:[background-position:100%_0] transition">
-                  <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
-                    <svg viewBox="0 0 48 48" class="w-5 h-5 transition-transform group-hover:scale-110" fill="currentColor" aria-hidden="true">
-                      <path d="M33.2 17.7c-2.6-1.5-4.5-4-5.1-7l-.2-1.2h-6.1v19.9c0 2.1-1.7 3.8-3.8 3.8-2 0-3.7-1.6-3.8-3.6-.1-2.2 1.7-4.1 3.9-4.1.6 0 1.2.1 1.7.4v-6.2c-5.1-1-10 2.4-10.9 7.5-1 5.3 2.5 10.3 7.8 11.3 5.7 1 10.8-3.3 10.8-8.9v-7.6c2 2 4.6 3.3 7.4 3.7l1.3.2v-6.4l-1-.1c-.7-.1-1.4-.3-2-.6z"/>
-                    </svg>
-                  </span>
-                </a>
-              </div>
-              <p class="mt-3 text-center text-white/60 text-sm italic">Sjednocujeme značky, tvůrce a komunity do jednoho světa plného inspirace. ✨</p>
-            </div>
-</div>
 
-<!-- Copyright / právní -->
-<div class="text-center text-white/60 text-sm mt-7 sm:mt-2">
-  <div>
-    © 2025 
-    <i data-lucide="crown"
-   class="w-4 h-4 inline-block text-amber-400 ml-1 mr-0 relative -top-[3px]"></i>
-    Kartao.cz • Všechna práva vyhrazena
+    <!-- Sleduj nás -->
+    <div class="mt-6 pt-4 border-t border-white/10">
+      <div class="text-xs uppercase tracking-wider text-white/50 text-center mb-3">Sleduj nás</div>
+
+      <div class="mx-auto max-w-xs sm:max-w-sm rounded-2xl p-2 bg-gradient-to-r from-fuchsia-500/15 via-pink-500/10 to-amber-400/15 border border-white/10">
+        <div id="socialRow" class="flex justify-center items-center gap-3">
+          
+          <!-- FB -->
+          <a href="#" class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 transition">
+            <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
+              <i data-lucide="facebook" class="w-5 h-5"></i>
+            </span>
+          </a>
+
+          <!-- IG -->
+          <a href="#" class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 transition">
+            <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
+              <i data-lucide="instagram" class="w-5 h-5"></i>
+            </span>
+          </a>
+
+          <!-- YouTube -->
+          <a href="#" class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 transition">
+            <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
+              <i data-lucide="youtube" class="w-5 h-5"></i>
+            </span>
+          </a>
+
+          <!-- TikTok -->
+          <a href="#" class="group relative rounded-xl p-[1.5px] bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 transition">
+            <span class="block w-10 h-10 rounded-[10px] bg-neutral-900/90 border border-white/10 grid place-items-center">
+              <i data-lucide="music" class="w-5 h-5"></i>
+            </span>
+          </a>
+
+        </div>
+
+        <p class="mt-3 text-center text-white/60 text-sm italic">
+          Sjednocujeme značky, tvůrce a komunity do jednoho světa plného inspirace. ✨
+        </p>
+      </div>
+    </div>
+
+
+    <!-- Copyright -->
+    <div class="text-center text-white/60 text-sm mt-7 sm:mt-2">
+      <div>
+        © 2025 
+        <i data-lucide="crown" class="w-4 h-4 inline-block text-amber-400 ml-1 mr-0 relative -top-[3px]"></i>
+        Kartao.cz • Všechna práva vyhrazena
+      </div>
+    </div>
+
   </div>
-</div>
-
-</div>
-</div>
-</div>
-</div>
-</div>
 
 </footer>
+<!-- =============== FOOTER END =============== -->
 
 
 
