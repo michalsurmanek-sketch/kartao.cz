@@ -1,93 +1,61 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao.cz – Založit kartu</title>
-
-  <!-- Tailwind CDN -->
+  <title>Založit kartu – Kartao.cz</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            neutral: tailwind.colors.neutral,
             fuchsia: tailwind.colors.fuchsia,
             amber: tailwind.colors.amber,
-            sky: tailwind.colors.sky,
+            neutral: tailwind.colors.neutral,
             emerald: tailwind.colors.emerald,
-          },
-          boxShadow: {
-            soft: "0 18px 45px rgba(0,0,0,0.45)",
-          },
-        },
-      },
-    };
+          }
+        }
+      }
+    }
   </script>
-
-  <!-- Lucide ikony -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
   <style>
-    body {
-      background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
-    }
-
-    .glass-panel {
-      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
-        radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.08), transparent);
-      backdrop-filter: blur(24px);
-    }
+    .shadow-soft{box-shadow:0 18px 45px rgba(0,0,0,.5)}
+    .glass{background:radial-gradient(circle at top left,rgba(236,72,153,.14),transparent 55%),radial-gradient(circle at bottom right,rgba(250,204,21,.12),transparent 50%),rgba(15,23,42,.92);backdrop-filter:blur(18px)}
   </style>
 </head>
-<body class="min-h-screen text-white bg-neutral-950/95">
-  <div class="min-h-screen flex flex-col">
-    <!-- HEADER (stejný styl jako jinde) -->
-    <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
-            <i data-lucide="crown" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-            <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
-          </div>
-        </a>
-
-        <div class="flex items-center gap-2 text-sm">
-          <button data-show-when="loggedout" onclick="openLogin && openLogin()" class="hidden md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
-            Přihlásit se
-          </button>
-          <a data-show-when="loggedin" href="#" onclick="logoutUser && logoutUser()" class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            <span>Odhlásit se</span>
-          </a>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- jednoduchá hlavička -->
+  <header class="border-b border-white/10 bg-neutral-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
         </div>
+        <div>
+          <div class="font-extrabold tracking-tight">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
+      <a href="login.html" class="text-sm text-white/70 hover:text-white">Můj účet</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10 md:py-14">
+    <!-- Úvodní blok -->
+    <section class="mb-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 px-3 py-1 text-xs text-fuchsia-100 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Pro přihlášené tvůrce – krok 1/2</span>
       </div>
-    </header>
-
-    <!-- MAIN -->
-    <main class="flex-1">
-      <section class="max-w-3xl mx-auto px-4 py-8 md:py-10">
-        <!-- Breadcrumbs -->
-        <nav class="mb-4 text-xs text-white/50 flex items-center gap-1">
-          <a href="index.html" class="hover:text-white">Domů</a>
-          <span>/</span>
-          <span class="text-white/70">Založit kartu</span>
-        </nav>
-
-        <!-- Nadpis -->
-        <div class="mb-6">
-          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2">
-            <i data-lucide="id-card" class="w-7 h-7 text-amber-300"></i>
-            <span>Založit kartu tvůrce</span>
-          </h1>
-          <p class="text-white/60 mt-1 text-sm md:text-base max-w-2xl">
-            Vyplňte základní informace o sobě a svých profilech. Podle těchto údajů vás budou značky na Kartao.cz vyhledávat a oslovovat.
-          </p>
-        </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 flex flex-wrap items-center gap-3">
+        Založit kartu tvůrce
+        <span class="text-sm font-semibold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Zdarma</span>
+      </h1>
+      <p class="text-white/70 max-w-2xl text-sm md:text-base">
+        Vyplň základní informace o sobě a svých sítích. Kartu můžeš kdykoliv upravit a později přidat detailnější statistiky, ceník i speciální nabídky pro značky.
+      </p>
+    </section>
 
         <!-- FORMULÁŘ -->
         <form id="cardForm" class="glass-panel rounded-2xl border border-white/10 p-4 md:p-6 space-y-5">
