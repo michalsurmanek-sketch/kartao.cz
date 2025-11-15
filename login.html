@@ -75,7 +75,7 @@
   <!-- Ikony -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>lucide.createIcons();</script>
-
+  
   <!-- Firebase SDK (compat pro jednodušší zápis) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -89,14 +89,19 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
+    
     // 2) Vždy preferuj popup (řeší tvůj problém s chybějícím stavem u redirectu)
     const googleProvider = new firebase.auth.GoogleAuthProvider();
 
     function getReturnUrl(){
-      const p = new URLSearchParams(location.search);
-      return p.get('returnUrl') || 'index.html';
+    const p = new URLSearchParams(location.search);
+    const next = p.get('next');          // např. ?next=kartao-zalozit-kartu.html
+    const ret  = p.get('returnUrl');     // kdybys to někde používal jako ?returnUrl=...
+    return next || ret || 'index.html';  // priorita: next -> returnUrl -> index.html
     }
+    
+    function goToCreateCard() {
+    window.location.href = "login.html?next=kartao-zalozit-kartu.html";}
 
     async function loginGoogle(){
       try{
@@ -121,15 +126,16 @@
       }
     }
 
-    async function emailRegister(){
-      const email = document.getElementById('email').value.trim();
-      const pass  = document.getElementById('password').value;
-      try{
-        await auth.createUserWithEmailAndPassword(email, pass);
-        location.href = getReturnUrl();
-      }catch(err){
-        alert('Registrace selhala: ' + err.message);
-      }
+    const firebaseConfig = {
+  apiKey: "AIzaxxxxxxxxxxxxxxxxxxxxxx",
+  authDomain: "kartao-cz.firebaseapp.com",
+  projectId: "kartao-cz",
+  storageBucket: "kartao-cz.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcdef1234567890",
+  measurementId: "G-XXXXXXX"
+  };
+
     }
 
     // 3) Ovládání UI
