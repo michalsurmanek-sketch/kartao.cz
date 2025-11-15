@@ -1238,23 +1238,25 @@
   
   <script>
   function goToCreateCard() {
-    if (!window.firebase || !firebase.auth) {
-      console.error("Firebase není načtený.");
-      return;
+    try {
+      // Pokud je Firebase a je někdo přihlášený → rovnou na založit kartu
+      if (window.firebase && firebase.auth) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          window.location.href = "zalozit-kartu.html";
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      // Když něco spadne, pokračujeme dál na login
     }
 
-    const user = firebase.auth().currentUser;
-
-    // není přihlášen → přesměrujeme na login.html
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    // přihlášen → pustíme na založení karty
-    window.location.href = "zalozit-kartu.html";
+    // Když NENÍ přihlášený nebo Firebase není načtený → vždy pošleme na login
+    window.location.href = "login.html";
   }
 </script>
+
 
   
 <script>
