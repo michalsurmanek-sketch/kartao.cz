@@ -22,9 +22,9 @@
   </script>
 
   <!-- Firebase compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <style>
     /* Lehký rozmazaný gradient na pozadí */
@@ -50,12 +50,8 @@
 
     <!-- Přepínač Přihlášení / Registrace -->
     <div class="flex mb-4 rounded-xl bg-neutral-800/80 p-1 text-sm">
-      <button id="tab-login" data-tab="login" type="button" class="flex-1 py-2 rounded-lg font-medium bg-neutral-900 text-white">
-        Přihlášení
-      </button>
-      <button id="tab-register" data-tab="register" type="button" class="flex-1 py-2 rounded-lg font-medium text-white/70 hover:text-white">
-        Registrace
-      </button>
+      <button id="tab-login" data-tab="login" type="button" class="flex-1 py-2 rounded-lg font-medium bg-neutral-900 text-white">Přihlášení</button>
+      <button id="tab-register" data-tab="register" type="button" class="flex-1 py-2 rounded-lg font-medium text-white/70 hover:text-white">Registrace</button>
     </div>
 
     <!-- Box na hlášky -->
@@ -65,38 +61,21 @@
     <form id="login-form" class="space-y-4">
       <div>
         <label class="block text-sm mb-1" for="login-email">E-mail</label>
-        <input
-          id="login-email"
-          type="email"
-          required
-          autocomplete="email"
-          class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400"
-        />
+        <input id="login-email" type="email" required autocomplete="email"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
       </div>
       <div>
         <label class="block text-sm mb-1" for="login-password">Heslo</label>
-        <input
-          id="login-password"
-          type="password"
-          required
-          autocomplete="current-password"
-          class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400"
-        />
+        <input id="login-password" type="password" required autocomplete="current-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
       </div>
 
-      <button
-        type="submit"
-        class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition"
-      >
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
         Přihlásit se
       </button>
 
       <!-- Tlačítko pro znovu-poslání ověřovacího e-mailu (standardně skryté) -->
-      <button
-        type="button"
-        id="btn-resend"
-        class="hidden w-full py-2 rounded-xl border border-amber-300/60 text-xs text-amber-200 hover:bg-amber-300/10 transition"
-      >
+      <button type="button" id="btn-resend" class="hidden w-full py-2 rounded-xl border border-amber-300/60 text-xs text-amber-200 hover:bg-amber-300/10 transition">
         Znovu poslat ověřovací e-mail
       </button>
 
@@ -104,20 +83,12 @@
         <span class="inline-block px-2 text-white/60">nebo</span>
       </div>
 
-      <button
-        type="button"
-        id="btn-google"
-        class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2"
-      >
+      <button type="button" id="btn-google" class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2">
         <span class="text-lg">G</span>
         <span>Přihlásit se přes Google</span>
       </button>
 
-      <button
-        type="button"
-        id="btn-facebook"
-        class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2"
-      >
+      <button type="button" id="btn-facebook" class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2">
         <span class="text-lg">f</span>
         <span>Přihlásit se přes Facebook</span>
       </button>
@@ -127,42 +98,22 @@
     <form id="register-form" class="space-y-4 hidden">
       <div>
         <label class="block text-sm mb-1" for="reg-email">E-mail</label>
-        <input
-          id="reg-email"
-          type="email"
-          required
-          autocomplete="email"
-          class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400"
-        />
+        <input id="reg-email" type="email" required autocomplete="email"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
       </div>
       <div>
         <label class="block text-sm mb-1" for="reg-password">Heslo</label>
-        <input
-          id="reg-password"
-          type="password"
-          required
-          minlength="6"
-          autocomplete="new-password"
-          class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400"
-        />
+        <input id="reg-password" type="password" required minlength="6" autocomplete="new-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
         <p class="mt-1 text-[11px] text-white/50">Min. 6 znaků.</p>
       </div>
       <div>
         <label class="block text-sm mb-1" for="reg-password2">Heslo znovu</label>
-        <input
-          id="reg-password2"
-          type="password"
-          required
-          minlength="6"
-          autocomplete="new-password"
-          class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400"
-        />
+        <input id="reg-password2" type="password" required minlength="6" autocomplete="new-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
       </div>
 
-      <button
-        type="submit"
-        class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition"
-      >
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
         Vytvořit účet a poslat ověření
       </button>
 
@@ -188,7 +139,7 @@
       storageBucket: "kartao-cz.firebasestorage.app",
       messagingSenderId: "712778602439",
       appId: "1:712778602439:web:14e2b4c07ea35f70a16be2",
-      measurementId: "G-QC38M7X2KT",
+      measurementId: "G-QC38M7X2KT"
     };
 
     if (!firebase.apps.length) {
@@ -210,15 +161,7 @@
     function showMessage(text, type = "info") {
       if (!messageBox) return;
       messageBox.textContent = text;
-      messageBox.classList.remove(
-        "hidden",
-        "border-red-400",
-        "bg-red-900/60",
-        "border-emerald-400",
-        "bg-emerald-900/60",
-        "border-amber-300",
-        "bg-amber-900/40",
-      );
+      messageBox.classList.remove("hidden", "border-red-400", "bg-red-900/60", "border-emerald-400", "bg-emerald-900/60", "border-amber-300", "bg-amber-900/40");
 
       if (type === "error") {
         messageBox.classList.add("border-red-400", "bg-red-900/60");
@@ -240,19 +183,15 @@
       if (!user || !db) return;
       try {
         const userRef = db.collection("users").doc(user.uid);
-        const providerId =
-          user.providerData && user.providerData[0] ? user.providerData[0].providerId : "password";
-        await userRef.set(
-          {
-            email: user.email || "",
-            displayName: user.displayName || "",
-            photoURL: user.photoURL || "",
-            provider: providerId,
-            emailVerified: !!user.emailVerified,
-            updatedAt: new Date().toISOString(),
-          },
-          { merge: true },
-        );
+        const providerId = user.providerData && user.providerData[0] ? user.providerData[0].providerId : "password";
+        await userRef.set({
+          email: user.email || "",
+          displayName: user.displayName || "",
+          photoURL: user.photoURL || "",
+          provider: providerId,
+          emailVerified: !!user.emailVerified,
+          updatedAt: new Date().toISOString(),
+        }, { merge: true });
       } catch (err) {
         console.error("Chyba při ukládání profilu:", err);
       }
@@ -319,10 +258,7 @@
         if (cred.user) {
           await saveUserProfile(cred.user);
           await cred.user.sendEmailVerification();
-          showMessage(
-            "Účet byl vytvořen. Zkontrolujte e-mail a potvrďte ověřovací odkaz.",
-            "success",
-          );
+          showMessage("Účet byl vytvořen. Zkontrolujte e-mail a potvrďte ověřovací odkaz.", "success");
           registerForm.reset();
           setActiveTab("login");
         }
@@ -348,10 +284,7 @@
         const user = cred.user;
 
         if (!user.emailVerified) {
-          showMessage(
-            "Účet je vytvořen, ale e-mail zatím není ověřen. Zkontrolujte schránku nebo klikněte na 'Znovu poslat ověřovací e-mail'.",
-            "info",
-          );
+          showMessage("Účet je vytvořen, ale e-mail zatím není ověřen. Zkontrolujte schránku nebo klikněte na 'Znovu poslat ověřovací e-mail'.", "info");
           if (btnResend) btnResend.classList.remove("hidden");
           return;
         }
@@ -360,6 +293,7 @@
         showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
 
         // TODO: po přihlášení přesměruj kam potřebuješ (např. na kartu nebo přehled účtu)
+        // např.:
         // window.location.href = "kartao-zalozit-kartu.html";
 
       } catch (error) {
