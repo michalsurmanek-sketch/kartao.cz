@@ -394,6 +394,16 @@
         console.error(err);
         showMessage('Nastala chyba při ukládání karty. Zkuste to prosím znovu.', 'error');
       }
+      auth.onAuthStateChanged((user) => {
+     };
+  if (!user) {
+    // není přihlášený → pošli ho na login a po přihlášení zpět sem
+    window.location.href = "login.html?next=kartao-zalozit-kartu.html";
+  } else {
+    console.log("Přihlášený uživatel:", user.email);
+  }
+});
+
     });
   </script>
 </body>
