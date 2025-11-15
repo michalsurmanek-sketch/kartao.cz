@@ -16,6 +16,7 @@ if (!firebase.apps.length) {
 
 // Firestore instance
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 // Auth status
 let AOcurrentUser = null;
