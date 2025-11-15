@@ -141,25 +141,41 @@
       }
     }
 
-    // 6) Ovládání UI + navázání tlačítek
+        // 6) Ovládání UI – BEZ DOMContentLoaded, skript je už na konci stránky
     document.body.classList.add("modal-open");
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("overlay").addEventListener("click", (e) => {
+    const overlay   = document.getElementById("overlay");
+    const closeBtn  = document.getElementById("closeBtn");
+    const btnGoogle = document.getElementById("login-google");
+    const btnEmailLogin    = document.getElementById("btnEmailLogin");
+    const btnEmailRegister = document.getElementById("btnEmailRegister");
+
+    if (overlay) {
+      overlay.addEventListener("click", (e) => {
         if (e.target.id === "overlay") {
           location.href = "index.html";
         }
       });
+    }
 
-      document.getElementById("closeBtn").addEventListener("click", () => {
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
         location.href = "index.html";
       });
+    }
 
-      document.getElementById("login-google").addEventListener("click", loginGoogle);
-      document.getElementById("btnEmailLogin").addEventListener("click", emailLogin);
-      document.getElementById("btnEmailRegister").addEventListener("click", emailRegister);
-    });
-  </script>
+    if (btnGoogle) {
+      btnGoogle.addEventListener("click", loginGoogle);
+    }
 
+    if (btnEmailLogin) {
+      btnEmailLogin.addEventListener("click", emailLogin);
+    }
+
+    if (btnEmailRegister) {
+      btnEmailRegister.addEventListener("click", emailRegister);
+    }
+
+</script>
 </body>
 </html>
