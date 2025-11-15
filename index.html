@@ -1238,20 +1238,24 @@
   
   <script>
   function goToCreateCard() {
-    const user = firebase.auth().currentUser;
-
-    // Pokud není přihlášený → přesměruj na login stránku
-    if (!user) {
-      window.location.href = "login.html?redirect=kartao-zalozit-kartu.html";
+    if (!window.firebase || !firebase.auth) {
+      console.error("Firebase není načtený.");
       return;
     }
 
-    // Pokud je přihlášený → pošli ho na založení karty
-    window.location.href = "kartao-zalozit-kartu.html";
+    const user = firebase.auth().currentUser;
+
+    // není přihlášen → přesměrujeme na login.html
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    // přihlášen → pustíme na založení karty
+    window.location.href = "zalozit-kartu.html";
   }
 </script>
 
-</script>
   
 <script>
   // === Pricing toggle (měsíčně/ročně) ===
