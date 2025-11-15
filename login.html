@@ -21,10 +21,12 @@
     };
   </script>
 
-  <!-- Firebase compat SDK -->
+    <!-- Firebase compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Jednotná inicializace Firebase pro celý web -->
+  <script src="firebase-init.js"></script>
 
   <style>
     /* Lehký rozmazaný gradient na pozadí */
@@ -130,23 +132,9 @@
 
   <script>
     // =========================
-    // 1) Firebase konfigurace
+    // 1) Předpoklad: Firebase už je inicializovaná ve firebase-init.js
     // =========================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAmUuqkye67hhyoauRJiUVi_UVEdzU7hTI",
-      authDomain: "kartao-cz.firebaseapp.com",
-      projectId: "kartao-cz",
-      storageBucket: "kartao-cz.firebasestorage.app",
-      messagingSenderId: "712778602439",
-      appId: "1:712778602439:web:14e2b4c07ea35f70a16be2",
-      measurementId: "G-QC38M7X2KT"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // Zde jen vytvoříme providery pro sociální přihlášení
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     const facebookProvider = new firebase.auth.FacebookAuthProvider();
 
@@ -293,7 +281,6 @@
         showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
 
         // TODO: po přihlášení přesměruj kam potřebuješ (např. na kartu nebo přehled účtu)
-        // např.:
         // window.location.href = "kartao-zalozit-kartu.html";
 
       } catch (error) {
