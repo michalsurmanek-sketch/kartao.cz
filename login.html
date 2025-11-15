@@ -81,14 +81,16 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script>
     // 1) DOPLŇ SVŮJ KONFIG Z Nastavení projektu → Aplikace → Konfigurace
-    const firebaseConfig = {
-      apiKey: "PASTE_YOUR_API_KEY",
-      authDomain: "kartao-cz.firebaseapp.com",
-      projectId: "kartao-cz",
-      appId: "PASTE_YOUR_APP_ID",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAmUuqkye67hhyoauRJiUVi_UVEdzU7hTI",
+  authDomain: "kartao-cz.firebaseapp.com",
+  projectId: "kartao-cz",
+  storageBucket: "kartao-cz.firebasestorage.app",
+  messagingSenderId: "712778602439",
+  appId: "1:712778602439:web:14e2b4c07ea35f70a16be2",
+  measurementId: "G-QC38M7X2KT"
+};
     
     // 2) Vždy preferuj popup (řeší tvůj problém s chybějícím stavem u redirectu)
     const googleProvider = new firebase.auth.GoogleAuthProvider();
