@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Založit kartu</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neutral: tailwind.colors.neutral,
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(0,0,0,0.45)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Lucide ikony -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
+    }
+
+    .glass-panel {
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
+        radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.08), transparent);
+      backdrop-filter: blur(24px);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white bg-neutral-950/95">
+  <div class="min-h-screen flex flex-col">
+    <!-- HEADER (stejný styl jako jinde) -->
+    <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+            <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-2 text-sm">
+          <button data-show-when="loggedout" onclick="openLogin && openLogin()" class="hidden md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
+            Přihlásit se
+          </button>
+          <a data-show-when="loggedin" href="#" onclick="logoutUser && logoutUser()" class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>Odhlásit se</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1">
+      <section class="max-w-3xl mx-auto px-4 py-8 md:py-10">
+        <!-- Breadcrumbs -->
+        <nav class="mb-4 text-xs text-white/50 flex items-center gap-1">
+          <a href="index.html" class="hover:text-white">Domů</a>
+          <span>/</span>
+          <span class="text-white/70">Založit kartu</span>
+        </nav>
+
+        <!-- Nadpis -->
+        <div class="mb-6">
+          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2">
+            <i data-lucide="id-card" class="w-7 h-7 text-amber-300"></i>
+            <span>Založit kartu tvůrce</span>
+          </h1>
+          <p class="text-white/60 mt-1 text-sm md:text-base max-w-2xl">
+            Vyplňte základní informace o sobě a svých profilech. Podle těchto údajů vás budou značky na Kartao.cz vyhledávat a oslovovat.
+          </p>
+        </div>
+
+        <!-- FORMULÁŘ -->
+        <form id="cardForm" class="glass-panel rounded-2xl border border-white/10 p-4 md:p-6 space-y-5">
+          <!-- ZÁKLADNÍ ÚDAJE -->
+          <div>
+            <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+              <i data-lucide="user" class="w-4 h-4 text-amber-300"></i>
+              Základní údaje
+            </h2>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Jméno a příjmení *</label>
+                <input id="name" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="Jan Novák" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Přezdívka / handle *</label>
+                <input id="handle" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="@janincontent" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">E‑mail (nezveřejňuje se) *</label>
+                <input id="email" type="email" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. ty@domena.cz" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Město / region *</label>
+                <input id="city" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="Praha, Brno, Ostrava…" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Kategorie *</label>
+                <select id="category" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm">
+                  <option value="">Vyberte kategorii</option>
+                  <option>Beauty</option>
+                  <option>Fitness</option>
+                  <option>Travel</option>
+                  <option>Gaming</option>
+                  <option>Lifestyle</option>
+                  <option>Food</option>
+                  <option>Rodina & děti</option>
+                  <option>Business & finance</option>
+                  <option>Jiné</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Profilová fotka – URL (dočasně)</label>
+                <input id="avatar" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://..." />
+                <p class="text-[11px] text-white/40 mt-1">Později nahrávání souboru, teď stačí odkaz na fotku.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- POPIS / BIO -->
+          <div>
+            <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+              <i data-lucide="align-left" class="w-4 h-4 text-amber-300"></i>
+              Krátké představení
+            </h2>
+            <label class="block text-xs text-white/60 mb-1">Bio – stručně o vás *</label>
+            <textarea id="bio" required rows="4" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="Kdo jste, jaký obsah tvoříte, s jakými značkami jste už spolupracovali…"></textarea>
+          </div>
+
+          <!-- PLATFORMY -->
+          <div>
+            <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+              <i data-lucide="grid-2x2-check" class="w-4 h-4 text-amber-300"></i>
+              Sociální sítě
+            </h2>
+            <p class="text-xs text-white/60 mb-3">Vyplňte jen ty platformy, kde jste aktivní. Ostatní můžete nechat prázdné.</p>
+
+            <div class="space-y-3">
+              <!-- Instagram -->
+              <div class="grid md:grid-cols-[minmax(0,_1.4fr)_minmax(0,_0.8fr)_minmax(0,_0.8fr)] gap-3 items-end">
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Instagram – profil (URL)</label>
+                  <input id="instagramUrl" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://instagram.com/vasprofil" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Sledující (odhad)</label>
+                  <input id="instagramFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 25300" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Engagement (%)</label>
+                  <input id="instagramEngagement" type="number" min="0" step="0.1" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 4.2" />
+                </div>
+              </div>
+
+              <!-- TikTok -->
+              <div class="grid md:grid-cols-[minmax(0,_1.4fr)_minmax(0,_0.8fr)_minmax(0,_0.8fr)] gap-3 items-end">
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">TikTok – profil (URL)</label>
+                  <input id="tiktokUrl" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://tiktok.com/@vasprofil" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Sledující (odhad)</label>
+                  <input id="tiktokFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 48900" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Průměrný dosah / video</label>
+                  <input id="tiktokReach" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 120000" />
+                </div>
+              </div>
+
+              <!-- YouTube -->
+              <div class="grid md:grid-cols-[minmax(0,_1.4fr)_minmax(0,_0.8fr)] gap-3 items-end">
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">YouTube – kanál (URL)</label>
+                  <input id="youtubeUrl" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://youtube.com/@vasprofil" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Odběratelé (odhad)</label>
+                  <input id="youtubeFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 15000" />
+                </div>
+              </div>
+
+              <!-- Facebook -->
+              <div class="grid md:grid-cols-[minmax(0,_1.4fr)_minmax(0,_0.8fr)] gap-3 items-end">
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Facebook – stránka (URL)</label>
+                  <input id="facebookUrl" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://facebook.com/vasprofil" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Sledující (odhad)</label>
+                  <input id="facebookFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 8000" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENÍK -->
+          <div>
+            <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+              <i data-lucide="hand-coins" class="w-4 h-4 text-amber-300"></i>
+              Ceník spoluprací (orientačně)
+            </h2>
+            <div class="grid md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Reels / krátké video od (Kč)</label>
+                <input id="priceReels" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 6000" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Stories balíček od (Kč)</label>
+                <input id="priceStories" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 3500" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/60 mb-1">Individuální balíček</label>
+                <input id="priceCustom" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. podle domluvy" />
+              </div>
+            </div>
+          </div>
+
+          <!-- INFORMACE PRO ZNAČKY -->
+          <div>
+            <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+              <i data-lucide="briefcase" class="w-4 h-4 text-amber-300"></i>
+              Informace pro značky
+            </h2>
+            <label class="block text-xs text-white/60 mb-1">Jaké typy spoluprací preferujete? Co neděláte?</label>
+            <textarea id="brandInfo" rows="4" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="Např. dlouhodobé spolupráce, ambasadorství, produktová videa… Nedělám alkohol, hazard, konkurenční značky X."></textarea>
+          </div>
+
+          <!-- SOUHLAS + ODESLÁNÍ -->
+          <div class="space-y-3">
+            <label class="flex items-start gap-2 text-xs text-white/60">
+              <input id="agree" type="checkbox" class="mt-1 rounded border-white/30 bg-neutral-900" required />
+              <span>
+                Souhlasím se zpracováním uvedených údajů pro účely zprostředkování spoluprací přes Kartao.cz.
+                Podrobnosti najdete v dokumentech <a href="ochrana-osobnich-udaju.html" class="underline hover:text-white">Ochrana osobních údajů</a> a <a href="obchodni-podminky.html" class="underline hover:text-white">Obchodní podmínky</a>.
+              </span>
+            </label>
+
+            <div id="formMessage" class="hidden text-xs"></div>
+
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 text-sm font-semibold shadow-soft">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              Uložit kartu a pokračovat
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 text-center text-white/60 py-6 text-xs mt-4">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-3 mb-2">
+        <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+        <span class="hidden md:block">•</span>
+        <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+        <span class="hidden md:block">•</span>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+      </div>
+      <div class="flex items-center justify-center gap-2">
+        <span>© 2025 Kartao.cz – Síť influencerů a tvůrců</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Lucide ikony
+    lucide.createIcons();
+
+    // === FIREBASE ULOŽENÍ KARTY ===
+    // POZNÁMKA: tady počítáme s tím, že už máš na stránce načtené a inicializované Firebase (firebase-app, firebase-auth, firebase-firestore)
+    // Např. někde výš ve <script> máš:
+    //   const firebaseConfig = { ... };
+    //   firebase.initializeApp(firebaseConfig);
+    //   const db = firebase.firestore();
+
+    const form = document.getElementById('cardForm');
+    const formMessage = document.getElementById('formMessage');
+
+    let currentUser = null;
+
+    if (window.firebase && firebase.auth) {
+      firebase.auth().onAuthStateChanged((user) => {
+        currentUser = user || null;
+        // případně můžeš přesměrovat nepřihlášené na login
+        // if (!currentUser) window.location.href = 'index.html';
+      });
+    }
+
+    function showMessage(text, type = 'info') {
+      if (!formMessage) return;
+      formMessage.textContent = text;
+      formMessage.classList.remove('hidden');
+      formMessage.classList.remove('text-emerald-300', 'text-red-300');
+      if (type === 'success') formMessage.classList.add('text-emerald-300');
+      if (type === 'error') formMessage.classList.add('text-red-300');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!window.firebase || !firebase.firestore) {
+        showMessage('Firebase není na stránce inicializovaný. Zkontrolujte skripty.', 'error');
+        return;
+      }
+
+      if (!currentUser) {
+        showMessage('Pro uložení karty se prosím nejdřív přihlaste.', 'error');
+        if (typeof openLogin === 'function') openLogin();
+        return;
+      }
+
+      const db = firebase.firestore();
+
+      const now = Date.now();
+
+      const data = {
+        uid: currentUser.uid,
+        name: document.getElementById('name').value.trim(),
+        handle: document.getElementById('handle').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        category: document.getElementById('category').value || null,
+        avatar: document.getElementById('avatar').value.trim() || null,
+        bio: document.getElementById('bio').value.trim(),
+        metrics: {
+          instagram: {
+            url: document.getElementById('instagramUrl').value.trim() || null,
+            followers: Number(document.getElementById('instagramFollowers').value) || null,
+            engagement: Number(document.getElementById('instagramEngagement').value) || null,
+          },
+          tiktok: {
+            url: document.getElementById('tiktokUrl').value.trim() || null,
+            followers: Number(document.getElementById('tiktokFollowers').value) || null,
+            reach: Number(document.getElementById('tiktokReach').value) || null,
+          },
+          youtube: {
+            url: document.getElementById('youtubeUrl').value.trim() || null,
+            followers: Number(document.getElementById('youtubeFollowers').value) || null,
+          },
+          facebook: {
+            url: document.getElementById('facebookUrl').value.trim() || null,
+            followers: Number(document.getElementById('facebookFollowers').value) || null,
+          },
+        },
+        prices: {
+          reels: Number(document.getElementById('priceReels').value) || null,
+          stories: Number(document.getElementById('priceStories').value) || null,
+          custom: document.getElementById('priceCustom').value.trim() || null,
+        },
+        brandInfo: document.getElementById('brandInfo').value.trim() || null,
+        visibility: 'public',
+        updatedAt: now,
+        createdAt: now,
+      };
+
+      try {
+        await db.collection('cards').doc(currentUser.uid).set(data, { merge: true });
+        showMessage('Karta byla úspěšně uložena. Můžete pokračovat na náhled.', 'success');
+        // Po uložení můžeš přesměrovat na moje-karta.html:
+        // window.location.href = 'moje-karta.html';
+      } catch (err) {
+        console.error(err);
+        showMessage('Nastala chyba při ukládání karty. Zkuste to prosím znovu.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>
