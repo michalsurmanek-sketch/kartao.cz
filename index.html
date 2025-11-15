@@ -461,32 +461,6 @@
       panel.addEventListener('touchend', ()=>{ startX = null; }, {passive:true});
     })();
   </script>
-  
-  <!Tlačítko založit kartu její funkce>
-  
-  <script>
-  function goToCreateCard() {
-    if (!window.firebase || !firebase.auth) {
-      console.error("Firebase není načtený.");
-      return;
-    }
-
-    const user = firebase.auth().currentUser;
-
-    // Pokud není přihlášen → otevře login okno
-    if (!user) {
-      if (typeof openLogin === "function") {
-        openLogin(); // tvoje přihlašovací okno
-      } else {
-        alert("Pro založení karty se musíte přihlásit.");
-      }
-      return;
-    }
-
-    // Pokud je přihlášen → pustí ho na formulář
-    window.location.href = "zalozit-kartu.html";
-  }
-</script>
 
   <script>
     (function(){
@@ -1259,6 +1233,33 @@
       console.assert(typeof state.infinite === 'boolean', 'Test infinite boolean');
     });
   </script>
+  
+  <!Tlačítko založit kartu její funkce>
+  
+  <script>
+  function goToCreateCard() {
+    if (!window.firebase || !firebase.auth) {
+      console.error("Firebase není načtený.");
+      return;
+    }
+
+    const user = firebase.auth().currentUser;
+
+    // Pokud není přihlášen → otevře login okno
+    if (!user) {
+      if (typeof openLogin === "function") {
+        openLogin(); // tvoje přihlašovací okno
+      } else {
+        alert("Pro založení karty se musíte přihlásit.");
+      }
+      return;
+    }
+
+    // Pokud je přihlášen → pustí ho na formulář
+    window.location.href = "zalozit-kartu.html";
+  }
+</script>
+  
 <script>
   // === Pricing toggle (měsíčně/ročně) ===
   document.addEventListener('DOMContentLoaded', ()=>{
