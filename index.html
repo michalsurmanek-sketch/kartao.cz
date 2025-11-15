@@ -1238,26 +1238,19 @@
   
   <script>
   function goToCreateCard() {
-    if (!window.firebase || !firebase.auth) {
-      console.error("Firebase není načtený.");
-      return;
-    }
-
     const user = firebase.auth().currentUser;
 
-    // Pokud není přihlášen → otevře login okno
+    // Pokud není přihlášený → přesměruj na login stránku
     if (!user) {
-      if (typeof openLogin === "function") {
-        openLogin(); // tvoje přihlašovací okno
-      } else {
-        alert("Pro založení karty se musíte přihlásit.");
-      }
+      window.location.href = "login.html?redirect=kartao-zalozit-kartu.html";
       return;
     }
 
-    // Pokud je přihlášen → pustí ho na formulář
-    window.location.href = "zalozit-kartu.html";
+    // Pokud je přihlášený → pošli ho na založení karty
+    window.location.href = "kartao-zalozit-kartu.html";
   }
+</script>
+
 </script>
   
 <script>
