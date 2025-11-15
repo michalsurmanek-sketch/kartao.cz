@@ -388,8 +388,8 @@
       try {
         await db.collection('cards').doc(currentUser.uid).set(data, { merge: true });
         showMessage('Karta byla úspěšně uložena. Můžete pokračovat na náhled.', 'success');
-        // Po uložení můžeš přesměrovat na moje-karta.html:
-        // window.location.href = 'moje-karta.html';
+        // Po uložení můžeš přesměrovat nakartao-moje-karta.html:
+        // window.location.href = 'kartao-moje-karta.html';
       } catch (err) {
         console.error(err);
         showMessage('Nastala chyba při ukládání karty. Zkuste to prosím znovu.', 'error');
