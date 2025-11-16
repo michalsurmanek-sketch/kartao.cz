@@ -9,6 +9,13 @@ FILE: firm-dashboard.html
   <title>Kartao – Dashboard firmy</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="payment-services.js"></script>
   <style>
     .card{background-color:rgba(23,23,23,.7);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
     .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:.75rem}
@@ -59,10 +66,31 @@ FILE: firm-dashboard.html
       </form>
     </section>
 
+    <!-- Statistiky plateb -->
+    <section class="card p-4">
+      <h2 class="text-xl font-bold mb-3">Přehled plateb</h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-400" id="totalSpent">0 Kč</div>
+          <div class="text-xs text-white/60">Celkem utraceno</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-400" id="activeOrders">0</div>
+          <div class="text-xs text-white/60">Aktivní objednávky</div>
+        </div>
+      </div>
+      <a href="order-management.html" class="btn btn-outline w-full">
+        <i data-lucide="list" class="w-4 h-4"></i>
+        Moje objednávky
+      </a>
+    </section>
+
     <!-- Moje poptávky -->
     <section class="card p-4">
-      <h2 class="text-xl font-bold mb-3">Moje poptávky</h2>
-      <div id="requests" class="space-y-2 text-sm"></div>
+      <h2 class="text-xl font-bold mb-3">Nedávné objednávky</h2>
+      <div id="recentOrders" class="space-y-2 text-sm">
+        <div class="text-center py-4 text-white/50">Načítání...</div>
+      </div>
     </section>
 
     <!-- Doporučení tvůrci (placeholder) -->
@@ -73,65 +101,245 @@ FILE: firm-dashboard.html
   </main>
 
   <script>
-    // Guard – povol jen pro user_type=company (jinak na index)
-    const t2 = localStorage.getItem('user_type');
-    if(t2 && t2 !== 'company'){ location.href = 'index.html'; }
+    // Pokud je potřeba vytvořit inicializační data v databázi, odkomentuj:
+    // initializeDatabase();
+    
+    let creatorService;
+    let userService;
+    let paymentService;
+    let currentUser = null;
+
+    // Inicializace po načtení Firebase
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      
+      if (!creatorService) {
+        creatorService = new CreatorService();
+        userService = new UserService();
+        paymentService = new PaymentService();
+        
+        // Zkontroluj roli uživatele
+        const role = await userService.getUserRole(user.uid);
+        if (role !== 'company') {
+          if (role === 'creator') {
+            window.location.href = 'creator-dashboard.html';
+          } else {
+            window.location.href = 'kartao-vyber-uctu.html';
+          }
+          return;
+        }
+        
+        await loadCompanyData(user.uid);
+        await loadPaymentStats(user.uid);
+        await loadRecentOrders(user.uid);
+        loadCreatorRecommendations();
+      }
+        
+        // Zkontroluj roli uživatele
+        const role = await userService.getUserRole(user.uid);
+        if (role !== 'company') {
+          if (role === 'creator') {
+            window.location.href = 'creator-dashboard.html';
+          } else {
+            window.location.href = 'kartao-vyber-uctu.html';
+          }
+          return;
+        }
+        
+        await loadCompanyData();
+        await renderRecommendedCreators();
+      }
+    });
+
+    async function loadCompanyData(companyId) {
+      // Load company profile and basic data
+      console.log('Company dashboard loaded for user:', companyId);
+    }
+
+    async function loadPaymentStats(companyId) {
+      try {
+        const orders = await paymentService.getUserOrders(companyId);
+        
+        const totalSpent = orders.reduce((sum, order) => {
+          if (order.status === 'completed') {
+            const platformFee = Math.round(order.amount * 0.05);
+            return sum + order.amount + platformFee;
+          }
+          return sum;
+        }, 0);
+        
+        const activeOrdersCount = orders.filter(o => 
+          o.status === 'pending' || o.status === 'in_progress'
+        ).length;
+        
+        document.getElementById('totalSpent').textContent = 
+          PaymentService.formatAmount(totalSpent);
+        document.getElementById('activeOrders').textContent = activeOrdersCount;
+        
+      } catch (error) {
+        console.error('Chyba při načítání platebních statistik:', error);
+      }
+    }
+
+    async function loadRecentOrders(companyId) {
+      try {
+        const orders = await paymentService.getUserOrders(companyId);
+        const recentOrders = orders
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 3);
+        
+        const container = document.getElementById('recentOrders');
+        
+        if (recentOrders.length === 0) {
+          container.innerHTML = '<div class="text-center py-4 text-white/50">Žádné objednávky</div>';
+          return;
+        }
+        
+        container.innerHTML = recentOrders.map(order => {
+          const statusConfig = getOrderStatusConfig(order.status);
+          return `
+            <div class="p-3 bg-neutral-900/50 rounded-lg border border-white/10">
+              <div class="flex justify-between items-start mb-2">
+                <div class="font-medium">${order.title}</div>
+                <span class="text-xs px-2 py-1 rounded ${statusConfig.bgClass} ${statusConfig.textClass}">
+                  ${statusConfig.label}
+                </span>
+              </div>
+              <div class="text-sm text-white/60">
+                ${PaymentService.formatAmount(order.amount)} • ${new Date(order.createdAt).toLocaleDateString('cs-CZ')}
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (error) {
+        console.error('Chyba při načítání objednávek:', error);
+        document.getElementById('recentOrders').innerHTML = 
+          '<div class="text-center py-4 text-red-400">Chyba při načítání</div>';
+      }
+    }
+
+    function getOrderStatusConfig(status) {
+      const configs = {
+        pending: {
+          label: 'Čekající',
+          bgClass: 'bg-yellow-500/20',
+          textClass: 'text-yellow-400'
+        },
+        in_progress: {
+          label: 'Probíhající',
+          bgClass: 'bg-blue-500/20',
+          textClass: 'text-blue-400'
+        },
+        completed: {
+          label: 'Dokončeno',
+          bgClass: 'bg-green-500/20',
+          textClass: 'text-green-400'
+        },
+        cancelled: {
+          label: 'Zrušeno',
+          bgClass: 'bg-red-500/20',
+          textClass: 'text-red-400'
+        }
+      };
+      
+      return configs[status] || configs.pending;
+    }
 
     const fmt = (x)=> Number(x).toLocaleString('cs-CZ');
 
-    // Uložení briefu (demo -> localStorage)
-    document.getElementById('briefForm').addEventListener('submit', (e)=>{
+    // Uložení briefu do Firestore
+    document.getElementById('briefForm').addEventListener('submit', async (e)=> {
       e.preventDefault();
+      
+      if (!currentUser) return;
+      
       const fd = new FormData(e.target);
-      const data = Object.fromEntries(fd.entries());
-      const all = JSON.parse(localStorage.getItem('firm_requests')||'[]');
-      all.unshift({...data, createdAt:new Date().toISOString()});
-      localStorage.setItem('firm_requests', JSON.stringify(all));
-      e.target.reset();
-      renderRequests();
-      alert('Poptávka uložena (demo).');
+      const campaignData = {
+        companyId: currentUser.uid,
+        company: fd.get('company'),
+        contact: fd.get('contact'),
+        email: fd.get('email'),
+        budget: Number(fd.get('budget')),
+        goal: fd.get('goal'),
+        platform: fd.get('platform'),
+        brief: fd.get('brief') || '',
+        status: 'active',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      try {
+        await firebase.firestore().collection('campaigns').add(campaignData);
+        e.target.reset();
+        alert('Kampaň byla úspěšně vytvořena!');
+        console.log('Campaign created successfully');
+      } catch (error) {
+        console.error('Chyba při vytváření kampaně:', error);
+        alert('Došlo k chybě při ukládání kampaně.');
+      }
     });
 
-    // Render poptávek
+    // Render poptávek - zatím placeholder, v budoucnu načteme z Firestore
     function renderRequests(){
-      const list = JSON.parse(localStorage.getItem('firm_requests')||'[]');
-      requests.innerHTML = list.length? list.map(r=>
-        `<div class="p-3 rounded-lg bg-neutral-900/60 border border-white/10">
-           <div class="flex items-center justify-between">
-             <div class="font-semibold">${r.company}</div>
-             <div class="text-sm">${fmt(r.budget)} Kč</div>
-           </div>
-           <div class="text-xs text-white/60 mt-1">${r.platform} • ${r.goal} • ${new Date(r.createdAt).toLocaleString('cs-CZ')}</div>
-           <div class="text-sm text-white/80 mt-1">${r.brief||''}</div>
-         </div>`
-      ).join('') : '<div class="text-white/60">Zatím žádné poptávky.</div>'
+      const requestsEl = document.getElementById('requests');
+      if (requestsEl) {
+        requestsEl.innerHTML = '<div class="text-white/60">Vaše kampaně se načítají...</div>';
+      }
     }
 
-    // Doporučení tvůrci – placeholder z demo dat
-    const DEMO_CREATORS = [
-      {name:'Anna Influ', city:'Brno', cat:'Beauty', price:12000},
-      {name:'Kája Fit', city:'Zlín', cat:'Fitness', price:9000},
-      {name:'Lukáš Plays', city:'Ostrava', cat:'Gaming', price:15000}
-    ];
-    function renderReco(){
-      reco.innerHTML = DEMO_CREATORS.map(c=>
-        `<div class="p-3 rounded-lg bg-neutral-900/60 border border-white/10 flex items-center justify-between">
-           <div>
-             <div class="font-semibold">${c.name}</div>
-             <div class="text-xs text-white/60">${c.city} • ${c.cat}</div>
-           </div>
-           <div class="text-sm">od ${fmt(c.price)} Kč</div>
-         </div>`
-      ).join('');
+    // Doporučení tvůrci z databáze
+    async function loadCreatorRecommendations() {
+      try {
+        const creators = await creatorService.searchCreators({
+          limit: 5,
+          category: 'all'
+        });
+        
+        const recoEl = document.getElementById('reco');
+        if (recoEl && creators.length > 0) {
+          recoEl.innerHTML = creators.map(c =>
+            `<div class="p-3 rounded-lg bg-neutral-900/60 border border-white/10 flex items-center justify-between">
+               <div>
+                 <div class="font-semibold">${c.name}</div>
+                 <div class="text-xs text-white/60">${c.city} • ${c.category}</div>
+               </div>
+               <div class="text-sm">od ${fmt(c.price || 8000)} Kč</div>
+             </div>`
+          ).join('');
+        } else if (recoEl) {
+          recoEl.innerHTML = '<div class="text-white/60">Zatím nejsou dostupní žádní tvůrci.</div>';
+        }
+      } catch (error) {
+        console.error('Chyba při načítání tvůrců:', error);
+        const recoEl = document.getElementById('reco');
+        if (recoEl) {
+          recoEl.innerHTML = '<div class="text-white/60">Chyba při načítání doporučení.</div>';
+        }
+      }
     }
 
     // Odhlášení
-    document.getElementById('logoutF').addEventListener('click', ()=>{ localStorage.removeItem('user_type'); location.href='index.html'; });
+    document.getElementById('logoutF').addEventListener('click', async () => {
+      try {
+        await firebase.auth().signOut();
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Chyba při odhlašování:', error);
+      }
+    });
 
-    renderRequests();
-    renderReco();
-
-    document.addEventListener('DOMContentLoaded', ()=>{ lucide.createIcons(); });
+    // Inicializace ikon
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    .chat-bubble {
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    .chat-bubble.own {
+      margin-left: auto;
+      background: linear-gradient(135deg, #db58f6, #ffb347);
+    }
+    .chat-bubble.other {
+      margin-right: auto;
+      background: rgba(38, 38, 38, 0.8);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Kartao.cz Chat</div>
+      </a>
+      
+      <button id="logout" class="text-white/70 hover:text-white transition">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Chat Layout -->
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-120px)]">
+      
+      <!-- Conversations List -->
+      <div class="lg:col-span-1 bg-neutral-900/50 border border-white/10 rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-white/10">
+          <h2 class="font-semibold">Konverzace</h2>
+        </div>
+        
+        <div id="conversationsList" class="overflow-y-auto h-full">
+          <div class="p-8 text-center text-white/60">
+            <i data-lucide="message-circle" class="w-12 h-12 mx-auto mb-3 text-white/40"></i>
+            <div>Načítání konverzací...</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Window -->
+      <div class="lg:col-span-2 bg-neutral-900/50 border border-white/10 rounded-xl overflow-hidden flex flex-col">
+        
+        <!-- Chat Header -->
+        <div id="chatHeader" class="p-4 border-b border-white/10 hidden">
+          <div class="flex items-center gap-3">
+            <img id="chatAvatar" src="" class="w-10 h-10 rounded-full object-cover">
+            <div>
+              <div id="chatName" class="font-semibold"></div>
+              <div id="chatStatus" class="text-sm text-white/60"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Messages Area -->
+        <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-3">
+          <div class="h-full flex items-center justify-center text-white/60">
+            <div class="text-center">
+              <i data-lucide="message-square" class="w-16 h-16 mx-auto mb-4 text-white/30"></i>
+              <div class="text-lg font-medium">Vyberte konverzaci</div>
+              <div class="text-sm">Pro začátek chatu klikněte na konverzaci vlevo</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Message Input -->
+        <div id="messageInput" class="hidden p-4 border-t border-white/10">
+          <div class="flex gap-3">
+            <input 
+              id="messageText" 
+              type="text" 
+              placeholder="Napište zprávu..." 
+              class="flex-1 px-4 py-2 bg-neutral-800 border border-white/20 rounded-xl text-white placeholder:text-white/50 outline-none focus:border-fuchsia-500"
+            >
+            <button 
+              id="sendMessage"
+              class="px-4 py-2 bg-fuchsia-500 hover:bg-fuchsia-600 rounded-xl transition">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    let chatService;
+    let currentUser = null;
+    let currentConversationId = null;
+    let messagesListener = null;
+    let conversationsListener = null;
+
+    // Firebase auth check
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      chatService = new ChatService();
+      
+      // Načtení konverzací
+      loadConversations();
+      
+      // Real-time listener pro konverzace
+      conversationsListener = chatService.listenToConversations(user.uid, (snapshot) => {
+        updateConversationsList(snapshot);
+      });
+    });
+
+    async function loadConversations() {
+      try {
+        const conversations = await chatService.getUserConversations(currentUser.uid);
+        renderConversations(conversations);
+      } catch (error) {
+        console.error('Chyba při načítání konverzací:', error);
+      }
+    }
+
+    function updateConversationsList(snapshot) {
+      const conversations = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      renderConversations(conversations);
+    }
+
+    function renderConversations(conversations) {
+      const container = document.getElementById('conversationsList');
+      
+      if (conversations.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-white/60">
+            <i data-lucide="message-circle" class="w-12 h-12 mx-auto mb-3 text-white/40"></i>
+            <div>Zatím žádné konverzace</div>
+            <div class="text-sm mt-1">První zprávu můžete poslat z profilu tvůrce</div>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = conversations.map(conv => {
+        const otherUserId = conv.participants.find(p => p !== currentUser.uid);
+        const unreadCount = conv.unreadCount?.[currentUser.uid] || 0;
+        const lastMessage = conv.lastMessage;
+        
+        return `
+          <div class="conversation-item p-4 border-b border-white/10 hover:bg-white/5 cursor-pointer transition" 
+               onclick="openConversation('${conv.id}', '${otherUserId}')">
+            <div class="flex items-center gap-3">
+              <img src="https://api.dicebear.com/7.x/initials/svg?seed=${otherUserId}" 
+                   class="w-12 h-12 rounded-full object-cover">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="font-medium truncate">${otherUserId}</div>
+                  ${unreadCount > 0 ? `<span class="bg-fuchsia-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">${unreadCount}</span>` : ''}
+                </div>
+                <div class="text-sm text-white/60 truncate">
+                  ${lastMessage ? lastMessage.text : 'Nová konverzace'}
+                </div>
+                <div class="text-xs text-white/40 mt-1">
+                  ${lastMessage ? ChatService.formatMessageTime(lastMessage.createdAt) : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function openConversation(conversationId, otherUserId) {
+      currentConversationId = conversationId;
+      
+      // Označit jako přečtené
+      await chatService.markAsRead(conversationId, currentUser.uid);
+      
+      // Zobrazit chat header a input
+      document.getElementById('chatHeader').classList.remove('hidden');
+      document.getElementById('messageInput').classList.remove('hidden');
+      
+      // Nastavit header informace
+      document.getElementById('chatAvatar').src = `https://api.dicebear.com/7.x/initials/svg?seed=${otherUserId}`;
+      document.getElementById('chatName').textContent = otherUserId;
+      document.getElementById('chatStatus').textContent = 'Online';
+      
+      // Načíst zprávy
+      loadMessages(conversationId);
+      
+      // Real-time listener pro zprávy
+      if (messagesListener) {
+        messagesListener(); // Unsubscribe předchozí listener
+      }
+      
+      messagesListener = chatService.listenToMessages(conversationId, (snapshot) => {
+        updateMessages(snapshot);
+      });
+    }
+
+    async function loadMessages(conversationId) {
+      try {
+        const messages = await chatService.getMessages(conversationId);
+        renderMessages(messages);
+      } catch (error) {
+        console.error('Chyba při načítání zpráv:', error);
+      }
+    }
+
+    function updateMessages(snapshot) {
+      const messages = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })).sort((a, b) => a.createdAt - b.createdAt);
+      
+      renderMessages(messages);
+    }
+
+    function renderMessages(messages) {
+      const container = document.getElementById('messagesArea');
+      
+      if (messages.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex items-center justify-center text-white/60">
+            <div class="text-center">
+              <i data-lucide="message-square" class="w-16 h-16 mx-auto mb-4 text-white/30"></i>
+              <div class="text-lg font-medium">Začněte konverzaci</div>
+              <div class="text-sm">Napište první zprávu</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = messages.map(message => {
+        const isOwn = message.senderId === currentUser.uid;
+        return `
+          <div class="chat-bubble ${isOwn ? 'own' : 'other'} p-3 rounded-xl">
+            <div class="text-sm">${message.text}</div>
+            <div class="text-xs opacity-70 mt-1">
+              ${ChatService.formatMessageTime(message.createdAt)}
+              ${isOwn && message.read ? ' ✓✓' : isOwn ? ' ✓' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Scroll to bottom
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Send message
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    document.getElementById('messageText').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const input = document.getElementById('messageText');
+      const text = input.value.trim();
+      
+      if (!text || !currentConversationId) return;
+      
+      try {
+        await chatService.sendMessage(currentConversationId, currentUser.uid, text);
+        input.value = '';
+      } catch (error) {
+        console.error('Chyba při odesílání zprávy:', error);
+      }
+    }
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', async () => {
+      try {
+        await firebase.auth().signOut();
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Chyba při odhlašování:', error);
+      }
+    });
+
+    // Cleanup listeners on unload
+    window.addEventListener('beforeunload', () => {
+      if (messagesListener) messagesListener();
+      if (conversationsListener) conversationsListener();
+    });
+
+    // Initialize icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

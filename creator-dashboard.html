@@ -82,68 +82,284 @@ FILE: creator-dashboard.html
       </div>
     </section>
 
+    <!-- Příjmy a výdělky -->
+    <section class="card p-4">
+      <h2 class="text-xl font-bold mb-3">Moje příjmy</h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-400" id="totalEarnings">0 Kč</div>
+          <div class="text-xs text-white/60">Celkové příjmy</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-400" id="pendingEarnings">0 Kč</div>
+          <div class="text-xs text-white/60">K výběru</div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <button id="withdrawBtn" class="btn btn-primary w-full" disabled>
+          <i data-lucide="credit-card" class="w-4 h-4"></i>
+          Vybrat peníze
+        </button>
+        <a href="earnings-management.html" class="btn btn-outline w-full">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          Detailní přehled
+        </a>
+        <a href="order-management.html" class="btn btn-outline w-full">
+          <i data-lucide="list" class="w-4 h-4"></i>
+          Moje objednávky
+        </a>
+      </div>
+    </section>
+
     <!-- Nabídky spolupráce (inbox) -->
     <section class="card p-4">
-      <h2 class="text-xl font-bold mb-3">Nabídky</h2>
-      <div id="offers" class="space-y-2 text-sm"></div>
+      <h2 class="text-xl font-bold mb-3">Aktivní objednávky</h2>
+      <div id="activeOrders" class="space-y-2 text-sm">
+        <div class="text-center py-4 text-white/50">Načítání...</div>
+      </div>
+      <div class="mt-3">
+        <a href="order-management.html" class="text-sm text-white/60 hover:text-white">Zobrazit všechny →</a>
+      </div>
     </section>
   </main>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="payment-services.js"></script>
+
   <script>
-<script src="data-model.js"></script>
-  // === API BASE URL pro KARTAO ===
-const apiBase = 'https://kartao-api.onrender.com';
+    // Pokud je potřeba vytvořit inicializační data v databázi, odkomentuj:
+    // initializeDatabase();
+    
+    let creatorService;
+    let userService;
+    let paymentService;
+    let currentUser = null;
 
-// Pomocné
-function slugify(s){
-  return String(s||'').toLowerCase()
-    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'') // odháčkovat
-    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'profil';
-}
-function uid(){ return (crypto?.randomUUID && crypto.randomUUID()) || ('id-' + Math.random().toString(36).slice(2)); }
+    // Inicializace po načtení Firebase
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
 
-// Výchozí šablona karty z profilu (demo)
-function createCardFromProfile(profile, metricsMap){
-  const now = Date.now();
-  const slug = slugify(profile.name || profile.handle || 'profil');
-  const avatar = profile.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.name||'K')}`;
-  const cover  = profile.cover  || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
-  const category = profile.category || 'Lifestyle';
-  const city = profile.city || 'Praha';
-  const price = Number(profile.price||0) > 0 ? Number(profile.price) : 6000;
+      currentUser = user;
+      
+      if (!creatorService) {
+        creatorService = new CreatorService();
+        userService = new UserService();
+        paymentService = new PaymentService();
+        
+        // Zkontroluj roli uživatele
+        const role = await userService.getUserRole(user.uid);
+        if (role !== 'creator') {
+          if (role === 'company') {
+            window.location.href = 'firm-dashboard.html';
+          } else {
+            window.location.href = 'kartao-vyber-uctu.html';
+          }
+          return;
+        }
+        
+        await loadCreatorProfile(user.uid);
+        await loadEarningsData(user.uid);
+        await loadActiveOrders(user.uid);
+      }
+    });
 
-  // metricsMap očekává např.: { instagram: { connected:true, followers:12345 }, ... }
-  const platforms = ['instagram','tiktok','youtube','facebook'];
-  const metrics = {};
-  platforms.forEach(p=>{
-    const m = metricsMap?.[p] || {};
-    metrics[p] = {
-      connected: !!m.connected,
-      followers: Number.isFinite(m.followers) ? Number(m.followers) : null,
-      updatedAt: m.updatedAt || null
-    };
-  });
+    async function loadCreatorProfile(userId) {
+      try {
+        const creator = await creatorService.getCreatorDetail(userId);
+        
+        if (creator) {
+          document.querySelector('[name="name"]').value = creator.name || '';
+          document.querySelector('[name="email"]').value = creator.email || currentUser.email || '';
+          document.querySelector('[name="city"]').value = creator.city || '';
+          document.querySelector('[name="category"]').value = creator.category || '';
+          document.querySelector('[name="bio"]').value = creator.bio || '';
+          
+          updateStats(creator.metrics);
+        }
+      } catch (error) {
+        console.error('Chyba při načítání profilu:', error);
+      }
+    }
 
-  return {
-    id: uid(),
-    slug,
-    name: profile.name || 'Nový tvůrce',
-    handle: profile.handle || '@' + slug,
-    city, category,
-    bio: profile.bio || '',
-    avatar, cover,
-    price,
-    rating: 4.6,
-    verified: false,
-    platforms: platforms.filter(p=> metrics[p]?.connected) /* jen připojené – klidně nech "vše" */,
-    metrics,
-    gallery: profile.gallery || [],
-    createdAt: now,
-    updatedAt: now
-  };
-}
+    async function loadEarningsData(creatorId) {
+      try {
+        const earnings = await paymentService.getCreatorEarnings(creatorId);
+        
+        document.getElementById('totalEarnings').textContent = 
+          PaymentService.formatAmount(earnings.totalEarnings || 0);
+        document.getElementById('pendingEarnings').textContent = 
+          PaymentService.formatAmount(earnings.availableBalance || 0);
+        
+        // Enable withdraw button if there's balance
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        if (earnings.availableBalance > 100) { // Minimum 1 Kč for withdrawal
+          withdrawBtn.disabled = false;
+          withdrawBtn.addEventListener('click', () => showWithdrawModal(earnings.availableBalance));
+        }
+        
+      } catch (error) {
+        console.error('Chyba při načítání příjmů:', error);
+      }
+    }
 
-// DEMO: akce „Založit kartu“ – uloží do LocalStorage a přesměruje na veřejnou URL
+    function updateStats(metrics) {
+      const platforms = [
+        { key: 'instagram', id: 'sIG' },
+        { key: 'tiktok', id: 'sTT' },
+        { key: 'youtube', id: 'sYT' }
+      ];
+      
+      platforms.forEach(platform => {
+        const element = document.getElementById(platform.id);
+        const metric = metrics?.[platform.key];
+        if (element) {
+          element.textContent = metric && metric.connected 
+            ? DataHelpers.formatFollowers(metric.followers) || '—'
+            : '—';
+        }
+      });
+    }
+
+    // Make processWithdrawal globally available
+    window.processWithdrawal = processWithdrawal;
+
+    // Uložení profilu
+    document.getElementById('creatorProfile').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!currentUser) return;
+      
+      const formData = new FormData(e.target);
+      const profileData = {
+        userId: currentUser.uid,
+        name: formData.get('name'),
+        email: formData.get('email'), 
+        city: formData.get('city'),
+        category: formData.get('category'),
+        bio: formData.get('bio'),
+        platforms: ['instagram', 'tiktok', 'youtube'], // default platformy
+        setupCompleted: true
+      };
+      
+      try {
+        const success = await creatorService.updateCreatorProfile(currentUser.uid, profileData);
+        
+        if (success) {
+          alert('Profil byl úspěšně uložen!');
+          await loadCreatorProfile(currentUser.uid);
+        } else {
+          alert('Chyba při ukládání profilu.');
+        }
+      } catch (error) {
+        console.error('Chyba při ukládání:', error);
+        alert('Došlo k chybě při ukládání.');
+      }
+    });
+
+    // Propojení Instagram
+    document.getElementById('connectIG').addEventListener('click', async () => {
+      const url = document.getElementById('igUrl').value.trim();
+      if (!url) {
+        alert('Zadejte URL profilu');
+        return;
+      }
+      
+      // Simulace API volání (ve skutečnosti by zde byla integrace s Instagram API)
+      const followers = Math.floor(Math.random() * 100000) + 10000;
+      
+      const success = await creatorService.updateSocialAccount(currentUser.uid, 'instagram', {
+        username: extractUsernameFromUrl(url),
+        followers: followers,
+        connected: true,
+        verified: Math.random() > 0.5
+      });
+      
+      if (success) {
+        alert(`Instagram připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
+        await loadCreatorProfile(currentUser.uid);
+        document.getElementById('igUrl').value = '';
+      }
+    });
+
+    // Propojení TikTok
+    document.getElementById('connectTT').addEventListener('click', async () => {
+      const url = document.getElementById('ttUrl').value.trim();
+      if (!url) {
+        alert('Zadejte URL profilu');
+        return;
+      }
+      
+      const followers = Math.floor(Math.random() * 200000) + 5000;
+      
+      const success = await creatorService.updateSocialAccount(currentUser.uid, 'tiktok', {
+        username: extractUsernameFromUrl(url),
+        followers: followers,
+        connected: true,
+        verified: Math.random() > 0.7
+      });
+      
+      if (success) {
+        alert(`TikTok připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
+        await loadCreatorProfile(currentUser.uid);
+        document.getElementById('ttUrl').value = '';
+      }
+    });
+
+    // Propojení YouTube
+    document.getElementById('connectYT').addEventListener('click', async () => {
+      const url = document.getElementById('ytUrl').value.trim();
+      if (!url) {
+        alert('Zadejte URL kanálu');
+        return;
+      }
+      
+      const followers = Math.floor(Math.random() * 150000) + 1000;
+      
+      const success = await creatorService.updateSocialAccount(currentUser.uid, 'youtube', {
+        username: extractUsernameFromUrl(url),
+        followers: followers,
+        connected: true,
+        verified: Math.random() > 0.6
+      });
+      
+      if (success) {
+        alert(`YouTube připojen! Subscribers: ${DataHelpers.formatFollowers(followers)}`);
+        await loadCreatorProfile(currentUser.uid);
+        document.getElementById('ytUrl').value = '';
+      }
+    });
+
+    function extractUsernameFromUrl(url) {
+      const match = url.match(/[/@]([a-zA-Z0-9_.]+)(?:\?|$|\/)/);
+      return match ? match[1] : url.split('/').pop() || 'unknown';
+    }
+
+    // Odhlášení
+    document.getElementById('logout').addEventListener('click', async () => {
+      try {
+        await firebase.auth().signOut();
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Chyba při odhlašování:', error);
+      }
+    });
+
+    // Inicializace ikon
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>// DEMO: akce „Založit kartu“ – uloží do LocalStorage a přesměruje na veřejnou URL
 document.getElementById('creatorProfile')?.addEventListener('submit', (e)=>{
   // existující uložení profilu nech – jen po uložení přidej:
   setTimeout(()=>{
@@ -171,47 +387,5 @@ document.getElementById('creatorProfile')?.addEventListener('submit', (e)=>{
     location.href = 'index.html?k=' + encodeURIComponent(card.slug);
   }, 10);
 });
-    // Guard – povol jen pro user_type=creator (jinak pošli na index)
-    const t = localStorage.getItem('user_type');
-    if(t && t !== 'creator'){ location.href = 'index.html'; }
-
-    function n(x){return x.toLocaleString('cs-CZ')}
-
-    // Demo ukládání profilu
-    document.getElementById('creatorProfile').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const data = Object.fromEntries(fd.entries());
-      localStorage.setItem('creator_profile', JSON.stringify(data));
-      alert('Profil uložen (demo).');
-    });
-
-    // Demo propojení účtů → vygeneruj náhodné počty
-    const rnd = () => Math.floor(1000 + Math.random()*50000);
-    const setStats = (ig, tt, yt) => { sIG.textContent=n(ig); sTT.textContent=n(tt); sYT.textContent=n(yt); };
-    connectIG.onclick = ()=> setStats(rnd(), sTT.textContent.replace(/\s/g,'')||rnd(), sYT.textContent.replace(/\s/g,'')||rnd());
-    connectTT.onclick = ()=> setStats(sIG.textContent.replace(/\s/g,'')||rnd(), rnd(), sYT.textContent.replace(/\s/g,'')||rnd());
-    connectYT.onclick = ()=> setStats(sIG.textContent.replace(/\s/g,'')||rnd(), sTT.textContent.replace(/\s/g,'')||rnd(), rnd());
-
-    // Demo nabídky
-    const offers = [
-      {brand:'GymBeam', budget:15000, note:'IG Reels + story', status:'Nová'},
-      {brand:'Notino', budget:12000, note:'1× YT Short + 3× IG story', status:'Nová'}
-    ];
-    document.getElementById('offers').innerHTML = offers.map(o=>
-      `<div class="p-3 rounded-lg bg-neutral-900/60 border border-white/10 flex items-center justify-between">
-         <div>
-           <div class="font-semibold">${o.brand}</div>
-           <div class="text-white/60 text-xs">${o.note}</div>
-         </div>
-         <div class="text-sm">${n(o.budget)} Kč</div>
-       </div>`
-    ).join('');
-
-    // Odhlášení
-    document.getElementById('logout').addEventListener('click', ()=>{ localStorage.removeItem('user_type'); location.href='index.html'; })
-
-    document.addEventListener('DOMContentLoaded', ()=>{ lucide.createIcons(); });
-  </script>
 </body>
 </html>

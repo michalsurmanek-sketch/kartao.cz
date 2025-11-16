@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platba úspěšná - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="email-notification-service.js"></script>
+  <script src="payment-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Kartao.cz</div>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-2xl mx-auto px-4 py-12">
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center">
+      <div class="animate-spin mx-auto w-8 h-8 mb-4">
+        <i data-lucide="loader-2" class="w-8 h-8"></i>
+      </div>
+      <div class="text-white/60">Načítání objednávky...</div>
+    </div>
+
+    <!-- Success State -->
+    <div id="successState" class="hidden text-center">
+      <!-- Success Icon -->
+      <div class="w-24 h-24 mx-auto mb-6 bg-green-500/20 rounded-full flex items-center justify-center">
+        <div class="w-16 h-16 bg-green-500/30 rounded-full flex items-center justify-center">
+          <i data-lucide="check" class="w-8 h-8 text-green-400"></i>
+        </div>
+      </div>
+      
+      <h1 class="text-3xl font-bold mb-3 text-green-400">Platba úspěšná!</h1>
+      <p class="text-white/70 mb-8">Vaše objednávka byla úspěšně zpracována a tvůrce byl informován.</p>
+      
+      <!-- Order Details Card -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 mb-8 text-left">
+        <h3 class="text-lg font-semibold mb-4 text-center">Detaily objednávky</h3>
+        
+        <div class="space-y-4">
+          <!-- Order ID -->
+          <div class="flex justify-between py-2 border-b border-white/10">
+            <span class="text-white/60">Číslo objednávky:</span>
+            <span id="orderId" class="font-mono text-sm"></span>
+          </div>
+          
+          <!-- Creator Info -->
+          <div class="flex justify-between items-center py-2 border-b border-white/10">
+            <span class="text-white/60">Tvůrce:</span>
+            <div class="flex items-center gap-2">
+              <img id="creatorAvatar" src="" class="w-8 h-8 rounded-full">
+              <span id="creatorName"></span>
+            </div>
+          </div>
+          
+          <!-- Service Type -->
+          <div class="flex justify-between py-2 border-b border-white/10">
+            <span class="text-white/60">Služba:</span>
+            <span id="serviceType"></span>
+          </div>
+          
+          <!-- Schedule -->
+          <div id="scheduleInfo" class="hidden">
+            <div class="flex justify-between py-2 border-b border-white/10">
+              <span class="text-white/60">Termín:</span>
+              <span id="scheduleDate"></span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-white/10">
+              <span class="text-white/60">Čas:</span>
+              <span id="scheduleTime"></span>
+            </div>
+          </div>
+          
+          <!-- Amount -->
+          <div class="flex justify-between py-2 text-lg font-semibold">
+            <span>Celkem:</span>
+            <span id="totalAmount" class="text-green-400"></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- What's Next -->
+      <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mb-8">
+        <h4 class="font-semibold mb-3 text-blue-400 flex items-center gap-2">
+          <i data-lucide="info" class="w-5 h-5"></i>
+          Co bude následovat?
+        </h4>
+        <div class="text-left space-y-2 text-sm text-blue-200">
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span class="text-xs font-bold">1</span>
+            </div>
+            <div>Tvůrce byl automaticky informován o vaší objednávce</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span class="text-xs font-bold">2</span>
+            </div>
+            <div>Brzy vás bude kontaktovat pro upřesnění detailů</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span class="text-xs font-bold">3</span>
+            </div>
+            <div>Po dokončení práce a vašem schválení budou peníze uvolněny</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="space-y-3">
+        <a href="chat.html" class="w-full btn btn-primary">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          Napsat tvůrci
+        </a>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <a href="creator-dashboard.html" class="btn btn-outline">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            Můj účet
+          </a>
+          <a href="index.html" class="btn btn-outline">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            Domů
+          </a>
+        </div>
+      </div>
+      
+      <!-- Email Confirmation Note -->
+      <div class="mt-8 text-sm text-white/50 text-center">
+        <i data-lucide="mail" class="w-4 h-4 inline mr-1"></i>
+        Potvrzení objednávky bylo odesláno na váš email
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden text-center">
+      <div class="w-24 h-24 mx-auto mb-6 bg-red-500/20 rounded-full flex items-center justify-center">
+        <i data-lucide="alert-circle" class="w-12 h-12 text-red-400"></i>
+      </div>
+      <h2 class="text-2xl font-semibold mb-3 text-red-400">Chyba při načítání</h2>
+      <p class="text-white/60 mb-6" id="errorMessage">Nepodařilo se načíst detaily objednávky</p>
+      <a href="index.html" class="btn btn-primary">Zpět na hlavní stránku</a>
+    </div>
+    
+  </div>
+
+  <script>
+    let paymentService;
+    let currentUser;
+
+    // Get order ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order');
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        showError('Pro zobrazení objednávky se musíte přihlásit');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return;
+      }
+
+      currentUser = user;
+      
+      if (!orderId) {
+        showError('Nebyl specifikován ID objednávky');
+        return;
+      }
+      
+      await loadOrderDetails();
+    });
+
+    async function loadOrderDetails() {
+      try {
+        paymentService = new PaymentService();
+        const order = await paymentService.getOrder(orderId);
+        
+        if (!order) {
+          throw new Error('Objednávka nenalezena');
+        }
+
+        // Verify user has access to this order
+        if (order.clientId !== currentUser.uid) {
+          throw new Error('Nemáte oprávnění zobrazit tuto objednávku');
+        }
+
+        // Load creator details
+        const creatorService = new CreatorService();
+        const creator = await creatorService.getCreatorDetail(order.creatorId);
+        
+        // Show success state
+        displayOrderSuccess(order, creator);
+        
+      } catch (error) {
+        console.error('Error loading order:', error);
+        showError(error.message);
+      }
+    }
+
+    function displayOrderSuccess(order, creator) {
+      // Hide loading, show success
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('successState').classList.remove('hidden');
+      
+      // Fill order details
+      document.getElementById('orderId').textContent = order.id;
+      document.getElementById('serviceType').textContent = order.title;
+      
+      // Creator info
+      if (creator) {
+        document.getElementById('creatorName').textContent = creator.name;
+        document.getElementById('creatorAvatar').src = creator.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${creator.name}`;
+      }
+      
+      // Schedule info (if applicable)
+      if (order.scheduledDate && order.scheduledTime) {
+        document.getElementById('scheduleInfo').classList.remove('hidden');
+        document.getElementById('scheduleDate').textContent = new Date(order.scheduledDate).toLocaleDateString('cs-CZ');
+        document.getElementById('scheduleTime').textContent = order.scheduledTime;
+      }
+      
+      // Amount (including platform fee)
+      const platformFee = Math.round(order.amount * 0.05);
+      const totalAmount = order.amount + platformFee;
+      document.getElementById('totalAmount').textContent = PaymentService.formatAmount(totalAmount);
+    }
+
+    function showError(message) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').classList.remove('hidden');
+    }
+
+    // Initialize icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

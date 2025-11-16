@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Správa příjmů - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="email-notification-service.js"></script>
+  <script src="payment-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="creator-dashboard.html" class="flex items-center gap-2 text-white/60 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Zpět na dashboard
+      </a>
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Kartao.cz</div>
+      </a>
+      <button id="logoutBtn" class="text-white/60 hover:text-white transition">Odhlásit</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Správa příjmů</h1>
+      <p class="text-white/60">Detailní přehled vašich výdělků, výběrů a daňových informací</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm text-white/60">Celkové příjmy</div>
+          <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-green-400" id="totalEarnings">0 Kč</div>
+        <div class="text-xs text-white/40 mt-1">od začátku</div>
+      </div>
+      
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm text-white/60">K dispozici</div>
+          <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-blue-400" id="availableBalance">0 Kč</div>
+        <div class="text-xs text-white/40 mt-1">k výběru</div>
+      </div>
+      
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm text-white/60">Vybráno celkem</div>
+          <i data-lucide="arrow-down" class="w-5 h-5 text-purple-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-purple-400" id="totalWithdrawn">0 Kč</div>
+        <div class="text-xs text-white/40 mt-1">na bankovní účet</div>
+      </div>
+      
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm text-white/60">Tento měsíc</div>
+          <i data-lucide="calendar" class="w-5 h-5 text-yellow-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-yellow-400" id="monthlyEarnings">0 Kč</div>
+        <div class="text-xs text-white/40 mt-1">aktuální měsíc</div>
+      </div>
+    </div>
+
+    <!-- Charts and Analysis -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-8">
+      <!-- Earnings Chart -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Příjmy za posledních 12 měsíců</h3>
+        <div class="h-64">
+          <canvas id="earningsChart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Service Types Breakdown -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Rozdělení příjmů podle služeb</h3>
+        <div class="h-64">
+          <canvas id="servicesChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdrawal Section -->
+    <div class="grid lg:grid-cols-3 gap-8 mb-8">
+      <!-- Withdrawal Request -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Výběr peněz</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Částka k výběru</label>
+            <div class="relative">
+              <input type="number" id="withdrawAmount" 
+                     min="100" step="100" placeholder="0"
+                     class="w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 pr-12">
+              <span class="absolute right-3 top-2 text-sm text-white/60">Kč</span>
+            </div>
+            <div class="text-xs text-white/40 mt-1">Minimum: 1 Kč</div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">Bankovní účet</label>
+            <input type="text" id="bankAccount" 
+                   placeholder="IBAN nebo číslo účtu"
+                   class="w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2">
+          </div>
+          
+          <button id="withdrawBtn" class="btn btn-primary w-full" disabled>
+            <i data-lucide="credit-card" class="w-4 h-4"></i>
+            Požádat o výběr
+          </button>
+          
+          <div class="text-xs text-white/40 bg-neutral-800/50 rounded-lg p-3">
+            💡 Výběry jsou zpracovávány do 2-3 pracovních dnů. 
+            Za zpracování se neúčtuje žádný poplatek.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Withdrawals -->
+      <div class="lg:col-span-2 bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Historie výběrů</h3>
+        <div id="withdrawalHistory" class="space-y-3">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Information -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-8">
+      <!-- Tax Overview -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+          Daňové informace
+        </h3>
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-3 bg-neutral-800/50 rounded-lg">
+              <div class="text-lg font-semibold text-blue-400" id="taxYear">2025</div>
+              <div class="text-sm text-white/60">Daňový rok</div>
+            </div>
+            <div class="text-center p-3 bg-neutral-800/50 rounded-lg">
+              <div class="text-lg font-semibold text-green-400" id="yearlyIncome">0 Kč</div>
+              <div class="text-sm text-white/60">Roční příjem</div>
+            </div>
+          </div>
+          
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5"></i>
+              <div class="text-sm text-yellow-200">
+                <div class="font-medium mb-1">Daňová povinnost</div>
+                <div>Příjmy z platformy podléhají dani z příjmů. Doporučujeme konzultaci s daňovým poradcem.</div>
+              </div>
+            </div>
+          </div>
+          
+          <button id="downloadTaxReport" class="btn btn-outline w-full">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Stáhnout výpis pro daně
+          </button>
+        </div>
+      </div>
+      
+      <!-- Payment Methods -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="credit-card" class="w-5 h-5"></i>
+          Způsoby výběru
+        </h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-neutral-800/50 rounded-lg">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                <i data-lucide="building-2" class="w-5 h-5 text-blue-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">Bankovní převod</div>
+                <div class="text-sm text-white/60">SEPA, 0-2 pracovní dny</div>
+              </div>
+            </div>
+            <span class="text-green-400 text-sm font-medium">Aktivní</span>
+          </div>
+          
+          <div class="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg opacity-60">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <i data-lucide="smartphone" class="w-5 h-5 text-purple-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">PayPal</div>
+                <div class="text-sm text-white/60">Okamžitý převod</div>
+              </div>
+            </div>
+            <span class="text-white/40 text-sm">Brzy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Earnings Table -->
+    <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold">Detailní historie příjmů</h3>
+        <div class="flex gap-2">
+          <select id="periodFilter" class="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm">
+            <option value="all">Všechny období</option>
+            <option value="month">Tento měsíc</option>
+            <option value="quarter">Toto čtvrtletí</option>
+            <option value="year">Tento rok</option>
+          </select>
+          <select id="serviceFilter" class="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm">
+            <option value="all">Všechny služby</option>
+            <option value="booking">Bookings</option>
+            <option value="campaign">Kampaně</option>
+            <option value="consultation">Konzultace</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left py-3 px-4 text-sm font-medium text-white/60">Datum</th>
+              <th class="text-left py-3 px-4 text-sm font-medium text-white/60">Služba</th>
+              <th class="text-left py-3 px-4 text-sm font-medium text-white/60">Klient</th>
+              <th class="text-left py-3 px-4 text-sm font-medium text-white/60">Typ</th>
+              <th class="text-right py-3 px-4 text-sm font-medium text-white/60">Částka</th>
+              <th class="text-center py-3 px-4 text-sm font-medium text-white/60">Status</th>
+            </tr>
+          </thead>
+          <tbody id="earningsTable">
+            <!-- Will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="loadMoreBtn" class="text-center mt-6">
+        <button class="btn btn-outline">Načíst více</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let paymentService;
+    let currentUser;
+    let earningsData = [];
+    let withdrawalHistory = [];
+    let earningsChart, servicesChart;
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      paymentService = new PaymentService();
+      
+      await loadEarningsData();
+      await loadWithdrawalHistory();
+      setupEventListeners();
+      initializeCharts();
+    });
+
+    async function loadEarningsData() {
+      try {
+        // Load creator earnings summary
+        const earnings = await paymentService.getCreatorEarnings(currentUser.uid);
+        
+        // Load detailed earnings history
+        const orders = await paymentService.getCreatorOrders(currentUser.uid);
+        earningsData = orders.filter(order => order.status === 'completed');
+        
+        updateStatsDisplay(earnings);
+        updateEarningsTable();
+        updateCharts();
+        
+      } catch (error) {
+        console.error('Error loading earnings data:', error);
+      }
+    }
+
+    async function loadWithdrawalHistory() {
+      try {
+        withdrawalHistory = await paymentService.getCreatorWithdrawals(currentUser.uid);
+        updateWithdrawalHistory();
+        
+      } catch (error) {
+        console.error('Error loading withdrawal history:', error);
+      }
+    }
+
+    function updateStatsDisplay(earnings) {
+      document.getElementById('totalEarnings').textContent = 
+        PaymentService.formatAmount(earnings.totalEarnings || 0);
+      document.getElementById('availableBalance').textContent = 
+        PaymentService.formatAmount(earnings.availableBalance || 0);
+      document.getElementById('totalWithdrawn').textContent = 
+        PaymentService.formatAmount(earnings.totalWithdrawn || 0);
+      
+      // Calculate monthly earnings
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const monthlyTotal = earningsData
+        .filter(order => {
+          const orderDate = new Date(order.completedAt);
+          return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+        })
+        .reduce((sum, order) => sum + order.amount, 0);
+      
+      document.getElementById('monthlyEarnings').textContent = 
+        PaymentService.formatAmount(monthlyTotal);
+      
+      // Update yearly income for tax purposes
+      const yearlyTotal = earningsData
+        .filter(order => {
+          const orderDate = new Date(order.completedAt);
+          return orderDate.getFullYear() === currentYear;
+        })
+        .reduce((sum, order) => sum + order.amount, 0);
+      
+      document.getElementById('yearlyIncome').textContent = 
+        PaymentService.formatAmount(yearlyTotal);
+      
+      // Enable/disable withdraw button
+      const withdrawBtn = document.getElementById('withdrawBtn');
+      const availableAmount = earnings.availableBalance || 0;
+      if (availableAmount >= 100) {
+        withdrawBtn.disabled = false;
+        document.getElementById('withdrawAmount').max = availableAmount;
+      }
+    }
+
+    function updateWithdrawalHistory() {
+      const container = document.getElementById('withdrawalHistory');
+      
+      if (withdrawalHistory.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-white/50">Zatím žádné výběry</div>';
+        return;
+      }
+      
+      container.innerHTML = withdrawalHistory.slice(0, 5).map(withdrawal => {
+        const statusConfig = getWithdrawalStatusConfig(withdrawal.status);
+        return `
+          <div class="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                <i data-lucide="arrow-down" class="w-5 h-5 text-blue-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">${PaymentService.formatAmount(withdrawal.amount)}</div>
+                <div class="text-sm text-white/60">
+                  ${new Date(withdrawal.requestedAt.toDate()).toLocaleDateString('cs-CZ')}
+                </div>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgClass} ${statusConfig.textClass}">
+              ${statusConfig.label}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getWithdrawalStatusConfig(status) {
+      const configs = {
+        pending: { label: 'Čekající', bgClass: 'bg-yellow-500/20', textClass: 'text-yellow-400' },
+        processing: { label: 'Zpracování', bgClass: 'bg-blue-500/20', textClass: 'text-blue-400' },
+        completed: { label: 'Dokončeno', bgClass: 'bg-green-500/20', textClass: 'text-green-400' },
+        rejected: { label: 'Zamítnuto', bgClass: 'bg-red-500/20', textClass: 'text-red-400' }
+      };
+      return configs[status] || configs.pending;
+    }
+
+    function updateEarningsTable() {
+      const tbody = document.getElementById('earningsTable');
+      const periodFilter = document.getElementById('periodFilter').value;
+      const serviceFilter = document.getElementById('serviceFilter').value;
+      
+      let filteredData = [...earningsData];
+      
+      // Apply filters
+      if (periodFilter !== 'all') {
+        const now = new Date();
+        const filterDate = new Date();
+        
+        switch (periodFilter) {
+          case 'month':
+            filterDate.setMonth(filterDate.getMonth() - 1);
+            break;
+          case 'quarter':
+            filterDate.setMonth(filterDate.getMonth() - 3);
+            break;
+          case 'year':
+            filterDate.setFullYear(filterDate.getFullYear() - 1);
+            break;
+        }
+        
+        filteredData = filteredData.filter(order => 
+          new Date(order.completedAt) >= filterDate
+        );
+      }
+      
+      if (serviceFilter !== 'all') {
+        filteredData = filteredData.filter(order => order.type === serviceFilter);
+      }
+      
+      // Sort by completion date (newest first)
+      filteredData.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+      
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-8 text-white/50">
+              Žádné záznamy pro vybrané filtry
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = filteredData.slice(0, 10).map(order => `
+        <tr class="border-b border-white/5 hover:bg-white/5">
+          <td class="py-3 px-4">
+            <div class="text-sm">
+              ${new Date(order.completedAt).toLocaleDateString('cs-CZ')}
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-medium">${order.title}</div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="text-sm text-white/70">Klient ${order.clientId.slice(0, 8)}...</div>
+          </td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+              ${getServiceTypeName(order.type)}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right font-medium">
+            ${PaymentService.formatAmount(order.amount)}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+              Dokončeno
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getServiceTypeName(type) {
+      const types = {
+        booking: 'Booking',
+        campaign: 'Kampaň',
+        consultation: 'Konzultace'
+      };
+      return types[type] || type;
+    }
+
+    function initializeCharts() {
+      // Earnings chart
+      const earningsCtx = document.getElementById('earningsChart').getContext('2d');
+      earningsChart = new Chart(earningsCtx, {
+        type: 'line',
+        data: {
+          labels: getLast12Months(),
+          datasets: [{
+            label: 'Měsíční příjmy',
+            data: getMonthlyEarningsData(),
+            borderColor: 'rgb(34, 211, 238)',
+            backgroundColor: 'rgba(34, 211, 238, 0.1)',
+            borderWidth: 2,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { 
+              ticks: { color: 'rgba(255,255,255,0.6)' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            y: { 
+              ticks: { 
+                color: 'rgba(255,255,255,0.6)',
+                callback: function(value) {
+                  return PaymentService.formatAmount(value);
+                }
+              },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            }
+          }
+        }
+      });
+      
+      // Services chart
+      const servicesCtx = document.getElementById('servicesChart').getContext('2d');
+      servicesChart = new Chart(servicesCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Bookings', 'Kampaně', 'Konzultace'],
+          datasets: [{
+            data: getServiceBreakdownData(),
+            backgroundColor: [
+              'rgb(168, 85, 247)',
+              'rgb(34, 211, 238)', 
+              'rgb(251, 191, 36)'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: 'rgba(255,255,255,0.8)' }
+            }
+          }
+        }
+      });
+    }
+
+    function getLast12Months() {
+      const months = [];
+      const now = new Date();
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push(date.toLocaleDateString('cs-CZ', { month: 'short' }));
+      }
+      return months;
+    }
+
+    function getMonthlyEarningsData() {
+      const data = new Array(12).fill(0);
+      const now = new Date();
+      
+      earningsData.forEach(order => {
+        const orderDate = new Date(order.completedAt);
+        const monthsDiff = (now.getFullYear() - orderDate.getFullYear()) * 12 + 
+                          (now.getMonth() - orderDate.getMonth());
+        
+        if (monthsDiff >= 0 && monthsDiff < 12) {
+          data[11 - monthsDiff] += order.amount;
+        }
+      });
+      
+      return data;
+    }
+
+    function getServiceBreakdownData() {
+      const breakdown = { booking: 0, campaign: 0, consultation: 0 };
+      
+      earningsData.forEach(order => {
+        if (breakdown.hasOwnProperty(order.type)) {
+          breakdown[order.type] += order.amount;
+        }
+      });
+      
+      return [breakdown.booking, breakdown.campaign, breakdown.consultation];
+    }
+
+    function updateCharts() {
+      if (earningsChart) {
+        earningsChart.data.datasets[0].data = getMonthlyEarningsData();
+        earningsChart.update();
+      }
+      
+      if (servicesChart) {
+        servicesChart.data.datasets[0].data = getServiceBreakdownData();
+        servicesChart.update();
+      }
+    }
+
+    function setupEventListeners() {
+      // Withdraw button
+      document.getElementById('withdrawBtn').addEventListener('click', async () => {
+        const amount = parseInt(document.getElementById('withdrawAmount').value);
+        const bankAccount = document.getElementById('bankAccount').value.trim();
+        
+        if (!amount || amount < 100) {
+          alert('Minimální částka pro výběr je 1 Kč');
+          return;
+        }
+        
+        if (!bankAccount) {
+          alert('Zadejte bankovní účet');
+          return;
+        }
+        
+        try {
+          const success = await paymentService.requestWithdrawal(currentUser.uid, {
+            amount,
+            bankAccount,
+            currency: 'CZK'
+          });
+          
+          if (success) {
+            alert('Žádost o výběr byla odeslána. Peníze budou převedeny do 2-3 pracovních dnů.');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('bankAccount').value = '';
+            await loadEarningsData();
+            await loadWithdrawalHistory();
+          }
+        } catch (error) {
+          console.error('Withdrawal error:', error);
+          alert('Došlo k chybě při zpracování žádosti');
+        }
+      });
+
+      // Filter change handlers
+      document.getElementById('periodFilter').addEventListener('change', updateEarningsTable);
+      document.getElementById('serviceFilter').addEventListener('change', updateEarningsTable);
+      
+      // Download tax report
+      document.getElementById('downloadTaxReport').addEventListener('click', () => {
+        generateTaxReport();
+      });
+      
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        firebase.auth().signOut().then(() => {
+          window.location.href = 'login.html';
+        });
+      });
+    }
+
+    function generateTaxReport() {
+      const currentYear = new Date().getFullYear();
+      const yearlyEarnings = earningsData.filter(order => {
+        const orderDate = new Date(order.completedAt);
+        return orderDate.getFullYear() === currentYear;
+      });
+      
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Datum,Služba,Částka,Typ,Klient\n";
+      
+      yearlyEarnings.forEach(order => {
+        const row = [
+          new Date(order.completedAt).toLocaleDateString('cs-CZ'),
+          order.title,
+          order.amount,
+          getServiceTypeName(order.type),
+          order.clientId.slice(0, 8) + '...'
+        ].join(',');
+        csvContent += row + "\n";
+      });
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `kartao_prijmy_${currentYear}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+
+  <style>
+    .btn {
+      @apply px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2;
+    }
+    
+    .btn-primary {
+      @apply bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white;
+    }
+    
+    .btn-outline {
+      @apply border border-white/20 hover:border-white/40 text-white/80 hover:text-white;
+    }
+    
+    /* Chart containers */
+    canvas {
+      max-height: 256px !important;
+    }
+    
+    /* Table styling */
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+  </style>
+</body>
+</html>

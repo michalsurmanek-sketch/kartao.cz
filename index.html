@@ -7,7 +7,6 @@
 
   <!-- Popis pro vyhledávače -->
   <meta name="description" content="Kartao.cz – síť influencerů a tvůrců. Propojujeme značky a tvůrce. Najdi influencera rychle a chytře.">
-
   <meta name="theme-color" content="#0f172a" />
 
   <!-- Open Graph -->
@@ -19,12 +18,15 @@
   <meta property="og:locale" content="cs_CZ" />
 
   <link rel="canonical" href="https://www.kartao.cz/" />
-
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide ikony -->
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Tailwind konfigurace -->
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -36,114 +38,7 @@
             amber: tailwind.colors.amber,
             sky: tailwind.colors.sky,
             emerald: tailwind.colors.emerald
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Lucide ikony (UMD; doporučená varianta) -->
-<script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-<!-- Tailwind konfigurace -->
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          neutral: tailwind.colors.neutral,
-          fuchsia: tailwind.colors.fuchsia,
-          amber: tailwind.colors.amber,
-          sky: tailwind.colors.sky,
-          emerald: tailwind.colors.emerald
-        }
-      }
-    }
-  }
-</script>
-  <style>
-     .logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
-    .logo-badge svg{filter:drop-shadow(0 2px 6px rgba(255,255,255,.08));transition:transform .3s ease}
-    .logo-badge:hover{transform:translateY(-1px) scale(1.02)}
-    .logo-badge:hover svg{transform:translateY(-.5px) rotate(-2deg)}
-    .logo-badge::after{content:"";position:absolute;inset:-60%;pointer-events:none;opacity:.18;background:conic-gradient(from 0deg,transparent 0 72%, #fff 73% 76%, transparent 77%);animation:spinShine 6s linear infinite}
-    @keyframes spinShine{to{transform:rotate(360deg)}}
-    .logo-badge.pulse::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(251,191,36,.35);animation:softPulse 2.8s ease-out infinite}
-    @keyframes softPulse{0%{box-shadow:0 0 0 0 rgba(251,191,36,.35)}100%{box-shadow:0 0 0 14px rgba(251,191,36,0)}}
-    .icon-badge{
-  display:grid;place-items:center;width:2rem;height:2rem;border-radius:0.75rem;
-  background-image:linear-gradient(135deg,#db58f6,#ffb347);
-  box-shadow:0 4px 12px rgba(219,88,246,.2),inset 0 0 0 1px rgba(255,255,255,.1);
-  transition:all .3s;
-   }
-.icon-badge:hover{transform:translateY(-2px) scale(1.05);}
-    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .backdrop-blur{backdrop-filter: blur(8px)}
-    .shadow-soft{box-shadow:0 10px 30px rgba(236,72,153,.15)}
-    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-radius:.75rem}
-    .btn-primary{background:#db58f6}
-      @apply w-10 h-10 rounded-full flex items-center justify-center 
-           bg-neutral-900/60 text-white font-bold 
-           border border-white/10 backdrop-blur 
-           hover:bg-neutral-900/80 hover:scale-110 transition cursor-pointer;
-     }ackground:#e879f9}
-    .btn-primary:hover{background:#db58f6}
-    .btn-light{background:#fff;color:#111}
-    .btn-light:hover{background:#f3f3f3}
-    .btn-outline{border:1px solid rgba(255,255,255,.2)}
-    .tag{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.1);padding:.25rem .5rem;border-radius:.5rem;background:rgba(38,38,38,.9)}
-    .modal-enter{transform:translateX(100%);opacity:.5}
-    .modal-enter.active{transform:translateX(0);opacity:1;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
-    /* ===== Efekt korunky v logu ===== */
-.logo-badge{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s ease, filter .3s ease}
-.logo-badge svg{filter:drop-shadow(0 2px 6px rgba(255,255,255,.08));transition:transform .3s ease}
-.logo-badge:hover{transform:translateY(-1px) scale(1.02)}
-.logo-badge:hover svg{transform:translateY(-.5px) rotate(-2deg)}
-/* jemný rotující lesk přes badge */
-.logo-badge::after{content:"";position:absolute;inset:-60%;pointer-events:none;opacity:.18;background:conic-gradient(from 0deg,transparent 0 72%, #fff 73% 76%, transparent 77%);animation:spinShine 6s linear infinite}
-@keyframes spinShine{to{transform:rotate(360deg)}}
-/* pulzující kroužek – decentní aura */
-.logo-badge.pulse::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(251,191,36,.35);animation:softPulse 2.8s ease-out infinite}
-@keyframes softPulse{0%{box-shadow:0 0 0 0 rgba(251,191,36,.35)}100%{box-shadow:0 0 0 14px rgba(251,191,36,0)}}
-/* Efekt svítící korunky */
-@keyframes crownGlow {
-  0%   { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }     /* žlutá */
-  40%  { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }    /* růžová */
-  100%  { color: #ffffff; filter: drop-shadow(0 0 18px #ffffff); }    /* bílý záblesk */
-  80%  { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }    /* zpět růžová */
-  100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }     /* zpět žlutá */
-}
-
-.crown-glow {
-  animation: crownGlow 1.8s ease-in-out infinite;
-}
-
-  </style>
-</head>
-  
-      <section class="mt-4 grid grid-cols-2 gap-2">
-  <!-- Nová kampaň -->
-  <a href="kartao-pro-firmy.html" 
-     class="rounded-lg border border-white/10 bg-white/5 py-3 text-center text-sm hover:bg-white/10">
-    <i data-lucide="plus" class="inline w-4 h-4 mr-1"></i>
-    Nová kampaň
-  </a>
-
-  <!-- Založit kartu -->
-  <a href="kartao-zalozit-kartu.html" 
-          class="rounded-lg border border-white/10 bg-white/5 py-3 px-4 text-center text-sm hover:bg-white/10 flex items-center justify-center gap-2">
-    <i data-lucide="id-card" class="w-4 h-4"></i>
-    Založit kartu
-  </a>
-</section>
-
-
-<script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
+          },
           boxShadow: {
             soft: "0 8px 30px rgb(0 0 0 / 0.25)",
           },
@@ -160,13 +55,135 @@
       }
     }
   </script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
+    .logo-badge {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform .3s ease, filter .3s ease;
+    }
+    .logo-badge svg {
+      filter: drop-shadow(0 2px 6px rgba(255,255,255,.08));
+      transition: transform .3s ease;
+    }
+    .logo-badge:hover {
+      transform: translateY(-1px) scale(1.02);
+    }
+    .logo-badge:hover svg {
+      transform: translateY(-.5px) rotate(-2deg);
+    }
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      pointer-events: none;
+      opacity: .18;
+      background: conic-gradient(from 0deg, transparent 0 72%, #fff 73% 76%, transparent 77%);
+      animation: spinShine 6s linear infinite;
+    }
+    @keyframes spinShine {
+      to { transform: rotate(360deg); }
+    }
+    .logo-badge.pulse::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgba(251,191,36,.35);
+      animation: softPulse 2.8s ease-out infinite;
+    }
+    @keyframes softPulse {
+      0% { box-shadow: 0 0 0 0 rgba(251,191,36,.35); }
+      100% { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
+    }
+    .icon-badge {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.75rem;
+      background-image: linear-gradient(135deg, #db58f6, #ffb347);
+      box-shadow: 0 4px 12px rgba(219,88,246,.2), inset 0 0 0 1px rgba(255,255,255,.1);
+      transition: all .3s;
+    }
+    .icon-badge:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .backdrop-blur {
+      backdrop-filter: blur(8px);
+    }
+    .shadow-soft {
+      box-shadow: 0 10px 30px rgba(236,72,153,.15);
+    }
+    .card {
+      background-color: rgba(23,23,23,.6);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 1rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem .75rem;
+      border-radius: .75rem;
+    }
+    .btn-primary {
+      background: #db58f6;
+    }
+    .btn-primary:hover {
+      background: #e879f9;
+    }
+    .btn-light {
+      background: #fff;
+      color: #111;
+    }
+    .btn-light:hover {
+      background: #f3f3f3;
+    }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border: 1px solid rgba(255,255,255,.1);
+      padding: .25rem .5rem;
+      border-radius: .5rem;
+      background: rgba(38,38,38,.9);
+    }
+    .modal-enter {
+      transform: translateX(100%);
+      opacity: .5;
+    }
+    .modal-enter.active {
+      transform: translateX(0);
+      opacity: 1;
+      transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s;
+    }
+    .crown-glow {
+      animation: crownGlow 1.8s ease-in-out infinite;
+    }
+    @keyframes crownGlow {
+      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+      40% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      60% { color: #ffffff; filter: drop-shadow(0 0 18px #ffffff); }
+      80% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+    }
     .svh { height: 100svh; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white">
 
+  <!-- HLAVNÍ HEADER -->
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="index.html" class="flex items-center gap-3">
@@ -181,6 +198,7 @@
 
       <nav class="hidden md:flex items-center gap-6">
         <a href="kartao-marketplace.html" class="text-white/80 hover:text-white transition">Marketplace</a>
+        <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
         <a href="kartao-pro-firmy.html#brief" class="text-white/80 hover:text-white transition">Zadat kampaň</a>
         <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
         <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
@@ -222,8 +240,16 @@
 
         <nav class="px-3 py-3">
           <a href="kartao-marketplace.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="search" class="w-5 h-5 text-white/70"></i><span>Vyhledat kampaň</span></a>
-          <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="megaphone" class="w-5 h-5 text-white/70"></i><span>Zadat kampaň</span><i data-lucide="building" class="w-4 h-4 text-amber-300 ml-auto">Firma</i></a>
-          <a onclick="goToCreateCard()" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3 cursor-pointer"><i data-lucide="id-card" class="w-5 h-5 text-white/70"></i><span>Založit kartu</span><i data-lucide="user" class="w-4 h-4 text-fuchsia-300 ml-auto">Tvůrce</i></a></a>
+          <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+            <i data-lucide="megaphone" class="w-5 h-5 text-white/70"></i>
+            <span>Zadat kampaň</span>
+            <i data-lucide="building" class="w-4 h-4 text-amber-300 ml-auto"></i>
+          </a>
+          <a onclick="goToCreateCard()" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3 cursor-pointer">
+            <i data-lucide="id-card" class="w-5 h-5 text-white/70"></i>
+            <span>Založit kartu</span>
+            <i data-lucide="user" class="w-4 h-4 text-fuchsia-300 ml-auto"></i>
+          </a>
           <a href="kartao-magazin.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="book-open-text" class="w-5 h-5 text-white/70"></i><span>Magazín</span></a>
           <a href="kartao-kontakt.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="mail" class="w-5 h-5 text-white/70"></i><span>Kontakt</span></a>
 
@@ -347,210 +373,31 @@
           </div>
         </div>
 
-        <div class="mt-auto p-4 text-xs text-white/40 text-center">© 2025 Kartao.cz</div>
       </div>
     </div>
   </div>
-<script>
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const menuBackdrop = document.getElementById('menuBackdrop');
-    const menuPanel = document.getElementById('menuPanel');
-    const menuClose = document.getElementById('menuClose');
 
-    function openMenu() {
-      mobileMenu.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        menuBackdrop.classList.remove('opacity-0');
-        menuPanel.classList.remove('translate-x-full');
-      });
-      menuToggle.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeMenu() {
-      menuBackdrop.classList.add('opacity-0');
-      menuPanel.classList.add('translate-x-full');
-      menuToggle.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      setTimeout(() => mobileMenu.classList.add('hidden'), 200);
-    }
-
-    menuToggle?.addEventListener('click', openMenu);
-    menuClose?.addEventListener('click', closeMenu);
-
-    mobileMenu.addEventListener('click', (e) => {
-      if (e.target === menuBackdrop) closeMenu();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mobileMenu && !mobileMenu.classList.contains('hidden')) {
-        closeMenu();
-      }
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide) lucide.createIcons();
-      // Automatické rozdělení gradientu podle počtu ikon (bez ručního --i)
-      const items = document.querySelectorAll('[data-gradient-icon]');
-      const n = items.length;
-      items.forEach((el, i) => {
-        const pos = n === 1 ? 0 : Math.round((i / (n - 1)) * 100);
-        el.style.setProperty('--pos', pos + '%');
-      });
-    });
-  </script>
-  <!-- Skript: hamburger + focus trap + swipe -->
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
-    });
-    (function(){
-      const body = document.body;
-      const menuBtn = document.getElementById('menuBtn');
-      const overlay = document.getElementById('mobileOverlay');
-      const panel = document.getElementById('mobileNav');
-      const closeBtn = document.getElementById('closeBtn');
-      const backdrop = document.getElementById('backdrop');
-      let lastFocused = null;
-      let startX = null;
-      const getFocusables = () => panel.querySelectorAll('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])');
-      function lockScroll(){ body.style.overflow = 'hidden'; }
-      function unlockScroll(){ body.style.overflow = ''; }
-      function openMenu(){
-        lastFocused = document.activeElement;
-        overlay.classList.remove('hidden');
-        lockScroll();
-        requestAnimationFrame(() => {
-          panel.classList.remove('translate-x-full');
-          const f = getFocusables()[0];
-          if (f) f.focus();
-        });
-        menuBtn.setAttribute('aria-expanded','true');
-      }
-      function closeMenu(){
-        panel.classList.add('translate-x-full');
-        menuBtn.setAttribute('aria-expanded','false');
-        setTimeout(()=> {
-          overlay.classList.add('hidden');
-          unlockScroll();
-          if (lastFocused) lastFocused.focus();
-        }, 200);
-      }
-      menuBtn.addEventListener('click', openMenu);
-      closeBtn.addEventListener('click', closeMenu);
-      backdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e)=>{
-        if(overlay.classList.contains('hidden')) return;
-        if(e.key === 'Escape') return closeMenu();
-        if(e.key === 'Tab'){
-          const f = Array.from(getFocusables());
-          if(!f.length) return;
-          const first = f[0];
-          const last = f[f.length - 1];
-          if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
-          else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
-        }
-      });
-      panel.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
-      panel.addEventListener('touchmove', (e)=>{
-        if(startX === null) return;
-        const dx = e.touches[0].clientX - startX;
-        if(dx > 80){ startX = null; closeMenu(); }
-      }, {passive:true});
-      panel.addEventListener('touchend', ()=>{ startX = null; }, {passive:true});
-    })();
-  </script>
-
-  <script>
-    (function(){
-      const path = window.location.pathname.split('/').pop();
-      const links = document.querySelectorAll('nav a');
-      links.forEach(link => {
-        const href = link.getAttribute('href');
-        if(href === path){
-          link.classList.add('ring-2','ring-fuchsia-400','ring-offset-2','ring-offset-neutral-950');
-        }
-      });
-    })();
-  </script>
-
-  <!-- Login modal -->
-<div id="adminModal" class="hidden fixed inset-0 z-50">
-  <div class="absolute inset-0 bg-black/70" data-close></div>
-  <div class="relative max-w-sm mx-auto mt-24 bg-neutral-900 border border-white/10 rounded-xl p-5">
-    <div class="flex items-start justify-between gap-3">
-      <h3 class="text-lg font-semibold">Přihlášení administrátora</h3>
-      <button class="text-white/70 hover:text-white" data-close aria-label="Zavřít">✕</button>
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/70" data-close></div>
+    <div class="relative max-w-sm mx-auto mt-24 bg-neutral-900 border border-white/10 rounded-xl p-5">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="text-lg font-semibold">Přihlášení administrátora</h3>
+        <button class="text-white/70 hover:text-white" data-close aria-label="Zavřít">✕</button>
+      </div>
+      <p class="text-sm text-white/70 mt-2">Zadej admin klíč a potvrď.</p>
+      <input id="adminKeyInput" type="password" placeholder="Admin klíč"
+             class="mt-3 w-full p-2 rounded bg-neutral-800 border border-white/20" />
+      <div class="text-[11px] text-white/45 mt-1">
+        Pro lokální test: <code class="bg-white/10 px-1.5 py-0.5 rounded">kartao-dev</code>
+      </div>
+      <button id="adminLoginBtn"
+              class="mt-4 w-full bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 rounded">
+        Přihlásit
+      </button>
     </div>
-    <p class="text-sm text-white/70 mt-2">Zadej admin klíč a potvrď.</p>
-    <input id="adminKeyInput" type="password" placeholder="Admin klíč"
-           class="mt-3 w-full p-2 rounded bg-neutral-800 border border-white/20" />
-    <div class="text-[11px] text-white/45 mt-1">
-      Pro lokální test: <code class="bg-white/10 px-1.5 py-0.5 rounded">kartao-dev</code>
-    </div>
-    <button id="adminLoginBtn"
-            class="mt-4 w-full bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 rounded">
-      Přihlásit
-    </button>
   </div>
-</div>
 
-<script>
-  (function () {
-    const apiBase = 'https://api.kartao.cz';
-    const ENABLE_LOCAL_TEST = true;
-    const LOCAL_TEST_KEY = 'kartao-dev';
-
-    const fab   = document.getElementById('adminFab');
-    const modal = document.getElementById('adminModal');
-    const input = document.getElementById('adminKeyInput');
-    const login = document.getElementById('adminLoginBtn');
-
-    function show() { if(modal){ modal.classList.remove('hidden'); setTimeout(()=> input?.focus(), 0); } }
-    function hide() { if(modal){ modal.classList.add('hidden'); if(input) input.value = ''; } }
-
-    if(fab) fab.addEventListener('click', show);
-    if(modal) modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', hide));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-
-    async function doLogin() {
-      const key = (input.value || '').trim();
-      if (!key) { alert('Zadej admin klíč'); return; }
-
-      // Lokální test mód (bez backendu)
-      if (ENABLE_LOCAL_TEST && key === LOCAL_TEST_KEY) {
-        localStorage.setItem('admin_jwt', 'LOCAL_TEST');
-        hide();
-        location.href = 'admin.html';
-        return;
-      }
-
-      // Produkční ověření přes API
-      try {
-        const res = await fetch(`${apiBase}/admin/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key })
-        });
-        const out = await res.json();
-        if (out.token) {
-          localStorage.setItem('admin_jwt', out.token);
-          hide();
-          location.href = 'admin.html';
-        } else {
-          alert('Neplatný klíč');
-        }
-      } catch (e) {
-        alert('Nepodařilo se ověřit klíč.');
-      }
-    }
-
-    login.addEventListener('click', doLogin);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-  })();
-</script>
-<!-- === /KARTAO: ADMIN SNIPPET === -->
 
   <!-- HERO + SEARCH -->
   <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
@@ -607,36 +454,67 @@
 
         <select id="sort" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
           <option value="relevance">Relevance</option>
-          <option value="followers">Nejvíc followerů (API)</option>
+          <option value="followers">Nejvíc followerů</option>
           <option value="priceLow">Nejnižší cena</option>
+          <option value="priceHigh">Nejvyšší cena</option>
           <option value="rating">Nejlepší hodnocení</option>
-        </select>
-
-        <select id="pageSize" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="12">12</option>
-          <option value="24">24</option>
-          <option value="48">48</option>
+          <option value="newest">Nejnovější</option>
         </select>
 
         <button id="advancedBtn" class="btn btn-primary md:col-span-1"><i data-lucide="filter" class="w-4 h-4"></i> Pokročilé</button>
       </div>
 
       <!-- Pokročilé filtry -->
-      <div class="mt-3 grid gap-3 md:grid-cols-5" id="advancedWrap">
-        <input id="maxPrice" type="number" min="0" placeholder="Max rozpočet na post (Kč)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2" />
-        <div class="relative">
-          <input id="minFollowers" type="number" min="0" placeholder="Min. followeři (jen z API)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 disabled:opacity-50" />
-          <div class="text-xs text-white/50 mt-1" id="minFollowersHint" style="display:none">Filtr se uplatní jen při výběru konkrétní platformy</div>
+      <div class="mt-3 grid gap-3 md:grid-cols-6" id="advancedWrap">
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Rozpočet (Kč)</label>
+          <div class="flex gap-2">
+            <input id="minPrice" type="number" min="0" placeholder="Od" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm" />
+            <input id="maxPrice" type="number" min="0" placeholder="Do" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm" />
+          </div>
         </div>
-        <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-          <input id="premiumOnly" type="checkbox" class="accent-fuchsia-500" />
-          Pouze prémiové (ověřené / 100k+ z API)
-        </label>
-        <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-          <input id="infinite" type="checkbox" class="accent-fuchsia-500" />
-          Nekonečné načítání místo stránek
-        </label>
-        <div class="flex items-center gap-2 text-sm text-white/60"><i data-lucide="sparkles" class="w-4 h-4"></i> Tip: Pro přesné počty propojte účty v detailu karty</div>
+        
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Min. hodnocení</label>
+          <select id="minRating" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
+            <option value="0">Jakékoliv</option>
+            <option value="3">3+ hvězdy</option>
+            <option value="4">4+ hvězdy</option>
+            <option value="4.5">4.5+ hvězdy</option>
+          </select>
+        </div>
+        
+        <div class="relative space-y-2">
+          <label class="text-xs text-white/70">Min. followeři</label>
+          <input id="minFollowers" type="number" min="0" placeholder="Počet" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm disabled:opacity-50" />
+          <div class="text-xs text-white/50" id="minFollowersHint" style="display:none">Filtr se uplatní jen při výběru konkrétní platformy</div>
+        </div>
+        
+        <div class="flex flex-col gap-2 justify-center">
+          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
+            <input id="premiumOnly" type="checkbox" class="accent-fuchsia-500" />
+            Pouze ověřené
+          </label>
+          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
+            <input id="infinite" type="checkbox" class="accent-fuchsia-500" />
+            Infinite scroll
+          </label>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Výsledky na stránku</label>
+          <select id="pageSize" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
+            <option value="12">12</option>
+            <option value="24">24</option>
+            <option value="48">48</option>
+          </select>
+        </div>
+        
+        <div class="flex items-end">
+          <button id="resetFilters" class="w-full px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 transition text-sm">
+            <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>Vymazat
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -850,6 +728,17 @@
 
 </footer>
 <!-- =============== FOOTER END =============== -->
+  
+  <!-- Firebase knihovny (compat verze) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Sdílená inicializace -->
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="api-services.js"></script>
+
   <!-- DETAIL SLIDEOVER -->
   <div id="overlay" class="fixed inset-0 z-50 hidden">
     <div id="overlayBg" class="absolute inset-0 bg-black/70"></div>
@@ -862,13 +751,14 @@
     </aside>
   </div>
 
-  <!-- Firebase knihovny (compat verze) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <!-- ŠIPKA NAHORU -->
+  <button id="scrollTopBtn" 
+    class="hidden fixed bottom-6 right-6 w-12 h-12 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 
+           text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
+    <i data-lucide="arrow-up" class="w-5 h-5"></i>
+  </button>
 
-<!-- Sdílená inicializace (stejná pro celý web) -->
-<script src="firebase-init.js"></script>
+  <!-- JAVASCRIPT SEKCE -->
 
 <script>
     /* ==========================
@@ -881,27 +771,42 @@
       {id:'youtube', label:'YouTube', icon:'play'}
     ];
     
-    const MOCK = [
-      {id:'1',name:'Marie Novotná',handle:'@mariemakeup',avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop',cover:'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',city:'Praha',category:'Beauty',platforms:['facebook','instagram','tiktok'],price:12000,rating:4.8,verified:true,engagement:4.2,metrics:{facebook:{connected:false,followers:null,updatedAt:null},instagram:{connected:false,followers:null,updatedAt:null},youtube:{connected:false,followers:null,updatedAt:null},tiktok:{connected:false,followers:null,updatedAt:null}},gallery:['https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=600&auto=format&fit=crop'],bio:'Beauty & lifestyle tvůrkyně. Spolupráce s DM, Notino, Sephora. Otevřeno novým kampaním.'},
-      {id:'2',name:'Adam Král',handle:'@adamfit',avatar:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop',cover:'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1200&auto=format&fit=crop',city:'Brno',category:'Fitness',platforms:['facebook','instagram','youtube'],price:8000,rating:4.6,verified:true,engagement:5.1,metrics:{facebook:{connected:false,followers:null,updatedAt:null},instagram:{connected:false,followers:null,updatedAt:null},youtube:{connected:false,followers:null,updatedAt:null},tiktok:{connected:false,followers:null,updatedAt:null}},gallery:['https://images.unsplash.com/photo-1558611848-73f7eb4001a1?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1434754205268-ad3b5f549b11?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=600&auto=format&fit=crop'],bio:'Fitness, zdraví a výživa. Spolupráce: GymBeam, MyProtein. Videa 2× týdně.'},
-      {id:'3',name:'Lukáš Procházka',handle:'@lukas_plays',avatar:'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400&auto=format&fit=crop',cover:'https://images.unsplash.com/photo-1605369059929-6f369e12a1f3?q=80&w=1200&auto=format&fit=crop',city:'Ostrava',category:'Gaming',platforms:['tiktok','youtube'],price:15000,rating:4.7,verified:false,engagement:6.3,metrics:{facebook:{connected:false,followers:null,updatedAt:null},instagram:{connected:false,followers:null,updatedAt:null},youtube:{connected:false,followers:null,updatedAt:null},tiktok:{connected:false,followers:null,updatedAt:null}},gallery:['https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop'],bio:'Gaming videa, livestreamy a e-sport. Otevřeno sponzoringu a product placementu.'},
-      {id:'4',name:'Eliška Dvořáková',handle:'@elitravels',avatar:'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',cover:'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',city:'Plzeň',category:'Travel',platforms:['facebook','instagram'],price:6000,rating:4.5,verified:true,engagement:3.8,metrics:{facebook:{connected:false,followers:null,updatedAt:null},instagram:{connected:false,followers:null,updatedAt:null},youtube:{connected:false,followers:null,updatedAt:null},tiktok:{connected:false,followers:null,updatedAt:null}},gallery:['https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1519681391401-22d216bb9170?q=80&w=600&auto=format&fit=crop','https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=600&auto=format&fit=crop'],bio:'Cestování chytře a za málo. Spolupráce s aerolinkami a hotely.'}
-    ];
+    // Inicializace služeb
+    let creatorService;
+    let userService;
     
-    function fmtFollowers(n){ if(typeof n!== 'number') return null; if(n>=1_000_000) return (n/1_000_000).toFixed(1)+'M'; if(n>=1_000) return (n/1000).toFixed(0)+'k'; return String(n) }
-    function platformFollowers(item, pid, mode){
-      if(pid==='all'){
-        const vals = ['facebook','instagram','youtube','tiktok'].map(k=>{ const m=item.metrics?.[k]; return m&&m.connected&&typeof m.followers==='number'?m.followers:0; });
-        return mode==='max'? Math.max(0,...vals) : vals.reduce((a,b)=>a+b,0);
+    // Globální cache pro výsledky
+    let allCreators = [];
+    let isLoading = false;
+    
+    // Inicializace po načtení Firebase
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!creatorService) {
+        creatorService = new CreatorService();
+        userService = new UserService();
+        
+        // Načtení všech tvůrců při startu
+        await loadAllCreators();
+        render();
       }
-      const m=item.metrics?.[pid];
-      return m&&m.connected&&typeof m.followers==='number'?m.followers:0;
+    });
+    
+    function fmtFollowers(n) { 
+      return DataHelpers.formatFollowers(n);
+    }
+    
+    function platformFollowers(item, pid, mode = 'sum'){
+      if(pid === 'all'){
+        return DataHelpers.calculateTotalFollowers(item.metrics, mode);
+      }
+      const m = item.metrics?.[pid];
+      return m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
     }
     
     /* ==========================
        STAV + URL SYNC
     ========================== */
-    const state = { q: '', platform: 'all', mode: 'sum', category: 'all', city: 'all', sort: 'relevance', maxPrice: null, minFollowers: null, premiumOnly: false, page: 1, pageSize: 12, infinite: false };
+    const state = { q: '', platform: 'all', mode: 'sum', category: 'all', city: 'all', sort: 'relevance', minPrice: null, maxPrice: null, minRating: 0, minFollowers: null, premiumOnly: false, page: 1, pageSize: 12, infinite: false };
 
     function readQS(){
       const qs = new URLSearchParams(location.search);
@@ -910,8 +815,10 @@
       const md = qs.get('mode'); if(['sum','max'].includes(md)) state.mode = md;
       const cat = qs.get('category'); if(['all','Fashion','Beauty','Fitness','Lifestyle','Gaming','Tech','Food','Travel','Auto','Music'].includes(cat)) state.category = cat;
       const city = qs.get('city'); if(['all','Praha','Brno','Ostrava','Plzeň','Olomouc','Zlín','Hradec Králové','České Budějovice'].includes(city)) state.city = city;
-      const sort = qs.get('sort'); if(['relevance','followers','priceLow','rating'].includes(sort)) state.sort = sort;
+      const sort = qs.get('sort'); if(['relevance','followers','priceLow','priceHigh','rating','newest'].includes(sort)) state.sort = sort;
+      if(qs.get('minPrice')!==null) state.minPrice = qs.get('minPrice')? Number(qs.get('minPrice')): null;
       if(qs.get('maxPrice')!==null) state.maxPrice = qs.get('maxPrice')? Number(qs.get('maxPrice')): null;
+      if(qs.get('minRating')!==null) state.minRating = qs.get('minRating')? Number(qs.get('minRating')): 0;
       if(qs.get('minFollowers')!==null) state.minFollowers = qs.get('minFollowers')? Number(qs.get('minFollowers')): null;
       state.premiumOnly = qs.get('premium')==='1';
       state.page = Math.max(1, parseInt(qs.get('page')||'1',10));
@@ -926,7 +833,9 @@
       if(state.category!=='all') qs.set('category', state.category);
       if(state.city!=='all') qs.set('city', state.city);
       if(state.sort!=='relevance') qs.set('sort', state.sort);
+      if(state.minPrice!=null) qs.set('minPrice', String(state.minPrice));
       if(state.maxPrice!=null) qs.set('maxPrice', String(state.maxPrice));
+      if(state.minRating>0) qs.set('minRating', String(state.minRating));
       if(state.minFollowers!=null && state.platform!=='all') qs.set('minFollowers', String(state.minFollowers));
       if(state.premiumOnly) qs.set('premium', '1');
       if(state.page>1) qs.set('page', String(state.page));
@@ -939,23 +848,67 @@
     /* ==========================
        FILTRY + RENDERING
     ========================== */
-    function applyFilters(){
-      let list = [...MOCK];
-      const s = state.q.trim().toLowerCase();
-      if(s){ list = list.filter(i=> [i.name,i.handle,i.city,i.category].some(v=> v.toLowerCase().includes(s))); }
-      if(state.platform!=='all') list = list.filter(i=> i.platforms.includes(state.platform));
-      if(state.category!=='all') list = list.filter(i=> i.category===state.category);
-      if(state.city!=='all') list = list.filter(i=> i.city===state.city);
-      if(state.maxPrice!=null) list = list.filter(i=> i.price <= state.maxPrice);
-      if(state.minFollowers!=null && state.platform!=='all') list = list.filter(i=> platformFollowers(i,state.platform,state.mode) >= state.minFollowers);
-      if(state.premiumOnly) list = list.filter(i=> i.verified || platformFollowers(i,state.platform,state.mode) > 100000);
-
-      switch(state.sort){
-        case 'followers': list.sort((a,b)=> platformFollowers(b,state.platform,state.mode) - platformFollowers(a,state.platform,state.mode)); break;
-        case 'priceLow': list.sort((a,b)=> a.price - b.price); break;
-        case 'rating': list.sort((a,b)=> b.rating - a.rating); break;
-        default: list.sort((a,b)=> (b.verified?1:0) - (a.verified?1:0) || b.engagement - a.engagement);
+    async function loadAllCreators() {
+      if (isLoading) return;
+      isLoading = true;
+      
+      try {
+        const filters = {
+          q: state.q,
+          platform: state.platform,
+          category: state.category,
+          city: state.city,
+          sort: state.sort,
+          minPrice: state.minPrice,
+          maxPrice: state.maxPrice,
+          minRating: state.minRating,
+          minFollowers: state.minFollowers,
+          premiumOnly: state.premiumOnly,
+          limit: 100 // Načteme více dat pro cache
+        };
+        
+        allCreators = await creatorService.searchCreators(filters);
+        console.log(`Načteno ${allCreators.length} tvůrců z databáze`);
+        
+      } catch (error) {
+        console.error('Chyba při načítání tvůrců:', error);
+        allCreators = [];
+      } finally {
+        isLoading = false;
       }
+    }
+
+    function applyFilters(){
+      if (!allCreators.length) {
+        return [];
+      }
+      
+      // Aplikujeme dodatečné filtry na načtená data
+      let list = [...allCreators];
+      
+      // Textové vyhledávání
+      const searchTerm = state.q.trim().toLowerCase();
+      if (searchTerm) {
+        list = list.filter(creator => 
+          creator.name.toLowerCase().includes(searchTerm) ||
+          creator.handle.toLowerCase().includes(searchTerm) ||
+          creator.city.toLowerCase().includes(searchTerm) ||
+          creator.category.toLowerCase().includes(searchTerm) ||
+          (creator.bio && creator.bio.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      // Další filtry už jsou aplikované při načítání z API
+      
+      // Řazení podle followers musí být zde kvůli složitosti
+      if (state.sort === 'followers') {
+        list.sort((a,b) => {
+          const aFollowers = DataHelpers.calculateTotalFollowers(a.metrics, state.mode);
+          const bFollowers = DataHelpers.calculateTotalFollowers(b.metrics, state.mode);
+          return bFollowers - aFollowers;
+        });
+      }
+      
       return list;
     }
 
@@ -1103,10 +1056,12 @@
     /* ==========================
        DETAIL MODAL
     ========================== */
-    function openDetail(data){
+    async function openDetail(data){
       const ov = document.getElementById('overlay');
       const body = document.getElementById('drawerBody');
       const drawer = document.getElementById('drawer');
+      
+      // Základní obsah
       body.innerHTML = `
         <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${data.cover}')"></div>
         <div class="flex items-start gap-3 -mt-10 p-2">
@@ -1132,13 +1087,37 @@
           ${platformRow('youtube','YouTube subscribers', data)}
           ${platformRow('tiktok','TikTok followers', data)}
         </div>
+        
+        <!-- Recenze sekce -->
+        <div class="mt-6">
+          <h4 class="font-semibold mb-3 flex items-center gap-2">
+            <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
+            Recenze
+            <div id="reviewsLoading" class="animate-spin"><i data-lucide="loader-2" class="w-4 h-4"></i></div>
+          </h4>
+          <div id="reviewsList" class="space-y-3">
+            <!-- Reviews will be loaded here -->
+          </div>
+        </div>
+        
         <div class="mt-6 flex items-center justify-end gap-2">
-          <a href="kartao-pro-firmy.html#brief" class="btn btn-primary"><i data-lucide="mail" class="w-4 h-4"></i> Poptejte spolupráci</a>
+          <button onclick="startChat('${data.id}')" class="btn btn-outline">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Napsat zprávu
+          </button>
+          <a href="booking.html?creator=${data.id}" class="btn btn-outline">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Rezervovat termín
+          </a>
+          <a href="kartao-pro-firmy.html#brief" class="btn btn-primary">
+            <i data-lucide="mail" class="w-4 h-4"></i> Poptejte spolupráci
+          </a>
         </div>
       `;
       lucide.createIcons();
       ov.classList.remove('hidden');
       setTimeout(()=> drawer.classList.add('active'), 0);
+      
+      // Načtení recenzí asynchronně
+      loadCreatorReviews(data.id);
     }
 
     function stat(label, value){
@@ -1166,6 +1145,81 @@
         </div>`;
     }
 
+    // Načítání recenzí pro detail modal
+    async function loadCreatorReviews(creatorId) {
+      try {
+        const reviewService = new ReviewService();
+        const reviews = await reviewService.getCreatorReviews(creatorId, 5); // Load 5 most recent
+        
+        document.getElementById('reviewsLoading').style.display = 'none';
+        const reviewsList = document.getElementById('reviewsList');
+        
+        if (reviews.length === 0) {
+          reviewsList.innerHTML = '<div class="text-white/60 text-sm text-center py-4">Zatím žádné recenze</div>';
+          return;
+        }
+        
+        reviewsList.innerHTML = reviews.map(review => `
+          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+            <div class="flex items-start gap-3">
+              <img src="${review.companyLogo || 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=40&h=40&fit=crop&crop=center'}" 
+                   class="w-10 h-10 rounded-lg object-cover">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-semibold text-sm">${review.companyName}</div>
+                  <div class="flex items-center gap-1">
+                    ${ReviewService.renderStars(review.rating)}
+                  </div>
+                </div>
+                ${review.title ? `<div class="font-medium text-sm mb-1">${review.title}</div>` : ''}
+                <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
+                <div class="flex items-center justify-between mt-2 text-xs text-white/50">
+                  <span>${ReviewService.formatDate(review.createdAt)}</span>
+                  <div class="flex items-center gap-3">
+                    ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
+                    <span>${review.helpful || 0} užitečné</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        
+        lucide.createIcons();
+        
+      } catch (error) {
+        console.error('Chyba při načítání recenzí:', error);
+        document.getElementById('reviewsLoading').style.display = 'none';
+        document.getElementById('reviewsList').innerHTML = '<div class="text-red-400 text-sm text-center py-4">Chyba při načítání recenzí</div>';
+      }
+    }
+
+    // Spuštění chatu s tvůrcem
+    async function startChat(creatorId) {
+      // Kontrola přihlášení
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert('Pro psaní zpráv se musíte přihlásit');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        const chatService = new ChatService();
+        const conversation = await chatService.getOrCreateConversation(user.uid, creatorId);
+        
+        if (conversation) {
+          // Přesměrování na chat s konkrétní konverzací
+          window.location.href = `chat.html?conversation=${conversation.id}&user=${creatorId}`;
+        } else {
+          alert('Chyba při vytváření konverzace');
+        }
+      } catch (error) {
+        console.error('Chyba při spuštění chatu:', error);
+        alert('Chyba při spuštění chatu');
+      }
+    }
+
     function closeDetail(){
       const ov = document.getElementById('overlay');
       const drawer = document.getElementById('drawer');
@@ -1177,13 +1231,38 @@
        INIT + EVENTS
     ========================== */
     function syncInputsFromState(){
-      q.value = state.q; platform.value = state.platform; mode.value = state.mode; category.value = state.category; city.value = state.city; sort.value = state.sort; pageSize.value = String(state.pageSize);
+      q.value = state.q; 
+      platform.value = state.platform; 
+      mode.value = state.mode; 
+      category.value = state.category; 
+      city.value = state.city; 
+      sort.value = state.sort; 
+      pageSize.value = String(state.pageSize);
+      
+      // Nové filtry
+      document.getElementById('minPrice').value = state.minPrice || '';
+      document.getElementById('maxPrice').value = state.maxPrice || '';
+      document.getElementById('minRating').value = String(state.minRating);
+      minFollowers.value = state.minFollowers || '';
+      
       minFollowers.disabled = (state.platform==='all');
       document.getElementById('minFollowersHint').style.display = state.platform==='all' ? '' : 'none';
-      premiumOnly.checked = state.premiumOnly; infinite.checked = state.infinite;
+      premiumOnly.checked = state.premiumOnly; 
+      infinite.checked = state.infinite;
     }
 
-    function resetPageAndRender(){ state.page = 1; writeQS(); render(); }
+    async function resetPageAndRender(){ 
+      state.page = 1; 
+      writeQS(); 
+      
+      // Reload dat z API při změně důležitých filtrů
+      const shouldReload = true; // Pro teď vždy reloadujeme
+      if (shouldReload) {
+        await loadAllCreators();
+      }
+      
+      render(); 
+    }
 
     document.addEventListener('DOMContentLoaded', ()=>{
       lucide.createIcons();
@@ -1205,17 +1284,51 @@
       writeQS();
       render();
 
-      q.addEventListener('input', (e)=>{ state.q = e.target.value; resetPageAndRender(); });
-      platform.addEventListener('change', (e)=>{ state.platform = e.target.value; syncInputsFromState(); resetPageAndRender(); });
-      mode.addEventListener('change', (e)=>{ state.mode = e.target.value; resetPageAndRender(); });
-      category.addEventListener('change', (e)=>{ state.category = e.target.value; resetPageAndRender(); });
-      city.addEventListener('change', (e)=>{ state.city = e.target.value; resetPageAndRender(); });
-      sort.addEventListener('change', (e)=>{ state.sort = e.target.value; resetPageAndRender(); });
-      pageSize.addEventListener('change', (e)=>{ state.pageSize = Number(e.target.value); resetPageAndRender(); });
-      maxPrice.addEventListener('input', (e)=>{ const v = e.target.value.trim(); state.maxPrice = v? Number(v) : null; resetPageAndRender(); });
-      minFollowers.addEventListener('input', (e)=>{ const v = e.target.value.trim(); state.minFollowers = v? Number(v) : null; resetPageAndRender(); });
-      premiumOnly.addEventListener('change', (e)=>{ state.premiumOnly = e.target.checked; resetPageAndRender(); });
-      infinite.addEventListener('change', (e)=>{ state.infinite = e.target.checked; resetPageAndRender(); });
+      q.addEventListener('input', async (e)=>{ state.q = e.target.value; await resetPageAndRender(); });
+      platform.addEventListener('change', async (e)=>{ state.platform = e.target.value; syncInputsFromState(); await resetPageAndRender(); });
+      mode.addEventListener('change', async (e)=>{ state.mode = e.target.value; await resetPageAndRender(); });
+      category.addEventListener('change', async (e)=>{ state.category = e.target.value; await resetPageAndRender(); });
+      city.addEventListener('change', async (e)=>{ state.city = e.target.value; await resetPageAndRender(); });
+      sort.addEventListener('change', async (e)=>{ state.sort = e.target.value; await resetPageAndRender(); });
+      pageSize.addEventListener('change', async (e)=>{ state.pageSize = Number(e.target.value); await resetPageAndRender(); });
+      
+      // Cenové filtry
+      const minPrice = document.getElementById('minPrice');
+      const maxPrice = document.getElementById('maxPrice');
+      minPrice.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.minPrice = v? Number(v) : null; await resetPageAndRender(); });
+      maxPrice.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.maxPrice = v? Number(v) : null; await resetPageAndRender(); });
+      
+      // Rating filter
+      const minRating = document.getElementById('minRating');
+      minRating.addEventListener('change', async (e)=>{ state.minRating = Number(e.target.value); await resetPageAndRender(); });
+      
+      // Followers filter
+      minFollowers.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.minFollowers = v? Number(v) : null; await resetPageAndRender(); });
+      
+      // Checkboxes
+      premiumOnly.addEventListener('change', async (e)=>{ state.premiumOnly = e.target.checked; await resetPageAndRender(); });
+      infinite.addEventListener('change', async (e)=>{ state.infinite = e.target.checked; await resetPageAndRender(); });
+      
+      // Reset button
+      document.getElementById('resetFilters').addEventListener('click', async ()=>{ 
+        // Reset všech filtrů na výchozí hodnoty
+        state.q = '';
+        state.platform = 'all';
+        state.category = 'all'; 
+        state.city = 'all';
+        state.sort = 'relevance';
+        state.minPrice = null;
+        state.maxPrice = null;
+        state.minRating = 0;
+        state.minFollowers = null;
+        state.premiumOnly = false;
+        state.infinite = false;
+        state.pageSize = 12;
+        state.page = 1;
+        
+        syncInputsFromState(); 
+        await resetPageAndRender(); 
+      });
 
       // Advanced toggle (just focuses inputs)
       document.getElementById('advancedBtn').addEventListener('click', ()=>{

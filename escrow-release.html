@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uvolnění platby - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="email-notification-service.js"></script>
+  <script src="payment-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="order-management.html" class="flex items-center gap-2 text-white/60 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Zpět na objednávky
+      </a>
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Kartao.cz</div>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center">
+      <div class="animate-spin mx-auto w-8 h-8 mb-4">
+        <i data-lucide="loader-2" class="w-8 h-8"></i>
+      </div>
+      <div class="text-white/60">Načítání objednávky...</div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="hidden">
+      <!-- Order Header -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-2xl font-bold">Schválení dokončené práce</h1>
+          <span id="orderStatus" class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400">
+            Probíhající
+          </span>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-white/60">Objednávka:</span>
+              <span id="orderTitle" class="font-medium"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/60">Tvůrce:</span>
+              <div class="flex items-center gap-2">
+                <img id="creatorAvatar" src="" class="w-6 h-6 rounded-full">
+                <span id="creatorName"></span>
+              </div>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/60">Datum objednávky:</span>
+              <span id="orderDate"></span>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-white/60">Částka k uvolnění:</span>
+              <span id="escrowAmount" class="text-lg font-semibold text-green-400"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-white/60">Poplatek platformy:</span>
+              <span id="platformFee"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-white/60">Celkově zaplaceno:</span>
+              <span id="totalPaid"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creator's Delivery -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="package" class="w-5 h-5"></i>
+          Dokončená práce od tvůrce
+        </h2>
+        
+        <div id="deliveryContent" class="space-y-4">
+          <!-- Content will be loaded dynamically -->
+        </div>
+        
+        <!-- Delivery Files/Links -->
+        <div id="deliveryFiles" class="mt-6">
+          <!-- Files will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Review & Rating -->
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="star" class="w-5 h-5"></i>
+          Hodnocení práce
+        </h2>
+        
+        <div class="space-y-4">
+          <!-- Star Rating -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Hodnocení (povinné)</label>
+            <div class="flex gap-1" id="starRating">
+              <button class="star-btn" data-rating="1"><i data-lucide="star" class="w-6 h-6"></i></button>
+              <button class="star-btn" data-rating="2"><i data-lucide="star" class="w-6 h-6"></i></button>
+              <button class="star-btn" data-rating="3"><i data-lucide="star" class="w-6 h-6"></i></button>
+              <button class="star-btn" data-rating="4"><i data-lucide="star" class="w-6 h-6"></i></button>
+              <button class="star-btn" data-rating="5"><i data-lucide="star" class="w-6 h-6"></i></button>
+            </div>
+            <div id="ratingText" class="text-sm text-white/60 mt-1">Vyberte hodnocení</div>
+          </div>
+          
+          <!-- Review Text -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Vaše recenze (volitelné)</label>
+            <textarea id="reviewText" 
+                      placeholder="Popište vaši spokojenost s prací tvůrce..."
+                      class="w-full h-32 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm resize-none"></textarea>
+          </div>
+          
+          <!-- Public Review Toggle -->
+          <div class="flex items-center gap-3">
+            <input type="checkbox" id="publicReview" checked 
+                   class="rounded bg-neutral-800 border-white/20 text-fuchsia-600">
+            <label for="publicReview" class="text-sm">Zveřejnit recenzi na profilu tvůrce</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-4">
+        <!-- Approve Button -->
+        <button id="approveBtn" class="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+          Schválit práci a uvolnit platbu
+        </button>
+        
+        <!-- Request Changes Button -->
+        <button id="changesBtn" class="btn btn-outline w-full">
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+          Požádat o úpravy
+        </button>
+        
+        <!-- Dispute Button -->
+        <details class="mt-6">
+          <summary class="cursor-pointer text-sm text-white/60 hover:text-white">
+            Máte problém s dokončenou prací?
+          </summary>
+          <div class="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <p class="text-sm text-red-200 mb-3">
+              Pokud nejste spokojeni s prací a tvůrce nereaguje na vaše připomínky, 
+              můžete otevřít spor. Náš tým situaci posoudí a pomůže najít řešení.
+            </p>
+            <button id="disputeBtn" class="btn btn-sm text-red-400 border-red-500/50 hover:bg-red-500/10">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              Otevřít spor
+            </button>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden text-center">
+      <div class="w-24 h-24 mx-auto mb-6 bg-red-500/20 rounded-full flex items-center justify-center">
+        <i data-lucide="alert-circle" class="w-12 h-12 text-red-400"></i>
+      </div>
+      <h2 class="text-2xl font-semibold mb-3 text-red-400">Chyba při načítání</h2>
+      <p class="text-white/60 mb-6" id="errorMessage">Nepodařilo se načíst detaily objednávky</p>
+      <a href="order-management.html" class="btn btn-primary">Zpět na objednávky</a>
+    </div>
+
+    <!-- Changes Request Modal -->
+    <div id="changesModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
+      <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-neutral-900 border border-white/20 rounded-2xl p-6 max-w-2xl w-full">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold">Požádat o úpravy</h3>
+            <button id="closeChangesModal" class="text-white/60 hover:text-white">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Co potřebujete upravit?</label>
+              <textarea id="changesText" 
+                        placeholder="Popište konkrétně, co by mělo být změněno nebo doplněno..."
+                        class="w-full h-32 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm resize-none"></textarea>
+            </div>
+            
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+              <p class="text-sm text-blue-200">
+                <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+                Požadavek bude odeslán tvůrci. Platba zůstane v escrow do dokončení úprav.
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button id="cancelChanges" class="btn btn-outline flex-1">Zrušit</button>
+            <button id="submitChanges" class="btn btn-primary flex-1">Odeslat požadavek</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let paymentService;
+    let reviewService;
+    let currentUser;
+    let currentOrder;
+    let selectedRating = 0;
+
+    // Get order ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order');
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      
+      if (!orderId) {
+        showError('Nebyl specifikován ID objednávky');
+        return;
+      }
+      
+      await initializeServices();
+      await loadOrderForApproval();
+    });
+
+    async function initializeServices() {
+      paymentService = new PaymentService();
+      reviewService = new ReviewService();
+    }
+
+    async function loadOrderForApproval() {
+      try {
+        currentOrder = await paymentService.getOrder(orderId);
+        
+        if (!currentOrder) {
+          throw new Error('Objednávka nenalezena');
+        }
+
+        // Verify user has access to approve this order
+        if (currentOrder.clientId !== currentUser.uid) {
+          throw new Error('Nemáte oprávnění schválit tuto objednávku');
+        }
+
+        // Check if order is in correct state for approval
+        if (currentOrder.status !== 'in_progress' && currentOrder.status !== 'pending_approval') {
+          throw new Error('Objednávka není ve stavu pro schválení');
+        }
+
+        // Load creator details
+        const creatorService = new CreatorService();
+        const creator = await creatorService.getCreatorDetail(currentOrder.creatorId);
+        
+        // Display order details
+        displayOrderDetails(currentOrder, creator);
+        
+        // Load delivery content
+        await loadDeliveryContent(currentOrder);
+        
+      } catch (error) {
+        console.error('Error loading order:', error);
+        showError(error.message);
+      }
+    }
+
+    function displayOrderDetails(order, creator) {
+      // Hide loading, show main content
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('mainContent').classList.remove('hidden');
+      
+      // Fill order details
+      document.getElementById('orderTitle').textContent = order.title;
+      document.getElementById('orderDate').textContent = 
+        new Date(order.createdAt).toLocaleDateString('cs-CZ');
+      
+      // Creator info
+      if (creator) {
+        document.getElementById('creatorName').textContent = creator.name;
+        document.getElementById('creatorAvatar').src = 
+          creator.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${creator.name}`;
+      }
+      
+      // Financial details
+      const platformFee = Math.round(order.amount * 0.05);
+      const totalPaid = order.amount + platformFee;
+      
+      document.getElementById('escrowAmount').textContent = PaymentService.formatAmount(order.amount);
+      document.getElementById('platformFee').textContent = PaymentService.formatAmount(platformFee);
+      document.getElementById('totalPaid').textContent = PaymentService.formatAmount(totalPaid);
+    }
+
+    async function loadDeliveryContent(order) {
+      const container = document.getElementById('deliveryContent');
+      
+      // Mock delivery content - in real app this would come from order updates/messages
+      const deliveryData = {
+        message: order.deliveryMessage || 'Práce byla dokončena podle zadání. Všechny požadavky byly splněny.',
+        files: order.deliveryFiles || [],
+        completedAt: order.deliveryDate || new Date().toISOString()
+      };
+      
+      container.innerHTML = `
+        <div class="bg-neutral-800/50 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-white/60">Zpráva od tvůrce:</span>
+            <span class="text-xs text-white/40">
+              ${new Date(deliveryData.completedAt).toLocaleDateString('cs-CZ')} 
+              ${new Date(deliveryData.completedAt).toLocaleTimeString('cs-CZ', {hour: '2-digit', minute: '2-digit'})}
+            </span>
+          </div>
+          <p class="text-white/90">${deliveryData.message}</p>
+        </div>
+      `;
+      
+      // Load delivery files if any
+      if (deliveryData.files.length > 0) {
+        const filesContainer = document.getElementById('deliveryFiles');
+        filesContainer.innerHTML = `
+          <h4 class="font-medium mb-3">Dodané soubory:</h4>
+          <div class="space-y-2">
+            ${deliveryData.files.map(file => `
+              <div class="flex items-center justify-between p-3 bg-neutral-800/50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="file" class="w-5 h-5 text-white/60"></i>
+                  <span>${file.name}</span>
+                </div>
+                <button class="text-blue-400 hover:text-blue-300 text-sm">Stáhnout</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function setupEventListeners() {
+      // Star rating
+      document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedRating = parseInt(btn.dataset.rating);
+          updateStarRating();
+          updateApproveButton();
+        });
+        
+        btn.addEventListener('mouseover', () => {
+          highlightStars(parseInt(btn.dataset.rating));
+        });
+      });
+      
+      document.getElementById('starRating').addEventListener('mouseleave', () => {
+        updateStarRating();
+      });
+
+      // Approve button
+      document.getElementById('approveBtn').addEventListener('click', approveOrder);
+      
+      // Changes button
+      document.getElementById('changesBtn').addEventListener('click', () => {
+        document.getElementById('changesModal').classList.remove('hidden');
+      });
+      
+      // Dispute button
+      document.getElementById('disputeBtn').addEventListener('click', openDispute);
+      
+      // Modal controls
+      document.getElementById('closeChangesModal').addEventListener('click', () => {
+        document.getElementById('changesModal').classList.add('hidden');
+      });
+      
+      document.getElementById('cancelChanges').addEventListener('click', () => {
+        document.getElementById('changesModal').classList.add('hidden');
+      });
+      
+      document.getElementById('submitChanges').addEventListener('click', submitChangesRequest);
+    }
+
+    function updateStarRating() {
+      document.querySelectorAll('.star-btn').forEach((btn, index) => {
+        const star = btn.querySelector('i');
+        if (index < selectedRating) {
+          star.setAttribute('fill', 'currentColor');
+          btn.classList.add('text-yellow-400');
+        } else {
+          star.removeAttribute('fill');
+          btn.classList.remove('text-yellow-400');
+          btn.classList.add('text-white/30');
+        }
+      });
+      
+      const ratingTexts = ['', 'Velmi špatné', 'Špatné', 'Průměrné', 'Dobré', 'Výborné'];
+      document.getElementById('ratingText').textContent = ratingTexts[selectedRating] || 'Vyberte hodnocení';
+    }
+
+    function highlightStars(rating) {
+      document.querySelectorAll('.star-btn').forEach((btn, index) => {
+        const star = btn.querySelector('i');
+        if (index < rating) {
+          star.setAttribute('fill', 'currentColor');
+          btn.classList.add('text-yellow-400');
+          btn.classList.remove('text-white/30');
+        } else {
+          star.removeAttribute('fill');
+          btn.classList.remove('text-yellow-400');
+          btn.classList.add('text-white/30');
+        }
+      });
+    }
+
+    function updateApproveButton() {
+      const approveBtn = document.getElementById('approveBtn');
+      approveBtn.disabled = selectedRating === 0;
+    }
+
+    async function approveOrder() {
+      if (selectedRating === 0) {
+        alert('Prosím vyberte hodnocení před schválením');
+        return;
+      }
+
+      const reviewText = document.getElementById('reviewText').value.trim();
+      const publicReview = document.getElementById('publicReview').checked;
+
+      try {
+        // Disable button during processing
+        const approveBtn = document.getElementById('approveBtn');
+        approveBtn.disabled = true;
+        approveBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Zpracování...';
+
+        // Submit review first
+        if (publicReview) {
+          await reviewService.addReview({
+            creatorId: currentOrder.creatorId,
+            clientId: currentUser.uid,
+            rating: selectedRating,
+            comment: reviewText,
+            orderId: currentOrder.id,
+            serviceType: currentOrder.type
+          });
+        }
+
+        // Release escrow and complete order
+        const success = await paymentService.releaseEscrow(currentOrder.id, {
+          approved: true,
+          rating: selectedRating,
+          review: reviewText,
+          approvedAt: new Date().toISOString()
+        });
+
+        if (success) {
+          // Show success message and redirect
+          alert('Platba byla úspěšně uvolněna! Tvůrce obdrží peníze do 24 hodin.');
+          window.location.href = 'order-management.html';
+        } else {
+          throw new Error('Chyba při uvolňování platby');
+        }
+
+      } catch (error) {
+        console.error('Approval error:', error);
+        alert('Došlo k chybě při schvalování. Zkuste to prosím znovu.');
+        
+        // Re-enable button
+        const approveBtn = document.getElementById('approveBtn');
+        approveBtn.disabled = selectedRating === 0;
+        approveBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> Schválit práci a uvolnit platbu';
+        lucide.createIcons();
+      }
+    }
+
+    async function submitChangesRequest() {
+      const changesText = document.getElementById('changesText').value.trim();
+      
+      if (!changesText) {
+        alert('Popište prosím, co je potřeba upravit');
+        return;
+      }
+
+      try {
+        // In real app, this would send a message to creator or update order status
+        const success = await paymentService.requestOrderChanges(currentOrder.id, {
+          changes: changesText,
+          requestedAt: new Date().toISOString(),
+          requestedBy: currentUser.uid
+        });
+
+        if (success) {
+          alert('Požadavek na úpravy byl odeslán tvůrci. Budete informováni o postupu.');
+          document.getElementById('changesModal').classList.add('hidden');
+          window.location.href = 'order-management.html';
+        } else {
+          alert('Chyba při odesílání požadavku');
+        }
+
+      } catch (error) {
+        console.error('Changes request error:', error);
+        alert('Došlo k chybě při odesílání požadavku');
+      }
+    }
+
+    function openDispute() {
+      if (confirm('Opravdu chcete otevřít spor? Tato akce je nevratná a situaci bude řešit náš tým.')) {
+        // In real app, this would create a dispute ticket
+        alert('Spor byl otevřen. Náš tým vás bude kontaktovat do 24 hodin.');
+        window.location.href = 'order-management.html';
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').classList.remove('hidden');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupEventListeners();
+      updateApproveButton();
+    });
+  </script>
+
+  <style>
+    .btn {
+      @apply px-4 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2;
+    }
+    
+    .btn-primary {
+      @apply bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white;
+    }
+    
+    .btn-outline {
+      @apply border border-white/20 hover:border-white/40 text-white/80 hover:text-white;
+    }
+    
+    .btn-sm {
+      @apply text-sm px-3 py-2;
+    }
+    
+    .star-btn {
+      @apply transition-colors hover:scale-110 transform;
+    }
+    
+    .star-btn:hover {
+      @apply text-yellow-400;
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moje objednávky - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  <script src="email-notification-service.js"></script>
+  <script src="payment-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Kartao.cz</div>
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="index.html" class="text-white/60 hover:text-white transition">Domů</a>
+        <a href="creator-dashboard.html" class="text-white/60 hover:text-white transition">Dashboard</a>
+        <button id="logoutBtn" class="text-white/60 hover:text-white transition">Odhlásit</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Moje objednávky</h1>
+      <p class="text-white/60">Přehled všech vašich objednávek a jejich aktuální stav</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="text-2xl font-bold text-blue-400" id="totalOrders">0</div>
+        <div class="text-sm text-white/60">Celkem objednávek</div>
+      </div>
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="text-2xl font-bold text-yellow-400" id="pendingOrders">0</div>
+        <div class="text-sm text-white/60">Čekající</div>
+      </div>
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="text-2xl font-bold text-green-400" id="completedOrders">0</div>
+        <div class="text-sm text-white/60">Dokončené</div>
+      </div>
+      <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+        <div class="text-2xl font-bold text-white" id="totalSpent">0 Kč</div>
+        <div class="text-sm text-white/60">Celkem utraceno</div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex gap-2 mb-6 overflow-x-auto">
+      <button class="filter-tab active" data-filter="all">Všechny</button>
+      <button class="filter-tab" data-filter="pending">Čekající</button>
+      <button class="filter-tab" data-filter="in_progress">Probíhající</button>
+      <button class="filter-tab" data-filter="completed">Dokončené</button>
+      <button class="filter-tab" data-filter="cancelled">Zrušené</button>
+    </div>
+
+    <!-- Orders List -->
+    <div id="ordersContainer" class="space-y-4">
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div class="animate-spin mx-auto w-8 h-8 mb-4">
+          <i data-lucide="loader-2" class="w-8 h-8"></i>
+        </div>
+        <div class="text-white/60">Načítání objednávek...</div>
+      </div>
+      
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <div class="w-24 h-24 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center">
+          <i data-lucide="shopping-bag" class="w-12 h-12 text-white/30"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-white/70">Zatím žádné objednávky</h3>
+        <p class="text-white/50 mb-6">Začněte objevovat tvůrce a objednejte si svou první službu</p>
+        <a href="index.html" class="btn btn-primary">Prozkoumat tvůrce</a>
+      </div>
+      
+      <!-- Orders will be populated here -->
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
+      <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-neutral-900 border border-white/20 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold">Detail objednávky</h3>
+            <button id="closeModal" class="text-white/60 hover:text-white">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          
+          <div id="modalContent">
+            <!-- Content will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let paymentService;
+    let currentUser;
+    let allOrders = [];
+    let filteredOrders = [];
+    let currentFilter = 'all';
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      paymentService = new PaymentService();
+      
+      await loadOrders();
+      setupEventListeners();
+    });
+
+    async function loadOrders() {
+      try {
+        // Load user's orders (as client)
+        allOrders = await paymentService.getUserOrders(currentUser.uid);
+        
+        updateStats();
+        filterOrders(currentFilter);
+        
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        showError('Chyba při načítání objednávek');
+      }
+    }
+
+    function updateStats() {
+      const stats = {
+        total: allOrders.length,
+        pending: allOrders.filter(o => o.status === 'pending').length,
+        completed: allOrders.filter(o => o.status === 'completed').length,
+        totalSpent: allOrders.reduce((sum, order) => {
+          if (order.status === 'completed') {
+            const platformFee = Math.round(order.amount * 0.05);
+            return sum + order.amount + platformFee;
+          }
+          return sum;
+        }, 0)
+      };
+
+      document.getElementById('totalOrders').textContent = stats.total;
+      document.getElementById('pendingOrders').textContent = stats.pending;
+      document.getElementById('completedOrders').textContent = stats.completed;
+      document.getElementById('totalSpent').textContent = PaymentService.formatAmount(stats.totalSpent);
+    }
+
+    function filterOrders(filter) {
+      currentFilter = filter;
+      
+      if (filter === 'all') {
+        filteredOrders = allOrders;
+      } else {
+        filteredOrders = allOrders.filter(order => order.status === filter);
+      }
+      
+      renderOrders();
+      updateFilterTabs();
+    }
+
+    function renderOrders() {
+      const container = document.getElementById('ordersContainer');
+      const loadingState = document.getElementById('loadingState');
+      const emptyState = document.getElementById('emptyState');
+      
+      // Hide loading state
+      loadingState.style.display = 'none';
+      
+      if (filteredOrders.length === 0) {
+        emptyState.classList.remove('hidden');
+        container.innerHTML = '';
+        container.appendChild(emptyState);
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      
+      // Sort orders by creation date (newest first)
+      const sortedOrders = [...filteredOrders].sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      
+      container.innerHTML = sortedOrders.map(order => createOrderCard(order)).join('');
+      
+      // Reattach event listeners
+      attachOrderEventListeners();
+    }
+
+    function createOrderCard(order) {
+      const statusConfig = getStatusConfig(order.status);
+      const platformFee = Math.round(order.amount * 0.05);
+      const totalAmount = order.amount + platformFee;
+      const createdAt = new Date(order.createdAt);
+      
+      return `
+        <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 hover:border-white/20 transition cursor-pointer order-card" 
+             data-order-id="${order.id}">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="font-semibold">${order.title}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgClass} ${statusConfig.textClass}">
+                  ${statusConfig.label}
+                </span>
+              </div>
+              <p class="text-white/60 text-sm">Objednávka #${order.id}</p>
+              <p class="text-white/40 text-xs">${createdAt.toLocaleDateString('cs-CZ')} ${createdAt.toLocaleTimeString('cs-CZ', {hour: '2-digit', minute: '2-digit'})}</p>
+            </div>
+            <div class="text-right">
+              <div class="text-lg font-semibold">${PaymentService.formatAmount(totalAmount)}</div>
+              <div class="text-sm text-white/60">vč. poplatku</div>
+            </div>
+          </div>
+          
+          ${order.scheduledDate ? `
+            <div class="flex items-center gap-2 text-sm text-white/60 mb-4">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+              ${new Date(order.scheduledDate).toLocaleDateString('cs-CZ')} v ${order.scheduledTime}
+            </div>
+          ` : ''}
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-sm text-white/60">
+              <i data-lucide="user" class="w-4 h-4"></i>
+              <span>Tvůrce ID: ${order.creatorId}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              ${order.status === 'completed' ? `
+                <button class="btn-sm btn-outline review-btn" data-creator-id="${order.creatorId}" data-order-id="${order.id}">
+                  <i data-lucide="star" class="w-4 h-4"></i>
+                  Hodnotit
+                </button>
+              ` : ''}
+              <button class="btn-sm btn-primary">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+                Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getStatusConfig(status) {
+      const configs = {
+        pending: {
+          label: 'Čekající',
+          bgClass: 'bg-yellow-500/20',
+          textClass: 'text-yellow-400'
+        },
+        in_progress: {
+          label: 'Probíhající',
+          bgClass: 'bg-blue-500/20',
+          textClass: 'text-blue-400'
+        },
+        completed: {
+          label: 'Dokončeno',
+          bgClass: 'bg-green-500/20',
+          textClass: 'text-green-400'
+        },
+        cancelled: {
+          label: 'Zrušeno',
+          bgClass: 'bg-red-500/20',
+          textClass: 'text-red-400'
+        }
+      };
+      
+      return configs[status] || configs.pending;
+    }
+
+    function updateFilterTabs() {
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        if (tab.dataset.filter === currentFilter) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+    }
+
+    function attachOrderEventListeners() {
+      // Order card click handlers
+      document.querySelectorAll('.order-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('button')) {
+            const orderId = card.dataset.orderId;
+            showOrderDetail(orderId);
+          }
+        });
+      });
+
+      // Review button handlers
+      document.querySelectorAll('.review-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const creatorId = btn.dataset.creatorId;
+          const orderId = btn.dataset.orderId;
+          // Redirect to review page (could be implemented)
+          window.location.href = `creator-detail.html?id=${creatorId}#review`;
+        });
+      });
+    }
+
+    async function showOrderDetail(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      try {
+        // Load creator details
+        const creatorService = new CreatorService();
+        const creator = await creatorService.getCreatorDetail(order.creatorId);
+        
+        const modal = document.getElementById('orderModal');
+        const content = document.getElementById('modalContent');
+        
+        const statusConfig = getStatusConfig(order.status);
+        const platformFee = Math.round(order.amount * 0.05);
+        const totalAmount = order.amount + platformFee;
+        
+        content.innerHTML = `
+          <div class="space-y-6">
+            <!-- Order Status -->
+            <div class="text-center">
+              <span class="px-4 py-2 rounded-full text-sm font-medium ${statusConfig.bgClass} ${statusConfig.textClass}">
+                ${statusConfig.label}
+              </span>
+            </div>
+            
+            <!-- Order Info -->
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-white/60">Číslo objednávky:</span>
+                <span class="font-mono text-sm">${order.id}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-white/60">Služba:</span>
+                <span>${order.title}</span>
+              </div>
+              
+              ${creator ? `
+                <div class="flex justify-between items-center">
+                  <span class="text-white/60">Tvůrce:</span>
+                  <div class="flex items-center gap-2">
+                    <img src="${creator.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${creator.name}`}" 
+                         class="w-6 h-6 rounded-full">
+                    <span>${creator.name}</span>
+                  </div>
+                </div>
+              ` : ''}
+              
+              <div class="flex justify-between">
+                <span class="text-white/60">Vytvořeno:</span>
+                <span>${new Date(order.createdAt).toLocaleDateString('cs-CZ')} ${new Date(order.createdAt).toLocaleTimeString('cs-CZ', {hour: '2-digit', minute: '2-digit'})}</span>
+              </div>
+              
+              ${order.scheduledDate ? `
+                <div class="flex justify-between">
+                  <span class="text-white/60">Naplánováno:</span>
+                  <span>${new Date(order.scheduledDate).toLocaleDateString('cs-CZ')} v ${order.scheduledTime}</span>
+                </div>
+              ` : ''}
+            </div>
+            
+            <!-- Description -->
+            ${order.description ? `
+              <div>
+                <h4 class="font-medium mb-2">Popis zakázky:</h4>
+                <p class="text-white/70 bg-neutral-800/50 rounded-lg p-3 text-sm">${order.description}</p>
+              </div>
+            ` : ''}
+            
+            <!-- Pricing Breakdown -->
+            <div class="border-t border-white/10 pt-4">
+              <h4 class="font-medium mb-3">Cenový rozpis:</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-white/60">Cena služby:</span>
+                  <span>${PaymentService.formatAmount(order.amount)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-white/60">Poplatek platformy (5%):</span>
+                  <span>${PaymentService.formatAmount(platformFee)}</span>
+                </div>
+                <div class="flex justify-between font-semibold text-lg border-t border-white/10 pt-2">
+                  <span>Celkem:</span>
+                  <span>${PaymentService.formatAmount(totalAmount)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+              ${order.status === 'pending' || order.status === 'in_progress' ? `
+                <a href="chat.html?creator=${order.creatorId}" class="btn btn-primary flex-1">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  Napsat tvůrci
+                </a>
+              ` : ''}
+              
+              ${order.status === 'completed' ? `
+                <button class="btn btn-outline flex-1" onclick="downloadInvoice('${order.id}')">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                  Stáhnout fakturu
+                </button>
+              ` : ''}
+              
+              ${order.status === 'pending' ? `
+                <button class="btn btn-outline text-red-400 border-red-500/30" onclick="cancelOrder('${order.id}')">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                  Zrušit
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+        
+      } catch (error) {
+        console.error('Error loading order details:', error);
+      }
+    }
+
+    function setupEventListeners() {
+      // Filter tabs
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          filterOrders(tab.dataset.filter);
+        });
+      });
+
+      // Close modal
+      document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('orderModal').classList.add('hidden');
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        firebase.auth().signOut().then(() => {
+          window.location.href = 'login.html';
+        });
+      });
+
+      // Close modal on backdrop click
+      document.getElementById('orderModal').addEventListener('click', (e) => {
+        if (e.target.id === 'orderModal') {
+          document.getElementById('orderModal').classList.add('hidden');
+        }
+      });
+    }
+
+    function showError(message) {
+      // Simple error display
+      alert(message);
+    }
+
+    // Utility functions
+    function downloadInvoice(orderId) {
+      // This would generate and download invoice
+      alert('Funkce stahování faktury bude implementována v budoucnu');
+    }
+
+    function cancelOrder(orderId) {
+      if (confirm('Opravdu chcete zrušit tuto objednávku?')) {
+        // Cancel order logic here
+        alert('Funkce zrušení objednávky bude implementována v budoucnu');
+      }
+    }
+
+    // Initialize icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+
+  <style>
+    .btn {
+      @apply px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2;
+    }
+    
+    .btn-primary {
+      @apply bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white;
+    }
+    
+    .btn-outline {
+      @apply border border-white/20 hover:border-white/40 text-white/80 hover:text-white;
+    }
+    
+    .btn-sm {
+      @apply text-sm px-3 py-1;
+    }
+    
+    .filter-tab {
+      @apply px-4 py-2 rounded-lg font-medium transition whitespace-nowrap text-white/60 hover:text-white border border-white/10 hover:border-white/20;
+    }
+    
+    .filter-tab.active {
+      @apply bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white border-transparent;
+    }
+  </style>
+</body>
+</html>

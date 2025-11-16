@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rezervace termínu - Kartao.cz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    .calendar-day {
+      aspect-ratio: 1;
+      min-height: 40px;
+    }
+    .calendar-day.available {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .calendar-day.available:hover {
+      background: rgba(16, 185, 129, 0.2);
+    }
+    .calendar-day.unavailable {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: rgba(255, 255, 255, 0.3);
+    }
+    .calendar-day.selected {
+      background: linear-gradient(135deg, #db58f6, #ffb347);
+      border: 1px solid #db58f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  
+  <!-- Firebase Setup -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="api-services.js"></script>
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="font-bold">Rezervace termínu</div>
+      </a>
+      
+      <button onclick="history.back()" class="text-white/70 hover:text-white transition">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    
+    <!-- Creator Info -->
+    <div id="creatorInfo" class="mb-8 p-6 bg-neutral-900/50 border border-white/10 rounded-xl">
+      <div class="flex items-start gap-4">
+        <img id="creatorAvatar" src="" class="w-16 h-16 rounded-xl object-cover">
+        <div class="flex-1">
+          <h1 id="creatorName" class="text-2xl font-bold mb-2"></h1>
+          <div id="creatorCategory" class="text-white/60 mb-3"></div>
+          <div class="flex items-center gap-4 text-sm">
+            <div class="flex items-center gap-1">
+              <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
+              <span id="creatorRating">0</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-4 h-4 text-white/60"></i>
+              <span id="creatorCity"></span>
+            </div>
+            <div class="flex items-center gap-1">
+              <i data-lucide="euro" class="w-4 h-4 text-green-400"></i>
+              <span id="creatorPrice">0</span> Kč / příspěvek
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Calendar -->
+      <div class="space-y-6">
+        <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold">Vyberte termín</h2>
+            <div class="flex items-center gap-2">
+              <button id="prevMonth" class="p-2 hover:bg-white/10 rounded-lg transition">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <span id="currentMonth" class="font-medium px-4"></span>
+              <button id="nextMonth" class="p-2 hover:bg-white/10 rounded-lg transition">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Calendar Grid -->
+          <div class="grid grid-cols-7 gap-1 mb-4">
+            <div class="text-center text-sm text-white/60 py-2">Po</div>
+            <div class="text-center text-sm text-white/60 py-2">Út</div>
+            <div class="text-center text-sm text-white/60 py-2">St</div>
+            <div class="text-center text-sm text-white/60 py-2">Čt</div>
+            <div class="text-center text-sm text-white/60 py-2">Pá</div>
+            <div class="text-center text-sm text-white/60 py-2">So</div>
+            <div class="text-center text-sm text-white/60 py-2">Ne</div>
+          </div>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
+          
+          <!-- Legend -->
+          <div class="mt-6 flex items-center gap-6 text-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded border border-green-400/30 bg-green-400/10"></div>
+              <span>Dostupné</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded border border-red-400/30 bg-red-400/10"></div>
+              <span>Obsazené</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded bg-gradient-to-r from-fuchsia-500 to-amber-400"></div>
+              <span>Vybráno</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Time Slots -->
+        <div id="timeSlots" class="bg-neutral-900/50 border border-white/10 rounded-xl p-6 hidden">
+          <h3 class="text-lg font-semibold mb-4">Dostupné časy</h3>
+          <div id="timeGrid" class="grid grid-cols-3 gap-2"></div>
+        </div>
+      </div>
+      
+      <!-- Booking Form -->
+      <div class="space-y-6">
+        <div class="bg-neutral-900/50 border border-white/10 rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-4">Detaily rezervace</h3>
+          
+          <form id="bookingForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Typ spolupráce</label>
+              <select id="collaborationType" class="w-full px-3 py-2 bg-neutral-800 border border-white/20 rounded-lg focus:border-fuchsia-500 outline-none">
+                <option value="post">Instagram post</option>
+                <option value="story">Instagram story</option>
+                <option value="reel">Instagram reel</option>
+                <option value="tiktok">TikTok video</option>
+                <option value="youtube">YouTube video</option>
+                <option value="campaign">Celá kampaň</option>
+                <option value="consultation">Konzultace</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-2">Rozpočet (Kč)</label>
+              <input id="budget" type="number" min="1000" step="500" class="w-full px-3 py-2 bg-neutral-800 border border-white/20 rounded-lg focus:border-fuchsia-500 outline-none" placeholder="10000">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-2">Popis kampaně</label>
+              <textarea id="description" rows="4" class="w-full px-3 py-2 bg-neutral-800 border border-white/20 rounded-lg focus:border-fuchsia-500 outline-none resize-none" placeholder="Popište svou představu o spolupráci..."></textarea>
+            </div>
+            
+            <div class="bg-neutral-800/50 border border-white/10 rounded-lg p-4">
+              <h4 class="font-medium mb-2">Shrnutí rezervace</h4>
+              <div class="space-y-1 text-sm text-white/80">
+                <div class="flex justify-between">
+                  <span>Datum:</span>
+                  <span id="selectedDate">Nevybráno</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Čas:</span>
+                  <span id="selectedTime">Nevybráno</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Typ:</span>
+                  <span id="selectedType">Instagram post</span>
+                </div>
+                <div class="flex justify-between font-medium border-t border-white/20 pt-2 mt-2">
+                  <span>Celkem:</span>
+                  <span id="totalPrice">0 Kč</span>
+                </div>
+              </div>
+            </div>
+            
+            <button id="submitBooking" type="submit" class="w-full px-4 py-3 bg-fuchsia-500 hover:bg-fuchsia-600 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Odeslat rezervaci
+            </button>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let selectedCreator = null;
+    let selectedDate = null;
+    let selectedTime = null;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    // Get creator ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const creatorId = urlParams.get('creator');
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        alert('Pro rezervaci se musíte přihlásit');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      
+      if (creatorId) {
+        await loadCreatorInfo();
+      } else {
+        alert('Nebyl specifikován tvůrce');
+        window.location.href = 'index.html';
+      }
+      
+      renderCalendar();
+    });
+
+    async function loadCreatorInfo() {
+      try {
+        const creatorService = new CreatorService();
+        selectedCreator = await creatorService.getCreatorDetail(creatorId);
+        
+        if (!selectedCreator) {
+          alert('Tvůrce nenalezen');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // Fill creator info
+        document.getElementById('creatorAvatar').src = selectedCreator.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${selectedCreator.name}`;
+        document.getElementById('creatorName').textContent = selectedCreator.name;
+        document.getElementById('creatorCategory').textContent = selectedCreator.category + ' • ' + selectedCreator.handle;
+        document.getElementById('creatorRating').textContent = selectedCreator.rating || '4.5';
+        document.getElementById('creatorCity').textContent = selectedCreator.city;
+        document.getElementById('creatorPrice').textContent = DataHelpers.formatFollowers(selectedCreator.price || 5000);
+        
+        // Set default budget
+        document.getElementById('budget').value = selectedCreator.price || 5000;
+        updateSummary();
+        
+      } catch (error) {
+        console.error('Chyba při načítání tvůrce:', error);
+        alert('Chyba při načítání informací o tvůrci');
+      }
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      const monthLabel = document.getElementById('currentMonth');
+      
+      const monthNames = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+                         'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
+      
+      monthLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      // Clear grid
+      grid.innerHTML = '';
+      
+      // Get first day of month and number of days
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const firstDayWeek = (firstDay.getDay() + 6) % 7; // Monday = 0
+      const daysInMonth = lastDay.getDate();
+      
+      // Empty cells for days before month starts
+      for (let i = 0; i < firstDayWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day';
+        grid.appendChild(emptyCell);
+      }
+      
+      // Days of the month
+      const today = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        const cellDate = new Date(currentYear, currentMonth, day);
+        
+        dayCell.className = 'calendar-day flex items-center justify-center text-sm font-medium rounded-lg cursor-pointer transition';
+        dayCell.textContent = day;
+        
+        // Check if day is in the past
+        if (cellDate < today.setHours(0, 0, 0, 0)) {
+          dayCell.className += ' unavailable cursor-not-allowed';
+        } else {
+          // Mock availability - in real app, this would come from creator's calendar
+          const isAvailable = Math.random() > 0.3; // 70% chance available
+          
+          if (isAvailable) {
+            dayCell.className += ' available';
+            dayCell.onclick = () => selectDate(cellDate);
+          } else {
+            dayCell.className += ' unavailable cursor-not-allowed';
+          }
+        }
+        
+        grid.appendChild(dayCell);
+      }
+    }
+
+    function selectDate(date) {
+      selectedDate = date;
+      
+      // Update visual selection
+      document.querySelectorAll('.calendar-day.available').forEach(cell => {
+        cell.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+      
+      // Show time slots
+      showTimeSlots();
+      updateSummary();
+    }
+
+    function showTimeSlots() {
+      const timeSlotsDiv = document.getElementById('timeSlots');
+      const timeGrid = document.getElementById('timeGrid');
+      
+      timeSlotsDiv.classList.remove('hidden');
+      
+      // Mock available times - in real app, this would come from creator's schedule
+      const availableTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+      
+      timeGrid.innerHTML = availableTimes.map(time => {
+        return `
+          <button class="time-slot p-3 text-sm border border-white/20 rounded-lg hover:bg-white/10 transition" 
+                  onclick="selectTime('${time}')">
+            ${time}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectTime(time) {
+      selectedTime = time;
+      
+      // Update visual selection
+      document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('bg-fuchsia-500');
+      });
+      event.target.classList.add('bg-fuchsia-500');
+      
+      updateSummary();
+      document.getElementById('submitBooking').disabled = false;
+    }
+
+    function updateSummary() {
+      const collaborationType = document.getElementById('collaborationType').value;
+      const budget = document.getElementById('budget').value;
+      
+      document.getElementById('selectedDate').textContent = selectedDate ? 
+        selectedDate.toLocaleDateString('cs-CZ') : 'Nevybráno';
+      document.getElementById('selectedTime').textContent = selectedTime || 'Nevybráno';
+      document.getElementById('selectedType').textContent = collaborationType;
+      document.getElementById('totalPrice').textContent = budget + ' Kč';
+    }
+
+    // Event listeners
+    document.getElementById('prevMonth').onclick = () => {
+      if (currentMonth === 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else {
+        currentMonth--;
+      }
+      renderCalendar();
+    };
+
+    document.getElementById('nextMonth').onclick = () => {
+      if (currentMonth === 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else {
+        currentMonth++;
+      }
+      renderCalendar();
+    };
+
+    document.getElementById('collaborationType').onchange = updateSummary;
+    document.getElementById('budget').oninput = updateSummary;
+
+    document.getElementById('bookingForm').onsubmit = async (e) => {
+      e.preventDefault();
+      
+      if (!selectedDate || !selectedTime) {
+        alert('Vyberte prosím datum a čas');
+        return;
+      }
+      
+      const bookingData = {
+        creatorId: creatorId,
+        clientId: currentUser.uid,
+        date: selectedDate.toISOString(),
+        time: selectedTime,
+        type: document.getElementById('collaborationType').value,
+        budget: Number(document.getElementById('budget').value),
+        description: document.getElementById('description').value,
+        status: 'pending',
+        createdAt: Date.now()
+      };
+      
+      try {
+        // In real app, this would save to Firebase
+        console.log('Booking data:', bookingData);
+        
+        alert('Rezervace byla odeslána! Tvůrce vás bude kontaktovat.');
+        window.location.href = 'index.html';
+        
+      } catch (error) {
+        console.error('Chyba při odesílání rezervace:', error);
+        alert('Chyba při odesílání rezervace');
+      }
+    };
+
+    // Initialize icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

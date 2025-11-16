@@ -280,8 +280,20 @@
         await saveUserProfile(user);
         showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
 
-        // TODO: po přihlášení přesměruj kam potřebuješ (např. na kartu nebo přehled účtu)
-        // window.location.href = "kartao-zalozit-kartu.html";
+        // Přesměrování na základě role uživatele
+        setTimeout(async () => {
+          const userService = new (await import('./api-services.js')).UserService();
+          const role = await userService.getUserRole(user.uid);
+          
+          if (role === 'creator') {
+            window.location.href = "creator-dashboard.html";
+          } else if (role === 'company') {
+            window.location.href = "firm-dashboard.html";
+          } else {
+            // Nový uživatel - pošleme na výběr role
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }, 1500);
 
       } catch (error) {
         console.error(error);
@@ -301,7 +313,19 @@
           if (user) {
             await saveUserProfile(user);
             showMessage("Přihlášení přes Google proběhlo úspěšně. Přesměrovávám...", "success");
-            // window.location.href = "kartao-zalozit-kartu.html";
+            
+            setTimeout(async () => {
+              const userService = new (await import('./api-services.js')).UserService();
+              const role = await userService.getUserRole(user.uid);
+              
+              if (role === 'creator') {
+                window.location.href = "creator-dashboard.html";
+              } else if (role === 'company') {
+                window.location.href = "firm-dashboard.html";
+              } else {
+                window.location.href = "kartao-vyber-uctu.html";
+              }
+            }, 1500);
           }
         } catch (error) {
           console.error(error);
