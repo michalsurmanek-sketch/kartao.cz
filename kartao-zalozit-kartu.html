@@ -227,6 +227,18 @@
                   <input id="facebookFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 8000" />
                 </div>
               </div>
+
+              <!-- Pinterest -->
+              <div class="grid md:grid-cols-[minmax(0,_1.4fr)_minmax(0,_0.8fr)] gap-3 items-end">
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Pinterest – profil (URL)</label>
+                  <input id="pinterestUrl" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://pinterest.com/vasprofil" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/60 mb-1">Sledující (odhad)</label>
+                  <input id="pinterestFollowers" type="number" min="0" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. 12000" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -376,6 +388,10 @@
           facebook: {
             url: document.getElementById('facebookUrl').value.trim() || null,
             followers: Number(document.getElementById('facebookFollowers').value) || null,
+          },
+          pinterest: {
+            url: document.getElementById('pinterestUrl').value.trim() || null,
+            followers: Number(document.getElementById('pinterestFollowers').value) || null,
           },
         },
         prices: {

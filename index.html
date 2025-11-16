@@ -513,6 +513,7 @@
           <option value="instagram">Instagram</option>
           <option value="tiktok">TikTok</option>
           <option value="youtube">YouTube</option>
+          <option value="pinterest">Pinterest</option>
         </select>
 
         <select id="mode" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
@@ -862,7 +863,8 @@
       {id:'facebook', label:'Facebook', icon:'facebook'},
       {id:'instagram', label:'Instagram', icon:'camera'},
       {id:'tiktok', label:'TikTok', icon:'music-4'},
-      {id:'youtube', label:'YouTube', icon:'play'}
+      {id:'youtube', label:'YouTube', icon:'play'},
+      {id:'pinterest', label:'Pinterest', icon:'image'}
     ];
     
     // Inicializace služeb
@@ -905,7 +907,7 @@
     function readQS(){
       const qs = new URLSearchParams(location.search);
       if(qs.get('q')) state.q = qs.get('q');
-      const pf = qs.get('platform'); if(['all','facebook','instagram','tiktok','youtube'].includes(pf)) state.platform = pf;
+      const pf = qs.get('platform'); if(['all','facebook','instagram','tiktok','youtube','pinterest'].includes(pf)) state.platform = pf;
       const md = qs.get('mode'); if(['sum','max'].includes(md)) state.mode = md;
       const cat = qs.get('category'); if(['all','Fashion','Beauty','Fitness','Lifestyle','Gaming','Tech','Food','Travel','Auto','Music'].includes(cat)) state.category = cat;
       const city = qs.get('city'); if(['all','Praha','Brno','Ostrava','Plzeň','Olomouc','Zlín','Hradec Králové','České Budějovice'].includes(city)) state.city = city;
@@ -1126,7 +1128,7 @@
 
     function pickFollowers(data){
       if(state.platform==='all'){
-        const parts = ['facebook','instagram','youtube','tiktok'].map(pid=>{
+        const parts = ['facebook','instagram','youtube','tiktok','pinterest'].map(pid=>{
           const m = data.metrics?.[pid];
           const val = m && m.connected && typeof m.followers==='number' ? m.followers : 0;
           return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
@@ -1180,6 +1182,7 @@
           ${platformRow('instagram','Instagram followers', data)}
           ${platformRow('youtube','YouTube subscribers', data)}
           ${platformRow('tiktok','TikTok followers', data)}
+          ${platformRow('pinterest','Pinterest followers', data)}
         </div>
         
         <!-- Recenze sekce -->
