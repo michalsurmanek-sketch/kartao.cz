@@ -230,11 +230,17 @@
         
         <!-- O Kartao -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-fuchsia-400">
-            <i data-lucide="sparkles" class="w-5 h-5"></i>
-            <span>O Kartao</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-1" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+              <span>O Kartao</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-1" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-o-nas.html">
               <i data-lucide="info" class="w-4 h-4"></i>O nás
             </a></li>
@@ -252,11 +258,17 @@
 
         <!-- Pro firmy -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-amber-400">
-            <i data-lucide="building" class="w-5 h-5"></i>
-            <span>Pro firmy</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-amber-400"
+                  aria-controls="footer-section-2" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="building" class="w-5 h-5"></i>
+              <span>Pro firmy</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-2" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-firmy.html">
               <i data-lucide="megaphone" class="w-4 h-4"></i>Zadat kampaň
             </a></li>
@@ -274,11 +286,17 @@
 
         <!-- Pro tvůrce -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-fuchsia-400">
-            <i data-lucide="camera" class="w-5 h-5"></i>
-            <span>Pro tvůrce</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-3" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="camera" class="w-5 h-5"></i>
+              <span>Pro tvůrce</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-3" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-tvurce.html">
               <i data-lucide="user-plus" class="w-4 h-4"></i>Začít jako tvůrce
             </a></li>
@@ -370,6 +388,30 @@
   <script src="hamburger-menu.js"></script>
   <script src="form-validation.js"></script>
   <script>
+    // === Footer collapsible na mobilu ===
+    document.addEventListener('DOMContentLoaded', () => {
+      const footerButtons = document.querySelectorAll('footer button[aria-controls]');
+      footerButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const panelId = btn.getAttribute('aria-controls');
+          const panel = document.getElementById(panelId);
+          const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+          
+          // Toggle expanded state
+          btn.setAttribute('aria-expanded', !isExpanded);
+          
+          // Toggle panel visibility
+          panel.classList.toggle('hidden');
+          
+          // Rotate chevron icon
+          const chevron = btn.querySelector('[data-lucide="chevron-down"]');
+          if (chevron) {
+            chevron.style.transform = isExpanded ? '' : 'rotate(180deg)';
+          }
+        });
+      });
+    });
+
     // === Pomocné funkce pro CSV export ===
     function csvEscape(value){
       if(value==null) return '';
