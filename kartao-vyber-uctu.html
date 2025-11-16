@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Vyberte typ účtu</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Firebase + společná inicializace -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #db58f6 0, transparent 55%),
+                  radial-gradient(circle at bottom right, #fbbf24 0, #020617 55%);
+    }
+  </style>
+</head>
+<body class="text-white flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-xl bg-neutral-900/85 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md p-6 md:p-8">
+    <!-- Logo + claim -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-lg">
+        <span class="text-xl font-bold">K</span>
+      </div>
+      <div>
+        <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+        <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+      </div>
+    </div>
+
+    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">
+      Vyberte, co jste
+    </h1>
+    <p class="text-sm text-white/70 mb-6">
+      Potřebujeme vědět, jestli chcete zadávat kampaně jako firma, nebo tvořit obsah jako tvůrce.
+    </p>
+
+    <!-- Hlášky -->
+    <div id="role-message" class="hidden mb-4 text-sm rounded-lg px-3 py-2 border"></div>
+
+    <!-- Karty výběru -->
+    <div id="role-card" class="grid md:grid-cols-2 gap-4">
+      <!-- Firma -->
+      <button
+        id="btn-firma"
+        class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-amber-400 hover:bg-neutral-800 transition flex flex-col justify-between"
+      >
+        <div class="flex-1">
+          <div class="text-xs uppercase tracking-wide text-amber-300 mb-1">Pro firmy &amp; značky</div>
+          <div class="text-lg font-semibold mb-2">Jsem firma</div>
+          <p class="text-sm text-white/70">
+            Chci zadávat kampaně, oslovit influencery a spravovat spolupráce.
+          </p>
+        </div>
+        <div class="mt-4 text-xs text-white/50 group-hover:text-amber-200 flex items-center justify-between">
+          <span>Pokračovat do rozhraní pro firmy</span>
+          <span>→</span>
+        </div>
+      </button>
+
+      <!-- Tvůrce -->
+      <button
+        id="btn-tvurce"
+        class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-fuchsia-400 hover:bg-neutral-800 transition flex flex-col justify-between"
+      >
+        <div class="flex-1">
+          <div class="text-xs uppercase tracking-wide text-fuchsia-300 mb-1">Influenceři &amp; tvůrci</div>
+          <div class="text-lg font-semibold mb-2">Jsem tvůrce</div>
+          <p class="text-sm text-white/70">
+            Chci získávat spolupráce, nabízet své služby a mít vlastní kartu Kartao.
+          </p>
+        </div>
+        <div class="mt-4 text-xs text-white/50 group-hover:text-fuchsia-200 flex items-center justify-between">
+          <span>Pokračovat do rozhraní pro tvůrce</span>
+          <span>→</span>
+        </div>
+      </button>
+    </div>
+
+    <p class="mt-6 text-[11px] text-white/40">
+      Pokud jste se sem dostali omylem, můžete se <a href="index.html" class="underline">vrátit na homepage</a>.
+    </p>
+  </div>
+
+  <script>
+    // Základní prvky UI
+    const msgBox   = document.getElementById("role-message");
+    const roleCard = document.getElementById("role-card");
+    const btnFirma  = document.getElementById("btn-firma");
+    const btnTvurce = document.getElementById("btn-tvurce");
+
+    function showRoleMessage(text, type = "info") {
+      if (!msgBox) return;
+      msgBox.textContent = text;
+      msgBox.classList.remove(
+        "hidden",
+        "border-red-400",
+        "bg-red-900/60",
+        "border-amber-300",
+        "bg-amber-900/30",
+        "border-emerald-300",
+        "bg-emerald-900/30"
+      );
+      if (type === "error") {
+        msgBox.classList.add("border-red-400", "bg-red-900/60");
+      } else if (type === "success") {
+        msgBox.classList.add("border-emerald-300", "bg-emerald-900/30");
+      } else {
+        msgBox.classList.add("border-amber-300", "bg-amber-900/30");
+      }
+    }
+
+    function hideRoleMessage() {
+      if (!msgBox) return;
+      msgBox.classList.add("hidden");
+      msgBox.textContent = "";
+    }
+
+    (function initRoleSelection() {
+      // Ověříme, že je načtená Firebase
+      if (typeof firebase === "undefined") {
+        console.error("Firebase není načtená.");
+        showRoleMessage("Technický problém: přihlášení není dostupné (Firebase není načtená).", "error");
+        return;
+      }
+
+      // Ověříme, že máme auth a db (z firebase-init.js)
+      if (typeof auth === "undefined" || typeof db === "undefined") {
+        console.error("auth nebo db nejsou definované. Zkontroluj firebase-init.js.");
+        showRoleMessage("Technický problém: přihlášení není plně inicializované. Zkuste to prosím později.", "error");
+        return;
+      }
+
+      // Uložení role a přesměrování
+      async function setRoleAndRedirect(role) {
+        hideRoleMessage();
+        const user = auth.currentUser;
+
+        if (!user) {
+          showRoleMessage("Nejste přihlášený, přesměrovávám na přihlášení…", "error");
+          window.location.href = "login.html?next=kartao-vyber-uctu.html";
+          return;
+        }
+
+        try {
+          if (typeof db !== "undefined") {
+            await db.collection("users").doc(user.uid).set(
+              { role: role, updatedAt: new Date().toISOString() },
+              { merge: true }
+            );
+          }
+
+          if (role === "firma") {
+            window.location.href = "kartao-pro-firmy.html";
+          } else {
+            window.location.href = "kartao-pro-tvurce.html";
+          }
+        } catch (err) {
+          console.error(err);
+          showRoleMessage("Nepodařilo se uložit výběr. Zkuste to prosím znovu.", "error");
+        }
+      }
+
+      // Kontrola přihlášení + auto redirect, pokud už role existuje
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          showRoleMessage("Nejste přihlášený, přesměrovávám na přihlášení…", "error");
+          window.location.href = "login.html?next=kartao-vyber-uctu.html";
+          return;
+        }
+
+        try {
+          if (typeof db !== "undefined") {
+            const docRef = db.collection("users").doc(user.uid);
+            const snap = await docRef.get();
+            if (snap.exists) {
+              const data = snap.data();
+              if (data.role === "firma") {
+                window.location.href = "kartao-pro-firmy.html";
+                return;
+              }
+              if (data.role === "tvurce") {
+                window.location.href = "kartao-pro-tvurce.html";
+                return;
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Chyba při načítání role:", err);
+        }
+
+        // tady necháme uživatele zvolit
+        if (roleCard) roleCard.classList.remove("opacity-50");
+      });
+
+      // Kliknutí na tlačítka
+      if (btnFirma) {
+        btnFirma.addEventListener("click", () => setRoleAndRedirect("firma"));
+      }
+      if (btnTvurce) {
+        btnTvurce.addEventListener("click", () => setRoleAndRedirect("tvurce"));
+      }
+    })();
+  </script>
+</body>
+</html>
