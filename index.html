@@ -1507,7 +1507,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-init.js"></script>
-<script src="hamburger-menu.js"></script>
 
   <!-- ŠIPKA NAHORU - KARTAO STYLE -->
 <button id="scrollTopBtn" 
@@ -1532,27 +1531,33 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  // Hamburger menu
-  
-    window.addEventListener('DOMContentLoaded',()=>{ if(window.lucide?.createIcons) window.lucide.createIcons(); });
+  // Inicializace ikon Lucide
+  window.addEventListener('DOMContentLoaded',()=>{ if(window.lucide?.createIcons) window.lucide.createIcons(); });
 
-    const buttons=document.querySelectorAll('footer button[aria-controls]');
-    buttons.forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const id=btn.getAttribute('aria-controls');
-        const panel=document.getElementById(id);
-        const open=btn.getAttribute('aria-expanded')==='true';
-        btn.setAttribute('aria-expanded',!open);
-        panel.classList.toggle('hidden');
-        const icon=btn.querySelector('[data-lucide="chevron-down"]');
-        if(icon) icon.style.transform=open?'':'rotate(180deg)';
-      });
+  // Footer collapsible
+  const buttons=document.querySelectorAll('footer button[aria-controls]');
+  buttons.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.getAttribute('aria-controls');
+      const panel=document.getElementById(id);
+      const open=btn.getAttribute('aria-expanded')==='true';
+      btn.setAttribute('aria-expanded',!open);
+      panel.classList.toggle('hidden');
+      const icon=btn.querySelector('[data-lucide="chevron-down"]');
+      if(icon) icon.style.transform=open?'':'rotate(180deg)';
     });
+  });
   
 </script>
 
 <!-- Hamburger Menu -->
 <script src="hamburger-menu.js"></script>
+<script>
+  // Inicializace hamburger menu
+  if (typeof initHamburgerMenu === 'function') {
+    initHamburgerMenu();
+  }
+</script>
 
 </body>
 </html>
