@@ -175,12 +175,20 @@
     <!-- Card: Formulář -->
     <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
       <h2 class="text-2xl font-bold mb-4 text-fuchsia-400">Kontaktní formulář</h2>
-      <form class="space-y-4" onsubmit="event.preventDefault();this.reset();document.getElementById('sent').classList.remove('hidden')">
-        <input type="text" placeholder="Vaše jméno" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
-        <input type="email" placeholder="Váš e‑mail" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
-        <textarea rows="4" placeholder="Zpráva" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required></textarea>
-        <button type="submit" class="w-full py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 font-semibold text-neutral-950 hover:opacity-90 transition">Odeslat zprávu</button>
-        <p id="sent" class="hidden text-sm text-emerald-400">Děkujeme! Zpráva byla odeslána.</p>
+      <form id="contact-form" class="space-y-4">
+        <div>
+          <input type="text" name="name" placeholder="Vaše jméno" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
+        </div>
+        <div>
+          <input type="email" name="email" placeholder="Váš e‑mail" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required />
+        </div>
+        <div>
+          <textarea name="message" rows="4" placeholder="Zpráva" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" required></textarea>
+        </div>
+        <button type="submit" class="w-full py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 font-semibold text-neutral-950 hover:opacity-90 transition">
+          <span class="submit-text">Odeslat zprávu</span>
+          <span class="submit-loading hidden">Odesílám...</span>
+        </button>
       </form>
     </div>
   </main>
@@ -192,9 +200,9 @@
         <div class="text-xl font-semibold">Novinky e‑mailem</div>
         <div class="text-white/60 text-sm">Žádný spam. Jen podstatné novinky a tipy pro značky i tvůrce.</div>
       </div>
-      <form class="flex gap-2" onsubmit="event.preventDefault();">
-        <input type="email" required placeholder="Váš e‑mail" class="min-w-[240px] rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" />
-        <button class="rounded-xl px-4 py-2 font-semibold bg-fuchsia-500 hover:bg-fuchsia-600">Odebírat</button>
+      <form id="newsletter-form" class="flex gap-2">
+        <input type="email" name="email" required placeholder="Váš e‑mail" class="min-w-[240px] rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-white placeholder-white/40" />
+        <button type="submit" class="rounded-xl px-4 py-2 font-semibold bg-fuchsia-500 hover:bg-fuchsia-600">Odebírat</button>
       </form>
     </div>
   </section>
@@ -215,7 +223,74 @@
   </div>
  </footer>
 
+ <script src="form-validation.js"></script>
  <script>
+   // Validace kontaktního formuláře
+   const contactForm = document.getElementById('contact-form');
+   if (contactForm) {
+     const validator = new FormValidator(contactForm);
+     validator
+       .addRule('name', { required: true, minLength: 2 })
+       .addRule('email', { required: true, email: true })
+       .addRule('message', { required: true, minLength: 10 });
+     
+     validator.enableRealTimeValidation();
+     
+     validator.onSubmit(async (data) => {
+       const btn = contactForm.querySelector('button[type="submit"]');
+       const btnText = btn.querySelector('.submit-text');
+       const btnLoading = btn.querySelector('.submit-loading');
+       
+       btnText.classList.add('hidden');
+       btnLoading.classList.remove('hidden');
+       btn.disabled = true;
+       
+       try {
+         // Simulace odeslání (zde by bylo volání API)
+         await new Promise(resolve => setTimeout(resolve, 1500));
+         
+         Toast.success('Zpráva byla úspěšně odeslána! Odpovíme vám co nejdříve.');
+         contactForm.reset();
+       } catch (error) {
+         Toast.error('Chyba při odesílání. Zkuste to prosím znovu.');
+       } finally {
+         btnText.classList.remove('hidden');
+         btnLoading.classList.add('hidden');
+         btn.disabled = false;
+       }
+     });
+   }
+   
+   // Validace newsletteru
+   const newsletterForm = document.getElementById('newsletter-form');
+   if (newsletterForm) {
+     newsletterForm.addEventListener('submit', async (e) => {
+       e.preventDefault();
+       const email = newsletterForm.elements.email.value;
+       
+       if (!isValidEmail(email)) {
+         Toast.error('Zadejte prosím platnou e-mailovou adresu');
+         return;
+       }
+       
+       const btn = newsletterForm.querySelector('button');
+       const originalText = btn.textContent;
+       btn.textContent = 'Ukládám...';
+       btn.disabled = true;
+       
+       try {
+         await new Promise(resolve => setTimeout(resolve, 1000));
+         Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
+         newsletterForm.reset();
+       } catch (error) {
+         Toast.error('Nepodařilo se přihlásit k odběru');
+       } finally {
+         btn.textContent = originalText;
+         btn.disabled = false;
+       }
+     });
+   }
+
    // Hamburger menu funkcionalita
    const menuToggle = document.getElementById('menuToggle');
    const mobileMenu = document.getElementById('mobileMenu');

@@ -99,7 +99,7 @@
         <!-- Chat Header -->
         <div id="chatHeader" class="p-4 border-b border-white/10 hidden">
           <div class="flex items-center gap-3">
-            <img id="chatAvatar" src="" class="w-10 h-10 rounded-full object-cover">
+            <img id="chatAvatar" src="" alt="Avatar uživatele" class="w-10 h-10 rounded-full object-cover">
             <div>
               <div id="chatName" class="font-semibold"></div>
               <div id="chatStatus" class="text-sm text-white/60"></div>
@@ -206,6 +206,7 @@
                onclick="openConversation('${conv.id}', '${otherUserId}')">
             <div class="flex items-center gap-3">
               <img src="https://api.dicebear.com/7.x/initials/svg?seed=${otherUserId}" 
+                   alt="Avatar uživatele ${otherUserId}"
                    class="w-12 h-12 rounded-full object-cover">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">

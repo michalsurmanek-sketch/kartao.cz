@@ -174,7 +174,70 @@
     </p>
   </div>
 
+  <script src="form-validation.js"></script>
   <script>
+    // Validace přihlašovacího formuláře
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    
+    if (loginForm) {
+      const loginValidator = new FormValidator(loginForm);
+      loginValidator
+        .addRule('login-email', { required: true, email: true })
+        .addRule('login-password', { required: true, minLength: 6 });
+      
+      loginValidator.enableRealTimeValidation();
+      
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!loginValidator.validate()) {
+          return;
+        }
+        
+        const btn = loginForm.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.textContent = 'Přihlašuji...';
+        btn.disabled = true;
+        
+        // Zde by bylo volání Firebase auth - ponecháno originální
+      });
+    }
+    
+    if (registerForm) {
+      const regValidator = new FormValidator(registerForm);
+      regValidator
+        .addRule('reg-email', { required: true, email: true })
+        .addRule('reg-password', { required: true, minLength: 6 })
+        .addRule('reg-password2', { 
+          required: true,
+          custom: (value) => {
+            const pass1 = document.getElementById('reg-password').value;
+            if (value !== pass1) {
+              return 'Hesla se neshodují';
+            }
+            return null;
+          }
+        });
+      
+      regValidator.enableRealTimeValidation();
+      
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!regValidator.validate()) {
+          return;
+        }
+        
+        const btn = registerForm.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.textContent = 'Vytvářím účet...';
+        btn.disabled = true;
+        
+        // Zde by bylo volání Firebase auth - ponecháno originální
+      });
+    }
+
     // =========================
     // 1) Předpoklad: Firebase už je inicializovaná ve firebase-init.js
     // =========================
