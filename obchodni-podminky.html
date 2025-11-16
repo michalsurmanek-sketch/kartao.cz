@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obchodní podmínky | Kartao.cz</title>
+  <meta name="description" content="Obchodní podmínky a podmínky používání platformy Kartao.cz. Transparentní pravidla pro influencery, tvůrce a firmy.">
+  <link rel="canonical" href="https://kartao.cz/obchodni-podminky.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📋</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { 
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); 
+      color: white; 
+      font-family: system-ui, -apple-system, sans-serif; 
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .terms-section {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .terms-section:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+    .toc-link {
+      transition: all 0.2s ease;
+    }
+    .toc-link:hover {
+      background: rgba(251, 191, 36, 0.1);
+      color: rgb(251, 191, 36);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Hamburger menu tlačítko -->
+      <button id="menuToggle" class="md:hidden p-2 rounded-lg hover:bg-white/5 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
+      <!-- Logo + claim -->
+      <a href="index.html" class="flex items-center gap-3 no-underline">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-lg">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Obchodní podmínky</div>
+        </div>
+      </a>
+      
+      <!-- Desktop navigace -->
+      <nav class="hidden md:flex gap-6 text-sm text-white/80">
+        <a href="index.html" class="hover:text-white">Domů</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
+        <a href="kartao-magazin.html" class="hover:text-white">Magazín</a>
+        <a href="kartao-o-nas.html" class="hover:text-white">O nás</a>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+      </nav>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div id="menuBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl overflow-y-auto">
+          <div class="sticky top-0 bg-neutral-900/80 backdrop-blur border-b border-white/10 p-4 flex items-center justify-between">
+            <span class="font-semibold text-lg">Menu</span>
+            <button id="menuClose" class="p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+          
+          <div class="p-4 space-y-6">
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">HLAVNÍ MENU</h3>
+              <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="home" class="w-5 h-5 text-amber-400"></i>
+                  <span>Domů</span>
+                </a>
+                <a href="kartao-marketplace.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="store" class="w-5 h-5 text-fuchsia-400"></i>
+                  <span>Marketplace</span>
+                </a>
+                <a href="kartao-magazin.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="newspaper" class="w-5 h-5 text-purple-400"></i>
+                  <span>Magazín</span>
+                </a>
+                <a href="kartao-o-nas.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="info" class="w-5 h-5 text-sky-400"></i>
+                  <span>O nás</span>
+                </a>
+                <a href="kontakt.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+                  <span>Kontakt</span>
+                </a>
+              </nav>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">LEGAL</h3>
+              <nav class="space-y-2">
+                <a href="obchodni-podminky.html" class="flex items-center gap-3 p-2 rounded-lg bg-white/10 text-amber-400">
+                  <i data-lucide="file-text" class="w-5 h-5"></i>
+                  <span>Obchodní podmínky</span>
+                </a>
+                <a href="ochrana-osobnich-udaju.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i>
+                  <span>Ochrana údajů</span>
+                </a>
+                <a href="cookies.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="cookie" class="w-5 h-5 text-orange-400"></i>
+                  <span>Cookies</span>
+                </a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumbs -->
+  <nav class="max-w-7xl mx-auto px-4 py-3 text-sm text-white/60">
+    <div class="flex items-center gap-2">
+      <a href="index.html" class="hover:text-white transition">Domů</a>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <span class="text-white">Obchodní podmínky</span>
+    </div>
+  </nav>
+
+  <!-- Hero sekce -->
+  <section class="max-w-4xl mx-auto px-4 pt-8 pb-12">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-400/10 border border-blue-400/20 text-blue-400 text-sm font-medium mb-4">
+        <i data-lucide="file-text" class="w-4 h-4"></i>
+        Verze 2.0
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold gradient-text mb-4">Obchodní podmínky</h1>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">
+        Transparentní pravidla pro používání platformy Kartao.cz. 
+        Definují práva a povinnosti všech uživatelů naší síťe influencerů.
+      </p>
+    </div>
+
+    <!-- Meta informace -->
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+      <div class="grid md:grid-cols-3 gap-4 text-sm">
+        <div>
+          <div class="text-white/60 mb-1">Poslední aktualizace</div>
+          <div class="font-semibold">16. listopadu 2024</div>
+        </div>
+        <div>
+          <div class="text-white/60 mb-1">Verze podmínek</div>
+          <div class="font-semibold">2.0</div>
+        </div>
+        <div>
+          <div class="text-white/60 mb-1">Účinnost od</div>
+          <div class="font-semibold">1. prosince 2024</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Obsah -->
+    <div class="grid lg:grid-cols-4 gap-8">
+      <!-- Table of Contents -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-24">
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <h3 class="font-semibold text-white mb-4">Obsah</h3>
+            <nav class="space-y-2 text-sm">
+              <a href="#definice" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">1. Definice</a>
+              <a href="#registrace" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">2. Registrace</a>
+              <a href="#sluzby" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">3. Služby</a>
+              <a href="#poplatky" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">4. Poplatky</a>
+              <a href="#obsah" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">5. Obsah</a>
+              <a href="#odpovednost" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">6. Odpovědnost</a>
+              <a href="#ukonceni" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">7. Ukončení</a>
+              <a href="#zmeny" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">8. Změny</a>
+              <a href="#konecna" class="toc-link block px-3 py-2 rounded-lg text-white/70 hover:text-amber-400">9. Závěr</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="lg:col-span-3 space-y-8">
+
+        <!-- Úvodní informace -->
+        <div class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/20 grid place-items-center">
+              <i data-lucide="building" class="w-5 h-5 text-blue-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold">Provozovatel</h2>
+          </div>
+          <div class="space-y-3 text-white/80">
+            <p><strong>Společnost:</strong> Kartao.cz s.r.o.</p>
+            <p><strong>IČO:</strong> 12345678</p>
+            <p><strong>Sídlo:</strong> Wenceslas Square 1, 110 00 Praha 1</p>
+            <p><strong>E-mail:</strong> <a href="mailto:legal@kartao.cz" class="text-amber-400 hover:text-amber-300">legal@kartao.cz</a></p>
+            <p><strong>Web:</strong> <a href="https://kartao.cz" class="text-amber-400 hover:text-amber-300">kartao.cz</a></p>
+          </div>
+        </div>
+
+        <!-- 1. Definice -->
+        <div id="definice" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-fuchsia-500/20 grid place-items-center">
+              <span class="text-fuchsia-400 font-bold">1</span>
+            </div>
+            <h2 class="text-2xl font-bold">Základní definice</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🏢 Provozovatel</h3>
+              <p>Kartao.cz s.r.o., společnost provozující internetovou platformu na doméně kartao.cz</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">👤 Uživatel</h3>
+              <p>Jakákoli osoba využívající služby platformy, včetně návštěvníků, registrovaných tvůrců a firem</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">⭐ Tvůrce (Influencer)</h3>
+              <p>Registrovaná osoba nabízející své služby v oblasti influence marketingu prostřednictvím platformy</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🏭 Firma (Klient)</h3>
+              <p>Registrovaný subjekt hledající tvůrce pro marketingové kampaně a spolupráce</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🎯 Kampaň</h3>
+              <p>Marketingová aktivita dohodnutá mezi firmou a tvůrcem prostřednictvím nebo mimo platformu</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">💰 Escrow služba</h3>
+              <p>Bezpečná úschova plateb mezi stranami kampaně s garancí plnění závazků</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Registrace a účty -->
+        <div id="registrace" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 grid place-items-center">
+              <span class="text-emerald-400 font-bold">2</span>
+            </div>
+            <h2 class="text-2xl font-bold">Registrace a uživatelské účty</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">📝 Podmínky registrace</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Registrace je otevřena osobám starším 16 let (mladší se souhlasem zákonného zástupce)</li>
+              <li>• Při registraci musí uživatel poskytnout pravdivé a aktuální údaje</li>
+              <li>• Jeden uživatel může mít pouze jeden účet na platformě</li>
+              <li>• Firemní účty musí být registrovány na oprávněnou osobu jednat za společnost</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">🔒 Bezpečnost účtu</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Uživatel je odpovědný za zabezpečení svého hesla a přístupových údajů</li>
+              <li>• Při podezření na zneužití účtu je třeba neprodleně kontaktovat podporu</li>
+              <li>• Doporučujeme používání dvoufaktorové autentizace</li>
+              <li>• Sdílení přístupových údajů s třetími stranami je zakázáno</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">✅ Ověřování profilů</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Provozovatel si vyhrazuje právo ověřovat pravost uživatelských profilů</li>
+              <li>• VIP tvůrci procházejí rozšířeným ověřovacím procesem</li>
+              <li>• Firemní účty mohou vyžadovat doložení oprávnění k podnikání</li>
+              <li>• Falešné nebo klamavé profily budou zablokované</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. Služby platformy -->
+        <div id="sluzby" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/20 grid place-items-center">
+              <span class="text-purple-400 font-bold">3</span>
+            </div>
+            <h2 class="text-2xl font-bold">Služby a funkcionalita</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-white/5 rounded-xl p-4">
+                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                  <i data-lucide="search" class="w-4 h-4 text-blue-400"></i>
+                  Marketplace tvůrců
+                </h3>
+                <p class="text-sm">Vyhledávání a prohlížení profilů influencerů podle kategorií, velikosti audience a dalších kritérií</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                  <i data-lucide="mail" class="w-4 h-4 text-green-400"></i>
+                  Komunikační systém
+                </h3>
+                <p class="text-sm">Zabezpečená komunikace mezi firmami a tvůrci s historií zpráv a souborů</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                  <i data-lucide="shield" class="w-4 h-4 text-purple-400"></i>
+                  Escrow platby
+                </h3>
+                <p class="text-sm">Bezpečná úschova plateb s automatickým uvolněním po splnění podmínek kampaně</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                  <i data-lucide="bar-chart" class="w-4 h-4 text-orange-400"></i>
+                  Analytics a reporty
+                </h3>
+                <p class="text-sm">Sledování výkonu kampaní, reach, engagement a ROI metrik</p>
+              </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-amber-400/10 border border-amber-400/20 rounded-xl">
+              <p class="text-amber-200">
+                <strong>Důležité:</strong> Kartao.cz funguje jako zprostředkovatelská platforma. 
+                Nejsme stranou obchodních dohod mezi tvůrci a firmami, ale poskytujeme nástroje pro jejich usnadnění.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Poplatky a platby -->
+        <div id="poplatky" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 grid place-items-center">
+              <span class="text-amber-400 font-bold">4</span>
+            </div>
+            <h2 class="text-2xl font-bold">Poplatky a fakturace</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">💳 Struktura poplatků</h3>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <span>Registrace a základní profil</span>
+                <span class="font-semibold text-emerald-400">Zdarma</span>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <span>VIP zvýraznění (měsíční)</span>
+                <span class="font-semibold text-amber-400">2.500 Kč</span>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <span>Firemní účet (měsíční)</span>
+                <span class="font-semibold text-blue-400">1.500 Kč</span>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <span>Escrow služba</span>
+                <span class="font-semibold text-purple-400">3% z částky</span>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <span>Platební brána</span>
+                <span class="font-semibold text-orange-400">2.9% + 7 Kč</span>
+              </div>
+            </div>
+
+            <h3 class="font-semibold text-white mt-6">🧾 Fakturace</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Měsíční poplatky jsou účtovány vždy k 1. dni v měsíci</li>
+              <li>• Platby přes escrow službu jsou účtovány při uvolnění prostředků</li>
+              <li>• Faktury jsou zasílány elektronicky na registrovaný e-mail</li>
+              <li>• Splatnost faktur je 14 dnů od vystavení</li>
+              <li>• Při opožděné platbě může být účet pozastaven</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">💸 Vrácení plateb</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Měsíční poplatky nejsou vratné po aktivaci služby</li>
+              <li>• Escrow platby jsou vráceny v případě nedodržení podmínek kampaně</li>
+              <li>• Sporné případy řešíme individuálně s ohledem na konkrétní okolnosti</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5. Obsah a práva -->
+        <div id="obsah" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 grid place-items-center">
+              <span class="text-rose-400 font-bold">5</span>
+            </div>
+            <h2 class="text-2xl font-bold">Uživatelský obsah a práva</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">📝 Odpovědnost za obsah</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Uživatel je plně odpovědný za veškerý obsah, který na platformu nahraje</li>
+              <li>• Obsah nesmí porušovat autorská práva třetích stran</li>
+              <li>• Je zakázán obsah obsahující nenávist, diskriminaci nebo nezákonné aktivity</li>
+              <li>• Pornografický nebo nevhodný obsah je přísně zakázán</li>
+              <li>• Falešné nebo klamavé informace vedou k zablokování účtu</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">⚖️ Licence k obsahu</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Nahráním obsahu uděluje uživatel platformě nevýhradní licenci k jeho zobrazení</li>
+              <li>• Licencia zahrnuje právo na úpravu pro potřeby zobrazení na platformě</li>
+              <li>• Uživatel si ponechává všechna autorská práva k svému obsahu</li>
+              <li>• Obsah můžeme používat pro marketingové účely platformy</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">🚫 Zakázané aktivity</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                <h4 class="font-semibold text-red-300 mb-2">Technické zneužití</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Automatizované vytváření účtů</li>
+                  <li>• Spam nebo nevyžádané zprávy</li>
+                  <li>• Pokusy o hacking nebo narušení</li>
+                  <li>• Obcházení bezpečnostních opatření</li>
+                </ul>
+              </div>
+              <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                <h4 class="font-semibold text-red-300 mb-2">Obchodní praktiky</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Falešné recenze nebo hodnocení</li>
+                  <li>• Umělé navyšování followerů</li>
+                  <li>• Klamavá propagace produktů</li>
+                  <li>• Porušování reklamních standardů</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Odpovědnost -->
+        <div id="odpovednost" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/20 grid place-items-center">
+              <span class="text-orange-400 font-bold">6</span>
+            </div>
+            <h2 class="text-2xl font-bold">Omezení odpovědnosti</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
+              <h3 class="font-semibold text-orange-200 mb-2">⚠️ Důležité upozornění</h3>
+              <p>Kartao.cz slouží jako zprostředkovatelská platforma. Nejsme stranou obchodních dohod mezi tvůrci a firmami a neneseme odpovědnost za jejich vzájemné závazky.</p>
+            </div>
+
+            <h3 class="font-semibold text-white">🔧 Dostupnost služby</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Službu poskytujeme "jak je" bez záruky nepřetržité dostupnosti</li>
+              <li>• Můžeme provádět plánovanou údržbu s předchozím upozorněním</li>
+              <li>• Neneseme odpovědnost za škody způsobené výpadky služby</li>
+              <li>• Snažíme se o 99.5% dostupnost, ale nezaručujeme ji</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">💼 Obchodní vztahy</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Neručíme za kvalitu nebo dodržení termínů kampaní</li>
+              <li>• Spory mezi tvůrci a firmami řeší strany vzájemně</li>
+              <li>• Poskytujeme mediační služby pouze jako dodatečnou pomoc</li>
+              <li>• Escrow služba slouží jako ochrana, ne jako záruka výsledku</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">⚖️ Právní omezení</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Celková odpovědnost je omezena na výši zaplacených poplatků za posledních 12 měsíců</li>
+              <li>• Nevztahuje se na úmyslné způsobení škody nebo porušení GDPR</li>
+              <li>• Nároky musí být uplatněny do 6 měsíců od vzniku</li>
+              <li>• Řídí se českým právem s jurisdikcí českých soudů</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 7. Ukončení -->
+        <div id="ukonceni" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-red-500/20 grid place-items-center">
+              <span class="text-red-400 font-bold">7</span>
+            </div>
+            <h2 class="text-2xl font-bold">Ukončení služby</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">✋ Ukončení ze strany uživatele</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Účet můžete zrušit kdykoli v nastavení profilu</li>
+              <li>• Při zrušení účtu jsou data anonymizována nebo smazána</li>
+              <li>• Zaplacené poplatky za zbývající období nejsou vráceny</li>
+              <li>• Probíhající kampaně musí být dokončeny před zrušením</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">⛔ Ukončení ze strany provozovatele</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Můžeme ukončit účet při porušení těchto podmínek</li>
+              <li>• Při závažném porušení můžeme ukončit účet okamžitě</li>
+              <li>• Při méně závažném porušení poskytneme 30 dnů na nápravu</li>
+              <li>• O ukončení informujeme e-mailem s odůvodněním</li>
+            </ul>
+
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mt-4">
+              <h3 class="font-semibold text-red-300 mb-2">🚨 Okamžité ukončení</h3>
+              <p>Účet může být okamžitě zablokován při:</p>
+              <ul class="text-sm mt-2 space-y-1">
+                <li>• Podvodném chování nebo krádeži identity</li>
+                <li>• Porušování autorských práv</li>
+                <li>• Nezákonných aktivitách</li>
+                <li>• Ohrožování bezpečnosti platformy</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. Změny podmínek -->
+        <div id="zmeny" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 grid place-items-center">
+              <span class="text-cyan-400 font-bold">8</span>
+            </div>
+            <h2 class="text-2xl font-bold">Změny podmínek</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">🔄 Proces změn</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Podmínky můžeme změnit s ohledem na vývoj služby a právních požadavků</li>
+              <li>• O změnách informujeme minimálně 30 dnů dopředu</li>
+              <li>• Notification zasíláme e-mailem a zobrazujeme na webu</li>
+              <li>• Pokračující používání služby znamená souhlas s novými podmínkami</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">📧 Způsoby oznámení</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">📬 E-mailové oznámení</h4>
+                <p class="text-sm">Zasíláme na registrovanou e-mailovou adresu všech uživatelů</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">🌐 Oznámení na webu</h4>
+                <p class="text-sm">Banner nebo popup s informacemi o změnách při přihlášení</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">📱 Push notifikace</h4>
+                <p class="text-sm">Pro uživatele s povolenými oznámeními v prohlížeči</p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">📄 Archiv verzí</h4>
+                <p class="text-sm">Všechny předchozí verze podmínek dostupné na webu</p>
+              </div>
+            </div>
+
+            <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mt-4">
+              <p class="text-blue-200">
+                <strong>Tip:</strong> Doporučujeme pravidelně kontrolovat aktuální verzi podmínek. 
+                Najdete ji vždy na adrese <a href="https://kartao.cz/obchodni-podminky.html" class="text-blue-400 underline">kartao.cz/obchodni-podminky.html</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. Závěrečná ustanovení -->
+        <div id="konecna" class="terms-section rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-green-500/20 grid place-items-center">
+              <span class="text-green-400 font-bold">9</span>
+            </div>
+            <h2 class="text-2xl font-bold">Závěrečná ustanovení</h2>
+          </div>
+          <div class="space-y-4 text-white/80">
+            <h3 class="font-semibold text-white">⚖️ Rozhodné právo</h3>
+            <ul class="space-y-2 ml-4">
+              <li>• Tyto podmínky se řídí právním řádem České republiky</li>
+              <li>• Spory jsou v příslušnosti českých soudů</li>
+              <li>• Při rozporu s EU právem má přednost EU legislativa</li>
+              <li>• GDPR a ochrana spotřebitele mají přednost před těmito podmínkami</li>
+            </ul>
+
+            <h3 class="font-semibold text-white mt-6">📞 Kontakt a podpora</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">📧 Obecné dotazy</h4>
+                <p><a href="mailto:info@kartao.cz" class="text-amber-400 hover:text-amber-300">info@kartao.cz</a></p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">⚖️ Právní záležitosti</h4>
+                <p><a href="mailto:legal@kartao.cz" class="text-amber-400 hover:text-amber-300">legal@kartao.cz</a></p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">🔒 GDPR dotazy</h4>
+                <p><a href="mailto:privacy@kartao.cz" class="text-amber-400 hover:text-amber-300">privacy@kartao.cz</a></p>
+              </div>
+              <div class="bg-white/5 rounded-xl p-4">
+                <h4 class="font-semibold text-white mb-2">🛠️ Technická podpora</h4>
+                <p><a href="mailto:support@kartao.cz" class="text-amber-400 hover:text-amber-300">support@kartao.cz</a></p>
+              </div>
+            </div>
+
+            <h3 class="font-semibold text-white mt-6">📋 Platnost podmínek</h3>
+            <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+              <p class="text-green-200">
+                Tyto obchodní podmínky nabývají platnosti dnem <strong>1. prosince 2024</strong> 
+                a nahrazují všechny předchozí verze. Registrací nebo pokračující používání služby 
+                po tomto datu vyjadřujete souhlas s těmito podmínkami.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shrnutí pro rychlé čtení -->
+        <div class="bg-gradient-to-r from-amber-500/10 to-fuchsia-500/10 border border-amber-500/20 rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 grid place-items-center">
+              <i data-lucide="zap" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold">TL;DR - Shrnutí pro zaneprázdněné</h2>
+          </div>
+          <div class="space-y-3 text-white/80">
+            <p>🎯 <strong>Kartao.cz je marketplace</strong> propojující influencery s firmami - nejsme stranou jejich obchodů</p>
+            <p>💰 <strong>Základní profily zdarma,</strong> VIP zvýraznění a firemní účty jsou placené</p>
+            <p>🛡️ <strong>Escrow služba chrání</strong> platby mezi stranami kampaní</p>
+            <p>📝 <strong>Zodpovídáte za svůj obsah</strong> a jeho pravdivost</p>
+            <p>⚖️ <strong>Spory řeší účastníci kampaní</strong> vzájemně, poskytujeme jen platformu</p>
+            <p>🔄 <strong>Podmínky můžeme změnit</strong> s 30denním předstihem</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-white/5">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
+        <div class="flex items-center gap-4">
+          <span>© <span id="year"></span> Kartao.cz - Obchodní podmínky v2.0</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="ochrana-osobnich-udaju.html" class="hover:text-white transition">Ochrana osobních údajů</a>
+          <span class="hidden md:block">•</span>
+          <a href="cookies.html" class="hover:text-white transition">Cookies</a>
+          <span class="hidden md:block">•</span>
+          <a href="kontakt.html" class="hover:text-white transition">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+    
+    // Hamburger menu
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+    const menuBackdrop = document.getElementById('menuBackdrop');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function openMenu() {
+      mobileMenu.classList.remove('-translate-x-full');
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.add('-translate-x-full');
+    }
+
+    menuToggle?.addEventListener('click', openMenu);
+    menuClose?.addEventListener('click', closeMenu);
+    menuBackdrop?.addEventListener('click', closeMenu);
+
+    // Auto rok
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth scroll pro TOC linky
+    document.querySelectorAll('.toc-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          
+          // Update active state
+          document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('bg-amber-400/10', 'text-amber-400'));
+          this.classList.add('bg-amber-400/10', 'text-amber-400');
+        }
+      });
+    });
+
+    // Highlight active section on scroll
+    function updateActiveSection() {
+      const sections = document.querySelectorAll('[id]');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      let currentSection = '';
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100 && rect.bottom >= 100) {
+          currentSection = section.id;
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('bg-amber-400/10', 'text-amber-400');
+        if (link.getAttribute('href') === `#${currentSection}`) {
+          link.classList.add('bg-amber-400/10', 'text-amber-400');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveSection);
+    updateActiveSection(); // Initial call
+  </script>
+</body>
+</html>
