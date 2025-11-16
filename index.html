@@ -1545,7 +1545,14 @@
   });
 
   // Inicializace ikon Lucide
-  window.addEventListener('DOMContentLoaded',()=>{ if(window.lucide?.createIcons) window.lucide.createIcons(); });
+  window.addEventListener('DOMContentLoaded',()=>{ 
+    if(window.lucide?.createIcons) window.lucide.createIcons();
+    
+    // Inicializace hamburger menu
+    if (typeof initHamburgerMenu === 'function') {
+      initHamburgerMenu();
+    }
+  });
 
   // Footer collapsible
   const buttons=document.querySelectorAll('footer button[aria-controls]');
@@ -1565,12 +1572,6 @@
 
 <!-- Hamburger Menu -->
 <script src="hamburger-menu.js"></script>
-<script>
-  // Inicializace hamburger menu
-  if (typeof initHamburgerMenu === 'function') {
-    initHamburgerMenu();
-  }
-</script>
 
 </body>
 </html>
