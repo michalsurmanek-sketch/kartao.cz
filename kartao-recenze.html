@@ -14,58 +14,192 @@
   <!-- Header -->
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Hamburger menu tlačítko -->
+      <button id="menuToggle" class="md:hidden p-2 rounded-lg hover:bg-white/5 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
       <!-- Logo + claim -->
       <a href="index.html" class="flex items-center gap-3 no-underline">
         <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
-          <i data-lucide="crown" class="w-5 h-5"></i>
+          <i data-lucide="star" class="w-5 h-5"></i>
         </div>
         <div>
           <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
           <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
         </div>
       </a>
+      
+      <!-- Desktop navigace -->
       <nav class="hidden md:flex gap-6 text-sm text-white/80">
         <a href="index.html" class="hover:text-white">Domů</a>
         <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
         <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
-        <a href="magazin.html" class="hover:text-white">Magazín</a>
-        <a href="o-nas.html" class="hover:text-white">O nás</a>
+        <a href="kartao-magazin.html" class="hover:text-white">Magazín</a>
+        <a href="kartao-o-nas.html" class="hover:text-white">O nás</a>
         <a href="kontakt.html" class="hover:text-white">Kontakt</a>
-        <a href="recenze-firmy.html" class="text-amber-400 font-semibold">Recenze</a>
+        <a href="kartao-recenze.html" class="text-amber-400 font-semibold">Recenze</a>
       </nav>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div id="menuBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl overflow-y-auto">
+          <div class="sticky top-0 bg-neutral-900/80 backdrop-blur border-b border-white/10 p-4 flex items-center justify-between">
+            <span class="font-semibold text-lg">Menu</span>
+            <button id="menuClose" class="p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+          
+          <div class="p-4 space-y-6">
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">HLAVNÍ MENU</h3>
+              <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="home" class="w-5 h-5 text-amber-400"></i>
+                  <span>Domů</span>
+                </a>
+                <a href="kartao-marketplace.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="store" class="w-5 h-5 text-fuchsia-400"></i>
+                  <span>Marketplace</span>
+                </a>
+                <a href="kartao-magazin.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="newspaper" class="w-5 h-5 text-purple-400"></i>
+                  <span>Magazín</span>
+                </a>
+                <a href="kartao-o-nas.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="info" class="w-5 h-5 text-sky-400"></i>
+                  <span>O nás</span>
+                </a>
+                <a href="kontakt.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+                  <span>Kontakt</span>
+                </a>
+                <a href="kartao-recenze.html" class="flex items-center gap-3 p-2 rounded-lg bg-white/10 text-amber-400">
+                  <i data-lucide="star" class="w-5 h-5"></i>
+                  <span>Recenze</span>
+                </a>
+              </nav>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">ÚČET</h3>
+              <nav class="space-y-2">
+                <a href="login.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="log-in" class="w-5 h-5 text-green-400"></i>
+                  <span>Přihlásit se</span>
+                </a>
+                <a href="kartao-pro-tvurce.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="user-plus" class="w-5 h-5 text-amber-400"></i>
+                  <span>Pro tvůrce</span>
+                </a>
+                <a href="kartao-pro-firmy.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="building" class="w-5 h-5 text-blue-400"></i>
+                  <span>Pro firmy</span>
+                </a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="max-w-7xl mx-auto px-4 pt-12 pb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-    <div>
-      <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">Recenze od firem</h1>
-      <p class="text-white/70 mt-3 max-w-2xl">
-        Jak se spolupracovalo značkám, které už přes Kartao.cz zadaly kampaně. Reálné výsledky, stručná zpětná vazba.
-      </p>
+  <!-- Breadcrumbs -->
+  <nav class="max-w-7xl mx-auto px-4 py-3 text-sm text-white/60">
+    <div class="flex items-center gap-2">
+      <a href="index.html" class="hover:text-white transition">Domů</a>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <span class="text-white">Recenze</span>
     </div>
-    <div class="text-sm text-white/60 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 max-w-sm">
-      <div class="font-semibold text-white flex items-center gap-2">
-        <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
-        Hodnocení platforem
+  </nav>
+
+  <!-- Hero -->
+  <section class="max-w-7xl mx-auto px-4 pt-8 pb-6">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+      <div class="flex-1">
+        <h1 class="text-4xl md:text-5xl font-extrabold gradient-text mb-4">Recenze od firem</h1>
+        <p class="text-white/70 text-lg max-w-2xl mb-6">
+          Jak se spolupracovalo značkám, které už přes Kartao.cz zadaly kampaně. Reálné výsledky, autentická zpětná vazba od skutečných klientů.
+        </p>
+        
+        <!-- Mini statistiky -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-2xl font-bold text-amber-400">150+</div>
+            <div class="text-xs text-white/60">Spokojených klientů</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-2xl font-bold text-emerald-400">4.8</div>
+            <div class="text-xs text-white/60">Průměrné hodnocení</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-2xl font-bold text-fuchsia-400">95%</div>
+            <div class="text-xs text-white/60">Doporučuje dále</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-2xl font-bold text-sky-400">320%</div>
+            <div class="text-xs text-white/60">Průměrné ROI</div>
+          </div>
+        </div>
       </div>
-      <div class="mt-1 flex items-baseline gap-2">
-        <div class="text-2xl font-bold">4,8</div>
-        <div class="text-xs uppercase tracking-wide text-white/50">z 5</div>
+      
+      <div class="bg-gradient-to-r from-amber-500/10 to-fuchsia-500/10 border border-amber-500/20 rounded-2xl p-6 max-w-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
+          <span class="font-semibold text-white">Celkové hodnocení</span>
+        </div>
+        <div class="flex items-baseline gap-2 mb-3">
+          <div class="text-3xl font-bold text-amber-400">4.8</div>
+          <div class="text-sm text-white/60">/ 5.0</div>
+        </div>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-white/70">Komunikace:</span>
+            <span class="text-white font-semibold">4.9/5</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/70">Výsledky kampaní:</span>
+            <span class="text-white font-semibold">4.7/5</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/70">Poměr cena/výkon:</span>
+            <span class="text-white font-semibold">4.8/5</span>
+          </div>
+        </div>
+        <div class="text-xs text-white/50 mt-3">Na základě 150+ recenzí za posledních 12 měsíců</div>
       </div>
-      <div class="text-xs text-white/50 mt-1">Souhrnné hodnocení firem za posledních 12 měsíců.</div>
     </div>
   </section>
 
-  <!-- Filtry / přepínače -->
-  <section class="max-w-7xl mx-auto px-4 pb-4">
-    <div class="flex flex-wrap gap-3 items-center text-sm">
-      <span class="text-white/60">Filtrovat:</span>
-      <button class="px-3 py-1 rounded-full bg-neutral-900 border border-white/20 text-white text-xs uppercase tracking-wide">Vše</button>
-      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">E‑shop</button>
-      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Gastro</button>
-      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Služby</button>
-      <button class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white text-xs uppercase tracking-wide">Lokalita Brno / Praha</button>
+  <!-- Filtry a třídění -->
+  <section class="max-w-7xl mx-auto px-4 pb-6">
+    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      <div class="flex flex-wrap gap-3 items-center">
+        <span class="text-white/60 text-sm">Kategorie:</span>
+        <button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium transition" data-category="all">Všechny</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition" data-category="e-shop">E‑shop</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition" data-category="gastro">Gastro</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition" data-category="služby">Služby</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition" data-category="saas">SaaS</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition" data-category="cestování">Cestování</button>
+      </div>
+      
+      <div class="flex gap-3 items-center">
+        <span class="text-white/60 text-sm">Řadit podle:</span>
+        <select id="sortSelect" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+          <option value="date">Nejnovější</option>
+          <option value="rating">Nejlepší hodnocení</option>
+          <option value="budget">Rozpočet (vysoký)</option>
+          <option value="budget-low">Rozpočet (nízký)</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Počítadlo výsledků -->
+    <div class="mt-4 text-sm text-white/60">
+      Zobrazeno <span id="resultCount">12</span> recenzí z celkem <span id="totalCount">150+</span>
     </div>
   </section>
 
