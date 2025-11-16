@@ -85,7 +85,8 @@ FILE: creator-dashboard.html
     <aside class="card p-4">
       <h3 class="font-semibold mb-2">Statistiky</h3>
       <div class="text-sm text-white/70">Followeři (demo)</div>
-      <div class="mt-2 grid grid-cols-3 gap-2 text-center">
+      <div class="mt-2 grid grid-cols-4 gap-2 text-center">
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">FB</div><div id="sFB" class="font-bold">—</div></div>
         <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">IG</div><div id="sIG" class="font-bold">—</div></div>
         <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">TT</div><div id="sTT" class="font-bold">—</div></div>
         <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">YT</div><div id="sYT" class="font-bold">—</div></div>
@@ -96,7 +97,12 @@ FILE: creator-dashboard.html
     <!-- Propojení účtů -->
     <section class="lg:col-span-2 card p-4">
       <h2 class="text-xl font-bold mb-3">Propojit účty</h2>
-      <div class="grid md:grid-cols-3 gap-3">
+      <div class="grid md:grid-cols-4 gap-3">
+        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
+          <div class="flex items-center justify-between"><span class="text-sm">Facebook</span><i data-lucide="facebook" class="w-4 h-4"></i></div>
+          <input id="fbUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
+          <button id="connectFB" class="mt-2 btn btn-primary w-full">Propojit</button>
+        </div>
         <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
           <div class="flex items-center justify-between"><span class="text-sm">Instagram</span><i data-lucide="camera" class="w-4 h-4"></i></div>
           <input id="igUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
@@ -246,6 +252,7 @@ FILE: creator-dashboard.html
 
     function updateStats(metrics) {
       const platforms = [
+        { key: 'facebook', id: 'sFB' },
         { key: 'instagram', id: 'sIG' },
         { key: 'tiktok', id: 'sTT' },
         { key: 'youtube', id: 'sYT' }
@@ -279,7 +286,7 @@ FILE: creator-dashboard.html
         city: formData.get('city'),
         category: formData.get('category'),
         bio: formData.get('bio'),
-        platforms: ['instagram', 'tiktok', 'youtube'], // default platformy
+        platforms: ['facebook', 'instagram', 'tiktok', 'youtube'], // default platformy
         setupCompleted: true
       };
       
@@ -295,6 +302,31 @@ FILE: creator-dashboard.html
       } catch (error) {
         console.error('Chyba při ukládání:', error);
         alert('Došlo k chybě při ukládání.');
+      }
+    });
+
+    // Propojení Facebook
+    document.getElementById('connectFB').addEventListener('click', async () => {
+      const url = document.getElementById('fbUrl').value.trim();
+      if (!url) {
+        alert('Zadejte URL profilu');
+        return;
+      }
+      
+      // Simulace API volání (ve skutečnosti by zde byla integrace s Facebook API)
+      const followers = Math.floor(Math.random() * 150000) + 5000;
+      
+      const success = await creatorService.updateSocialAccount(currentUser.uid, 'facebook', {
+        username: extractUsernameFromUrl(url),
+        followers: followers,
+        connected: true,
+        verified: Math.random() > 0.5
+      });
+      
+      if (success) {
+        alert(`Facebook připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
+        await loadCreatorProfile(currentUser.uid);
+        document.getElementById('fbUrl').value = '';
       }
     });
 
