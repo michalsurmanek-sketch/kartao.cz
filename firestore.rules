@@ -1,0 +1,226 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===================================
+    // KARTAO.CZ - Firebase Security Rules
+    // ===================================
+    
+    // Helper funkce
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isCreator() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'creator';
+    }
+    
+    function isCompany() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'company';
+    }
+    
+    // ============
+    // USERS
+    // ============
+    match /users/{userId} {
+      // Čtení: vlastník nebo admin
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Vytvoření: pouze vlastní účet
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // Aktualizace: vlastník (nesmí měnit role) nebo admin
+      allow update: if isOwner(userId) && 
+                       (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])) ||
+                       isAdmin();
+      
+      // Smazání: admin pouze
+      allow delete: if isAdmin();
+    }
+    
+    // ============
+    // CREATORS
+    // ============
+    match /creators/{creatorId} {
+      // Čtení: všichni (veřejné profily)
+      allow read: if true;
+      
+      // Vytvoření: přihlášený uživatel s role creator
+      allow create: if isCreator() && request.auth.uid == request.resource.data.userId;
+      
+      // Aktualizace: vlastník nebo admin
+      allow update: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      
+      // Smazání: vlastník nebo admin
+      allow delete: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+    
+    // ============
+    // COMPANIES
+    // ============
+    match /companies/{companyId} {
+      // Čtení: vlastník nebo admin
+      allow read: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      
+      // Vytvoření: přihlášený s role company
+      allow create: if isCompany() && request.auth.uid == request.resource.data.userId;
+      
+      // Aktualizace: vlastník nebo admin
+      allow update: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      
+      // Smazání: vlastník nebo admin
+      allow delete: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+    
+    // ============
+    // SOCIAL ACCOUNTS
+    // ============
+    match /socialAccounts/{accountId} {
+      // Čtení: všichni (pro zobrazení metrik na profilech)
+      allow read: if true;
+      
+      // Vytvoření/Aktualizace: vlastník creatora nebo admin
+      allow create, update: if isSignedIn() && 
+                              (get(/databases/$(database)/documents/creators/$(request.resource.data.creatorId)).data.userId == request.auth.uid ||
+                               isAdmin());
+      
+      // Smazání: vlastník nebo admin
+      allow delete: if isSignedIn() && 
+                      (get(/databases/$(database)/documents/creators/$(resource.data.creatorId)).data.userId == request.auth.uid ||
+                       isAdmin());
+    }
+    
+    // ============
+    // CAMPAIGNS
+    // ============
+    match /campaigns/{campaignId} {
+      // Čtení: vlastník firmy, přiřazení tvůrci, nebo admin
+      allow read: if isSignedIn() && 
+                     (resource.data.companyId == request.auth.uid ||
+                      request.auth.uid in resource.data.assignedCreators ||
+                      isAdmin());
+      
+      // Vytvoření: firma
+      allow create: if isCompany() && request.auth.uid == request.resource.data.companyId;
+      
+      // Aktualizace: vlastník firmy nebo admin
+      allow update: if (isSignedIn() && resource.data.companyId == request.auth.uid) || isAdmin();
+      
+      // Smazání: vlastník firmy nebo admin
+      allow delete: if (isSignedIn() && resource.data.companyId == request.auth.uid) || isAdmin();
+    }
+    
+    // ============
+    // PROPOSALS (Nabídky tvůrců na kampaně)
+    // ============
+    match /proposals/{proposalId} {
+      // Čtení: tvůrce nebo firma vlastnící kampaň
+      allow read: if isSignedIn() && 
+                     (resource.data.creatorId == request.auth.uid ||
+                      get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.companyId == request.auth.uid ||
+                      isAdmin());
+      
+      // Vytvoření: tvůrce
+      allow create: if isCreator() && request.auth.uid == request.resource.data.creatorId;
+      
+      // Aktualizace: tvůrce (svá nabídka) nebo firma (změna statusu)
+      allow update: if isSignedIn() && 
+                       (resource.data.creatorId == request.auth.uid ||
+                        get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.companyId == request.auth.uid ||
+                        isAdmin());
+      
+      // Smazání: tvůrce nebo admin
+      allow delete: if (isSignedIn() && resource.data.creatorId == request.auth.uid) || isAdmin();
+    }
+    
+    // ============
+    // REVIEWS
+    // ============
+    match /reviews/{reviewId} {
+      // Čtení: všichni (veřejné recenze)
+      allow read: if true;
+      
+      // Vytvoření: firma (po dokončené kampani)
+      allow create: if isCompany() && request.auth.uid == request.resource.data.companyId;
+      
+      // Aktualizace: vlastník recenze nebo admin
+      allow update: if (isSignedIn() && resource.data.companyId == request.auth.uid) || isAdmin();
+      
+      // Smazání: admin pouze
+      allow delete: if isAdmin();
+    }
+    
+    // ============
+    // CONVERSATIONS (Chat)
+    // ============
+    match /conversations/{conversationId} {
+      // Čtení: účastníci konverzace
+      allow read: if isSignedIn() && request.auth.uid in resource.data.participants;
+      
+      // Vytvoření: přihlášený (jeden z účastníků)
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants;
+      
+      // Aktualizace: účastníci (pro lastMessage, unread count)
+      allow update: if isSignedIn() && request.auth.uid in resource.data.participants;
+      
+      // Smazání: admin pouze
+      allow delete: if isAdmin();
+    }
+    
+    // ============
+    // MESSAGES
+    // ============
+    match /messages/{messageId} {
+      // Čtení: účastníci konverzace
+      allow read: if isSignedIn() && 
+                     request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants;
+      
+      // Vytvoření: odesílatel (musí být účastník konverzace)
+      allow create: if isSignedIn() && 
+                       request.auth.uid == request.resource.data.senderId &&
+                       request.auth.uid in get(/databases/$(database)/documents/conversations/$(request.resource.data.conversationId)).data.participants;
+      
+      // Aktualizace: příjemce (označení jako přečtené)
+      allow update: if isSignedIn() && 
+                       request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants;
+      
+      // Smazání: odesílatel nebo admin
+      allow delete: if (isSignedIn() && resource.data.senderId == request.auth.uid) || isAdmin();
+    }
+    
+    // ============
+    // ORDERS (Objednávky)
+    // ============
+    match /orders/{orderId} {
+      // Čtení: vlastník objednávky nebo admin
+      allow read: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      
+      // Vytvoření: přihlášený uživatel
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+      
+      // Aktualizace: systém (webhook) nebo admin
+      allow update: if isAdmin();
+      
+      // Smazání: admin pouze
+      allow delete: if isAdmin();
+    }
+    
+    // ============
+    // DEFAULT - Zakázat vše ostatní
+    // ============
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

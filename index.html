@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https: http:; font-src 'self' data:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com; frame-src 'self'; object-src 'none';">
   <title>Kartao.cz – síť influencerů</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🚀</text></svg>">
 
@@ -13,7 +14,7 @@
   <!-- Open Graph -->
   <meta property="og:title" content="Kartao.cz – síť influencerů" />
   <meta property="og:description" content="Propojujeme značky a tvůrce. Najdi influencera rychle a chytře." />
-  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:image" content="https://www.kartao.cz/og-image-placeholder.svg" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.kartao.cz/" />
   <meta property="og:locale" content="cs_CZ" />
@@ -216,7 +217,7 @@
     </div>
   </header>
   
-<!mobilní menu>
+  <!-- Mobilní menu -->
   
   <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
     <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
@@ -293,10 +294,6 @@
         </nav>
             <i data-lucide="user" class="w-4 h-4 text-fuchsia-300 ml-auto"></i>
           </a>
-          <a href="kartao-magazin.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="book-open-text" class="w-5 h-5 text-white/70"></i><span>Magazín</span></a>
-          <a href="kartao-kontakt.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="mail" class="w-5 h-5 text-white/70"></i><span>Kontakt</span></a>
-
-
           <div class="mt-2 p-3 rounded-2xl bg-gradient-to-br from-fuchsia-500/10 via-amber-400/5 to-transparent border border-white/10">
             <div class="grid grid-cols-2 gap-2">
               <a href="login.html" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-center text-sm">Přihlásit</a>
@@ -308,7 +305,7 @@
             </div>
           </div>
           
-          <!Sjednocujeme značky, tvůrce a komunity do jednoho světa plného inspirace. ✨>
+          <!-- Sociální sítě -->
           
           <div class="mt-6 pt-4 border-t border-white/10">
             <div class="text-xs uppercase tracking-wider text-white/50 text-center mb-3">Sleduj nás</div>
@@ -1402,7 +1399,7 @@
     });
   </script>
   
-  <!Tlačítko založit kartu její funkce>
+  <!-- Tlačítko založit kartu - funkce -->
   
   <script>
   function goToCreateCard() {
