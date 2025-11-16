@@ -44,6 +44,69 @@
         <span class="sr-only">Otevřít menu</span>
       </button>
     </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+      <div id="menuBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+      <div class="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl overflow-y-auto">
+        <div class="sticky top-0 bg-neutral-900/80 backdrop-blur border-b border-white/10 p-4 flex items-center justify-between">
+          <span class="font-semibold text-lg">Menu</span>
+          <button id="menuClose" class="p-2 rounded-lg hover:bg-white/5 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <div class="p-4 space-y-6">
+          <div>
+            <h3 class="text-sm font-semibold text-white/60 mb-3">HLAVNÍ MENU</h3>
+            <nav class="space-y-2">
+              <a href="index.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="home" class="w-5 h-5 text-amber-400"></i>
+                <span>Domů</span>
+              </a>
+              <a href="kartao-marketplace.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="search" class="w-5 h-5 text-fuchsia-400"></i>
+                <span>Marketplace</span>
+              </a>
+              <a href="kartao-pro-tvurce.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="user-plus" class="w-5 h-5 text-purple-400"></i>
+                <span>Pro tvůrce</span>
+              </a>
+              <a href="kartao-pro-firmy.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="building" class="w-5 h-5 text-blue-400"></i>
+                <span>Pro firmy</span>
+              </a>
+              <a href="vip.html" class="flex items-center gap-3 p-2 rounded-lg bg-white/10 text-amber-400">
+                <i data-lucide="crown" class="w-5 h-5"></i>
+                <span>VIP tvůrci</span>
+              </a>
+              <a href="kartao-recenze.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="star" class="w-5 h-5 text-sky-400"></i>
+                <span>Recenze</span>
+              </a>
+              <a href="kartao-magazin.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="newspaper" class="w-5 h-5 text-emerald-400"></i>
+                <span>Magazín</span>
+              </a>
+            </nav>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold text-white/60 mb-3">ÚČET</h3>
+            <nav class="space-y-2">
+              <a href="login.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="log-in" class="w-5 h-5 text-green-400"></i>
+                <span>Přihlásit se</span>
+              </a>
+              <a href="kartao-zalozit-kartu.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                <i data-lucide="credit-card" class="w-5 h-5 text-amber-400"></i>
+                <span>Založit kartu</span>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 
   <section class="relative border-b border-white/10">
@@ -91,8 +154,10 @@
         <option value="">Kategorie (vše)</option>
         <option>Beauty</option><option>Lifestyle</option><option>Gaming</option>
         <option>Tech</option><option>Auto/Moto</option><option>Fitness</option>
+        <option>Travel</option><option>Food</option><option>Business</option>
       </select>
-            <select class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 w-full">
+      <select id="platform" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 w-full">
+        <option value="">Platforma (vše)</option>
         <option>Facebook</option><option>Instagram</option><option>TikTok</option><option>YouTube</option>
       </select>
     </div>
@@ -168,7 +233,18 @@
       {name:"Ema Lifestyle", cat:"Lifestyle", platform:"Instagram", followers:"210k", er:"4.2%", price:"35–70 tis.", img:"https://i.pravatar.cc/120?img=1"},
       {name:"Petr Auto", cat:"Auto/Moto", platform:"TikTok", followers:"340k", er:"7.1%", price:"40–80 tis.", img:"https://i.pravatar.cc/120?img=7"},
       {name:"Verča Fit", cat:"Fitness", platform:"Instagram", followers:"150k", er:"4.0%", price:"25–45 tis.", img:"https://i.pravatar.cc/120?img=13"},
-      {name:"Reklamas", cat:"Reklama", platform:"Instagram", followers:"100k", er:"4.0%", price:"50 tis.", img:"https://i.pravatar.cc/120?img=13"},
+      {name:"Jakub Travel", cat:"Travel", platform:"Instagram", followers:"85k", er:"4.5%", price:"20–35 tis.", img:"https://i.pravatar.cc/120?img=8"},
+      {name:"Marie Food", cat:"Food", platform:"TikTok", followers:"190k", er:"6.2%", price:"30–50 tis.", img:"https://i.pravatar.cc/120?img=2"},
+      {name:"David Business", cat:"Business", platform:"YouTube", followers:"75k", er:"3.1%", price:"25–40 tis.", img:"https://i.pravatar.cc/120?img=14"},
+      {name:"Klára Beauty", cat:"Beauty", platform:"TikTok", followers:"320k", er:"7.8%", price:"50–90 tis.", img:"https://i.pravatar.cc/120?img=6"},
+      {name:"Filip Gaming", cat:"Gaming", platform:"TikTok", followers:"450k", er:"8.1%", price:"60–100 tis.", img:"https://i.pravatar.cc/120?img=12"},
+      {name:"Tereza Lifestyle", cat:"Lifestyle", platform:"YouTube", followers:"165k", er:"3.6%", price:"30–55 tis.", img:"https://i.pravatar.cc/120?img=3"},
+      {name:"Martin Tech", cat:"Tech", platform:"Instagram", followers:"110k", er:"4.1%", price:"25–45 tis.", img:"https://i.pravatar.cc/120?img=9"},
+      {name:"Nikol Fitness", cat:"Fitness", platform:"YouTube", followers:"130k", er:"3.9%", price:"25–50 tis.", img:"https://i.pravatar.cc/120?img=4"},
+      {name:"Adam Auto", cat:"Auto/Moto", platform:"YouTube", followers:"220k", er:"4.7%", price:"40–70 tis.", img:"https://i.pravatar.cc/120?img=10"},
+      {name:"Sára Travel", cat:"Travel", platform:"Facebook", followers:"95k", er:"2.8%", price:"20–35 tis.", img:"https://i.pravatar.cc/120?img=16"},
+      {name:"Pavel Food", cat:"Food", platform:"Instagram", followers:"80k", er:"5.2%", price:"18–30 tis.", img:"https://i.pravatar.cc/120?img=17"},
+      {name:"Jana Business", cat:"Business", platform:"TikTok", followers:"60k", er:"4.8%", price:"15–25 tis.", img:"https://i.pravatar.cc/120?img=18"},
     ];
 
     const limit = 20;
@@ -292,6 +368,40 @@
     [q,cat,platform].forEach(el => el.addEventListener('input', applyFilters));
 
     render(vipCreators);
+
+    // Hamburger menu functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+    const menuBackdrop = document.getElementById('menuBackdrop');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function openMenu() {
+      mobileMenu.classList.remove('-translate-x-full');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.add('-translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    menuToggle?.addEventListener('click', openMenu);
+    menuClose?.addEventListener('click', closeMenu);
+    menuBackdrop?.addEventListener('click', closeMenu);
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !mobileMenu.classList.contains('-translate-x-full')) {
+        closeMenu();
+      }
+    });
+
+    // Auto-close menu on larger screens
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && !mobileMenu.classList.contains('-translate-x-full')) {
+        closeMenu();
+      }
+    });
   </script>
 </body>
 </html>
