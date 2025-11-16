@@ -14,6 +14,11 @@
   <!-- HLAVIČKA -->
   <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Hamburger menu tlačítko -->
+      <button id="menuToggle" class="md:hidden p-2 rounded-lg hover:bg-white/5 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
       <a href="index.html" class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
           <i data-lucide="newspaper" class="w-5 h-5"></i>
@@ -23,25 +28,197 @@
           <div class="text-xs text-white/60 -mt-0.5">Novinky a inspirace</div>
         </div>
       </a>
+      
+      <!-- Desktop navigace -->
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="index.html" class="text-white/70 hover:text-white">Domů</a>
         <span class="text-white/40">/</span>
         <span class="text-white">Magazín</span>
       </nav>
+
+      <!-- Search tlačítko -->
+      <button id="searchToggle" class="p-2 rounded-lg hover:bg-white/5 transition">
+        <i data-lucide="search" class="w-5 h-5"></i>
+      </button>
     </div>
   </header>
 
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 bg-neutral-900/80 backdrop-blur border-b border-white/10 p-4 flex items-center justify-between">
+        <span class="font-semibold text-lg">Menu</span>
+        <button id="menuClose" class="p-2 rounded-lg hover:bg-white/5 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <!-- Menu obsah -->
+      <div class="p-4 space-y-6">
+        <!-- Hlavní menu -->
+        <div>
+          <h3 class="text-sm font-semibold text-white/60 mb-3">HLAVNÍ MENU</h3>
+          <nav class="space-y-2">
+            <a href="index.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="home" class="w-5 h-5 text-amber-400"></i>
+              <span>Domů</span>
+            </a>
+            <a href="kartao-marketplace.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="store" class="w-5 h-5 text-fuchsia-400"></i>
+              <span>Marketplace</span>
+            </a>
+            <a href="kartao-magazin.html" class="flex items-center gap-3 p-2 rounded-lg bg-white/10 text-amber-400">
+              <i data-lucide="newspaper" class="w-5 h-5"></i>
+              <span>Magazín</span>
+            </a>
+            <a href="kartao-o-nas.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="info" class="w-5 h-5 text-sky-400"></i>
+              <span>O nás</span>
+            </a>
+            <a href="kontakt.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+              <span>Kontakt</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Účet -->
+        <div>
+          <h3 class="text-sm font-semibold text-white/60 mb-3">ÚČET</h3>
+          <nav class="space-y-2">
+            <a href="login.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="log-in" class="w-5 h-5 text-green-400"></i>
+              <span>Přihlásit se</span>
+            </a>
+            <a href="kartao-pro-tvurce.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="user-plus" class="w-5 h-5 text-amber-400"></i>
+              <span>Pro tvůrce</span>
+            </a>
+            <a href="kartao-pro-firmy.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="building" class="w-5 h-5 text-blue-400"></i>
+              <span>Pro firmy</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Obsah -->
+        <div>
+          <h3 class="text-sm font-semibold text-white/60 mb-3">OBSAH</h3>
+          <nav class="space-y-2">
+            <a href="kartao-faq.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="help-circle" class="w-5 h-5 text-purple-400"></i>
+              <span>FAQ</span>
+            </a>
+            <a href="kartao-recenze.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="star" class="w-5 h-5 text-yellow-400"></i>
+              <span>Recenze</span>
+            </a>
+            <a href="vip.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="crown" class="w-5 h-5 text-amber-400"></i>
+              <span>VIP</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- HERO -->
   <section class="border-b border-white/10 bg-gradient-to-b from-fuchsia-600/10 to-transparent">
-    <div class="max-w-7xl mx-auto px-4 py-12 text-center">
-      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">Magazín Kartao.cz</h1>
-      <p class="text-white/70 max-w-2xl mx-auto">Články, tipy a case-studies o světě influencerů, spoluprací a trendů v marketingu.</p>
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold mb-3">Magazín Kartao.cz</h1>
+        <p class="text-white/70 max-w-2xl mx-auto mb-6">Články, tipy a case-studies o světě influencerů, spolupracích a trendů v marketingu.</p>
+        
+        <!-- Search bar -->
+        <div id="searchBar" class="hidden max-w-md mx-auto">
+          <div class="relative">
+            <input type="text" id="searchInput" placeholder="Hledat články..." class="w-full px-4 py-3 pl-12 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-amber-400/50">
+            <i data-lucide="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Kategorie -->
+      <div class="flex flex-wrap justify-center gap-3">
+        <button class="category-filter active px-4 py-2 rounded-full text-sm font-medium transition" data-category="all">
+          Všechny
+        </button>
+        <button class="category-filter px-4 py-2 rounded-full text-sm font-medium transition" data-category="Průvodce">
+          Průvodce
+        </button>
+        <button class="category-filter px-4 py-2 rounded-full text-sm font-medium transition" data-category="Case study">
+          Case Studies
+        </button>
+        <button class="category-filter px-4 py-2 rounded-full text-sm font-medium transition" data-category="Trendy">
+          Trendy
+        </button>
+        <button class="category-filter px-4 py-2 rounded-full text-sm font-medium transition" data-category="Finance">
+          Finance
+        </button>
+        <button class="category-filter px-4 py-2 rounded-full text-sm font-medium transition" data-category="Žebříček">
+          Žebříčky
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED ČLÁNEK -->
+  <section class="max-w-7xl mx-auto px-4 py-12 border-b border-white/10">
+    <h2 class="text-2xl font-bold mb-6">Doporučujeme</h2>
+    <div class="bg-gradient-to-r from-amber-500/10 to-fuchsia-500/10 border border-white/10 rounded-2xl overflow-hidden">
+      <div class="md:flex">
+        <div class="md:w-1/2">
+          <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop" class="w-full h-48 md:h-full object-cover" alt="featured">
+        </div>
+        <div class="md:w-1/2 p-6 md:p-8">
+          <div class="flex items-center gap-2 text-xs text-white/60 mb-3">
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/20">Průvodce</span>
+            <span>•</span>
+            <time>15. 11. 2025</time>
+          </div>
+          <h3 class="text-xl md:text-2xl font-bold mb-3 leading-tight">Kompletní průvodce affiliate marketingem s influencery v roce 2025</h3>
+          <p class="text-white/70 mb-4 leading-relaxed">Zjisti, jak nastavit úspěšnou affiliate kampaň s influencery, jaké jsou nejlepší platformy a jak optimalizovat výnosy. Kompletní návod krok za krokem.</p>
+          <div class="flex items-center justify-between">
+            <a href="affiliate-pruvodce-2025.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition font-medium">
+              Číst článek
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <div class="flex items-center gap-4 text-sm text-white/60">
+              <div class="flex items-center gap-1">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                8 min čtení
+              </div>
+              <div class="flex items-center gap-1">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+                2.3k zobrazení
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- GRID ČLÁNKŮ -->
   <section class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold">Nejnovější články</h2>
+      <div class="flex items-center gap-2 text-sm text-white/60">
+        <span id="articleCount">12</span>
+        <span>článků</span>
+      </div>
+    </div>
     <div id="magGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    
+    <!-- Load more -->
+    <div class="text-center mt-12">
+      <button id="loadMore" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 transition">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        Načíst další články
+      </button>
+    </div>
   </section>
 
   <!-- PATIČKA -->
@@ -51,38 +228,166 @@
 
   <script>
     const articles = [
-      {title:"Jak vybrat ideálního tvůrce pro e-shop", tag:"Průvodce", date:"10. 11. 2025", img:"https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=800&auto=format&fit=crop", url:"clanek-vyber-tvurce.html"},
-      {title:"Case study: 3× ROI s mikroinfluencery", tag:"Case study", date:"05. 11. 2025", img:"https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=800&auto=format&fit=crop", url:"case-roi-micro.html"},
-      {title:"Trendy 2026: TikTok Shop a affiliate", tag:"Trendy", date:"01. 11. 2025", img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop", url:"trendy-2026.html"},
-      {title:"Jak správně nacenit spolupráci", tag:"Finance", date:"02. 11. 2025", img:"https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop", url:"naceneni-spoluprace.html"},
-      {title:"TOP 10 influencerů v Česku 2025", tag:"Žebříček", date:"09. 11. 2025", img:"https://images.unsplash.com/photo-1551836022-4c4c79ecde51?q=80&w=800&auto=format&fit=crop", url:"top10-2025.html"}
+      {title:"Jak vybrat ideálního tvůrce pro e-shop", tag:"Průvodce", date:"10. 11. 2025", img:"https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=800&auto=format&fit=crop", url:"clanek-vyber-tvurce.html", views:"1.2k", readTime:"5 min"},
+      {title:"Case study: 3× ROI s mikroinfluencery", tag:"Case study", date:"05. 11. 2025", img:"https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=800&auto=format&fit=crop", url:"case-roi-micro.html", views:"3.5k", readTime:"7 min"},
+      {title:"Trendy 2026: TikTok Shop a affiliate", tag:"Trendy", date:"01. 11. 2025", img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop", url:"trendy-2026.html", views:"892", readTime:"6 min"},
+      {title:"Jak správně nacenit spolupráci", tag:"Finance", date:"02. 11. 2025", img:"https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop", url:"naceneni-spoluprace.html", views:"2.1k", readTime:"4 min"},
+      {title:"TOP 10 influencerů v Česku 2025", tag:"Žebříček", date:"09. 11. 2025", img:"https://images.unsplash.com/photo-1551836022-4c4c79ecde51?q=80&w=800&auto=format&fit=crop", url:"top10-2025.html", views:"5.2k", readTime:"3 min"},
+      {title:"Instagram Reels vs TikTok: Co funguje lépe?", tag:"Trendy", date:"08. 11. 2025", img:"https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=800&auto=format&fit=crop", url:"reels-vs-tiktok.html", views:"1.8k", readTime:"5 min"},
+      {title:"Právní aspekty influencer marketingu", tag:"Průvodce", date:"07. 11. 2025", img:"https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=800&auto=format&fit=crop", url:"pravni-aspekty.html", views:"756", readTime:"8 min"},
+      {title:"Case study: Jak Alza zvýšila prodeje o 150%", tag:"Case study", date:"06. 11. 2025", img:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop", url:"case-alza.html", views:"4.1k", readTime:"6 min"},
+      {title:"Nejlepší nástroje pro tracking kampaní", tag:"Průvodce", date:"04. 11. 2025", img:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop", url:"tracking-nastroje.html", views:"1.5k", readTime:"7 min"},
+      {title:"Micro vs Macro influencery: Kdy co použít", tag:"Finance", date:"03. 11. 2025", img:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800&auto=format&fit=crop", url:"micro-vs-macro.html", views:"2.7k", readTime:"5 min"},
+      {title:"YouTube Shorts: Nová příležitost pro značky", tag:"Trendy", date:"30. 10. 2025", img:"https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop", url:"youtube-shorts.html", views:"987", readTime:"4 min"},
+      {title:"Nejčastější chyby v influencer marketingu", tag:"Průvodce", date:"29. 10. 2025", img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop", url:"chyby-influencer.html", views:"3.2k", readTime:"6 min"}
     ];
 
-    const grid = document.getElementById('magGrid');
-    for(const a of articles){
-      grid.insertAdjacentHTML('beforeend', `
-        <article class="glass rounded-2xl overflow-hidden group">
-          <div class="aspect-[16/9] overflow-hidden">
-            <img src="${a.img}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-[1.05] transition"/>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center gap-2 text-xs text-white/60">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10">${a.tag}</span>
-              <span>•</span>
-              <time>${a.date}</time>
-            </div>
-            <h3 class="mt-2 font-bold leading-tight">${a.title}</h3>
-            <div class="mt-3 flex items-center justify-between">
-              <a href="${a.url}" class="flex items-center gap-1 text-sm underline underline-offset-4 decoration-white/30 hover:decoration-white">
-                Číst více <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </a>
-            </div>
-          </div>
-        </article>
-      `);
+    let currentArticles = [...articles];
+    let displayedCount = 6;
+
+    // Hamburger menu funkcionalita
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuClose = document.getElementById('menuClose');
+    const menuBackdrop = document.getElementById('menuBackdrop');
+
+    function openMenu() {
+      mobileMenu.classList.remove('-translate-x-full');
+      document.body.style.overflow = 'hidden';
     }
 
-    lucide.createIcons();
+    function closeMenu() {
+      mobileMenu.classList.add('-translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    menuToggle?.addEventListener('click', openMenu);
+    menuClose?.addEventListener('click', closeMenu);
+    menuBackdrop?.addEventListener('click', closeMenu);
+
+    // Search funkcionalita
+    const searchToggle = document.getElementById('searchToggle');
+    const searchBar = document.getElementById('searchBar');
+    const searchInput = document.getElementById('searchInput');
+
+    searchToggle.addEventListener('click', () => {
+      searchBar.classList.toggle('hidden');
+      if (!searchBar.classList.contains('hidden')) {
+        searchInput.focus();
+      }
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      if (query) {
+        currentArticles = articles.filter(a => 
+          a.title.toLowerCase().includes(query) || 
+          a.tag.toLowerCase().includes(query)
+        );
+      } else {
+        currentArticles = [...articles];
+      }
+      displayedCount = 6;
+      renderArticles();
+    });
+
+    // Kategorie filtry
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+      filter.addEventListener('click', () => {
+        // Update aktivní kategorie
+        categoryFilters.forEach(f => {
+          f.classList.remove('active', 'bg-amber-500/20', 'text-amber-300', 'border-amber-500/20');
+          f.classList.add('bg-white/5', 'text-white/70', 'border-white/10', 'hover:bg-white/10');
+        });
+        
+        filter.classList.remove('bg-white/5', 'text-white/70', 'border-white/10', 'hover:bg-white/10');
+        filter.classList.add('active', 'bg-amber-500/20', 'text-amber-300', 'border-amber-500/20');
+        
+        const category = filter.dataset.category;
+        if (category === 'all') {
+          currentArticles = [...articles];
+        } else {
+          currentArticles = articles.filter(a => a.tag === category);
+        }
+        displayedCount = 6;
+        renderArticles();
+      });
+    });
+
+    // Render články
+    function renderArticles() {
+      const grid = document.getElementById('magGrid');
+      grid.innerHTML = '';
+      
+      const toShow = currentArticles.slice(0, displayedCount);
+      
+      toShow.forEach(a => {
+        grid.insertAdjacentHTML('beforeend', `
+          <article class="glass rounded-2xl overflow-hidden group hover:scale-[1.02] transition-transform">
+            <div class="aspect-[16/9] overflow-hidden">
+              <img src="${a.img}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500"/>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center gap-2 text-xs text-white/60 mb-3">
+                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/20">${a.tag}</span>
+                <span>•</span>
+                <time>${a.date}</time>
+              </div>
+              <h3 class="font-bold leading-tight mb-3 line-clamp-2">${a.title}</h3>
+              <div class="flex items-center justify-between text-xs text-white/50 mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-1">
+                    <i data-lucide="clock" class="w-3 h-3"></i>
+                    <span>${a.readTime}</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i data-lucide="eye" class="w-3 h-3"></i>
+                    <span>${a.views}</span>
+                  </div>
+                </div>
+              </div>
+              <a href="${a.url}" class="flex items-center gap-2 text-sm font-medium text-amber-400 hover:text-amber-300 transition">
+                Číst článek
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </article>
+        `);
+      });
+      
+      // Update počet
+      document.getElementById('articleCount').textContent = currentArticles.length;
+      
+      // Update load more tlačítko
+      const loadMore = document.getElementById('loadMore');
+      if (displayedCount >= currentArticles.length) {
+        loadMore.style.display = 'none';
+      } else {
+        loadMore.style.display = 'inline-flex';
+      }
+      
+      lucide.createIcons();
+    }
+
+    // Load more funkcionalita
+    document.getElementById('loadMore').addEventListener('click', () => {
+      displayedCount += 6;
+      renderArticles();
+    });
+
+    // Nastav aktivní kategorie styling
+    categoryFilters.forEach((filter, index) => {
+      if (index === 0) {
+        filter.classList.add('bg-amber-500/20', 'text-amber-300', 'border-amber-500/20');
+      } else {
+        filter.classList.add('bg-white/5', 'text-white/70', 'border-white/10', 'hover:bg-white/10');
+      }
+      filter.classList.add('border');
+    });
+
+    // Počáteční render
+    renderArticles();
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
