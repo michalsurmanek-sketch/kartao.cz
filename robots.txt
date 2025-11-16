@@ -1,3 +1,20 @@
 User-agent: *
-Disallow:
-Sitemap: https://kartao.cz/sitemap.xml
+Disallow: /login.html
+Disallow: /kartao-muj-ucet.html
+Disallow: /kartao-vyber-uctu.html
+Disallow: /creator-dashboard.html
+Disallow: /firm-dashboard.html
+Disallow: /chat.html
+Disallow: /checkout.html
+Disallow: /order-management.html
+Disallow: /earnings-management.html
+Disallow: /escrow-release.html
+Disallow: /*záloha*
+Disallow: /*backup*
+Disallow: /*zaloha*
+Disallow: /*new/
+Disallow: /*old/
+
+Allow: /
+
+Sitemap: https://www.kartao.cz/sitemap.xml

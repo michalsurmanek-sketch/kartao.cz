@@ -1,9 +1,280 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://kartao.cz/</loc></url>
-  <url><loc>https://kartao.cz/kartao-pro-tvurce.html</loc></url>
-  <url><loc>https://kartao.cz/kartao-pro-firmy.html</loc></url>
-  <url><loc>https://kartao.cz/kartao-cenik.html</loc></url>
-  <url><loc>https://kartao.cz/podminky.html</loc></url>
-  <url><loc>https://kartao.cz/ochrana-soukromi.html</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Hlavní stránka -->
+  <url>
+    <loc>https://www.kartao.cz/</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Pro tvůrce -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-pro-tvurce.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Pro firmy -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-pro-firmy.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Marketplace -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-marketplace.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Magazín a obsah -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-magazin.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/affiliate-pruvodce-2025.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/top10-2025.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/trendy-2026.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/clanek-vyber-tvurce.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/case-roi-micro.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Informační stránky -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-o-nas.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/kartao-faq.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/kontakt.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Recenze a hodnocení -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-recenze.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- VIP a prémiové služby -->
+  <url>
+    <loc>https://www.kartao.cz/vip.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Ceník -->
+  <url>
+    <loc>https://www.kartao.cz/kartao-cenik.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Uživatelské stránky -->
+  <url>
+    <loc>https://www.kartao.cz/login.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/kartao-muj-ucet.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/kartao-zalozit-kartu.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/kartao-vyber-uctu.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <!-- Chat a komunikace -->
+  <url>
+    <loc>https://www.kartao.cz/chat.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Dashboardy -->
+  <url>
+    <loc>https://www.kartao.cz/creator-dashboard.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/firm-dashboard.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <!-- Booking a platby -->
+  <url>
+    <loc>https://www.kartao.cz/booking.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/checkout.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/payment-success.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/naceneni-spoluprace.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Správa -->
+  <url>
+    <loc>https://www.kartao.cz/order-management.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/earnings-management.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/escrow-release.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Právní dokumenty -->
+  <url>
+    <loc>https://www.kartao.cz/ochrana-osobnich-udaju.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/ochrana-soukromi.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/obchodni-podminky.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/podminky.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/pravidla-podminky.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kartao.cz/cookies.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  
+  <!-- Error page -->
+  <url>
+    <loc>https://www.kartao.cz/404.html</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
 </urlset>
