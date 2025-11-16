@@ -106,13 +106,6 @@ function initHamburgerMenu() {
   };
 }
 
-// Auto-init po načtení DOM
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initHamburgerMenu);
-} else {
-  initHamburgerMenu();
-}
-
 // Export pro případné použití jako modul
 if (typeof window !== 'undefined') {
   window.HamburgerMenu = { init: initHamburgerMenu };
