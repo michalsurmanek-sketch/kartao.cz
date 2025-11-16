@@ -1,0 +1,40 @@
+HAMBURGER MENU - SJEDNOCENÍ
+
+CÍLE:
+✅ Všechny stránky budou používat stejnou strukturu menu
+✅ Jeden JavaScript soubor (hamburger-menu.js) místo duplicit
+✅ Konzistentní UX napříč webem
+✅ Snadná údržba - změna na jednom místě
+
+AKTUÁLNÍ STAV (před změnami):
+- Verze A (hidden + backdrop): 5+ stránek
+- Verze B (-translate-x-full): 5+ stránek
+- Mix: neznámý počet
+
+PLÁN IMPLEMENTACE:
+1. ✅ Vytvořit hamburger-menu.js (univerzální JS)
+2. ✅ Vytvořit hamburger-menu-component.html (šablona)
+3. 🔄 Nahradit menu na všech 43 HTML stránkách
+4. ✅ Odstranit inline JavaScript kód
+5. ✅ Přidat <script src="hamburger-menu.js"></script>
+
+PRIORITNÍ STRÁNKY:
+- index.html ⏳
+- kontakt.html ✅ (už má správnou verzi)
+- vip.html ⏳
+- login.html ⏳
+- kartao-marketplace.html ⏳
+- kartao-pro-tvurce.html ⏳
+- kartao-pro-firmy.html ⏳
+- kartao-magazin.html ⏳
+- kartao-o-nas.html ⏳
+- kartao-recenze.html ⏳
+
+TESTOVÁNÍ:
+- [ ] Otevření menu (klik na ikonu)
+- [ ] Zavření menu (klik na X)
+- [ ] Zavření menu (klik na backdrop)
+- [ ] Zavření menu (Escape klávesa)
+- [ ] Zavření menu (klik na odkaz)
+- [ ] Responsivita (mobile/tablet/desktop)
+- [ ] Animace (smooth transitions)

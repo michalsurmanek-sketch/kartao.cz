@@ -291,51 +291,14 @@
      });
    }
 
-   // Hamburger menu funkcionalita
-   const menuToggle = document.getElementById('menuToggle');
-   const mobileMenu = document.getElementById('mobileMenu');
-   const menuClose = document.getElementById('menuClose');
-   const menuBackdrop = document.getElementById('menuBackdrop');
-
-   function openMenu() {
-     mobileMenu.classList.remove('hidden');
-     mobileMenu.offsetHeight;
-     document.getElementById('menuPanel').classList.remove('-translate-x-full');
-     menuBackdrop.classList.remove('opacity-0');
-     document.body.style.overflow = 'hidden';
-   }
-
-   function closeMenu() {
-     document.getElementById('menuPanel').classList.add('-translate-x-full');
-     menuBackdrop.classList.add('opacity-0');
-     setTimeout(() => {
-       mobileMenu.classList.add('hidden');
-       document.body.style.overflow = '';
-     }, 300);
-   }
-
-   menuToggle?.addEventListener('click', openMenu);
-   menuClose?.addEventListener('click', closeMenu);
-   menuBackdrop?.addEventListener('click', closeMenu);
-
-   document.addEventListener('keydown', (e) => {
-     if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
-       closeMenu();
-     }
-   });
-
-   const mobileNavLinks = mobileMenu?.querySelectorAll('a');
-   mobileNavLinks?.forEach(link => {
-     link.addEventListener('click', () => {
-       if (link.getAttribute('href')?.startsWith('#') || link.getAttribute('onclick')) {
-         setTimeout(() => closeMenu(), 100);
-       }
-     });
-   });
+   // Hamburger menu - viz hamburger-menu.js
 
    // Lucide ikony
    lucide.createIcons();
  </script>
+ 
+ <!-- Hamburger Menu -->
+ <script src="hamburger-menu.js"></script>
 </body>
 </html>
   </div>
