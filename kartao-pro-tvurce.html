@@ -42,8 +42,59 @@
           Založit kartu
         </a>
       </nav>
+      
+      <!-- HAMBURGER MENU BUTTON -->
+      <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+        <span class="sr-only">Otevřít menu</span>
+      </button>
     </div>
   </header>
+
+  <!-- MOBILNÍ MENU -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+    <div class="relative h-full svh flex flex-col items-stretch">
+      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
+          <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-extrabold">Kartao.cz</div>
+              <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
+            </div>
+          </a>
+          <button id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <nav class="px-3 py-3 overflow-y-auto flex-1">
+          <a href="index.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+            <i data-lucide="home" class="w-5 h-5 text-white/70"></i><span>Domů</span>
+          </a>
+          <a href="kartao-marketplace.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+            <i data-lucide="search" class="w-5 h-5 text-white/70"></i><span>Marketplace</span>
+          </a>
+          <a href="kartao-pro-tvurce.html" class="block px-3 py-3 rounded-xl bg-white/10 text-amber-300 flex items-center gap-3">
+            <i data-lucide="user-plus" class="w-5 h-5"></i><span>Pro tvůrce</span>
+          </a>
+          <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+            <i data-lucide="building" class="w-5 h-5 text-white/70"></i><span>Pro firmy</span>
+          </a>
+          <div class="border-t border-white/10 mt-3 pt-3">
+            <a href="#form" class="block px-3 py-3 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 flex items-center gap-3">
+              <i data-lucide="plus" class="w-5 h-5"></i><span>Založit kartu</span>
+            </a>
+            <a href="login.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="log-in" class="w-5 h-5 text-white/70"></i><span>Přihlásit se</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
 
   <!-- BREADCRUMB -->
   <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
@@ -248,6 +299,52 @@
       </div>
     </div>
   </section>
+
+  <!-- Hamburger menu functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggle = document.getElementById('menuToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const menuClose = document.getElementById('menuClose');
+      const menuBackdrop = document.getElementById('menuBackdrop');
+
+      function openMenu() {
+        mobileMenu.classList.remove('hidden');
+        mobileMenu.offsetHeight;
+        document.getElementById('menuPanel').classList.remove('-translate-x-full');
+        menuBackdrop.classList.remove('opacity-0');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMenu() {
+        document.getElementById('menuPanel').classList.add('-translate-x-full');
+        menuBackdrop.classList.add('opacity-0');
+        setTimeout(() => {
+          mobileMenu.classList.add('hidden');
+          document.body.style.overflow = '';
+        }, 300);
+      }
+
+      menuToggle?.addEventListener('click', openMenu);
+      menuClose?.addEventListener('click', closeMenu);
+      menuBackdrop?.addEventListener('click', closeMenu);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+          closeMenu();
+        }
+      });
+
+      const mobileNavLinks = mobileMenu?.querySelectorAll('a');
+      mobileNavLinks?.forEach(link => {
+        link.addEventListener('click', () => {
+          if (!link.getAttribute('href')?.startsWith('#')) {
+            closeMenu();
+          }
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>
