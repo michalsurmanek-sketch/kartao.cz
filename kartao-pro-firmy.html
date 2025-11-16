@@ -392,11 +392,29 @@
   <!-- =============== UNIFIED FOOTER END =============== -->
 
   <!-- Sticky FAB CTA (mobil) -->
-  <a href="#brief" class="md:hidden fixed bottom-5 right-5 btn btn-primary shadow-lg" style="box-shadow:0 10px 30px rgba(236,72,153,.35)"><i data-lucide="file-plus" class="w-4 h-4"></i> Zadat kampaň</a>
+  <a id="fabButton" href="#brief" class="md:hidden fixed bottom-5 right-5 btn btn-primary shadow-lg transition-all duration-300" style="box-shadow:0 10px 30px rgba(236,72,153,.35)"><i data-lucide="file-plus" class="w-4 h-4"></i> Zadat kampaň</a>
 
   <script src="hamburger-menu.js"></script>
   <script src="form-validation.js"></script>
   <script>
+    // === FAB tlačítko - zastavení nad footerem ===
+    window.addEventListener('scroll', () => {
+      const fab = document.getElementById('fabButton');
+      const footer = document.querySelector('footer');
+      if (!fab || !footer) return;
+
+      const footerRect = footer.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      
+      // Když footer je viditelný v viewportu
+      if (footerRect.top < viewportHeight) {
+        const offset = viewportHeight - footerRect.top + 20; // 20px padding
+        fab.style.bottom = offset + 'px';
+      } else {
+        fab.style.bottom = '20px'; // 20px = 1.25rem (bottom-5)
+      }
+    });
+
     // === Footer collapsible na mobilu ===
     document.addEventListener('DOMContentLoaded', () => {
       const footerButtons = document.querySelectorAll('footer button[aria-controls]');
