@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz — Jak správně nacenit spolupráci s influencery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+  <!-- HLAVIČKA -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="kartao-magazin.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Zpět na magazín</div>
+          <div class="text-xs text-white/60 -mt-0.5">Články a inspirace</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="index.html" class="text-white/70 hover:text-white">Domů</a>
+        <span class="text-white/40">/</span>
+        <a href="kartao-magazin.html" class="text-white/70 hover:text-white">Magazín</a>
+        <span class="text-white/40">/</span>
+        <span class="text-white">Finance</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO ČLÁNKU -->
+  <section class="relative border-b border-white/10">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-600/10 via-transparent to-sky-400/10"></div>
+    <div class="max-w-4xl mx-auto px-4 py-12 relative">
+      <div class="text-center mb-8">
+        <div class="flex justify-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 text-sm">Finance</span>
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-white/60">4 min čtení</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Jak správně nacenit spolupráci s influencery</h1>
+        <p class="text-white/70 max-w-2xl mx-auto mb-6 text-lg">Kompletní průvodce cenotvorbou v influencer marketingu. Kalkulačka, tabulky a praktické tipy pro férové ocenění.</p>
+        <div class="flex justify-center items-center gap-4 text-white/50 text-sm">
+          <div class="flex items-center gap-1">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span>2. 11. 2025</span>
+          </div>
+          <span>•</span>
+          <div class="flex items-center gap-1">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span>Lucie Nováková</span>
+          </div>
+          <span>•</span>
+          <div class="flex items-center gap-1">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>2.1k zobrazení</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBSAH ČLÁNKU -->
+  <article class="max-w-4xl mx-auto px-4 py-12">
+    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop" alt="pricing strategy" class="rounded-2xl mb-8 w-full" />
+
+    <!-- Kalkulačka box -->
+    <div class="bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
+      <h3 class="font-bold text-lg mb-3 text-emerald-400">💰 Rychlá kalkulačka</h3>
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <label class="block text-white/70 mb-1">Počet sledujících</label>
+            <input type="number" id="followers" placeholder="10000" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block text-white/70 mb-1">Engagement rate (%)</label>
+            <input type="number" id="engagement" placeholder="3.5" step="0.1" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white">
+          </div>
+        </div>
+        <button onclick="calculate()" class="w-full bg-emerald-500/20 text-emerald-300 py-2 rounded-lg hover:bg-emerald-500/30 transition">
+          Vypočítat doporučenou cenu
+        </button>
+        <div id="result" class="hidden bg-white/5 p-3 rounded-lg text-center">
+          <div class="text-lg font-bold text-emerald-400" id="price"></div>
+          <div class="text-sm text-white/60" id="range"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose prose-invert max-w-none">
+      <h2>Základní faktory ovlivňující cenu</h2>
+      <p>Správné ocenění spolupráce s influencery závisí na několika klíčových faktorech. Nejde pouze o počet sledujících, ale o komplexní hodnocení hodnoty, kterou influencer přináší.</p>
+
+      <h3>1. Velikost a kvalita publika</h3>
+      <ul>
+        <li><strong>Počet sledujících</strong> - Základ pro výpočet, ale ne jediný faktor</li>
+        <li><strong>Engagement rate</strong> - Podíl aktivních uživatelů (liky, komentáře, sdílení)</li>
+        <li><strong>Demografické údaje</strong> - Věk, pohlaví, lokalita publika</li>
+        <li><strong>Autenticita publika</strong> - Poměr skutečných vs. fake účtů</li>
+      </ul>
+
+      <h3>2. Typ obsahu a platforma</h3>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 my-8">
+        <h4 class="font-bold mb-4 text-sky-400">📱 Ceník podle typu obsahu</h4>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h5 class="font-semibold mb-3 text-amber-400">Instagram</h5>
+            <ul class="space-y-1 text-sm text-white/80">
+              <li>• Post v feed: 0.8-1.2 Kč/sledující</li>
+              <li>• Stories (24h): 0.3-0.5 Kč/sledující</li>
+              <li>• Reel: 1-1.5 Kč/sledující</li>
+              <li>• IGTV: 0.6-1 Kč/sledující</li>
+            </ul>
+          </div>
+          <div>
+            <h5 class="font-semibold mb-3 text-fuchsia-400">TikTok</h5>
+            <ul class="space-y-1 text-sm text-white/80">
+              <li>• Běžné video: 0.6-1 Kč/sledující</li>
+              <li>• Trend video: 1-1.8 Kč/sledující</li>
+              <li>• Originální sound: 1.2-2 Kč/sledující</li>
+              <li>• Brand hashtag: 0.8-1.3 Kč/sledující</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 grid md:grid-cols-2 gap-6">
+          <div>
+            <h5 class="font-semibold mb-3 text-red-400">YouTube</h5>
+            <ul class="space-y-1 text-sm text-white/80">
+              <li>• Integrovaná reklama: 15-25 Kč/1000 zhlédnutí</li>
+              <li>• Dedicated video: 2-4 Kč/odběratel</li>
+              <li>• Shorts: 0.5-1 Kč/odběratel</li>
+            </ul>
+          </div>
+          <div>
+            <h5 class="font-semibold mb-3 text-blue-400">Facebook</h5>
+            <ul class="space-y-1 text-sm text-white/80">
+              <li>• Post: 0.5-0.8 Kč/sledující</li>
+              <li>• Stories: 0.2-0.4 Kč/sledující</li>
+              <li>• Live stream: 1-2 Kč/sledující</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>3. Úroveň spolupráce</h3>
+
+      <h4>Nano-influenceři (1K-10K)</h4>
+      <ul>
+        <li>Velmi vysoký engagement (často 10-15%)</li>
+        <li>Lokální komunity, vysoká důvěra</li>
+        <li>Cena: 500-2000 Kč/post</li>
+        <li>Ideální pro: lokální firmy, niche produkty</li>
+      </ul>
+
+      <h4>Micro-influenceři (10K-100K)</h4>
+      <ul>
+        <li>Optimální poměr dosahu a engagementu</li>
+        <li>Specializace na konkrétní témata</li>
+        <li>Cena: 2000-15000 Kč/post</li>
+        <li>Ideální pro: většinu značek, nejlepší ROI</li>
+      </ul>
+
+      <h4>Mid-tier influenceři (100K-1M)</h4>
+      <ul>
+        <li>Profesionální kvalita obsahu</li>
+        <li>Větší dosah, stále autentičtí</li>
+        <li>Cena: 15000-80000 Kč/post</li>
+        <li>Ideální pro: národní kampaně, větší značky</li>
+      </ul>
+
+      <h4>Macro-influenceři (1M+)</h4>
+      <ul>
+        <li>Celebrity status, masivní dosah</li>
+        <li>Nižší engagement, vyšší cena</li>
+        <li>Cena: 80000+ Kč/post</li>
+        <li>Ideální pro: brand awareness, velké rozpočty</li>
+      </ul>
+
+      <blockquote class="border-l-4 border-emerald-400 pl-4 my-6 bg-emerald-500/5 p-4 rounded-r-lg">
+        <p class="italic">"Nejlepších výsledků dosahujeme s micro-influencery. Mají autentické publikum a jsou ochotni více spolupracovat na kreativním obsahu."</p>
+        <footer class="text-white/60 text-sm mt-2">— Petr Novák, Marketing Manager, Fashion Nova CZ</footer>
+      </blockquote>
+
+      <h2>Alternativní modely oceňování</h2>
+
+      <h3>1. Performance-based pricing</h3>
+      <p>Platba podle výsledků místo pevné částky:</p>
+      <ul>
+        <li><strong>CPC (Cost per Click)</strong> - 5-25 Kč za klik</li>
+        <li><strong>CPM (Cost per Mille)</strong> - 50-200 Kč za 1000 zobrazení</li>
+        <li><strong>CPA (Cost per Acquisition)</strong> - 5-15% z hodnoty objednávky</li>
+        <li><strong>CPL (Cost per Lead)</strong> - 50-300 Kč za kvalifikovaný lead</li>
+      </ul>
+
+      <h3>2. Hybrid model</h3>
+      <p>Kombinace pevné částky + bonusy za výsledky:</p>
+      <ul>
+        <li>Základní fee: 60-70% standardní ceny</li>
+        <li>Bonus za dosažení KPIs: 30-50% navíc</li>
+        <li>Nejvíce motivuje k lepším výsledkům</li>
+      </ul>
+
+      <h3>3. Product gifting + fee</h3>
+      <p>Snížená platba + produkty zdarma:</p>
+      <ul>
+        <li>Platba: 30-50% standardní ceny</li>
+        <li>Produkty v hodnotě 50-100% platby</li>
+        <li>Funguje u lifestyle a fashion značek</li>
+      </ul>
+
+      <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-6 my-8">
+        <h4 class="font-bold mb-3 text-amber-400">💡 Tipy pro vyjednávání</h4>
+        <ol class="space-y-2 text-white/80">
+          <li><strong>1. Začněte výzkumem</strong> - Zjistěte si standardní ceny v daném segmentu</li>
+          <li><strong>2. Nabídněte value beyond money</strong> - Dlouhodobá spolupráce, exkluzivní produkty, PR value</li>
+          <li><strong>3. Buďte transparentní s rozpočtem</strong> - Otevřená komunikace vede k lepším návrhům</li>
+          <li><strong>4. Vyžádejte si case studies</strong> - Ověřte si předchozí výsledky</li>
+          <li><strong>5. Nastavte jasné KPIs</strong> - Definujte úspěch předem</li>
+        </ol>
+      </div>
+
+      <h2>Nejčastější chyby při oceňování</h2>
+
+      <h3>❌ Co nedělat</h3>
+      <ul>
+        <li><strong>Oceňování pouze podle followeru</strong> - Ignorování engagementu a kvality</li>
+        <li><strong>Kopírování cen ze zahraničí</strong> - Český trh má jiné standardy</li>
+        <li><strong>Nedostatečný research</strong> - Platba bez ověření výsledků z minulosti</li>
+        <li><strong>Jedna cena pro všechny</strong> - Každá spolupráce je jiná</li>
+        <li><strong>Ignorování usage rights</strong> - Neřešení práv k použití obsahu</li>
+      </ul>
+
+      <h3>✅ Osvědčené postupy</h3>
+      <ul>
+        <li><strong>Detailní brief</strong> - Jasné zadání snižuje cenu a zlepšuje výsledky</li>
+        <li><strong>Testování menších influencerů</strong> - Pilotní projekty před velkými investicemi</li>
+        <li><strong>Dlouhodobé partnerství</strong> - Množstevní slevy a lepší spolupráce</li>
+        <li><strong>Tracking a měření</strong> - UTM kódy, promo kódy, affiliate linky</li>
+        <li><strong>Smlouva s KPIs</strong> - Jasně definované cíle a metriky</li>
+      </ul>
+
+      <h2>Praktické příklady</h2>
+
+      <h3>Příklad 1: Lokální restaurace</h3>
+      <p><strong>Cíl:</strong> Zvýšit návštěvnost o víkendech<br>
+      <strong>Influencer:</strong> Food blogger, 25K sledujících, 6% engagement<br>
+      <strong>Obsah:</strong> 2 Stories + 1 Reel<br>
+      <strong>Cena:</strong> 8000 Kč + večeře pro 2 osoby<br>
+      <strong>KPI:</strong> Minimálně 15 reservací s promo kódem</p>
+
+      <h3>Příklad 2: E-commerce módní značka</h3>
+      <p><strong>Cíl:</strong> Zvýšit prodeje nové kolekce<br>
+      <strong>Influencer:</strong> Fashion influencerka, 85K sledujících, 4.2% engagement<br>
+      <strong>Obsah:</strong> 3 feed posty + 5 Stories + 1 Reel<br>
+      <strong>Cena:</strong> 25000 Kč + 15% z prodejů přes její kód<br>
+      <strong>KPI:</strong> Minimálně 150 objednávek</p>
+
+      <h2>Závěr</h2>
+      <p>Správné oceňování influencer marketingu vyžaduje komplexní přístup. Nejde pouze o matematický výpočet, ale o porozumění hodnotě, kterou influencer přináší vaší značce.</p>
+
+      <p>Začněte se základními cenami podle followeru a engagementu, ale vždy zohledněte kvalitu publika, typ obsahu a potenciální dopad na váš byznys. Nejlepších výsledků dosáhnete kombinací fair pricing s jasně definovanými cíli a dlouhodobým partnerstvím.</p>
+    </div>
+
+    <!-- AKCE -->
+    <div class="bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-white/10 rounded-2xl p-8 mt-12 text-center">
+      <h3 class="text-2xl font-bold mb-3">Najděte influencery v každém rozpočtu</h3>
+      <p class="text-white/70 mb-6">Na Kartao.cz najdete transparentní ceny a možnost přímé komunikace</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <a href="kartao-marketplace.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition font-medium">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          Prohlédnout ceny
+        </a>
+        <a href="kartao-pro-firmy.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 transition">
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+          Kalkulátor kampání
+        </a>
+      </div>
+    </div>
+
+    <!-- SOUVISEJÍCÍ ČLÁNKY -->
+    <div class="mt-16 pt-8 border-t border-white/10">
+      <h3 class="text-xl font-bold mb-6">Související články</h3>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <a href="micro-vs-macro.html" class="glass rounded-xl p-4 hover:bg-white/10 transition group">
+          <div class="flex items-center gap-2 text-xs text-white/60 mb-2">
+            <span class="px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300">Finance</span>
+          </div>
+          <h4 class="font-semibold mb-2 group-hover:text-emerald-400 transition">Micro vs Macro influencery</h4>
+          <p class="text-sm text-white/60">Kdy použít kterou strategii a rozpočet</p>
+        </a>
+        <a href="case-roi-micro.html" class="glass rounded-xl p-4 hover:bg-white/10 transition group">
+          <div class="flex items-center gap-2 text-xs text-white/60 mb-2">
+            <span class="px-2 py-1 rounded-full bg-purple-500/20 text-purple-300">Case Study</span>
+          </div>
+          <h4 class="font-semibold mb-2 group-hover:text-emerald-400 transition">3× ROI s mikroinfluencery</h4>
+          <p class="text-sm text-white/60">Jak jsme dosáhli lepších výsledků</p>
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10 text-center text-white/60 py-8 mt-20 text-sm">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+      <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+      <span class="hidden md:block">•</span>
+      <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+      <span class="hidden md:block">•</span>
+      <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+    </div>
+    © 2025 Kartao.cz – Síť influencerů a tvůrců
+  </footer>
+
+  <script>
+    function calculate() {
+      const followers = parseInt(document.getElementById('followers').value) || 0;
+      const engagement = parseFloat(document.getElementById('engagement').value) || 0;
+      
+      if (followers === 0 || engagement === 0) {
+        alert('Vyplňte prosím všechna pole');
+        return;
+      }
+      
+      // Základní cena: 0.8-1.2 Kč na sledujícího pro Instagram post
+      let basePrice = followers * 1.0;
+      
+      // Úprava podle engagement rate
+      if (engagement < 2) {
+        basePrice *= 0.7; // Nízký engagement
+      } else if (engagement > 6) {
+        basePrice *= 1.3; // Vysoký engagement
+      }
+      
+      // Rozsah ±20%
+      const minPrice = Math.round(basePrice * 0.8);
+      const maxPrice = Math.round(basePrice * 1.2);
+      
+      document.getElementById('price').textContent = `${Math.round(basePrice).toLocaleString()} Kč`;
+      document.getElementById('range').textContent = `Rozsah: ${minPrice.toLocaleString()} - ${maxPrice.toLocaleString()} Kč`;
+      document.getElementById('result').classList.remove('hidden');
+    }
+    
+    lucide.createIcons();
+  </script>
+</body>
+</html>
