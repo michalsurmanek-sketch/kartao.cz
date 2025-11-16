@@ -1,106 +1,800 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Zásady používání cookies | KARTAO.cz</title>
-  <meta name="description" content="Zásady používání cookies a správa souhlasů pro KARTAO.cz." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zásady používání cookies | Kartao.cz</title>
+  <meta name="description" content="Zásady používání cookies a správa souhlasů pro platformu Kartao.cz. Transparentní informace o všech typech cookies a jejich využití.">
+  <link rel="canonical" href="https://kartao.cz/cookies.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🍪</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root { --bg:#0b0b0c; --fg:#ffffff; --muted:#b7b7c0; --card:#141416; --link:#60a5fa; }
-    *{box-sizing:border-box} body{margin:0;font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--fg)}
-    .wrap{max-width:860px;margin:auto;padding:40px 20px}
-    .card{background:var(--card);border:1px solid #26262a;border-radius:16px;padding:28px}
-    h1{font-size:2rem;margin:0 0 12px} h2{font-size:1.25rem;margin:24px 0 8px}
-    p,li{line-height:1.65;color:var(--muted)} a{color:var(--link);text-decoration:none}
-    header{border-bottom:1px solid #26262a;background:#0e0e11} header .inner{max-width:980px;margin:auto;padding:14px 20px;display:flex;gap:14px;align-items:center}
-    .brand{font-weight:800;letter-spacing:.2px}
-    nav a{opacity:.9;margin-right:16px}
-    footer{border-top:1px solid #26262a;color:#9aa0a6}
-    .footer-inner{max-width:980px;margin:auto;padding:24px 20px;font-size:.95rem}
-    .tag{display:inline-block;font-size:.8rem;color:#a1a1aa;border:1px solid #2d2d33;border-radius:999px;padding:4px 10px;margin-top:6px}
-    .banner{position:fixed;inset:auto 0 0 0;background:#111318;border-top:1px solid #26262a;display:none}
-    .banner .inner{max-width:980px;margin:auto;padding:16px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between}
-    .btn{border:1px solid #2d2d33;border-radius:999px;padding:8px 14px;background:#181a20;color:#e8eaed;cursor:pointer}
-    .btn.primary{background:#2563eb;border-color:#2563eb}
-    .kinds{display:flex;gap:10px;flex-wrap:wrap}
-    .kind{border:1px solid #2d2d33;border-radius:10px;padding:6px 10px;font-size:.9rem;color:#a1a1aa}
+    body { 
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); 
+      color: white; 
+      font-family: system-ui, -apple-system, sans-serif; 
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cookie-section {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .cookie-section:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+    .cookie-toggle {
+      appearance: none;
+      width: 48px;
+      height: 24px;
+      background: #374151;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .cookie-toggle:checked {
+      background: #10b981;
+    }
+    .cookie-toggle:before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s ease;
+    }
+    .cookie-toggle:checked:before {
+      transform: translateX(24px);
+    }
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .cookie-banner.show {
+      transform: translateY(0);
+    }
   </style>
 </head>
-<body>
-  <header>
-    <div class="inner">
-      <div class="brand">KARTAO.cz</div>
-      <nav>
-        <a href="/ochrana-osobnich-udaju">Ochrana osobních údajů</a>
-        <a href="/podminky">Pravidla a podmínky</a>
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Hamburger menu tlačítko -->
+      <button id="menuToggle" class="md:hidden p-2 rounded-lg hover:bg-white/5 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
+      <!-- Logo + claim -->
+      <a href="index.html" class="flex items-center gap-3 no-underline">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-lg">
+          <i data-lucide="cookie" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Cookies zásady</div>
+        </div>
+      </a>
+      
+      <!-- Desktop navigace -->
+      <nav class="hidden md:flex gap-6 text-sm text-white/80">
+        <a href="index.html" class="hover:text-white">Domů</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
+        <a href="kartao-magazin.html" class="hover:text-white">Magazín</a>
+        <a href="kartao-o-nas.html" class="hover:text-white">O nás</a>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
       </nav>
-    </div>
-  </header>
-  <main class="wrap">
-    <article class="card">
-      <h1>Zásady používání cookies</h1>
-      <div class="tag">Poslední aktualizace: <strong>DD. MM. RRRR</strong></div>
 
-      <h2>Co jsou cookies</h2>
-      <p>Krátké textové soubory ukládané do prohlížeče. Pomáhají zajistit funkčnost webu, měření návštěvnosti a personalizaci.</p>
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div id="menuBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative w-80 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl overflow-y-auto">
+          <div class="sticky top-0 bg-neutral-900/80 backdrop-blur border-b border-white/10 p-4 flex items-center justify-between">
+            <span class="font-semibold text-lg">Menu</span>
+            <button id="menuClose" class="p-2 rounded-lg hover:bg-white/5 transition">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+          
+          <div class="p-4 space-y-6">
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">HLAVNÍ MENU</h3>
+              <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="home" class="w-5 h-5 text-amber-400"></i>
+                  <span>Domů</span>
+                </a>
+                <a href="kartao-marketplace.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="store" class="w-5 h-5 text-fuchsia-400"></i>
+                  <span>Marketplace</span>
+                </a>
+                <a href="kartao-magazin.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="newspaper" class="w-5 h-5 text-purple-400"></i>
+                  <span>Magazín</span>
+                </a>
+                <a href="kartao-o-nas.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="info" class="w-5 h-5 text-sky-400"></i>
+                  <span>O nás</span>
+                </a>
+                <a href="kontakt.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+                  <span>Kontakt</span>
+                </a>
+              </nav>
+            </div>
 
-      <h2>Kategorie cookies</h2>
-      <ul>
-        <li><strong>Nezbytné</strong> – přihlášení, zabezpečení, formuláře (bez souhlasu).</li>
-        <li><strong>Preferenční</strong> – zapamatování voleb (se souhlasem).</li>
-        <li><strong>Analytické</strong> – anonymní statistiky (se souhlasem).</li>
-        <li><strong>Marketingové</strong> – personalizace a remarketing (se souhlasem).</li>
-      </ul>
-
-      <h2>Třetí strany</h2>
-      <p>{{Google Analytics 4, Meta Pixel, Firebase Analytics …}} – konkrétní seznam a doby uložení spravujeme aktuálně na této stránce.</p>
-
-      <h2>Správa souhlasů</h2>
-      <p>Při první návštěvě zobrazujeme cookie lištu. Nastavení lze kdykoli změnit klikem na <a href="#" onclick="return openCookieSettings()">Nastavení cookies</a> v patičce.</p>
-
-      <h2>Jak odvolat souhlas</h2>
-      <p>Otevřete <a href="#" onclick="return openCookieSettings()">Nastavení cookies</a> a upravte volby. Po odvolání maže Platforma volitelné cookies.</p>
-    </article>
-  </main>
-  <footer>
-    <div class="footer-inner">
-      © <span id="y"></span> KARTAO.cz · <a href="/ochrana-osobnich-udaju">GDPR</a> · <a href="/podminky">Podmínky</a> · <a href="#" onclick="return openCookieSettings()">Nastavení cookies</a>
-    </div>
-  </footer>
-
-  <!-- Minimal cookie banner mock (napojte na CMP dle potřeby) -->
-  <div id="cookieBanner" class="banner" role="dialog" aria-live="polite">
-    <div class="inner">
-      <div>
-        Používáme cookies pro funkce webu a, s vaším souhlasem, pro analytiku a marketing.
-        <div class="kinds">
-          <span class="kind">Nezbytné</span>
-          <span class="kind">Preferenční</span>
-          <span class="kind">Analytické</span>
-          <span class="kind">Marketingové</span>
+            <div>
+              <h3 class="text-sm font-semibold text-white/60 mb-3">LEGAL</h3>
+              <nav class="space-y-2">
+                <a href="cookies.html" class="flex items-center gap-3 p-2 rounded-lg bg-white/10 text-amber-400">
+                  <i data-lucide="cookie" class="w-5 h-5"></i>
+                  <span>Cookies</span>
+                </a>
+                <a href="ochrana-osobnich-udaju.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i>
+                  <span>Ochrana údajů</span>
+                </a>
+                <a href="obchodni-podminky.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition">
+                  <i data-lucide="file-text" class="w-5 h-5 text-blue-400"></i>
+                  <span>Obchodní podmínky</span>
+                </a>
+              </nav>
+            </div>
+          </div>
         </div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" onclick="rejectCookies()">Odmítnout</button>
-        <button class="btn" onclick="openCookieSettings()">Uložit výběr</button>
-        <button class="btn primary" onclick="acceptAllCookies()">Povolit vše</button>
+    </div>
+  </header>
+
+  <!-- Breadcrumbs -->
+  <nav class="max-w-7xl mx-auto px-4 py-3 text-sm text-white/60">
+    <div class="flex items-center gap-2">
+      <a href="index.html" class="hover:text-white transition">Domů</a>
+      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <span class="text-white">Cookies</span>
+    </div>
+  </nav>
+
+  <!-- Hero sekce -->
+  <section class="max-w-4xl mx-auto px-4 pt-8 pb-12">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-400/10 border border-orange-400/20 text-orange-400 text-sm font-medium mb-4">
+        <i data-lucide="cookie" class="w-4 h-4"></i>
+        Cookie Management
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold gradient-text mb-4">Zásady cookies</h1>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">
+        Transparentní informace o používání cookies na Kartao.cz. 
+        Spravujte své preference a dozvíte se, jak cookies vylepšují váš zážitek.
+      </p>
+    </div>
+
+    <!-- Rychlé nastavení -->
+    <div class="bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-2xl p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="font-bold text-xl text-white">Rychlé nastavení cookies</h2>
+          <p class="text-white/70 text-sm">Upravte své preference jediným klikem</p>
+        </div>
+        <i data-lucide="settings" class="w-6 h-6 text-orange-400"></i>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="acceptAllCookies()" class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">
+          ✅ Povolit vše
+        </button>
+        <button onclick="rejectOptionalCookies()" class="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">
+          ❌ Pouze nezbytné
+        </button>
+        <button onclick="openDetailedSettings()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">
+          ⚙️ Detailní nastavení
+        </button>
+      </div>
+    </div>
+
+    <!-- Meta informace -->
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+      <div class="grid md:grid-cols-3 gap-4 text-sm">
+        <div>
+          <div class="text-white/60 mb-1">Poslední aktualizace</div>
+          <div class="font-semibold">16. listopadu 2024</div>
+        </div>
+        <div>
+          <div class="text-white/60 mb-1">Verze zásad</div>
+          <div class="font-semibold">1.2</div>
+        </div>
+        <div>
+          <div class="text-white/60 mb-1">Vaše nastavení</div>
+          <div class="font-semibold">
+            <span id="cookieStatus" class="text-orange-400">Nenastaven</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Obsah cookies -->
+  <section class="max-w-4xl mx-auto px-4 pb-16">
+    <div class="space-y-8">
+
+      <!-- Co jsou cookies -->
+      <div class="cookie-section rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/20 grid place-items-center">
+            <i data-lucide="info" class="w-5 h-5 text-blue-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Co jsou cookies</h2>
+        </div>
+        <div class="space-y-4 text-white/80">
+          <p>
+            Cookies jsou malé textové soubory, které se ukládají do vašeho prohlížeče při návštěvě webových stránek. 
+            Pomáhají nám zajistit správné fungování platformy, zapamatovat si vaše preference a zlepšovat váš zážitek.
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🔧 Technické cookies</h3>
+              <p class="text-sm">Zajišťují základní funkcionalitu jako přihlašování, zabezpečení a nastavení</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">📊 Analytické cookies</h3>
+              <p class="text-sm">Pomáhají nám pochopit, jak uživatelé web používají a jak jej vylepšit</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">💾 Preferenční cookies</h3>
+              <p class="text-sm">Zapamatují si vaše volby a personalizují prostředí podle vašich potřeb</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🎯 Marketingové cookies</h3>
+              <p class="text-sm">Umožňují zobrazovat relevantní reklamy a měřit jejich účinnost</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kategorie cookies s nastavením -->
+      <div class="cookie-section rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/20 grid place-items-center">
+            <i data-lucide="sliders" class="w-5 h-5 text-orange-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Správa kategorií cookies</h2>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Nezbytné cookies -->
+          <div class="bg-white/5 rounded-xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i>
+                  <h3 class="font-semibold text-white text-lg">Nezbytné cookies</h3>
+                  <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-xs font-semibold">VŽDY AKTIVNÍ</span>
+                </div>
+                <p class="text-white/70 text-sm mb-3">
+                  Tyto cookies jsou nezbytné pro základní fungování webu. Nelze je vypnout, protože bez nich by web nefungoval správně.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Přihlašování a autentizace</span>
+                    <span class="text-green-400">✓</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Zabezpečení formulářů</span>
+                    <span class="text-green-400">✓</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Správa session</span>
+                    <span class="text-green-400">✓</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-4">
+                <input type="checkbox" class="cookie-toggle" checked disabled>
+              </div>
+            </div>
+            <div class="text-xs text-white/50">
+              <strong>Doba uložení:</strong> Po dobu session nebo 30 dní
+            </div>
+          </div>
+
+          <!-- Preferenční cookies -->
+          <div class="bg-white/5 rounded-xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <i data-lucide="user-cog" class="w-5 h-5 text-purple-400"></i>
+                  <h3 class="font-semibold text-white text-lg">Preferenční cookies</h3>
+                </div>
+                <p class="text-white/70 text-sm mb-3">
+                  Zapamatují si vaše preference a nastavení pro lepší uživatelský zážitek.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Jazyk rozhraní</span>
+                    <span class="text-purple-400">Čeština</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Filtry a třídění</span>
+                    <span class="text-purple-400">Poslední výběr</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Zobrazení profilu</span>
+                    <span class="text-purple-400">Uživatelské</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-4">
+                <input type="checkbox" id="preferenceToggle" class="cookie-toggle" onchange="updateCookiePrefs()">
+              </div>
+            </div>
+            <div class="text-xs text-white/50">
+              <strong>Doba uložení:</strong> 12 měsíců
+            </div>
+          </div>
+
+          <!-- Analytické cookies -->
+          <div class="bg-white/5 rounded-xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <i data-lucide="bar-chart" class="w-5 h-5 text-blue-400"></i>
+                  <h3 class="font-semibold text-white text-lg">Analytické cookies</h3>
+                </div>
+                <p class="text-white/70 text-sm mb-3">
+                  Pomáhají nám pochopit, jak používáte web, a zlepšovat naše služby. Data jsou anonymizována.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Google Analytics 4</span>
+                    <span class="text-blue-400">Anonymní měření</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Heatmapy a nahrávání</span>
+                    <span class="text-blue-400">Hotjar</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Výkonnostní metriky</span>
+                    <span class="text-blue-400">Core Web Vitals</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-4">
+                <input type="checkbox" id="analyticsToggle" class="cookie-toggle" onchange="updateCookiePrefs()">
+              </div>
+            </div>
+            <div class="text-xs text-white/50">
+              <strong>Doba uložení:</strong> 26 měsíců (Google Analytics standard)
+            </div>
+          </div>
+
+          <!-- Marketingové cookies -->
+          <div class="bg-white/5 rounded-xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <i data-lucide="target" class="w-5 h-5 text-red-400"></i>
+                  <h3 class="font-semibold text-white text-lg">Marketingové cookies</h3>
+                </div>
+                <p class="text-white/70 text-sm mb-3">
+                  Umožňují zobrazovat relevantní reklamy a měřit účinnost marketingových kampaní.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Facebook Pixel</span>
+                    <span class="text-red-400">Remarketing</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">Google Ads</span>
+                    <span class="text-red-400">Konverzní měření</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-white/60">LinkedIn Insight</span>
+                    <span class="text-red-400">B2B targeting</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-4">
+                <input type="checkbox" id="marketingToggle" class="cookie-toggle" onchange="updateCookiePrefs()">
+              </div>
+            </div>
+            <div class="text-xs text-white/50">
+              <strong>Doba uložení:</strong> 3-12 měsíců (dle poskytovatele)
+            </div>
+          </div>
+        </div>
+
+        <!-- Uložit nastavení -->
+        <div class="mt-6 flex items-center justify-between p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+          <div>
+            <p class="font-semibold text-amber-200">Změnili jste nastavení cookies</p>
+            <p class="text-sm text-amber-300/70">Klikněte pro uložení vašich preferencí</p>
+          </div>
+          <button onclick="saveCookieSettings()" class="px-6 py-2 bg-amber-500 text-black rounded-lg font-semibold hover:bg-amber-400 transition">
+            Uložit nastavení
+          </button>
+        </div>
+      </div>
+
+      <!-- Třetí strany -->
+      <div class="cookie-section rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/20 grid place-items-center">
+            <i data-lucide="external-link" class="w-5 h-5 text-purple-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Cookies třetích stran</h2>
+        </div>
+        <div class="space-y-4 text-white/80">
+          <p class="mb-4">Některé cookies nastavují externí služby, které integrujeme pro lepší funkcionalitu:</p>
+          
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-xl p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="bar-chart" class="w-4 h-4 text-blue-400"></i>
+                <h3 class="font-semibold text-white">Google Analytics 4</h3>
+              </div>
+              <p class="text-sm text-white/70 mb-2">Anonymní sledování návštěvnosti</p>
+              <div class="text-xs space-y-1">
+                <div><strong>Cookies:</strong> _ga, _ga_*, _gid</div>
+                <div><strong>Doba:</strong> 2 roky / 24 hodin</div>
+                <div><strong>Zásady:</strong> <a href="https://policies.google.com/privacy" class="text-blue-400 hover:text-blue-300 underline">Google Privacy</a></div>
+              </div>
+            </div>
+
+            <div class="bg-white/5 rounded-xl p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="facebook" class="w-4 h-4 text-blue-500"></i>
+                <h3 class="font-semibold text-white">Facebook Pixel</h3>
+              </div>
+              <p class="text-sm text-white/70 mb-2">Měření konverzí a remarketing</p>
+              <div class="text-xs space-y-1">
+                <div><strong>Cookies:</strong> _fbp, _fbc</div>
+                <div><strong>Doba:</strong> 3 měsíce</div>
+                <div><strong>Zásady:</strong> <a href="https://www.facebook.com/privacy/explanation" class="text-blue-400 hover:text-blue-300 underline">Meta Privacy</a></div>
+              </div>
+            </div>
+
+            <div class="bg-white/5 rounded-xl p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="server" class="w-4 h-4 text-orange-400"></i>
+                <h3 class="font-semibold text-white">Firebase</h3>
+              </div>
+              <p class="text-sm text-white/70 mb-2">Autentizace a realtime databáze</p>
+              <div class="text-xs space-y-1">
+                <div><strong>Cookies:</strong> __session, firebase-*</div>
+                <div><strong>Doba:</strong> Session / 1 rok</div>
+                <div><strong>Zásady:</strong> <a href="https://policies.google.com/privacy" class="text-blue-400 hover:text-blue-300 underline">Firebase Privacy</a></div>
+              </div>
+            </div>
+
+            <div class="bg-white/5 rounded-xl p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="credit-card" class="w-4 h-4 text-green-400"></i>
+                <h3 class="font-semibold text-white">Stripe</h3>
+              </div>
+              <p class="text-sm text-white/70 mb-2">Zpracování plateb</p>
+              <div class="text-xs space-y-1">
+                <div><strong>Cookies:</strong> __stripe_*, cid</div>
+                <div><strong>Doba:</strong> 1 rok</div>
+                <div><strong>Zásady:</strong> <a href="https://stripe.com/privacy" class="text-blue-400 hover:text-blue-300 underline">Stripe Privacy</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Správa a odvolání -->
+      <div class="cookie-section rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-red-500/20 grid place-items-center">
+            <i data-lucide="trash-2" class="w-5 h-5 text-red-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Správa a mazání cookies</h2>
+        </div>
+        <div class="space-y-4 text-white/80">
+          <h3 class="font-semibold text-white">🔧 Na této stránce</h3>
+          <ul class="space-y-2 ml-4">
+            <li>• Použijte přepínače výše pro změnu kategorií</li>
+            <li>• Klikněte "Uložit nastavení" pro aplikování změn</li>
+            <li>• Nastavení se automaticky synchronizuje napříč zařízeními</li>
+            <li>• Můžete kdykoliv změnit své preference</li>
+          </ul>
+
+          <h3 class="font-semibold text-white mt-6">🌐 V prohlížeči</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-xl p-4">
+              <h4 class="font-semibold text-white mb-2">Chrome / Edge</h4>
+              <ol class="text-sm space-y-1">
+                <li>1. Nastavení → Soukromí a zabezpečení</li>
+                <li>2. Cookies a další data webu</li>
+                <li>3. Zobrazit všechny cookies</li>
+                <li>4. Najít kartao.cz a smazat</li>
+              </ol>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h4 class="font-semibold text-white mb-2">Firefox</h4>
+              <ol class="text-sm space-y-1">
+                <li>1. Nastavení → Soukromí a zabezpečení</li>
+                <li>2. Cookies a data stránek</li>
+                <li>3. Spravovat data</li>
+                <li>4. Vyhledat kartao.cz a odstranit</li>
+              </ol>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h4 class="font-semibold text-white mb-2">Safari</h4>
+              <ol class="text-sm space-y-1">
+                <li>1. Safari → Nastavení</li>
+                <li>2. Soukromí → Spravovat data webů</li>
+                <li>3. Vyhledat kartao.cz</li>
+                <li>4. Kliknout Odstranit</li>
+              </ol>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h4 class="font-semibold text-white mb-2">Mobilní zařízení</h4>
+              <ol class="text-sm space-y-1">
+                <li>1. Nastavení prohlížeče</li>
+                <li>2. Soukromí / Data webu</li>
+                <li>3. Smazat cookies</li>
+                <li>4. Nebo smazat veškerá data</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p class="text-red-200">
+              <strong>⚠️ Upozornění:</strong> Smazání všech cookies způsobí odhlášení ze všech webů 
+              a ztrátu uložených preferencí. Doporučujeme používat nastavení na této stránce.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kontakt -->
+      <div class="cookie-section rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 grid place-items-center">
+            <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Kontakt a dotazy</h2>
+        </div>
+        <div class="space-y-4 text-white/80">
+          <p>Máte otázky k používání cookies nebo potřebujete pomoc s nastavením?</p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">📧 Obecné dotazy</h3>
+              <p>
+                <a href="mailto:privacy@kartao.cz" class="text-emerald-400 hover:text-emerald-300 underline">privacy@kartao.cz</a>
+              </p>
+              <p class="text-sm text-white/60 mt-1">Odpovídáme do 48 hodin</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4">
+              <h3 class="font-semibold text-white mb-2">🛠️ Technická podpora</h3>
+              <p>
+                <a href="mailto:support@kartao.cz" class="text-emerald-400 hover:text-emerald-300 underline">support@kartao.cz</a>
+              </p>
+              <p class="text-sm text-white/60 mt-1">Pomoc s nastavením</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cookie Banner -->
+  <div id="cookieBanner" class="cookie-banner">
+    <div class="bg-neutral-900 border-t border-white/10 p-4 shadow-2xl">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="cookie" class="w-5 h-5 text-orange-400"></i>
+              <h3 class="font-semibold text-white">Používáme cookies</h3>
+            </div>
+            <p class="text-white/70 text-sm">
+              Používáme cookies pro lepší fungování webu a, s vaším souhlasem, pro analýzu návštěvnosti a marketing.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs">Nezbytné ✓</span>
+              <span class="bg-gray-500/20 text-gray-300 px-2 py-1 rounded text-xs">Preferenční</span>
+              <span class="bg-gray-500/20 text-gray-300 px-2 py-1 rounded text-xs">Analytické</span>
+              <span class="bg-gray-500/20 text-gray-300 px-2 py-1 rounded text-xs">Marketingové</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="rejectOptionalCookies()" class="px-4 py-2 text-white/80 hover:text-white border border-white/20 rounded-lg transition">
+              Pouze nezbytné
+            </button>
+            <button onclick="openDetailedSettings()" class="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition">
+              Nastavit
+            </button>
+            <button onclick="acceptAllCookies()" class="px-4 py-2 bg-amber-500 text-black rounded-lg font-semibold hover:bg-amber-400 transition">
+              Povolit vše
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-white/5">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
+        <div class="flex items-center gap-4">
+          <span>© <span id="year"></span> Kartao.cz - Cookies zásady</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="ochrana-osobnich-udaju.html" class="hover:text-white transition">Ochrana osobních údajů</a>
+          <span class="hidden md:block">•</span>
+          <a href="obchodni-podminky.html" class="hover:text-white transition">Obchodní podmínky</a>
+          <span class="hidden md:block">•</span>
+          <a href="kontakt.html" class="hover:text-white transition">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    const KEY = 'kartao_cookie_consent_v1';
-    const banner = document.getElementById('cookieBanner');
-    function showBanner(){ if(!localStorage.getItem(KEY)) banner.style.display='block'; }
-    function hideBanner(){ banner.style.display='none'; }
-    function acceptAllCookies(){ localStorage.setItem(KEY, JSON.stringify({all:true,date:Date.now()})); hideBanner(); }
-    function rejectCookies(){ localStorage.setItem(KEY, JSON.stringify({all:false,sel:{},date:Date.now()})); hideBanner(); }
-    function openCookieSettings(){ alert('Zde otevřete detailní nastavení (CMP).'); return false; }
-    document.getElementById('y').textContent=new Date().getFullYear();
-    showBanner();
+    lucide.createIcons();
+    
+    // Hamburger menu
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+    const menuBackdrop = document.getElementById('menuBackdrop');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function openMenu() {
+      mobileMenu.classList.remove('-translate-x-full');
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.add('-translate-x-full');
+    }
+
+    menuToggle?.addEventListener('click', openMenu);
+    menuClose?.addEventListener('click', closeMenu);
+    menuBackdrop?.addEventListener('click', closeMenu);
+
+    // Auto rok
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Cookie management
+    const COOKIE_KEY = 'kartao_cookie_consent_v2';
+    
+    function getCookieSettings() {
+      const stored = localStorage.getItem(COOKIE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      return {
+        necessary: true,
+        preferences: false,
+        analytics: false,
+        marketing: false,
+        timestamp: Date.now()
+      };
+    }
+
+    function setCookieSettings(settings) {
+      localStorage.setItem(COOKIE_KEY, JSON.stringify({
+        ...settings,
+        timestamp: Date.now()
+      }));
+      updateUI();
+      hideCookieBanner();
+    }
+
+    function updateUI() {
+      const settings = getCookieSettings();
+      
+      document.getElementById('preferenceToggle').checked = settings.preferences;
+      document.getElementById('analyticsToggle').checked = settings.analytics;
+      document.getElementById('marketingToggle').checked = settings.marketing;
+      
+      const status = document.getElementById('cookieStatus');
+      if (settings.analytics && settings.marketing && settings.preferences) {
+        status.textContent = 'Vše povoleno';
+        status.className = 'text-green-400';
+      } else if (!settings.analytics && !settings.marketing && !settings.preferences) {
+        status.textContent = 'Pouze nezbytné';
+        status.className = 'text-orange-400';
+      } else {
+        status.textContent = 'Vlastní nastavení';
+        status.className = 'text-blue-400';
+      }
+    }
+
+    function showCookieBanner() {
+      const settings = getCookieSettings();
+      // Show banner if no settings exist or settings are older than 6 months
+      if (!localStorage.getItem(COOKIE_KEY) || (Date.now() - settings.timestamp > 6 * 30 * 24 * 60 * 60 * 1000)) {
+        document.getElementById('cookieBanner').classList.add('show');
+      }
+    }
+
+    function hideCookieBanner() {
+      document.getElementById('cookieBanner').classList.remove('show');
+    }
+
+    function acceptAllCookies() {
+      setCookieSettings({
+        necessary: true,
+        preferences: true,
+        analytics: true,
+        marketing: true
+      });
+    }
+
+    function rejectOptionalCookies() {
+      setCookieSettings({
+        necessary: true,
+        preferences: false,
+        analytics: false,
+        marketing: false
+      });
+    }
+
+    function updateCookiePrefs() {
+      // Auto-save when toggles change
+      const settings = {
+        necessary: true,
+        preferences: document.getElementById('preferenceToggle').checked,
+        analytics: document.getElementById('analyticsToggle').checked,
+        marketing: document.getElementById('marketingToggle').checked
+      };
+      
+      // Show save button
+      updateUI();
+    }
+
+    function saveCookieSettings() {
+      const settings = {
+        necessary: true,
+        preferences: document.getElementById('preferenceToggle').checked,
+        analytics: document.getElementById('analyticsToggle').checked,
+        marketing: document.getElementById('marketingToggle').checked
+      };
+      
+      setCookieSettings(settings);
+      
+      // Show success message
+      const button = event.target;
+      const originalText = button.textContent;
+      button.textContent = '✓ Uloženo';
+      button.classList.add('bg-green-500');
+      button.classList.remove('bg-amber-500');
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-500');
+        button.classList.add('bg-amber-500');
+      }, 2000);
+    }
+
+    function openDetailedSettings() {
+      hideCookieBanner();
+      // Scroll to settings section
+      document.querySelector('.cookie-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Initialize
+    updateUI();
+    showCookieBanner();
   </script>
 </body>
 </html>
