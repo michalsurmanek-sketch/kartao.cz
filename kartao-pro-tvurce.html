@@ -541,9 +541,21 @@
     </div>
   </section>
 
-  <!-- Hamburger menu functionality -->
+  <!-- Inicializace -->
   <script>
-    // Hamburger menu - viz hamburger-menu.js
+    // Inicializace ikon Lucide
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => { 
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+      
+      // Inicializace hamburger menu
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
+    });
   </script>
   
   <!-- Hamburger Menu -->
