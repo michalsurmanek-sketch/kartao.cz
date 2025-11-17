@@ -221,7 +221,7 @@
 
     function showMessage(text, type = "info") {
       if (!messageBox) return;
-      messageBox.textContent = text;
+      messageBox.innerHTML = text; // Změněno na innerHTML pro podporu HTML
       messageBox.classList.remove("hidden", "border-red-400", "bg-red-900/60", "border-emerald-400", "bg-emerald-900/60", "border-amber-300", "bg-amber-900/40");
 
       if (type === "error") {
@@ -236,7 +236,7 @@
     function clearMessage() {
       if (!messageBox) return;
       messageBox.classList.add("hidden");
-      messageBox.textContent = "";
+      messageBox.innerHTML = ""; // Změněno na innerHTML
     }
 
     // Uložení / aktualizace profilu uživatele ve Firestore
@@ -334,15 +334,26 @@
       const password = document.getElementById("reg-password").value;
       const password2 = document.getElementById("reg-password2").value;
 
+      // Kontrola, zda uživatel není již přihlášený
+      if (auth.currentUser) {
+        showMessage("⚠️ Již jste přihlášený jako " + auth.currentUser.email, "info");
+        return;
+      }
+
       const btn = registerFormEl.querySelector('button[type="submit"]');
       const originalText = btn.textContent;
       btn.textContent = 'Vytvářím účet...';
       btn.disabled = true;
+      
+      console.log('📝 Zahajuji registraci pro:', email);
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
+        console.log('✅ Účet vytvořen:', cred.user.uid);
+        
         if (cred.user) {
           await saveUserProfile(cred.user);
+          console.log('✅ Profil uložen do Firestore');
           
           // Pokus o odeslání ověřovacího emailu s detailním logováním
           try {
@@ -359,31 +370,47 @@
             console.log('🔗 Verification URL:', actionCodeSettings.url);
             
             showMessage(
-              `✅ Účet byl vytvořen! Ověřovací email byl odeslán na ${cred.user.email}. ` +
-              `Zkontrolujte schránku (i SPAM složku). Email přichází z noreply@kartao-cz.firebaseapp.com`,
+              `✅ <strong>Registrace úspěšná!</strong><br><br>` +
+              `Ověřovací email byl odeslán na <strong>${cred.user.email}</strong><br><br>` +
+              `📧 Zkontrolujte schránku (i SPAM složku)<br>` +
+              `📨 Email přichází z: noreply@kartao-cz.firebaseapp.com<br><br>` +
+              `<em>Za chvíli budete přesměrováni na přihlášení...</em>`,
               "success"
             );
           } catch (emailError) {
             console.error('❌ Chyba při odesílání ověřovacího emailu:', emailError);
             showMessage(
-              `⚠️ Účet byl vytvořen, ale ověřovací email se nepodařilo odeslat. ` +
-              `Můžete se přihlásit a použít tlačítko "Znovu poslat ověřovací e-mail".`,
+              `⚠️ <strong>Účet byl vytvořen!</strong><br><br>` +
+              `Ověřovací email se bohužel nepodařilo odeslat.<br>` +
+              `Můžete se přihlásit a použít tlačítko "Znovu poslat ověřovací e-mail".<br><br>` +
+              `<em>Za chvíli budete přesměrováni na přihlášení...</em>`,
               "info"
             );
           }
           
-          registerFormEl.reset();
-          setActiveTab("login");
+          // Počkat 3 sekundy a pak přepnout na login tab
+          setTimeout(() => {
+            registerFormEl.reset();
+            setActiveTab("login");
+            console.log('↪️ Přesměrováno na přihlášení');
+          }, 3000);
         }
       } catch (error) {
-        console.error(error);
+        console.error('❌ Chyba při registraci:', error.code, error.message);
         let errorMsg = "Při registraci došlo k chybě.";
+        
         if (error.code === 'auth/email-already-in-use') {
-          errorMsg = "Tento e-mail je již registrován.";
+          errorMsg = "⚠️ Tento e-mail je již registrován. <br><br>" +
+                     "<strong>Máte dva možnosti:</strong><br>" +
+                     "1. Přejděte na záložku 'Přihlášení' a přihlašte se<br>" +
+                     "2. Pokud jste zapomněli heslo, klikněte na 'Zapomněli jste heslo?'";
         } else if (error.code === 'auth/invalid-email') {
           errorMsg = "Neplatný formát e-mailu.";
         } else if (error.code === 'auth/weak-password') {
           errorMsg = "Heslo je příliš slabé. Použijte alespoň 6 znaků.";
+        } else if (error.code === 'auth/operation-not-allowed') {
+          errorMsg = "⚠️ Registrace emailem/heslem není povolena.<br>" +
+                     "Kontaktujte administrátora.";
         }
         showMessage(errorMsg, "error");
       } finally {
