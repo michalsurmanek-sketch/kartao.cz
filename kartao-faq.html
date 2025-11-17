@@ -6,6 +6,24 @@
   <title>FAQ – Časté dotazy | Kartao.cz</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>❓</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          keyframes: {
+            crownPulse: {
+              '0%, 100%': { color: '#f59e0b' },
+              '50%': { color: '#db58f6' },
+            }
+          },
+          animation: {
+            'crown-glow': 'crownPulse 1.6s ease-in-out infinite',
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .gradient-text{background:linear-gradient(90deg,#e879f9,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .shadow-soft{box-shadow:0 4px 24px rgba(232,121,249,.25),0 2px 10px rgba(251,191,36,.15)}
@@ -27,16 +45,106 @@
         </div>
       </a>
       <nav class="hidden md:flex gap-6 text-sm text-white/80">
-        <a href="index.html" class="hover:text-white">Domů</a>
-        <a href="kartao-pro-firmy.html" class="hover:text-white">Pro firmy</a>
-        <a href="kartao-pro-tvurce.html" class="hover:text-white">Pro tvůrce</a>
-        <a href="kartao-magazin.html" class="hover:text-white">Magazín</a>
-        <a href="kartao-o-nas.html" class="hover:text-white">O nás</a>
-        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
-        <a href="kartao-faq.html" class="text-amber-400 font-semibold">FAQ</a>
+        <a href="index.html" class="hover:text-white flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i>Domů</a>
+        <a href="kartao-marketplace.html" class="hover:text-white flex items-center gap-2"><i data-lucide="search" class="w-4 h-4"></i>Marketplace</a>
+        <a href="kartao-pro-firmy.html" class="hover:text-white flex items-center gap-2"><i data-lucide="building" class="w-4 h-4"></i>Pro firmy</a>
+        <a href="kartao-pro-tvurce.html" class="hover:text-white flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4"></i>Pro tvůrce</a>
+        <a href="kartao-magazin.html" class="hover:text-white flex items-center gap-2"><i data-lucide="newspaper" class="w-4 h-4"></i>Magazín</a>
+        <a href="kartao-faq.html" class="text-amber-400 font-semibold flex items-center gap-2"><i data-lucide="help-circle" class="w-4 h-4"></i>FAQ</a>
       </nav>
+      
+      <!-- HAMBURGER MENU BUTTON -->
+      <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+        <span class="sr-only">Otevřít menu</span>
+      </button>
     </div>
   </header>
+
+  <!-- MOBILNÍ MENU -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+    <div class="relative h-full svh flex flex-col items-stretch">
+      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
+          <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+              <i data-lucide="crown" class="w-5 h-5 animate-crown-glow"></i>
+            </div>
+            <div>
+              <div class="font-extrabold">Kartao.cz</div>
+              <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
+            </div>
+          </a>
+          <div class="flex items-center gap-2">
+            <a href="vip.html" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
+              <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
+            </a>
+            <button id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+        <nav class="px-3 py-3 overflow-y-auto flex-1">
+          <!-- Hlavní menu -->
+          <div class="mb-1">
+            <div class="px-3 py-2 text-xs font-semibold text-white/40 uppercase tracking-wider">Hlavní menu</div>
+            <a href="index.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="home" class="w-5 h-5 text-white/70"></i><span>Domů</span>
+            </a>
+            <a href="kartao-marketplace.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="search" class="w-5 h-5 text-white/70"></i><span>Marketplace</span>
+            </a>
+            <a href="kartao-pro-tvurce.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="user-plus" class="w-5 h-5 text-white/70"></i><span>Pro tvůrce</span>
+            </a>
+            <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="building" class="w-5 h-5 text-white/70"></i><span>Pro firmy</span>
+            </a>
+          </div>
+
+          <!-- Účet -->
+          <div class="border-t border-white/10 mt-3 pt-3 mb-1">
+            <div class="px-3 py-2 text-xs font-semibold text-white/40 uppercase tracking-wider">Účet</div>
+            <a href="kartao-zalozit-kartu.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="credit-card" class="w-5 h-5 text-white/70"></i>
+              <span>Založit kartu</span>
+              <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ZDARMA</span>
+            </a>
+            <a href="login.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="log-in" class="w-5 h-5 text-white/70"></i><span>Přihlásit se</span>
+            </a>
+            <a href="kartao-muj-ucet.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="user" class="w-5 h-5 text-white/70"></i><span>Můj účet</span>
+            </a>
+          </div>
+
+          <!-- Obsah -->
+          <div class="border-t border-white/10 mt-3 pt-3">
+            <div class="px-3 py-2 text-xs font-semibold text-white/40 uppercase tracking-wider">Obsah</div>
+            <a href="kartao-magazin.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="newspaper" class="w-5 h-5 text-white/70"></i><span>Magazín</span>
+            </a>
+            <a href="kartao-recenze.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="star" class="w-5 h-5 text-white/70"></i><span>Recenze</span>
+            </a>
+            <a href="kartao-faq.html" class="block px-3 py-3 rounded-xl bg-white/10 transition text-amber-300 flex items-center gap-3">
+              <i data-lucide="help-circle" class="w-5 h-5"></i><span>FAQ</span>
+            </a>
+            <a href="kartao-o-nas.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="info" class="w-5 h-5 text-white/70"></i><span>O nás</span>
+            </a>
+            <a href="kontakt.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="mail" class="w-5 h-5 text-white/70"></i><span>Kontakt</span>
+            </a>
+            <a href="vip.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="crown" class="w-5 h-5 text-amber-400"></i><span>VIP tvůrci</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
 
   <!-- Hero -->
   <section class="max-w-7xl mx-auto px-4 pt-12 pb-6">
@@ -206,26 +314,39 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    lucide.createIcons();
-    const tabs = document.querySelectorAll('.tab-btn');
-    const sections = {
-      firms: document.getElementById('tab-firms'),
-      creators: document.getElementById('tab-creators'),
-      general: document.getElementById('tab-general')
-    };
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const key = btn.getAttribute('data-tab');
-        // přepnout tlačítka
-        tabs.forEach(b => b.classList.remove('bg-neutral-900','text-white'));
-        btn.classList.add('bg-neutral-900','text-white');
-        // přepnout sekce
-        Object.entries(sections).forEach(([k,el]) => {
-          if (k === key) el.classList.remove('hidden');
-          else el.classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inicializace ikon
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+      
+      // Inicializace hamburger menu
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
+      
+      // Tab funkce pro FAQ
+      const tabs = document.querySelectorAll('.tab-btn');
+      const sections = {
+        firms: document.getElementById('tab-firms'),
+        creators: document.getElementById('tab-creators'),
+        general: document.getElementById('tab-general')
+      };
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-tab');
+          // přepnout tlačítka
+          tabs.forEach(b => b.classList.remove('bg-neutral-900','text-white'));
+          btn.classList.add('bg-neutral-900','text-white');
+          // přepnout sekce
+          Object.entries(sections).forEach(([k,el]) => {
+            if (k === key) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+          });
         });
       });
     });
   </script>
+  
+  <!-- Hamburger Menu -->
+  <script src="hamburger-menu.js"></script>
 </body>
 </html>
