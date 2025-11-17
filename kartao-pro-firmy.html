@@ -577,7 +577,15 @@
       const testHeaders=['a','b'];
       const row = csvBuildRow(testHeaders,{a:'1',b:'2'});
       console.assert(row==='1,2','csvBuildRow basic');
+      
+      // Inicializace hamburger menu
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
     });
   </script>
+  
+  <!-- Hamburger Menu -->
+  <script src="hamburger-menu.js"></script>
 </body>
 </html>

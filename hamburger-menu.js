@@ -115,11 +115,3 @@ function initHamburgerMenu() {
 if (typeof window !== 'undefined') {
   window.HamburgerMenu = { init: initHamburgerMenu };
 }
-
-// Automatická inicializace při načtení DOM
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initHamburgerMenu);
-} else {
-  // DOM již načten
-  initHamburgerMenu();
-}
