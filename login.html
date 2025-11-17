@@ -147,13 +147,27 @@ async function saveProfile(user) {
   console.log('💾 SaveProfile called for:', user.email);
   console.log('💾 DB available?', typeof db, db);
   try {
-    await db.collection('users').doc(user.uid).set({
+    const docRef = db.collection('users').doc(user.uid);
+    const doc = await docRef.get();
+    
+    const profileData = {
       email: user.email,
       displayName: user.displayName || '',
       photoURL: user.photoURL || '',
       provider: user.providerData?.[0]?.providerId || 'password',
       updatedAt: new Date().toISOString()
-    }, { merge: true });
+    };
+    
+    if (!doc.exists) {
+      // Nový uživatel - CREATE
+      console.log('💾 Creating new user profile');
+      await docRef.set(profileData);
+    } else {
+      // Existující - UPDATE (bez role)
+      console.log('💾 Updating existing user profile');
+      await docRef.update(profileData);
+    }
+    
     console.log('💾 Profile saved to Firestore');
   } catch (e) {
     console.error('❌ Profile save error:', e);
