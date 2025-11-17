@@ -229,13 +229,11 @@ formLogin.onsubmit = async (e) => {
     const cred = await auth.signInWithEmailAndPassword(email, password);
     console.log('✅ Login successful:', cred.user.email);
     
-    await saveProfile(cred.user);
-    console.log('✅ Profile saved');
-    
+    // Přeskočíme saveProfile - jdeme rovnou na redirect
     showMsg('Přihlášení úspěšné!', 'success');
     
-    console.log('⏳ Waiting 500ms before redirect...');
-    setTimeout(() => redirect(cred.user), 500);
+    console.log('⏳ Redirecting immediately...');
+    redirect(cred.user);
   } catch (error) {
     console.error('❌ Login error:', error);
     let msg = 'Chyba při přihlášení';
