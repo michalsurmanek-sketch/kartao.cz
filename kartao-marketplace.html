@@ -327,14 +327,18 @@
           </div>
 
           <div class="w-full lg:w-64">
-            <label class="block text-xs font-medium text-white/60 mb-1.5">Min. sledující: <span id="followerValue" class="text-fuchsia-400 font-semibold">10k+</span></label>
-            <input id="followerRange" type="range" min="1" max="5" value="3" step="1" class="w-full h-2 rounded-lg appearance-none cursor-pointer" style="background: linear-gradient(to right, #d946ef 0%, #d946ef 40%, #404040 40%, #404040 100%);" />
-            <div class="flex justify-between mt-1 text-[10px] text-white/40">
-              <span>1k</span>
-              <span>5k</span>
-              <span>10k</span>
-              <span>25k</span>
-              <span>50k+</span>
+            <label class="block text-xs font-medium text-white/60 mb-1.5">
+              Min. sledující: <span id="followerValue" class="text-fuchsia-400 font-semibold">10k+</span>
+            </label>
+            <div class="relative">
+              <input id="followerRange" type="range" min="1" max="5" value="3" step="1" class="w-full h-2 rounded-lg appearance-none cursor-pointer" style="background: linear-gradient(to right, #d946ef 0%, #d946ef 40%, #404040 40%, #404040 100%);" />
+              <div class="flex justify-between mt-1.5 text-[10px] text-white/40 pointer-events-none">
+                <span>1k</span>
+                <span>5k</span>
+                <span>10k</span>
+                <span>25k</span>
+                <span>50k+</span>
+              </div>
             </div>
           </div>
         </div>
@@ -348,6 +352,7 @@
               <option value="tiktok">TikTok</option>
               <option value="youtube">YouTube</option>
               <option value="facebook">Facebook</option>
+              <option value="pinterest">Pinterest</option>
             </select>
           </div>
 
