@@ -347,8 +347,16 @@
           // Pokus o odeslání ověřovacího emailu s detailním logováním
           try {
             console.log('📧 Odesílám ověřovací email na:', cred.user.email);
-            await cred.user.sendEmailVerification();
+            
+            // Konfigurace Action URL pro ověřovací email
+            const actionCodeSettings = {
+              url: window.location.origin + '/email-verified.html',
+              handleCodeInApp: true
+            };
+            
+            await cred.user.sendEmailVerification(actionCodeSettings);
             console.log('✅ Ověřovací email byl odeslán');
+            console.log('🔗 Verification URL:', actionCodeSettings.url);
             
             showMessage(
               `✅ Účet byl vytvořen! Ověřovací email byl odeslán na ${cred.user.email}. ` +
@@ -726,8 +734,16 @@
 
         try {
           console.log('📧 Opětovné odeslání ověřovacího emailu na:', user.email);
-          await user.sendEmailVerification();
+          
+          // Konfigurace Action URL pro ověřovací email
+          const actionCodeSettings = {
+            url: window.location.origin + '/email-verified.html',
+            handleCodeInApp: true
+          };
+          
+          await user.sendEmailVerification(actionCodeSettings);
           console.log('✅ Email odeslán úspěšně');
+          console.log('🔗 Verification URL:', actionCodeSettings.url);
           
           showMessage(
             `✅ Ověřovací e-mail byl znovu odeslán na ${user.email}. ` +
