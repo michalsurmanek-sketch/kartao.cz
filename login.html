@@ -3,141 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Přihlaste se do Kartao.cz - platformy pro influencery a značky">
-  <meta name="robots" content="noindex, nofollow">
   <title>Přihlášení - Kartao.cz</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔑</text></svg>">
   
-  <!-- Tailwind CSS -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Firebase SDK -->
+  
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
+  
   <style>
     body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top left, #db58f6 0, transparent 55%),
-                  radial-gradient(circle at bottom right, #fbbf24 0, #020617 55%);
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
     }
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-<!-- Header -->
-<header class="border-b border-white/10 bg-neutral-900/50">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-        <span class="text-lg font-bold">K</span>
-      </div>
-      <div>
-        <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-        <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
-      </div>
-    </a>
+<div class="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl">
+  
+  <!-- Logo -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-white mb-2">Kartao.cz</h1>
+    <p class="text-white/60">Přihlášení</p>
   </div>
-</header>
 
-<main class="flex-1 flex items-center justify-center px-4 py-10">
-  <div class="w-full max-w-md bg-neutral-900/80 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md p-8">
-    
-    <!-- Logo -->
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-        <span class="text-xl font-bold">K</span>
-      </div>
-      <div>
-        <div class="font-extrabold tracking-tight text-lg">Přihlášení</div>
-        <div class="text-xs text-white/60 -mt-0.5">Kartao.cz</div>
-      </div>
-    </div>
+  <!-- Zprávy -->
+  <div id="msg" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
 
-    <!-- Přepínač Přihlášení / Registrace -->
-    <div class="flex mb-6 rounded-xl bg-neutral-800/80 p-1 text-sm">
-      <button id="btn-switch-login" type="button" class="flex-1 py-2 rounded-lg font-medium transition bg-neutral-900 text-white">
-        Přihlášení
-      </button>
-      <button id="btn-switch-register" type="button" class="flex-1 py-2 rounded-lg font-medium transition text-white/70 hover:text-white">
-        Registrace
-      </button>
-    </div>
-
-    <!-- Zprávy -->
-    <div id="message-box" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
-
-    <!-- Formulář Přihlášení -->
-    <form id="form-login" class="space-y-4">
-      <div>
-        <label class="block text-sm mb-1" for="login-email">E-mail</label>
-        <input id="login-email" type="email" required autocomplete="email"
-               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400">
-      </div>
-      <div>
-        <label class="block text-sm mb-1" for="login-password">Heslo</label>
-        <input id="login-password" type="password" required autocomplete="current-password"
-               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400">
-      </div>
-      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
-        Přihlásit se
-      </button>
-    </form>
-
-    <!-- Formulář Registrace (skrytý) -->
-    <form id="form-register" class="space-y-4 hidden">
-      <div>
-        <label class="block text-sm mb-1" for="reg-email">E-mail</label>
-        <input id="reg-email" type="email" required autocomplete="email"
-               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400">
-      </div>
-      <div>
-        <label class="block text-sm mb-1" for="reg-password">Heslo</label>
-        <input id="reg-password" type="password" required minlength="6" autocomplete="new-password"
-               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400">
-        <p class="mt-1 text-xs text-white/50">Minimálně 6 znaků</p>
-      </div>
-      <div>
-        <label class="block text-sm mb-1" for="reg-password2">Heslo znovu</label>
-        <input id="reg-password2" type="password" required minlength="6" autocomplete="new-password"
-               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400">
-      </div>
-      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
-        Vytvořit účet
-      </button>
-      <p class="text-xs text-white/50 text-center">
-        Registrací souhlasíte s <a href="obchodni-podminky.html" class="underline">podmínkami použití</a>
-      </p>
-    </form>
-
-    <!-- Oddělovač -->
-    <div class="my-4 text-center">
-      <span class="text-xs text-white/40">nebo</span>
-    </div>
-
-    <!-- OAuth tlačítka -->
-    <button id="btn-google" type="button" class="w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2 mb-2">
-      <span class="text-lg">G</span>
-      <span>Pokračovat přes Google</span>
+  <!-- Přepínač -->
+  <div class="flex gap-2 mb-6 bg-white/5 rounded-lg p-1">
+    <button id="tab-login" class="flex-1 py-2 rounded-md font-medium bg-white/20 text-white">
+      Přihlášení
     </button>
-
-    <button id="btn-facebook" type="button" class="w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2">
-      <span class="text-lg">f</span>
-      <span>Pokračovat přes Facebook</span>
+    <button id="tab-register" class="flex-1 py-2 rounded-md font-medium text-white/60 hover:text-white">
+      Registrace
     </button>
-
-    <p class="mt-6 text-center text-xs text-white/40">
-      Potřebujete pomoct? <a href="mailto:podpora@kartao.cz" class="underline">podpora@kartao.cz</a>
-    </p>
   </div>
-</main>
+
+  <!-- LOGIN FORM -->
+  <form id="form-login" class="space-y-4">
+    <div>
+      <input id="login-email" type="email" placeholder="E-mail" required
+             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-fuchsia-500">
+    </div>
+    <div>
+      <input id="login-password" type="password" placeholder="Heslo" required
+             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-fuchsia-500">
+    </div>
+    <button type="submit" class="w-full py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-semibold rounded-lg hover:brightness-110">
+      Přihlásit se
+    </button>
+  </form>
+
+  <!-- REGISTER FORM -->
+  <form id="form-register" class="space-y-4 hidden">
+    <div>
+      <input id="reg-email" type="email" placeholder="E-mail" required
+             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-fuchsia-500">
+    </div>
+    <div>
+      <input id="reg-password" type="password" placeholder="Heslo (min. 6 znaků)" required minlength="6"
+             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-fuchsia-500">
+    </div>
+    <div>
+      <input id="reg-password2" type="password" placeholder="Heslo znovu" required minlength="6"
+             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-fuchsia-500">
+    </div>
+    <button type="submit" class="w-full py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-semibold rounded-lg hover:brightness-110">
+      Vytvořit účet
+    </button>
+  </form>
+
+  <!-- OAuth -->
+  <div class="mt-6">
+    <div class="text-center text-white/40 text-sm mb-4">nebo</div>
+    <button id="btn-google" class="w-full py-3 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 flex items-center justify-center gap-2">
+      <span>G</span>
+      <span>Google</span>
+    </button>
+  </div>
+
+  <div class="mt-6 text-center">
+    <a href="index.html" class="text-white/60 text-sm hover:text-white">← Zpět na hlavní stránku</a>
+  </div>
+</div>
 
 <script>
-// ============================================
-// FIREBASE INICIALIZACE
-// ============================================
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAmUuqkye67hhyoauRJiUVi_UVEdzU7hTI",
   authDomain: "kartao-cz.firebaseapp.com",
@@ -147,101 +101,73 @@ const firebaseConfig = {
   appId: "1:712778602439:web:14e2b4c07ea35f70a16be2"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
+// Init Firebase
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-// OAuth providery
 const googleProvider = new firebase.auth.GoogleAuthProvider();
-const facebookProvider = new firebase.auth.FacebookAuthProvider();
 
-// ============================================
-// GLOBÁLNÍ PROMĚNNÉ
-// ============================================
-let isProcessing = false;
-let currentMode = 'login'; // 'login' nebo 'register'
-
-// ============================================
-// DOM ELEMENTY
-// ============================================
-const messageBox = document.getElementById('message-box');
+// Elements
+const msg = document.getElementById('msg');
+const tabLogin = document.getElementById('tab-login');
+const tabRegister = document.getElementById('tab-register');
 const formLogin = document.getElementById('form-login');
 const formRegister = document.getElementById('form-register');
-const btnSwitchLogin = document.getElementById('btn-switch-login');
-const btnSwitchRegister = document.getElementById('btn-switch-register');
 const btnGoogle = document.getElementById('btn-google');
-const btnFacebook = document.getElementById('btn-facebook');
 
-// ============================================
-// HELPER FUNKCE
-// ============================================
-function showMessage(text, type = 'info') {
-  messageBox.innerHTML = text;
-  messageBox.classList.remove('hidden', 'bg-red-900/60', 'border-red-400', 'bg-emerald-900/60', 'border-emerald-400', 'bg-amber-900/40', 'border-amber-300');
-  
-  if (type === 'error') {
-    messageBox.classList.add('bg-red-900/60', 'border-red-400', 'border');
-  } else if (type === 'success') {
-    messageBox.classList.add('bg-emerald-900/60', 'border-emerald-400', 'border');
-  } else {
-    messageBox.classList.add('bg-amber-900/40', 'border-amber-300', 'border');
-  }
+let mode = 'login';
+let busy = false;
+
+// Helpers
+function showMsg(text, type) {
+  msg.className = 'mb-4 p-3 rounded-lg text-sm ';
+  if (type === 'error') msg.className += 'bg-red-500/20 text-red-200 border border-red-500/50';
+  else if (type === 'success') msg.className += 'bg-green-500/20 text-green-200 border border-green-500/50';
+  else msg.className += 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/50';
+  msg.textContent = text;
+  msg.classList.remove('hidden');
 }
 
-function hideMessage() {
-  messageBox.classList.add('hidden');
+function hideMsg() {
+  msg.classList.add('hidden');
 }
 
-function switchMode(mode) {
-  currentMode = mode;
-  hideMessage();
+function switchMode(m) {
+  mode = m;
+  hideMsg();
   
-  if (mode === 'login') {
-    btnSwitchLogin.classList.add('bg-neutral-900', 'text-white');
-    btnSwitchLogin.classList.remove('text-white/70');
-    btnSwitchRegister.classList.remove('bg-neutral-900', 'text-white');
-    btnSwitchRegister.classList.add('text-white/70');
+  if (m === 'login') {
+    tabLogin.className = 'flex-1 py-2 rounded-md font-medium bg-white/20 text-white';
+    tabRegister.className = 'flex-1 py-2 rounded-md font-medium text-white/60 hover:text-white';
     formLogin.classList.remove('hidden');
     formRegister.classList.add('hidden');
   } else {
-    btnSwitchRegister.classList.add('bg-neutral-900', 'text-white');
-    btnSwitchRegister.classList.remove('text-white/70');
-    btnSwitchLogin.classList.remove('bg-neutral-900', 'text-white');
-    btnSwitchLogin.classList.add('text-white/70');
+    tabRegister.className = 'flex-1 py-2 rounded-md font-medium bg-white/20 text-white';
+    tabLogin.className = 'flex-1 py-2 rounded-md font-medium text-white/60 hover:text-white';
     formRegister.classList.remove('hidden');
     formLogin.classList.add('hidden');
   }
 }
 
-async function saveUserProfile(user) {
+async function saveProfile(user) {
   if (!user) return;
-  
   try {
-    const providerId = user.providerData?.[0]?.providerId || 'password';
     await db.collection('users').doc(user.uid).set({
-      email: user.email || '',
+      email: user.email,
       displayName: user.displayName || '',
       photoURL: user.photoURL || '',
-      provider: providerId,
-      emailVerified: !!user.emailVerified,
+      provider: user.providerData?.[0]?.providerId || 'password',
       updatedAt: new Date().toISOString()
     }, { merge: true });
-    
-    console.log('✅ Profil uložen:', user.uid);
-  } catch (error) {
-    console.error('❌ Chyba při ukládání profilu:', error);
+  } catch (e) {
+    console.error('Profile save error:', e);
   }
 }
 
-async function redirectUser(user) {
+async function redirect(user) {
   try {
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const role = userDoc.exists ? userDoc.data()?.role : null;
-    
-    console.log('📍 Role uživatele:', role || 'žádná');
+    const doc = await db.collection('users').doc(user.uid).get();
+    const role = doc.exists ? doc.data()?.role : null;
     
     if (role === 'creator') {
       window.location.href = 'creator-dashboard.html';
@@ -250,263 +176,124 @@ async function redirectUser(user) {
     } else {
       window.location.href = 'kartao-vyber-uctu.html';
     }
-  } catch (error) {
-    console.error('❌ Chyba při načítání role:', error);
+  } catch (e) {
     window.location.href = 'kartao-vyber-uctu.html';
   }
 }
 
-// ============================================
-// PŘEPÍNÁNÍ REŽIMŮ
-// ============================================
-btnSwitchLogin.addEventListener('click', () => switchMode('login'));
-btnSwitchRegister.addEventListener('click', () => switchMode('register'));
+// Tabs
+tabLogin.onclick = () => switchMode('login');
+tabRegister.onclick = () => switchMode('register');
 
-// ============================================
-// PŘIHLÁŠENÍ
-// ============================================
-formLogin.addEventListener('submit', async (e) => {
+// Login
+formLogin.onsubmit = async (e) => {
   e.preventDefault();
-  
-  if (isProcessing) return;
-  isProcessing = true;
-  
-  hideMessage();
+  if (busy) return;
+  busy = true;
+  hideMsg();
   
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
-  const btn = formLogin.querySelector('button[type="submit"]');
+  const btn = formLogin.querySelector('button');
   
   btn.disabled = true;
   btn.textContent = 'Přihlašuji...';
   
   try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    await saveUserProfile(userCredential.user);
-    
-    showMessage('✅ Přihlášení úspěšné! Přesměrovávám...', 'success');
-    
-    setTimeout(() => {
-      redirectUser(userCredential.user);
-    }, 1000);
-    
+    const cred = await auth.signInWithEmailAndPassword(email, password);
+    await saveProfile(cred.user);
+    showMsg('Přihlášení úspěšné!', 'success');
+    setTimeout(() => redirect(cred.user), 500);
   } catch (error) {
-    console.error('❌ Chyba při přihlášení:', error);
-    
-    let errorMsg = 'Při přihlášení došlo k chybě.';
-    
-    if (error.code === 'auth/user-not-found') {
-      errorMsg = '❌ Uživatel s tímto e-mailem neexistuje.';
-    } else if (error.code === 'auth/wrong-password') {
-      errorMsg = '❌ Nesprávné heslo.';
-    } else if (error.code === 'auth/invalid-email') {
-      errorMsg = '❌ Neplatný formát e-mailu.';
-    } else if (error.code === 'auth/user-disabled') {
-      errorMsg = '❌ Tento účet byl deaktivován.';
-    } else if (error.code === 'auth/too-many-requests') {
-      errorMsg = '❌ Příliš mnoho pokusů. Zkuste to později.';
-    }
-    
-    showMessage(errorMsg, 'error');
+    let msg = 'Chyba při přihlášení';
+    if (error.code === 'auth/user-not-found') msg = 'Uživatel nenalezen';
+    else if (error.code === 'auth/wrong-password') msg = 'Špatné heslo';
+    else if (error.code === 'auth/invalid-email') msg = 'Neplatný e-mail';
+    showMsg(msg, 'error');
     btn.disabled = false;
     btn.textContent = 'Přihlásit se';
-  } finally {
-    isProcessing = false;
+    busy = false;
   }
-});
+};
 
-// ============================================
-// REGISTRACE
-// ============================================
-formRegister.addEventListener('submit', async (e) => {
+// Register
+formRegister.onsubmit = async (e) => {
   e.preventDefault();
-  
-  if (isProcessing) return;
-  isProcessing = true;
-  
-  hideMessage();
+  if (busy) return;
+  busy = true;
+  hideMsg();
   
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
   const password2 = document.getElementById('reg-password2').value;
-  const btn = formRegister.querySelector('button[type="submit"]');
+  const btn = formRegister.querySelector('button');
   
-  // Kontrola hesel
   if (password !== password2) {
-    showMessage('❌ Hesla se neshodují!', 'error');
-    isProcessing = false;
+    showMsg('Hesla se neshodují', 'error');
+    busy = false;
     return;
   }
   
   if (password.length < 6) {
-    showMessage('❌ Heslo musí mít alespoň 6 znaků!', 'error');
-    isProcessing = false;
+    showMsg('Heslo musí mít alespoň 6 znaků', 'error');
+    busy = false;
     return;
   }
   
   btn.disabled = true;
-  btn.textContent = 'Vytvářím účet...';
+  btn.textContent = 'Vytvářím...';
   
   try {
-    // Pokud je někdo přihlášen, odhlásit
-    if (auth.currentUser) {
-      await auth.signOut();
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
+    if (auth.currentUser) await auth.signOut();
     
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    await saveUserProfile(userCredential.user);
-    
-    showMessage('✅ Účet vytvořen! Přesměrovávám na výběr role...', 'success');
-    
-    setTimeout(() => {
-      window.location.href = 'kartao-vyber-uctu.html';
-    }, 1500);
-    
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    await saveProfile(cred.user);
+    showMsg('Účet vytvořen!', 'success');
+    setTimeout(() => redirect(cred.user), 500);
   } catch (error) {
-    console.error('❌ Chyba při registraci:', error);
-    
-    let errorMsg = 'Při registraci došlo k chybě.';
-    
-    if (error.code === 'auth/email-already-in-use') {
-      errorMsg = '❌ Tento e-mail je již registrován. Přejděte na přihlášení.';
-    } else if (error.code === 'auth/invalid-email') {
-      errorMsg = '❌ Neplatný formát e-mailu.';
-    } else if (error.code === 'auth/weak-password') {
-      errorMsg = '❌ Heslo je příliš slabé. Použijte alespoň 6 znaků.';
-    }
-    
-    showMessage(errorMsg, 'error');
+    let msg = 'Chyba při registraci';
+    if (error.code === 'auth/email-already-in-use') msg = 'E-mail již existuje';
+    else if (error.code === 'auth/invalid-email') msg = 'Neplatný e-mail';
+    else if (error.code === 'auth/weak-password') msg = 'Slabé heslo';
+    showMsg(msg, 'error');
     btn.disabled = false;
     btn.textContent = 'Vytvořit účet';
-  } finally {
-    isProcessing = false;
+    busy = false;
   }
-});
+};
 
-// ============================================
-// GOOGLE OAUTH
-// ============================================
-btnGoogle.addEventListener('click', async () => {
-  if (isProcessing) return;
-  isProcessing = true;
+// Google
+btnGoogle.onclick = async () => {
+  if (busy) return;
+  busy = true;
+  hideMsg();
   
-  hideMessage();
   btnGoogle.disabled = true;
-  const originalText = btnGoogle.innerHTML;
-  btnGoogle.textContent = 'Přihlašuji přes Google...';
+  const txt = btnGoogle.innerHTML;
+  btnGoogle.textContent = 'Přihlašuji...';
   
   try {
     const result = await auth.signInWithPopup(googleProvider);
-    await saveUserProfile(result.user);
-    
-    showMessage('✅ Přihlášení přes Google úspěšné!', 'success');
-    
-    setTimeout(() => {
-      redirectUser(result.user);
-    }, 1000);
-    
+    await saveProfile(result.user);
+    showMsg('Přihlášení úspěšné!', 'success');
+    setTimeout(() => redirect(result.user), 500);
   } catch (error) {
-    console.error('❌ Google OAuth chyba:', error);
-    
-    let errorMsg = 'Přihlášení přes Google se nepodařilo.';
-    
-    if (error.code === 'auth/popup-closed-by-user') {
-      errorMsg = 'Přihlášení bylo zrušeno.';
-    } else if (error.code === 'auth/popup-blocked') {
-      errorMsg = 'Popup bylo blokováno. Povolte prosím popup okna.';
-    } else if (error.code === 'auth/cancelled-popup-request') {
-      // Tichá ignorace
-      btnGoogle.innerHTML = originalText;
-      btnGoogle.disabled = false;
-      isProcessing = false;
-      return;
+    if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+      showMsg('Chyba Google přihlášení', 'error');
     }
-    
-    showMessage(errorMsg, 'error');
-    btnGoogle.innerHTML = originalText;
+    btnGoogle.innerHTML = txt;
     btnGoogle.disabled = false;
-  } finally {
-    if (error?.code !== 'auth/cancelled-popup-request') {
-      isProcessing = false;
-    }
+    busy = false;
   }
-});
+};
 
-// ============================================
-// FACEBOOK OAUTH
-// ============================================
-btnFacebook.addEventListener('click', async () => {
-  if (isProcessing) return;
-  isProcessing = true;
-  
-  hideMessage();
-  btnFacebook.disabled = true;
-  const originalText = btnFacebook.innerHTML;
-  btnFacebook.textContent = 'Přihlašuji přes Facebook...';
-  
-  try {
-    const result = await auth.signInWithPopup(facebookProvider);
-    await saveUserProfile(result.user);
-    
-    showMessage('✅ Přihlášení přes Facebook úspěšné!', 'success');
-    
-    setTimeout(() => {
-      redirectUser(result.user);
-    }, 1000);
-    
-  } catch (error) {
-    console.error('❌ Facebook OAuth chyba:', error);
-    
-    let errorMsg = 'Přihlášení přes Facebook se nepodařilo.';
-    
-    if (error.code === 'auth/popup-closed-by-user') {
-      errorMsg = 'Přihlášení bylo zrušeno.';
-    } else if (error.code === 'auth/popup-blocked') {
-      errorMsg = 'Popup bylo blokováno. Povolte prosím popup okna.';
-    } else if (error.code === 'auth/cancelled-popup-request') {
-      // Tichá ignorace
-      btnFacebook.innerHTML = originalText;
-      btnFacebook.disabled = false;
-      isProcessing = false;
-      return;
-    }
-    
-    showMessage(errorMsg, 'error');
-    btnFacebook.innerHTML = originalText;
-    btnFacebook.disabled = false;
-  } finally {
-    if (error?.code !== 'auth/cancelled-popup-request') {
-      isProcessing = false;
-    }
-  }
-});
-
-// ============================================
-// AUTH STATE LISTENER
-// ============================================
-auth.onAuthStateChanged((user) => {
-  console.log('🔐 Auth state:', user ? user.email : 'Odhlášen');
-});
-
-// ============================================
-// REDIRECT RESULT (pokud se vrací z OAuth)
-// ============================================
+// Redirect result
 auth.getRedirectResult().then(async (result) => {
   if (result.user) {
-    console.log('✅ OAuth redirect úspěšné');
-    await saveUserProfile(result.user);
-    await redirectUser(result.user);
+    await saveProfile(result.user);
+    await redirect(result.user);
   }
-}).catch((error) => {
-  if (error.code !== 'auth/popup-closed-by-user') {
-    console.error('❌ Redirect error:', error);
-    showMessage('Chyba při přihlášení: ' + error.message, 'error');
-  }
-});
-
-// Inicializace Lucide ikon
-lucide.createIcons();
+}).catch(console.error);
 </script>
 
 </body>
