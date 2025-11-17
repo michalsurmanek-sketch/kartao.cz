@@ -144,6 +144,8 @@ function switchMode(m) {
 
 async function saveProfile(user) {
   if (!user) return;
+  console.log('💾 SaveProfile called for:', user.email);
+  console.log('💾 DB available?', typeof db, db);
   try {
     await db.collection('users').doc(user.uid).set({
       email: user.email,
@@ -152,8 +154,10 @@ async function saveProfile(user) {
       provider: user.providerData?.[0]?.providerId || 'password',
       updatedAt: new Date().toISOString()
     }, { merge: true });
+    console.log('💾 Profile saved to Firestore');
   } catch (e) {
-    console.error('Profile save error:', e);
+    console.error('❌ Profile save error:', e);
+    throw e; // Re-throw aby se chyba propagovala
   }
 }
 
