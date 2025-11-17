@@ -586,107 +586,171 @@
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="border-t border-white/10 bg-neutral-900/30">
-    <div class="max-w-7xl mx-auto px-4 pt-12 pb-6">
-      <!-- Hlavní footer content -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        <!-- Logo a popis -->
-        <div class="lg:col-span-2">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-              <i data-lucide="crown" class="w-6 h-6"></i>
+  <!-- =============== UNIFIED FOOTER =============== -->
+  <footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40">
+    <div class="max-w-7xl mx-auto px-4">
+      
+      <!-- Main Footer Content -->
+      <div class="py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        
+        <!-- O Kartao -->
+        <div>
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-1" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+              <span>O Kartao</span>
             </div>
-            <div>
-              <div class="font-bold text-lg">Kartao.cz</div>
-              <div class="text-xs text-white/60">VIP tvůrci</div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-1" class="hidden sm:block space-y-2 text-sm text-white/70">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-o-nas.html">
+              <i data-lucide="info" class="w-4 h-4"></i>O nás
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-magazin.html">
+              <i data-lucide="newspaper" class="w-4 h-4"></i>Magazín
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kontakt.html">
+              <i data-lucide="mail" class="w-4 h-4"></i>Kontakt
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="vip.html">
+              <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>VIP tvůrci
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Pro firmy -->
+        <div>
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-amber-400"
+                  aria-controls="footer-section-2" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="building" class="w-5 h-5"></i>
+              <span>Pro firmy</span>
             </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-2" class="hidden sm:block space-y-2 text-sm text-white/70">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-firmy.html">
+              <i data-lucide="megaphone" class="w-4 h-4"></i>Zadat kampaň
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-marketplace.html">
+              <i data-lucide="search" class="w-4 h-4"></i>Najít tvůrce
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-recenze.html">
+              <i data-lucide="star" class="w-4 h-4"></i>Recenze
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-faq.html">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>FAQ
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Pro tvůrce -->
+        <div>
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-3" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="camera" class="w-5 h-5"></i>
+              <span>Pro tvůrce</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-3" class="hidden sm:block space-y-2 text-sm text-white/70">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-tvurce.html">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>Začít jako tvůrce
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-zalozit-kartu.html">
+              <i data-lucide="id-card" class="w-4 h-4"></i>Založit kartu
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-cenik.html">
+              <i data-lucide="tag" class="w-4 h-4"></i>Ceník
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="creator-dashboard.html">
+              <i data-lucide="bar-chart" class="w-4 h-4"></i>Dashboard
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter & Social -->
+        <div>
+          <div class="flex items-center gap-2 font-bold mb-4 text-sky-400">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+            <span>Novinky</span>
           </div>
-          <p class="text-white/70 text-sm max-w-md leading-relaxed">
-            Prémiová sekce pro ověřené influencery s garancí výkonu. 
-            Získejte prioritní viditelnost a přístup k nejlepším kampaním.
-          </p>
-          <div class="flex items-center gap-4 mt-4">
-            <a href="#" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 grid place-items-center hover:bg-white/10 transition">
+          <p class="text-sm text-white/60 mb-3">Žádný spam. Jen podstatné novinky a tipy.</p>
+          <form id="footer-newsletter" class="flex gap-2 mb-4">
+            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail" 
+                   class="flex-1 rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
+            <button type="submit" class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium text-sm whitespace-nowrap transition">
+              Odebírat
+            </button>
+          </form>
+          
+          <!-- Social Icons -->
+          <div class="flex items-center gap-2">
+            <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener" 
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Facebook">
               <i data-lucide="facebook" class="w-4 h-4"></i>
             </a>
-            <a href="#" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 grid place-items-center hover:bg-white/10 transition">
+            <a href="https://instagram.com/kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Instagram">
               <i data-lucide="instagram" class="w-4 h-4"></i>
             </a>
-            <a href="#" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 grid place-items-center hover:bg-white/10 transition">
-              <i data-lucide="twitter" class="w-4 h-4"></i>
+            <a href="https://youtube.com/@kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="YouTube">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
             </a>
-            <a href="#" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 grid place-items-center hover:bg-white/10 transition">
-              <i data-lucide="linkedin" class="w-4 h-4"></i>
+            <a href="https://tiktok.com/@kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="TikTok">
+              <i data-lucide="music" class="w-4 h-4"></i>
             </a>
-          </div>
-        </div>
-
-        <!-- Navigace -->
-        <div>
-          <h3 class="font-semibold text-white mb-4">Navigace</h3>
-          <nav class="space-y-3 text-sm text-white/70">
-            <a href="index.html" class="block hover:text-white transition">Domů</a>
-            <a href="kartao-marketplace.html" class="block hover:text-white transition">Marketplace</a>
-            <a href="kartao-pro-tvurce.html" class="block hover:text-white transition">Pro tvůrce</a>
-            <a href="kartao-pro-firmy.html" class="block hover:text-white transition">Pro firmy</a>
-            <a href="kartao-recenze.html" class="block hover:text-white transition">Recenze</a>
-            <a href="kartao-magazin.html" class="block hover:text-white transition">Magazín</a>
-          </nav>
-        </div>
-
-        <!-- VIP služby -->
-        <div>
-          <h3 class="font-semibold text-white mb-4">VIP služby</h3>
-          <nav class="space-y-3 text-sm text-white/70">
-            <a href="#vip-apply" class="block hover:text-white transition flex items-center gap-2">
-              <i data-lucide="crown" class="w-3 h-3 text-amber-400"></i>
-              Žádost o VIP status
+            <a href="https://pinterest.com/kartao_cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Pinterest">
+              <i data-lucide="image" class="w-4 h-4"></i>
             </a>
-            <a href="kartao-cenik.html" class="block hover:text-white transition">Ceník VIP služeb</a>
-            <a href="kartao-faq.html" class="block hover:text-white transition">FAQ VIP</a>
-            <a href="kontakt.html" class="block hover:text-white transition">VIP podpora</a>
-          </nav>
-        </div>
-      </div>
-
-      <!-- VIP stats -->
-      <div class="border-t border-white/10 pt-6 mb-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <div class="text-xl font-bold text-amber-400">20</div>
-            <div class="text-xs text-white/60">VIP pozic</div>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <div class="text-xl font-bold text-emerald-400">4.9★</div>
-            <div class="text-xs text-white/60">Průměrné hodnocení</div>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <div class="text-xl font-bold text-fuchsia-400">95%</div>
-            <div class="text-xs text-white/60">Úspěšnost kampaní</div>
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <div class="text-xl font-bold text-sky-400">48h</div>
-            <div class="text-xs text-white/60">Průměrná odezva</div>
           </div>
         </div>
       </div>
 
-      <!-- Copyright a legal -->
-      <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
-        <div class="flex items-center gap-4">
-          <span>© <span id="y"></span> Kartao.cz — VIP tvůrci</span>
-        </div>
-        <div class="flex flex-wrap items-center gap-4">
-          <a href="ochrana-osobnich-udaju.html" class="hover:text-white transition">Ochrana osobních údajů</a>
-          <span class="hidden md:block">•</span>
-          <a href="obchodni-podminky.html" class="hover:text-white transition">Obchodní podmínky</a>
-          <span class="hidden md:block">•</span>
-          <a href="kontakt.html" class="hover:text-white transition">Kontakt</a>
+      <!-- Bottom Bar -->
+      <div class="border-t border-white/10 py-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
+          
+          <!-- Copyright -->
+          <div class="flex items-center gap-2">
+            <span>© 2025</span>
+            <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>
+            <strong class="text-white/80">Kartao.cz</strong>
+            <span class="hidden sm:inline">– síť influencerů a tvůrců</span>
+          </div>
+
+          <!-- Legal Links -->
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="ochrana-osobnich-udaju.html" class="hover:text-white transition">Ochrana údajů</a>
+            <span class="text-white/30">•</span>
+            <a href="obchodni-podminky.html" class="hover:text-white transition">Podmínky</a>
+            <span class="text-white/30">•</span>
+            <a href="cookies.html" class="hover:text-white transition">Cookies</a>
+            <span class="text-white/30">•</span>
+            <a href="sitemap.xml" class="hover:text-white transition">Sitemap</a>
+          </div>
         </div>
       </div>
+
     </div>
   </footer>
+  <!-- =============== UNIFIED FOOTER END =============== -->
 
   <script>
     const vipCreators = [
@@ -941,6 +1005,32 @@
     render(vipCreators);
 
     // Hamburger menu - viz hamburger-menu.js
+    
+    // Footer collapsible sections (mobile only)
+    document.querySelectorAll('footer button[aria-controls]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('aria-controls');
+        const target = document.getElementById(targetId);
+        const chevron = btn.querySelector('[data-lucide="chevron-down"]');
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        
+        // Toggle
+        btn.setAttribute('aria-expanded', !isExpanded);
+        target.classList.toggle('hidden');
+        if (chevron) {
+          chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+      });
+    });
+    
+    // Newsletter form
+    document.getElementById('footer-newsletter')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      console.log('Newsletter subscription:', email);
+      alert('Děkujeme! Přihlášení k odběru novinek bylo úspěšné.');
+      e.target.reset();
+    });
   </script>
   
   <!-- Hamburger Menu -->
