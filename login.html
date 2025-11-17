@@ -12,6 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
   
   <style>
     body {
@@ -91,20 +92,7 @@
 </div>
 
 <script>
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyAmUuqkye67hhyoauRJiUVi_UVEdzU7hTI",
-  authDomain: "kartao-cz.firebaseapp.com",
-  projectId: "kartao-cz",
-  storageBucket: "kartao-cz.appspot.com",
-  messagingSenderId: "712778602439",
-  appId: "1:712778602439:web:14e2b4c07ea35f70a16be2"
-};
-
-// Init Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Firebase již inicializováno v firebase-init.js
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 // Elements

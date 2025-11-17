@@ -31,10 +31,11 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="firebase-init.js"></script>
 
   <style>
     body {
@@ -348,29 +349,9 @@
     </footer>
   </div>
 
-  <!-- Firebase Configuration & Initialization -->
+  <!-- Firebase již inicializováno v firebase-init.js -->
   <script>
-    // Firebase konfigurace - NAHRAĎTE svými skutečnými hodnotami z Firebase Console
-    const firebaseConfig = {
-      apiKey: "AIzaSyDEMO_API_KEY_REPLACE_ME",
-      authDomain: "kartao-cz.firebaseapp.com",
-      projectId: "kartao-cz",
-      storageBucket: "kartao-cz.appspot.com",
-      messagingSenderId: "123456789012",
-      appId: "1:123456789012:web:abcdef1234567890"
-    };
-
-    // Inicializace Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-
-    // Firebase služby
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-
-    console.log('Firebase inicializováno úspěšně');
+    console.log('✅ Firebase načteno z firebase-init.js');
   </script>
 
   <script>
