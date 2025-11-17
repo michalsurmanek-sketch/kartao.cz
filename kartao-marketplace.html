@@ -420,7 +420,7 @@
 
       <div id="campaignGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-12">
         <!-- Kampaň 1 - Beauty -->
-        <article class="campaign-card category-beauty group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-fuchsia-400/60 hover:bg-white/10 transition" data-category="beauty" data-platform="instagram" data-type="reels">
+        <article class="campaign-card category-beauty group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-fuchsia-400/60 hover:bg-white/10 transition" data-category="beauty" data-platform="instagram" data-type="reels" data-budget="25000" data-reward="paid" data-followers="15000">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-fuchsia-400 font-semibold mb-1">Beauty & Lifestyle</div>
@@ -450,14 +450,14 @@
             <button onclick="openCampaignDetail(1)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
               Detail kampaně
             </button>
-            <button class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+            <button onclick="toggleBookmark(event, 1)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
               <i data-lucide="bookmark" class="w-4 h-4"></i>
             </button>
           </div>
         </article>
 
         <!-- Kampaň 2 - Tech -->
-        <article class="campaign-card category-tech group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-blue-400/60 hover:bg-white/10 transition" data-category="tech" data-platform="youtube">
+        <article class="campaign-card category-tech group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-blue-400/60 hover:bg-white/10 transition" data-category="tech" data-platform="youtube" data-type="video" data-budget="barter" data-reward="barter" data-followers="5000">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-blue-400 font-semibold mb-1">Tech & Gaming</div>
@@ -487,15 +487,15 @@
             <button onclick="openCampaignDetail(2)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
               Detail kampaně
             </button>
-            <button class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+            <button onclick="toggleBookmark(event, 2)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
               <i data-lucide="bookmark" class="w-4 h-4"></i>
             </button>
           </div>
         </article>
 
         <!-- Kampaň 3 - Fashion -->
-        <article class="campaign-card category-fashion group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-purple-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-fashion group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-purple-400/60 hover:bg-white/10 transition" data-category="fashion" data-platform="instagram" data-type="stories" data-budget="15000" data-reward="paid" data-followers="20000">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-purple-400 font-semibold mb-1">Fashion</div>
               <h2 class="font-semibold text-base mb-2">Letní kolekce 2026</h2>
@@ -508,7 +508,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">Prezentace nové kolekce šatů pro ženy 25-35 let. Obsahuje 3 outfity + focení pro feed.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 20k followers</span>
                 <span class="font-semibold text-green-400">15 000 Kč</span>
               </div>
@@ -520,11 +520,19 @@
               <div class="text-[10px] text-white/50">Zbývá 8 dní</div>
             </div>
           </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(3)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button onclick="toggleBookmark(event, 3)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          </div>
         </article>
 
         <!-- Kampaň 4 - Food -->
-        <article class="campaign-card category-food group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-green-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-food group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-green-400/60 hover:bg-white/10 transition" data-category="food" data-platform="tiktok" data-type="video" data-budget="18000" data-reward="paid" data-followers="10000">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-green-400 font-semibold mb-1">Food & Drink</div>
               <h2 class="font-semibold text-base mb-2">Zdravé smoothie recepty</h2>
@@ -537,7 +545,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">5 TikTok videí s recepty na smoothie using our produkty. Možnost dlouhodobé spolupráce.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 10k followers</span>
                 <span class="font-semibold text-green-400">18 000 Kč</span>
               </div>
@@ -549,11 +557,19 @@
               <div class="text-[10px] text-white/50">Zbývá 3 dny</div>
             </div>
           </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(4)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button onclick="toggleBookmark(event, 4)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          </div>
         </article>
 
         <!-- Kampaň 5 - Fitness -->
-        <article class="campaign-card category-fitness group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-orange-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-fitness group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-orange-400/60 hover:bg-white/10 transition" data-category="fitness" data-platform="instagram" data-type="reels" data-budget="12000" data-reward="affiliate" data-followers="25000">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-orange-400 font-semibold mb-1">Fitness & Health</div>
               <h2 class="font-semibold text-base mb-2">Sportovní doplňky stravy</h2>
@@ -566,7 +582,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">Představení nové řady proteinů + 15% provize z prodeje přes váš unique kód.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 25k followers</span>
                 <span class="font-semibold text-green-400">12 000 + 15%</span>
               </div>
@@ -578,11 +594,19 @@
               <div class="text-[10px] text-white/50">Zbývá 15 dní</div>
             </div>
           </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(5)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button onclick="toggleBookmark(event, 5)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          </div>
         </article>
 
         <!-- Kampaň 6 - Travel -->
-        <article class="campaign-card category-travel group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-travel group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-400/60 hover:bg-white/10 transition" data-category="travel" data-platform="instagram" data-type="feed" data-budget="barter" data-reward="barter" data-followers="50000">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-cyan-400 font-semibold mb-1">Travel & Lifestyle</div>
               <h2 class="font-semibold text-base mb-2">Výlet do Dubaje ZDARMA</h2>
@@ -595,7 +619,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">5denní výlet do Dubaje za obsahový marketing hotelové sítě. All inclusive + letenky.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 50k followers</span>
                 <span class="font-semibold text-cyan-400">Výlet 120k hodnoty</span>
               </div>
@@ -606,6 +630,14 @@
               </span>
               <div class="text-[10px] text-white/50">Zbývá 2 dny</div>
             </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(6)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button onclick="toggleBookmark(event, 6)" class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
           </div>
         </article>
       </div>
@@ -1025,6 +1057,148 @@
           'Možnost dlouhodobé spolupráce',
           'Affiliate provize 10% z prodejů přes váš kód'
         ]
+      },
+      2: {
+        title: 'Gaming sluchátka ZDARMA',
+        category: 'Tech & Gaming',
+        company: 'TechGear Pro',
+        budget: 'Barter deal',
+        deadline: '12 dní',
+        minFollowers: '5 000+',
+        platform: 'YouTube',
+        description: 'Recenze herních sluchátek v hodnotě 4500 Kč. Ideální pro gaming kanály a tech reviewery.',
+        requirements: [
+          'Min. 5 000 odběratelů na YouTube',
+          'Gaming nebo tech zaměření kanálu',
+          'Průměrná sledovanost min. 1000 zhlédnutí/video',
+          'Kvalitní produkce videí'
+        ],
+        deliverables: [
+          '1x YouTube video (8-15 minut)',
+          'Detailní unboxing a testování',
+          'Upřímná recenze (pozitiva i negativa)',
+          'Zmínka v popisu videa + affiliate link'
+        ],
+        benefits: [
+          'Gaming sluchátka v hodnotě 4 500 Kč zdarma',
+          'Možnost ponechat si produkt',
+          'Affiliate provize 8% z prodejů',
+          'Budoucí spolupráce na dalších produktech'
+        ]
+      },
+      3: {
+        title: 'Letní kolekce 2026',
+        category: 'Fashion',
+        company: 'SummerStyle Fashion',
+        budget: '15 000 Kč',
+        deadline: '8 dní',
+        minFollowers: '20 000+',
+        platform: 'Instagram Stories + Feed',
+        description: 'Prezentace nové kolekce šatů pro ženy 25-35 let. Obsahuje 3 outfity + focení pro feed.',
+        requirements: [
+          'Min. 20 000 sledujících na Instagramu',
+          'Fashion nebo lifestyle zaměření profilu',
+          'Ženské publikum 25-35 let',
+          'Estetický feed s kvalitními fotkami'
+        ],
+        deliverables: [
+          '3x Instagram Feed post (profesionální focení)',
+          '10x Instagram Stories s outfity',
+          'Try-on video v Reels',
+          'Styling tips a kombinace outfitů'
+        ],
+        benefits: [
+          'Placená spolupráce: 15 000 Kč',
+          '3 outfity v hodnotě 8 000 Kč zdarma',
+          'Profesionální focení zajištěno značkou',
+          'Možnost dlouhodobé ambasadorské smlouvy'
+        ]
+      },
+      4: {
+        title: 'Zdravé smoothie recepty',
+        category: 'Food & Drink',
+        company: 'HealthyDrink Co.',
+        budget: '18 000 Kč',
+        deadline: '3 dny',
+        minFollowers: '10 000+',
+        platform: 'TikTok',
+        description: '5 TikTok videí s recepty na smoothie using our produkty. Možnost dlouhodobé spolupráce.',
+        requirements: [
+          'Min. 10 000 sledujících na TikToku',
+          'Food, health nebo fitness zaměření',
+          'Kreativní a dynamická videa',
+          'Zkušenost s foodie contentem'
+        ],
+        deliverables: [
+          '5x TikTok video (30-60s)',
+          'Receptury s našimi produkty',
+          'Step-by-step instrukce',
+          'Atraktivní finální prezentace smoothie'
+        ],
+        benefits: [
+          'Placená spolupráce: 18 000 Kč',
+          'Box produktů v hodnotě 3 000 Kč',
+          'Měsíční smlouva s možností prodloužení',
+          'Bonus 5 000 Kč při dosažení 100k views'
+        ]
+      },
+      5: {
+        title: 'Sportovní doplňky stravy',
+        category: 'Fitness & Health',
+        company: 'FitLife Nutrition',
+        budget: '12 000 Kč + 15% provize',
+        deadline: '15 dní',
+        minFollowers: '25 000+',
+        platform: 'Instagram Reels + Stories',
+        description: 'Představení nové řady proteinů + 15% provize z prodeje přes váš unique kód.',
+        requirements: [
+          'Min. 25 000 sledujících na Instagramu',
+          'Fitness nebo health zaměření',
+          'Aktivní sportovec/ka',
+          'Autentický a motivující obsah'
+        ],
+        deliverables: [
+          '4x Instagram Reels (workout + protein shake)',
+          '10x Instagram Stories s produktem',
+          'Before/After transformace (optional)',
+          'Pravidelné propagace affiliate kódu'
+        ],
+        benefits: [
+          'Základní odměna: 12 000 Kč',
+          'Affiliate provize 15% z každého prodeje',
+          'Měsíční dodávka proteinů zdarma',
+          'Prémiový bonus při prodeji 100+ balení'
+        ]
+      },
+      6: {
+        title: 'Výlet do Dubaje ZDARMA',
+        category: 'Travel & Lifestyle',
+        company: 'Luxury Hotels Dubai',
+        budget: 'Výlet v hodnotě 120 000 Kč',
+        deadline: '2 dny',
+        minFollowers: '50 000+',
+        platform: 'Instagram + TikTok + YouTube',
+        description: '5denní výlet do Dubaje za obsahový marketing hotelové sítě. All inclusive + letenky.',
+        requirements: [
+          'Min. 50 000 sledujících napříč platformami',
+          'Travel nebo luxury lifestyle profil',
+          'Vysoká kvalita foto/video produkce',
+          'Zkušenost s cestovatelským contentem'
+        ],
+        deliverables: [
+          'Minimálně 15 Instagram Feed postů',
+          '3x YouTube vlog (hotel tour, activities, food)',
+          '50+ Instagram Stories během pobytu',
+          'TikTok série (min. 10 videí)',
+          'Hotel review na všech platformách'
+        ],
+        benefits: [
+          '5denní pobyt v 5* hotelu - all inclusive',
+          'Business class letenky pro 2 osoby',
+          'Privátní transfers a exkurze',
+          'Celková hodnota výletu: 120 000 Kč',
+          'Možnost budoucích travel spolupráce'
+        ]
       }
     };
     
@@ -1135,32 +1309,39 @@
   }
   
   function applyCampaign(id) {
-    alert('Pro přihlášení na kampaň musíš mít vytvořenou tvůrčí kartu.\n\nBudeš přesměrován na vytvoření karty.');
-    window.location.href = 'kartao-zalozit-kartu.html';
+    // V reálné aplikaci by se kontrolovalo přihlášení a existence karty
+    const hasCard = localStorage.getItem('kartaoCard'); // Simulace kontroly
+    
+    if (!hasCard) {
+      if (confirm('Pro přihlášení na kampaň musíš mít vytvořenou tvůrčí kartu.\n\nChceš ji vytvořit teď?')) {
+        window.location.href = 'kartao-zalozit-kartu.html';
+      }
+    } else {
+      // Simulace úspěšné přihlášky
+      closeCampaignModal();
+      
+      // Zobrazit success message
+      const successMsg = document.createElement('div');
+      successMsg.className = 'fixed top-4 right-4 z-50 bg-gradient-to-r from-emerald-500 to-green-400 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-fadeIn';
+      successMsg.innerHTML = `
+        <i data-lucide="check-circle" class="w-6 h-6"></i>
+        <div>
+          <div class="font-bold">Přihláška odeslána!</div>
+          <div class="text-sm text-white/90">Firma tě bude brzy kontaktovat.</div>
+        </div>
+      `;
+      document.body.appendChild(successMsg);
+      lucide.createIcons();
+      
+      setTimeout(() => {
+        successMsg.style.opacity = '0';
+        successMsg.style.transform = 'translateX(100%)';
+        successMsg.style.transition = 'all 0.3s ease-out';
+        setTimeout(() => successMsg.remove(), 300);
+      }, 4000);
+    }
   }
   
-  function resetFilters() {
-    const searchInput = document.querySelector('input[placeholder="Značka, produkt..."]');
-    const selects = document.querySelectorAll('select');
-    
-    if (searchInput) searchInput.value = '';
-    selects.forEach(select => select.selectedIndex = 0);
-    
-    // Show all campaigns
-    const campaignCards = document.querySelectorAll('article');
-    campaignCards.forEach(card => {
-      card.style.display = 'block';
-    });
-    
-    // Update count
-    const countElement = document.getElementById('campaignCount');
-    const emptyState = document.getElementById('emptyState');
-    const campaignGrid = document.getElementById('campaignGrid');
-    
-    if (countElement) countElement.textContent = campaignCards.length;
-    campaignGrid?.classList.remove('hidden');
-    emptyState?.classList.add('hidden');
-  }
   
   // Close modal on ESC key
   document.addEventListener('keydown', function(e) {
@@ -1175,7 +1356,92 @@
       closeCampaignModal();
     }
   });
+  
+  // Bookmark functionality
+  function toggleBookmark(event, campaignId) {
+    event.stopPropagation(); // Prevent card click
+    
+    const button = event.currentTarget;
+    const icon = button.querySelector('i[data-lucide="bookmark"]');
+    
+    // Get bookmarks from localStorage
+    let bookmarks = JSON.parse(localStorage.getItem('kartaoBookmarks') || '[]');
+    
+    if (bookmarks.includes(campaignId)) {
+      // Remove bookmark
+      bookmarks = bookmarks.filter(id => id !== campaignId);
+      button.classList.remove('bg-amber-400/20', 'border-amber-400/50');
+      button.classList.add('border-white/20');
+      
+      // Show notification
+      showNotification('Kampaň odebrána ze záložek', 'info');
+    } else {
+      // Add bookmark
+      bookmarks.push(campaignId);
+      button.classList.add('bg-amber-400/20', 'border-amber-400/50');
+      button.classList.remove('border-white/20');
+      
+      // Show notification
+      showNotification('Kampaň přidána do záložek!', 'success');
     }
+    
+    localStorage.setItem('kartaoBookmarks', JSON.stringify(bookmarks));
+    
+    // Visual feedback
+    icon.style.transform = 'scale(1.3)';
+    setTimeout(() => icon.style.transform = 'scale(1)', 200);
+  }
+  
+  // Show notification helper
+  function showNotification(message, type = 'info') {
+    const colors = {
+      success: 'from-emerald-500 to-green-400',
+      info: 'from-sky-500 to-blue-400',
+      warning: 'from-amber-500 to-orange-400'
+    };
+    
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 bg-gradient-to-r ${colors[type]} text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300`;
+    notification.style.transform = 'translateX(400px)';
+    notification.innerHTML = `
+      <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" class="w-5 h-5"></i>
+      <span class="font-medium">${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    lucide.createIcons();
+    
+    setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateX(400px)';
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+  
+  // Initialize bookmarks on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const bookmarks = JSON.parse(localStorage.getItem('kartaoBookmarks') || '[]');
+    
+    // Apply bookmark styles to saved campaigns
+    bookmarks.forEach(campaignId => {
+      const button = document.querySelector(`article:nth-child(${campaignId}) button[onclick*="bookmark"]`);
+      if (button) {
+        button.classList.add('bg-amber-400/20', 'border-amber-400/50');
+        button.classList.remove('border-white/20');
+      }
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   });
 </script>
 
