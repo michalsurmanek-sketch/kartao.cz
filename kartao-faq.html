@@ -157,9 +157,9 @@
 
   <!-- Tabs: Pro firmy / Pro tvůrce / Obecné -->
   <main class="max-w-7xl mx-auto px-4 pb-16">
-    <div class="relative inline-flex rounded-2xl border border-white/10 bg-white/5 p-1 mb-8 text-sm">
+    <div class="relative inline-flex rounded-2xl border border-white/10 bg-white/5 p-1 mb-8 text-sm gap-1">
       <!-- Sliding indicator -->
-      <div id="tab-indicator" class="absolute top-1 left-1 h-[calc(100%-8px)] bg-gradient-to-r from-fuchsia-500 to-amber-400 rounded-xl transition-all duration-300 ease-out" style="width: calc(33.333% - 8px);"></div>
+      <div id="tab-indicator" class="absolute top-1 left-1 h-[calc(100%-8px)] bg-gradient-to-r from-fuchsia-500 to-amber-400 rounded-xl transition-all duration-300 ease-out"></div>
       
       <!-- Buttons -->
       <button type="button" data-tab="firms" data-index="0" class="tab-btn relative z-10 px-6 py-2 rounded-xl text-white font-medium transition-colors">Pro firmy</button>
@@ -336,16 +336,21 @@
         general: document.getElementById('tab-general')
       };
       
+      // Inicializovat první tlačítko
+      const firstButton = tabs[0];
+      indicator.style.width = `${firstButton.offsetWidth}px`;
+      
       tabs.forEach(btn => {
         btn.addEventListener('click', () => {
           const key = btn.getAttribute('data-tab');
           const index = parseInt(btn.getAttribute('data-index'));
           
-          // Posunout indikátor
+          // Posunout indikátor - offsetLeft bere v úvahu padding kontejneru
           const buttonWidth = btn.offsetWidth;
-          const gap = 4; // gap mezi tlačítky
+          const buttonLeft = btn.offsetLeft;
+          
           indicator.style.width = `${buttonWidth}px`;
-          indicator.style.transform = `translateX(${index * (buttonWidth + gap)}px)`;
+          indicator.style.left = `${buttonLeft}px`;
           
           // Přepnout barvy tlačítek
           tabs.forEach(b => {
