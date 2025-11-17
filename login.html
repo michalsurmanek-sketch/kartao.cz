@@ -323,44 +323,78 @@
     // =========================
     let authStateHandled = false;
     let isRegistering = false; // Flag pro rozlišení registrace vs. přihlášení
+    let emailCheckInterval = null;
     
     auth.onAuthStateChanged(async (user) => {
       console.log('🔐 Auth state changed:', user ? user.email : 'No user');
       console.log('📍 isRegistering:', isRegistering, 'authStateHandled:', authStateHandled);
       
-      // Pokud je uživatel přihlášen, NENÍ to registrace, a ještě jsme nepřesměrovali
-      if (user && !authStateHandled && !isRegistering) {
-        authStateHandled = true;
+      // Pokud je uživatel přihlášen
+      if (user) {
         console.log('👤 Uživatel přihlášen:', user.email);
         console.log('✉️ Email ověřen:', user.emailVerified);
-        console.log('🚀 Zahajuji přesměrování...');
         
-        // Malá prodleva pro zobrazení úspěšné zprávy (jen 1s)
-        setTimeout(async () => {
-          try {
-            console.log('📂 Načítám profil uživatele z Firestore...');
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const userData = userDoc.exists ? userDoc.data() : null;
-            const role = userData?.role;
-            
-            console.log('📊 Role uživatele:', role || 'žádná role (nový uživatel)');
-            
-            if (role === 'creator') {
-              console.log('↪️ Přesměrování na creator-dashboard.html');
-              window.location.href = "creator-dashboard.html";
-            } else if (role === 'company') {
-              console.log('↪️ Přesměrování na firm-dashboard.html');
-              window.location.href = "firm-dashboard.html";
-            } else {
-              console.log('↪️ Přesměrování na kartao-vyber-uctu.html (výběr role)');
+        // DŮLEŽITÉ: Přesměrujeme POUZE pokud je email ověřený
+        // A současně není registrace a ještě jsme nepřesměrovali
+        if (user.emailVerified && !authStateHandled && !isRegistering) {
+          authStateHandled = true;
+          console.log('🚀 Email je ověřen! Zahajuji přesměrování...');
+          
+          // Zastavit periodickou kontrolu
+          if (emailCheckInterval) {
+            clearInterval(emailCheckInterval);
+            emailCheckInterval = null;
+          }
+          
+          setTimeout(async () => {
+            try {
+              console.log('📂 Načítám profil uživatele z Firestore...');
+              const userDoc = await db.collection('users').doc(user.uid).get();
+              const userData = userDoc.exists ? userDoc.data() : null;
+              const role = userData?.role;
+              
+              console.log('📊 Role uživatele:', role || 'žádná role (nový uživatel)');
+              
+              if (role === 'creator') {
+                console.log('↪️ Přesměrování na creator-dashboard.html');
+                window.location.href = "creator-dashboard.html";
+              } else if (role === 'company') {
+                console.log('↪️ Přesměrování na firm-dashboard.html');
+                window.location.href = "firm-dashboard.html";
+              } else {
+                console.log('↪️ Přesměrování na kartao-vyber-uctu.html (výběr role)');
+                window.location.href = "kartao-vyber-uctu.html";
+              }
+            } catch (err) {
+              console.error('❌ Chyba při načítání role:', err);
+              console.log('↪️ Fallback na kartao-vyber-uctu.html');
               window.location.href = "kartao-vyber-uctu.html";
             }
-          } catch (err) {
-            console.error('❌ Chyba při načítání role:', err);
-            console.log('↪️ Fallback na kartao-vyber-uctu.html');
-            window.location.href = "kartao-vyber-uctu.html";
-          }
-        }, 1000); // Zkráceno na 1s
+          }, 1000);
+        } else if (!user.emailVerified && !emailCheckInterval) {
+          console.log('⏳ Email NENÍ ověřen - zahajuji periodickou kontrolu...');
+          console.log('💡 Uživatel musí kliknout na link v emailu');
+          
+          // Periodicky kontrolovat, zda už je email ověřený
+          emailCheckInterval = setInterval(async () => {
+            try {
+              await user.reload();
+              console.log('🔄 Kontrola ověření emailu...');
+              
+              if (user.emailVerified) {
+                console.log('✅ Email byl ověřen! Triggering auth state change...');
+                clearInterval(emailCheckInterval);
+                emailCheckInterval = null;
+                
+                // Znovu zavolat auth observer manuálně
+                authStateHandled = false;
+                auth.onAuthStateChanged.call(auth, user);
+              }
+            } catch (err) {
+              console.error('Chyba při reload uživatele:', err);
+            }
+          }, 3000); // Kontrola každé 3 sekundy
+        }
       }
       
       // Reset flag po odhlášení
@@ -368,6 +402,11 @@
         console.log('👋 Uživatel odhlášen - reset flagů');
         authStateHandled = false;
         isRegistering = false;
+        
+        if (emailCheckInterval) {
+          clearInterval(emailCheckInterval);
+          emailCheckInterval = null;
+        }
       }
     });
 
@@ -428,38 +467,35 @@
             showMessage(
               `✅ <strong>Registrace úspěšná!</strong><br><br>` +
               `Ověřovací email byl odeslán na <strong>${cred.user.email}</strong><br><br>` +
-              `📧 Zkontrolujte schránku (i SPAM složku)<br>` +
+              `📧 <strong>DŮLEŽITÉ: Zkontrolujte schránku (i SPAM složku) a klikněte na odkaz!</strong><br>` +
               `📨 Email přichází z: noreply@kartao-cz.firebaseapp.com<br><br>` +
-              `<em>Nyní se můžete přihlásit...</em>`,
+              `<em>Po ověření emailu budete automaticky přesměrováni...</em>`,
               "success"
             );
+            
+            // Zobrazit tlačítko pro opětovné odeslání
+            if (btnResend) btnResend.classList.remove("hidden");
+            
           } catch (emailError) {
             console.error('❌ Chyba při odesílání ověřovacího emailu:', emailError);
             showMessage(
               `⚠️ <strong>Účet byl vytvořen!</strong><br><br>` +
               `Ověřovací email se bohužel nepodařilo odeslat.<br>` +
-              `Můžete se přihlásit a použít tlačítko "Znovu poslat ověřovací e-mail".<br><br>` +
-              `<em>Nyní se můžete přihlásit...</em>`,
+              `Použijte tlačítko níže pro opětovné odeslání.<br><br>` +
+              `<em>Po ověření emailu budete automaticky přesměrováni...</em>`,
               "info"
             );
+            
+            if (btnResend) btnResend.classList.remove("hidden");
           }
           
-          // DŮLEŽITÉ: Odhlásit uživatele po registraci
-          // Firebase automaticky přihlásí po createUserWithEmailAndPassword
-          // Ale chceme, aby se uživatel přihlásil manuálně
+          // DŮLEŽITÉ: NEODHLASUJI uživatele!
+          // Uživatel zůstane přihlášený, ale bez ověřeného emailu
+          // Auth observer ho přesměruje až po ověření emailu
           
-          // Reset flag PŘED odhlášením
+          registerFormEl.reset();
           isRegistering = false;
-          
-          await auth.signOut();
-          console.log('👋 Uživatel odhlášen po registraci - může se přihlásit');
-          
-          // Počkat chvilku a pak přepnout na login tab
-          setTimeout(() => {
-            registerFormEl.reset();
-            setActiveTab("login");
-            console.log('↪️ Přepnuto na přihlášení');
-          }, 2000);
+          console.log('✅ Registrace dokončena, uživatel zůstává přihlášen (čeká na ověření emailu)');
         }
       } catch (error) {
         console.error('❌ Chyba při registraci:', error.code, error.message);
