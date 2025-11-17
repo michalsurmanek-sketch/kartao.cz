@@ -314,8 +314,27 @@
         const cred = await auth.createUserWithEmailAndPassword(email, password);
         if (cred.user) {
           await saveUserProfile(cred.user);
-          await cred.user.sendEmailVerification();
-          showMessage("Účet byl vytvořen. Zkontrolujte e-mail a potvrďte ověřovací odkaz.", "success");
+          
+          // Pokus o odeslání ověřovacího emailu s detailním logováním
+          try {
+            console.log('📧 Odesílám ověřovací email na:', cred.user.email);
+            await cred.user.sendEmailVerification();
+            console.log('✅ Ověřovací email byl odeslán');
+            
+            showMessage(
+              `✅ Účet byl vytvořen! Ověřovací email byl odeslán na ${cred.user.email}. ` +
+              `Zkontrolujte schránku (i SPAM složku). Email přichází z noreply@kartao-cz.firebaseapp.com`,
+              "success"
+            );
+          } catch (emailError) {
+            console.error('❌ Chyba při odesílání ověřovacího emailu:', emailError);
+            showMessage(
+              `⚠️ Účet byl vytvořen, ale ověřovací email se nepodařilo odeslat. ` +
+              `Můžete se přihlásit a použít tlačítko "Znovu poslat ověřovací e-mail".`,
+              "info"
+            );
+          }
+          
           registerFormEl.reset();
           setActiveTab("login");
         }
@@ -565,11 +584,28 @@
         btnResend.textContent = 'Odesílám...';
 
         try {
+          console.log('📧 Opětovné odeslání ověřovacího emailu na:', user.email);
           await user.sendEmailVerification();
-          showMessage("Ověřovací e-mail byl znovu odeslán. Zkontrolujte schránku (i SPAM).", "success");
+          console.log('✅ Email odeslán úspěšně');
+          
+          showMessage(
+            `✅ Ověřovací e-mail byl znovu odeslán na ${user.email}. ` +
+            `Zkontrolujte schránku včetně SPAM složky. ` +
+            `Email přichází z noreply@kartao-cz.firebaseapp.com`,
+            "success"
+          );
         } catch (error) {
-          console.error(error);
-          showMessage(error.message || "Ověřovací e-mail se nepodařilo odeslat.", "error");
+          console.error('❌ Chyba při odesílání emailu:', error);
+          
+          let errorMsg = "Ověřovací e-mail se nepodařilo odeslat.";
+          if (error.code === 'auth/too-many-requests') {
+            errorMsg = "Příliš mnoho pokusů. Počkejte chvíli a zkuste to znovu.";
+          } else if (error.code === 'auth/user-disabled') {
+            errorMsg = "Tento účet byl deaktivován.";
+          } else {
+            errorMsg = `Chyba: ${error.message}`;
+          }
+          showMessage(errorMsg, "error");
         } finally {
           btnResend.textContent = originalText;
           btnResend.disabled = false;
