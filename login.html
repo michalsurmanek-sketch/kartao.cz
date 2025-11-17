@@ -326,21 +326,24 @@
     
     auth.onAuthStateChanged(async (user) => {
       console.log('🔐 Auth state changed:', user ? user.email : 'No user');
+      console.log('📍 isRegistering:', isRegistering, 'authStateHandled:', authStateHandled);
       
       // Pokud je uživatel přihlášen, NENÍ to registrace, a ještě jsme nepřesměrovali
       if (user && !authStateHandled && !isRegistering) {
         authStateHandled = true;
         console.log('👤 Uživatel přihlášen:', user.email);
         console.log('✉️ Email ověřen:', user.emailVerified);
+        console.log('🚀 Zahajuji přesměrování...');
         
-        // Malá prodleva pro zobrazení úspěšné zprávy
+        // Malá prodleva pro zobrazení úspěšné zprávy (jen 1s)
         setTimeout(async () => {
           try {
+            console.log('📂 Načítám profil uživatele z Firestore...');
             const userDoc = await db.collection('users').doc(user.uid).get();
             const userData = userDoc.exists ? userDoc.data() : null;
             const role = userData?.role;
             
-            console.log('📊 Role uživatele:', role);
+            console.log('📊 Role uživatele:', role || 'žádná role (nový uživatel)');
             
             if (role === 'creator') {
               console.log('↪️ Přesměrování na creator-dashboard.html');
@@ -349,18 +352,20 @@
               console.log('↪️ Přesměrování na firm-dashboard.html');
               window.location.href = "firm-dashboard.html";
             } else {
-              console.log('↪️ Přesměrování na kartao-vyber-uctu.html');
+              console.log('↪️ Přesměrování na kartao-vyber-uctu.html (výběr role)');
               window.location.href = "kartao-vyber-uctu.html";
             }
           } catch (err) {
-            console.error('Chyba při načítání role:', err);
+            console.error('❌ Chyba při načítání role:', err);
+            console.log('↪️ Fallback na kartao-vyber-uctu.html');
             window.location.href = "kartao-vyber-uctu.html";
           }
-        }, 1500);
+        }, 1000); // Zkráceno na 1s
       }
       
       // Reset flag po odhlášení
       if (!user) {
+        console.log('👋 Uživatel odhlášen - reset flagů');
         authStateHandled = false;
         isRegistering = false;
       }
@@ -382,10 +387,12 @@
       const password = document.getElementById("reg-password").value;
       const password2 = document.getElementById("reg-password2").value;
 
-      // Kontrola, zda uživatel není již přihlášený
+      // Pokud je uživatel již přihlášený, automaticky ho odhlásit
       if (auth.currentUser) {
-        showMessage("⚠️ Již jste přihlášený jako " + auth.currentUser.email, "info");
-        return;
+        console.log('⚠️ Uživatel již přihlášen, odhlašuji před registrací...');
+        await auth.signOut();
+        // Krátká pauza pro dokončení odhlášení
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
       const btn = registerFormEl.querySelector('button[type="submit"]');
@@ -440,6 +447,10 @@
           // DŮLEŽITÉ: Odhlásit uživatele po registraci
           // Firebase automaticky přihlásí po createUserWithEmailAndPassword
           // Ale chceme, aby se uživatel přihlásil manuálně
+          
+          // Reset flag PŘED odhlášením
+          isRegistering = false;
+          
           await auth.signOut();
           console.log('👋 Uživatel odhlášen po registraci - může se přihlásit');
           
@@ -511,28 +522,8 @@
           showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
         }
 
-        // Přesměrování na základě role uživatele
-        setTimeout(async () => {
-          try {
-            // Zkusíme získat roli z Firestore
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const userData = userDoc.exists ? userDoc.data() : null;
-            const role = userData?.role;
-            
-            if (role === 'creator') {
-              window.location.href = "creator-dashboard.html";
-            } else if (role === 'company') {
-              window.location.href = "firm-dashboard.html";
-            } else {
-              // Nový uživatel - pošleme na výběr role
-              window.location.href = "kartao-vyber-uctu.html";
-            }
-          } catch (err) {
-            console.error('Chyba při načítání role:', err);
-            // Fallback na výběr účtu
-            window.location.href = "kartao-vyber-uctu.html";
-          }
-        }, 1500);
+        // Auth observer se postará o přesměrování automaticky
+        // Nemusíme zde nic dělat - onAuthStateChanged to zařídí
 
       } catch (error) {
         console.error(error);
