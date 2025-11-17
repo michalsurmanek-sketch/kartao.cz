@@ -760,72 +760,154 @@
     // Success screen
     function showSuccessScreen(cardData) {
       const formSection = document.querySelector('section.max-w-3xl');
+      
+      // Výpočet celkového počtu sledujících
+      let totalFollowers = 0;
+      if (cardData.metrics.instagram?.followers) totalFollowers += cardData.metrics.instagram.followers;
+      if (cardData.metrics.tiktok?.followers) totalFollowers += cardData.metrics.tiktok.followers;
+      if (cardData.metrics.youtube?.followers) totalFollowers += cardData.metrics.youtube.followers;
+      if (cardData.metrics.facebook?.followers) totalFollowers += cardData.metrics.facebook.followers;
+      if (cardData.metrics.pinterest?.followers) totalFollowers += cardData.metrics.pinterest.followers;
+      
+      const formatFollowers = (num) => {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+        return num.toString();
+      };
+      
       formSection.innerHTML = `
-        <div class="text-center py-12">
+        <div class="py-8">
           <!-- Success Animation -->
-          <div class="mb-8 relative inline-block">
-            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-500/30 grid place-items-center animate-bounce">
-              <i data-lucide="check" class="w-12 h-12 text-emerald-400"></i>
+          <div class="mb-6 text-center">
+            <div class="inline-block relative mb-4">
+              <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-500/30 grid place-items-center animate-bounce">
+                <i data-lucide="check" class="w-10 h-10 text-emerald-400"></i>
+              </div>
+              <div class="absolute inset-0 w-20 h-20 mx-auto rounded-full bg-emerald-400/20 animate-ping"></div>
             </div>
-            <div class="absolute inset-0 w-24 h-24 mx-auto rounded-full bg-emerald-400/20 animate-ping"></div>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-2 bg-gradient-to-r from-emerald-400 to-sky-400 bg-clip-text text-transparent">
+              Karta úspěšně vytvořena! 🎉
+            </h1>
+            <p class="text-white/60 text-sm">
+              Vaše karta je nyní veřejně dostupná
+            </p>
           </div>
 
-          <!-- Success Message -->
-          <h1 class="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-emerald-400 to-sky-400 bg-clip-text text-transparent">
-            Karta úspěšně vytvořena! 🎉
-          </h1>
-          <p class="text-white/70 max-w-2xl mx-auto mb-8">
-            Vaše karta tvůrce <strong class="text-white">${cardData.name}</strong> byla úspěšně uložena a je nyní veřejně dostupná v marketplace.
-          </p>
-
-          <!-- Card Preview -->
-          <div class="glass-panel rounded-2xl border border-white/10 p-6 max-w-md mx-auto mb-8">
-            <div class="flex items-center gap-4 mb-4">
-              ${cardData.avatar ? `<img src="${cardData.avatar}" alt="${cardData.name}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-emerald-400/50" />` : 
-                `<div class="w-20 h-20 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20 grid place-items-center">
-                  <i data-lucide="user" class="w-10 h-10 text-white/60"></i>
-                </div>`
-              }
-              <div class="text-left flex-1">
-                <h3 class="font-bold text-xl mb-1">${cardData.name}</h3>
-                <p class="text-sm text-white/60">${cardData.handle || '@' + cardData.name.toLowerCase().replace(/\s+/g, '')}</p>
-                ${cardData.category ? `<span class="inline-block mt-2 px-3 py-1 rounded-full bg-fuchsia-500/20 text-fuchsia-300 text-xs font-medium">${cardData.category}</span>` : ''}
+          <!-- INFLUENCER CARD PREVIEW (jako na marketplace) -->
+          <div class="max-w-sm mx-auto mb-8">
+            <article class="glass-panel rounded-2xl border border-white/10 overflow-hidden hover:border-fuchsia-400/30 transition-all duration-300 group">
+              <!-- Cover Photo -->
+              <div class="relative h-32 bg-gradient-to-br from-fuchsia-600/30 to-amber-400/30 overflow-hidden">
+                ${cardData.cover ? 
+                  `<img src="${cardData.cover}" alt="Cover" class="w-full h-full object-cover" />` : 
+                  '<div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20"></div>'
+                }
+                <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/80 to-transparent"></div>
               </div>
-            </div>
-            
-            ${cardData.bio ? `
-              <div class="text-left mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                <p class="text-sm text-white/80">${cardData.bio}</p>
-              </div>
-            ` : ''}
 
-            <!-- Social Stats Preview -->
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              ${cardData.metrics.instagram?.followers ? `
-                <div class="p-2 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-pink-500/5 border border-fuchsia-500/20">
-                  <div class="text-fuchsia-300 font-medium">Instagram</div>
-                  <div class="text-white/90">${cardData.metrics.instagram.followers.toLocaleString()} sledujících</div>
+              <!-- Card Content -->
+              <div class="p-5 -mt-12 relative">
+                <!-- Avatar -->
+                <div class="flex items-start gap-4 mb-4">
+                  <div class="relative flex-shrink-0">
+                    ${cardData.avatar ? 
+                      `<img src="${cardData.avatar}" alt="${cardData.name}" class="w-20 h-20 rounded-xl object-cover ring-4 ring-neutral-950 shadow-xl group-hover:ring-fuchsia-500/50 transition-all" />` :
+                      `<div class="w-20 h-20 rounded-xl bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center ring-4 ring-neutral-950 shadow-xl">
+                        <i data-lucide="user" class="w-10 h-10 text-white"></i>
+                      </div>`
+                    }
+                    <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 grid place-items-center ring-2 ring-neutral-950">
+                      <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="flex-1 min-w-0 pt-8">
+                    <h3 class="font-bold text-xl truncate mb-1">${cardData.name}</h3>
+                    <p class="text-sm text-white/60 truncate mb-2">${cardData.handle || '@' + cardData.name.toLowerCase().replace(/\s+/g, '')}</p>
+                    ${cardData.category ? 
+                      `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-medium">
+                        <i data-lucide="tag" class="w-3 h-3"></i>
+                        ${cardData.category}
+                      </span>` : ''
+                    }
+                  </div>
                 </div>
-              ` : ''}
-              ${cardData.metrics.tiktok?.followers ? `
-                <div class="p-2 rounded-lg bg-gradient-to-br from-sky-500/10 to-cyan-500/5 border border-sky-500/20">
-                  <div class="text-sky-300 font-medium">TikTok</div>
-                  <div class="text-white/90">${cardData.metrics.tiktok.followers.toLocaleString()} sledujících</div>
+
+                <!-- Bio -->
+                ${cardData.bio ? `
+                  <div class="mb-4">
+                    <p class="text-sm text-white/70 line-clamp-2">${cardData.bio}</p>
+                  </div>
+                ` : ''}
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                  ${totalFollowers > 0 ? `
+                    <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
+                      <div class="text-xs text-sky-300 mb-1">Sledující</div>
+                      <div class="font-bold text-sm">${formatFollowers(totalFollowers)}</div>
+                    </div>
+                  ` : ''}
+                  ${cardData.city ? `
+                    <div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
+                      <div class="text-xs text-amber-300 mb-1">Město</div>
+                      <div class="font-bold text-sm truncate">${cardData.city}</div>
+                    </div>
+                  ` : ''}
+                  ${cardData.age ? `
+                    <div class="rounded-xl bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-600/5 border border-fuchsia-500/20 p-3 text-center">
+                      <div class="text-xs text-fuchsia-300 mb-1">Věk</div>
+                      <div class="font-bold text-sm">${cardData.age}</div>
+                    </div>
+                  ` : ''}
                 </div>
-              ` : ''}
-              ${cardData.metrics.youtube?.followers ? `
-                <div class="p-2 rounded-lg bg-gradient-to-br from-red-500/10 to-rose-500/5 border border-red-500/20">
-                  <div class="text-red-300 font-medium">YouTube</div>
-                  <div class="text-white/90">${cardData.metrics.youtube.followers.toLocaleString()} odběratelů</div>
+
+                <!-- Social Platforms -->
+                <div class="flex items-center gap-2 flex-wrap mb-4">
+                  ${cardData.metrics.instagram?.url ? 
+                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-pink-500/5 border border-fuchsia-500/20">
+                      <i data-lucide="instagram" class="w-3 h-3 text-fuchsia-400"></i>
+                      <span class="text-xs text-fuchsia-300">${formatFollowers(cardData.metrics.instagram.followers || 0)}</span>
+                    </div>` : ''
+                  }
+                  ${cardData.metrics.tiktok?.url ? 
+                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-sky-500/10 to-cyan-500/5 border border-sky-500/20">
+                      <i data-lucide="music" class="w-3 h-3 text-sky-400"></i>
+                      <span class="text-xs text-sky-300">${formatFollowers(cardData.metrics.tiktok.followers || 0)}</span>
+                    </div>` : ''
+                  }
+                  ${cardData.metrics.youtube?.url ? 
+                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-red-500/10 to-rose-500/5 border border-red-500/20">
+                      <i data-lucide="youtube" class="w-3 h-3 text-red-400"></i>
+                      <span class="text-xs text-red-300">${formatFollowers(cardData.metrics.youtube.followers || 0)}</span>
+                    </div>` : ''
+                  }
+                  ${cardData.metrics.facebook?.url ? 
+                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20">
+                      <i data-lucide="facebook" class="w-3 h-3 text-blue-400"></i>
+                      <span class="text-xs text-blue-300">${formatFollowers(cardData.metrics.facebook.followers || 0)}</span>
+                    </div>` : ''
+                  }
+                  ${cardData.metrics.pinterest?.url ? 
+                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-rose-500/10 to-pink-500/5 border border-rose-500/20">
+                      <i data-lucide="image" class="w-3 h-3 text-rose-400"></i>
+                      <span class="text-xs text-rose-300">${formatFollowers(cardData.metrics.pinterest.followers || 0)}</span>
+                    </div>` : ''
+                  }
                 </div>
-              ` : ''}
-              ${cardData.metrics.facebook?.followers ? `
-                <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20">
-                  <div class="text-blue-300 font-medium">Facebook</div>
-                  <div class="text-white/90">${cardData.metrics.facebook.followers.toLocaleString()} sledujících</div>
-                </div>
-              ` : ''}
-            </div>
+
+                <!-- Prices Preview -->
+                ${cardData.prices?.reels || cardData.prices?.stories ? `
+                  <div class="pt-3 border-t border-white/10">
+                    <div class="text-xs text-white/50 mb-2">Orientační ceny:</div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      ${cardData.prices.reels ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-emerald-400">Reels: ${cardData.prices.reels} Kč</span>` : ''}
+                      ${cardData.prices.stories ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-sky-400">Stories: ${cardData.prices.stories} Kč</span>` : ''}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </article>
           </div>
 
           <!-- Action Buttons -->
