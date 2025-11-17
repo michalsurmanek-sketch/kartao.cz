@@ -177,26 +177,10 @@ async function saveProfile(user) {
 
 async function redirect(user) {
   console.log('🔄 Redirect called for user:', user.email);
-  try {
-    const doc = await db.collection('users').doc(user.uid).get();
-    const role = doc.exists ? doc.data()?.role : null;
-    
-    console.log('📊 User role:', role);
-    
-    if (role === 'tvurce') {
-      console.log('→ Redirecting to creator-dashboard');
-      window.location.href = 'creator-dashboard.html';
-    } else if (role === 'firma') {
-      console.log('→ Redirecting to firm-dashboard');
-      window.location.href = 'firm-dashboard.html';
-    } else {
-      console.log('→ Redirecting to role selection');
-      window.location.href = 'kartao-vyber-uctu.html';
-    }
-  } catch (e) {
-    console.error('❌ Redirect error:', e);
-    window.location.href = 'kartao-vyber-uctu.html';
-  }
+  
+  // Když Firestore nefunguje, jdeme rovnou na výběr role
+  console.log('→ Redirecting to role selection (Firestore offline)');
+  window.location.href = 'kartao-vyber-uctu.html';
 }
 
 // Tabs
