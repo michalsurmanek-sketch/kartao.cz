@@ -540,6 +540,7 @@
         `;
         lucide.createIcons();
       }
+      scheduleAutosave(); // Auto-save on change
     });
 
     // Cover file upload handler
@@ -572,6 +573,23 @@
           <span class="text-[11px] text-white/40 mt-1">Doporučeno 1600×600 px</span>
         `;
         lucide.createIcons();
+      }
+      scheduleAutosave(); // Auto-save on change
+    });
+
+    // === AUTO-SAVE LISTENERS ===
+    // Přidání auto-save na všechna formulářová pole
+    document.addEventListener('DOMContentLoaded', () => {
+      // Načtení uložených dat při načtení stránky
+      loadFormData();
+
+      // Přidání event listenerů na všechna pole formuláře
+      const form = document.getElementById('cardForm');
+      if (form) {
+        form.querySelectorAll('input, textarea, select').forEach(field => {
+          field.addEventListener('input', scheduleAutosave);
+          field.addEventListener('change', scheduleAutosave);
+        });
       }
     });
 
