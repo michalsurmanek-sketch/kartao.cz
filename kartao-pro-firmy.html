@@ -518,8 +518,16 @@
       return headers.map(h=> csvEscape(payload[h] ?? '')).join(',');
     }
 
-    document.addEventListener('DOMContentLoaded',()=>{
+    // Inicializace ikon - musí být mimo DOMContentLoaded pro hamburger menu
+    if (typeof lucide !== 'undefined') {
       lucide.createIcons();
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      // Reinicializace ikon po načtení DOM
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
       
       // Validace brief formuláře
       const f = document.getElementById('briefForm');

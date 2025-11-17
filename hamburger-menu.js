@@ -38,6 +38,11 @@ function initHamburgerMenu() {
     
     // Zamknout scroll
     document.body.style.overflow = 'hidden';
+    
+    // Reinicializace Lucide ikon v menu
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   }
 
   /**
@@ -109,4 +114,12 @@ function initHamburgerMenu() {
 // Export pro případné použití jako modul
 if (typeof window !== 'undefined') {
   window.HamburgerMenu = { init: initHamburgerMenu };
+}
+
+// Automatická inicializace při načtení DOM
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHamburgerMenu);
+} else {
+  // DOM již načten
+  initHamburgerMenu();
 }
