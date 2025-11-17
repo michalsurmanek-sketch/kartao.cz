@@ -346,14 +346,36 @@
         </nav>
             <i data-lucide="user" class="w-4 h-4 text-fuchsia-300 ml-auto"></i>
           </a>
-          <div class="mt-2 p-3 rounded-2xl bg-gradient-to-br from-fuchsia-500/10 via-amber-400/5 to-transparent border border-white/10">
-            <div class="grid grid-cols-2 gap-2">
+          
+          <!-- Přihlášení/Účet -->
+          <div id="desktop-auth-section" class="mt-2 p-3 rounded-2xl bg-gradient-to-br from-fuchsia-500/10 via-amber-400/5 to-transparent border border-white/10">
+            <!-- Pro nepřihlášené -->
+            <div id="desktop-not-logged-in" class="grid grid-cols-2 gap-2">
               <a href="login.html" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-center text-sm">Přihlásit</a>
               <a href="login.html" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-center text-sm">Registrovat</a>
               <a href="vip.html" class="col-span-2 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10">
                 <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
                 <span class="font-bold">VIP zóna</span>
               </a>
+            </div>
+            
+            <!-- Pro přihlášené -->
+            <div id="desktop-logged-in" class="hidden space-y-2">
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-white/5">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 flex items-center justify-center text-sm font-bold" id="desktop-user-avatar">
+                  ?
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium truncate" id="desktop-user-name">Načítám...</div>
+                  <div class="text-xs text-white/50 truncate" id="desktop-user-email">-</div>
+                </div>
+              </div>
+              <a href="kartao-muj-ucet.html" class="block px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-center text-sm">
+                Můj účet
+              </a>
+              <button id="desktop-logout-btn" class="w-full px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-center text-sm">
+                Odhlásit se
+              </button>
             </div>
           </div>
           
@@ -1511,6 +1533,52 @@
 
     // Když NENÍ přihlášený nebo Firebase není načtený → vždy pošleme na login
     window.location.href = "login.html";
+  }
+  
+  // ============================================
+  // AUTH STATE LISTENER - Desktop menu
+  // ============================================
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().onAuthStateChanged((user) => {
+      const notLoggedIn = document.getElementById('desktop-not-logged-in');
+      const loggedIn = document.getElementById('desktop-logged-in');
+      
+      if (user) {
+        // Přihlášen
+        if (notLoggedIn) notLoggedIn.classList.add('hidden');
+        if (loggedIn) loggedIn.classList.remove('hidden');
+        
+        // Nastavit údaje
+        const userName = document.getElementById('desktop-user-name');
+        const userEmail = document.getElementById('desktop-user-email');
+        const userAvatar = document.getElementById('desktop-user-avatar');
+        
+        if (userName) userName.textContent = user.displayName || 'Uživatel';
+        if (userEmail) userEmail.textContent = user.email || '';
+        if (userAvatar) {
+          const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+          userAvatar.textContent = initial;
+        }
+      } else {
+        // Odhlášen
+        if (notLoggedIn) notLoggedIn.classList.remove('hidden');
+        if (loggedIn) loggedIn.classList.add('hidden');
+      }
+    });
+    
+    // Odhlášení
+    const desktopLogoutBtn = document.getElementById('desktop-logout-btn');
+    if (desktopLogoutBtn) {
+      desktopLogoutBtn.addEventListener('click', async () => {
+        try {
+          await firebase.auth().signOut();
+          window.location.reload();
+        } catch (error) {
+          console.error('Chyba při odhlášení:', error);
+          alert('Chyba při odhlášení');
+        }
+      });
+    }
   }
 </script>
 

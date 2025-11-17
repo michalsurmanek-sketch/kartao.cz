@@ -634,15 +634,13 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // PRO DEMO ÚČELY: Pokud není přihlášený uživatel, vytvoříme testovacího
+      // VYŽADUJ PŘIHLÁŠENÍ
       if (!currentUser) {
-        showMessage('⚠️ DEMO MODE: Používám testovacího uživatele. V produkci vyžadujte přihlášení.', 'info');
-        // Simulujeme přihlášeného uživatele pro demo
-        currentUser = {
-          uid: 'demo-user-' + Date.now(),
-          email: 'demo@kartao.cz'
-        };
-        console.warn('DEMO MODE: Using test user');
+        showMessage('❌ Musíte být přihlášeni pro vytvoření karty. Přesměrovávám...', 'error');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return;
       }
 
       // Check if avatar and cover are provided (either file or URL)
@@ -666,9 +664,8 @@
       let coverUrl = coverUrlInput.value.trim();
 
       try {
-        // DEMO MODE: Použijeme data URL nebo URL přímo bez uploadu do Firebase
+        // Pokud jsou soubory, převést na data URL
         if (avatarUploadedFile && !avatarUrl) {
-          // V demo módu použijeme data URL z FileReader
           const reader = new FileReader();
           await new Promise((resolve) => {
             reader.onload = (e) => {
@@ -680,7 +677,6 @@
         }
 
         if (coverUploadedFile && !coverUrl) {
-          // V demo módu použijeme data URL z FileReader
           const reader = new FileReader();
           await new Promise((resolve) => {
             reader.onload = (e) => {
@@ -733,26 +729,25 @@
           },
           brandInfo: document.getElementById('brandInfo').value.trim() || null,
           visibility: 'public',
+          status: 'active',
           updatedAt: now,
           createdAt: now,
         };
 
-        // DEMO MODE: Uložíme data do localStorage místo Firebase
-        console.log('💾 Ukládám data do localStorage (DEMO MODE)');
-        localStorage.setItem('kartao_creator_card', JSON.stringify(data));
+        // ✅ ULOŽIT DO FIRESTORE
+        console.log('💾 Ukládám kartu do Firestore pro uživatele:', currentUser.uid);
+        await db.collection('creators').doc(currentUser.uid).set(data);
+        console.log('✅ Karta úspěšně uložena do Firestore!');
         
         // Smazat draft po úspěšném uložení
         localStorage.removeItem(AUTOSAVE_KEY);
         console.log('🗑️ Draft automaticky smazán po úspěšném uložení');
         
-        // Simulujeme delay pro realistický pocit
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
         // Show success screen
         showSuccessScreen(data);
         
       } catch (err) {
-        console.error(err);
+        console.error('❌ Chyba při ukládání:', err);
         showMessage('Nastala chyba při ukládání karty: ' + err.message, 'error');
       }
     });

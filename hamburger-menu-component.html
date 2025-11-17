@@ -51,19 +51,49 @@
         <!-- Účet a akce -->
         <div class="pb-2 mb-2 border-b border-white/10">
           <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">Účet</div>
-          <a href="kartao-zalozit-kartu.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-            <i data-lucide="id-card" class="w-5 h-5 text-white/70"></i>
-            <span>Založit kartu</span>
-            <span class="ml-auto px-2 py-1 bg-gradient-to-r from-fuchsia-500 to-amber-400 text-xs font-bold rounded-full">ZDARMA</span>
-          </a>
-          <a href="login.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-            <i data-lucide="log-in" class="w-5 h-5 text-white/70"></i>
-            <span>Přihlásit se</span>
-          </a>
-          <a href="kartao-muj-ucet.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-            <i data-lucide="user" class="w-5 h-5 text-white/70"></i>
-            <span>Můj účet</span>
-          </a>
+          
+          <!-- Pro nepřihlášené -->
+          <div id="menu-not-logged-in">
+            <a href="kartao-zalozit-kartu.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="id-card" class="w-5 h-5 text-white/70"></i>
+              <span>Založit kartu</span>
+              <span class="ml-auto px-2 py-1 bg-gradient-to-r from-fuchsia-500 to-amber-400 text-xs font-bold rounded-full">ZDARMA</span>
+            </a>
+            <a href="login.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="log-in" class="w-5 h-5 text-white/70"></i>
+              <span>Přihlásit se</span>
+            </a>
+          </div>
+          
+          <!-- Pro přihlášené -->
+          <div id="menu-logged-in" class="hidden">
+            <div class="px-3 py-2 rounded-xl bg-white/5 mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 flex items-center justify-center text-sm font-bold" id="menu-user-avatar">
+                  ?
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium truncate" id="menu-user-name">Načítám...</div>
+                  <div class="text-xs text-white/50 truncate" id="menu-user-email">-</div>
+                </div>
+              </div>
+            </div>
+            
+            <a href="kartao-muj-ucet.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="user" class="w-5 h-5 text-white/70"></i>
+              <span>Můj účet</span>
+            </a>
+            
+            <a href="kartao-zalozit-kartu.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="id-card" class="w-5 h-5 text-white/70"></i>
+              <span>Moje karty</span>
+            </a>
+            
+            <button id="menu-logout-btn" class="w-full text-left px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="log-out" class="w-5 h-5 text-white/70"></i>
+              <span>Odhlásit se</span>
+            </button>
+          </div>
         </div>
 
         <!-- Dashboard sekce -->
@@ -190,5 +220,57 @@
         }
       });
     });
+    
+    // ============================================
+    // AUTH STATE LISTENER - Dynamické zobrazení
+    // ============================================
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged((user) => {
+        const notLoggedIn = document.getElementById('menu-not-logged-in');
+        const loggedIn = document.getElementById('menu-logged-in');
+        
+        if (user) {
+          // Přihlášen
+          if (notLoggedIn) notLoggedIn.classList.add('hidden');
+          if (loggedIn) loggedIn.classList.remove('hidden');
+          
+          // Nastavit údaje uživatele
+          const userName = document.getElementById('menu-user-name');
+          const userEmail = document.getElementById('menu-user-email');
+          const userAvatar = document.getElementById('menu-user-avatar');
+          
+          if (userName) userName.textContent = user.displayName || 'Uživatel';
+          if (userEmail) userEmail.textContent = user.email || '';
+          if (userAvatar) {
+            const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+            userAvatar.textContent = initial;
+          }
+          
+          // Znovu vytvořit ikony
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+        } else {
+          // Odhlášen
+          if (notLoggedIn) notLoggedIn.classList.remove('hidden');
+          if (loggedIn) loggedIn.classList.add('hidden');
+        }
+      });
+      
+      // Odhlášení
+      const logoutBtn = document.getElementById('menu-logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          try {
+            await firebase.auth().signOut();
+            closeMenu();
+            window.location.href = 'index.html';
+          } catch (error) {
+            console.error('Chyba při odhlášení:', error);
+            alert('Chyba při odhlášení');
+          }
+        });
+      }
+    }
   });
 </script>
