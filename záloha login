@@ -1,0 +1,832 @@
+ <!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Přihlaste se do Kartao.cz - platformy pro influencery a značky. Spravujte svůj profil, kampaně a komunikaci s partnery." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://accounts.google.com https://www.facebook.com https://facebook.com wss://*.firebaseio.com; frame-src 'self' https://kartao-cz.firebaseapp.com https://*.firebaseapp.com https://accounts.google.com https://www.facebook.com https://facebook.com; child-src 'self' https://accounts.google.com https://www.facebook.com; form-action 'self' https://accounts.google.com; object-src 'none';">
+  <title>Kartao.cz – Přihlášení & Registrace</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔑</text></svg>">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Přihlášení - Kartao.cz" />
+  <meta property="og:description" content="Přihlaste se do své účtu na Kartao.cz" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.kartao.cz/login.html" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+          },
+        },
+      },
+    };
+  </script>
+
+    <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Jednotná inicializace Firebase pro celý web -->
+  <script src="firebase-init.js"></script>
+
+  <style>
+    /* Lehký rozmazaný gradient na pozadí */
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #db58f6 0, transparent 55%),
+                  radial-gradient(circle at bottom right, #fbbf24 0, #020617 55%);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white">
+
+<!-- MINIMÁLNÍ HEADER -->
+<header class="border-b border-white/10 bg-neutral-900/50">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+        <span class="text-lg font-bold">K</span>
+      </div>
+      <div>
+        <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+        <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-4 text-sm">
+      <a href="index.html" class="text-white/70 hover:text-white transition">Domů</a>
+      <a href="kartao-marketplace.html" class="text-white/70 hover:text-white transition">Marketplace</a>
+      <a href="kartao-pro-tvurce.html" class="text-white/70 hover:text-white transition">Pro tvůrce</a>
+    </nav>
+  </div>
+</header>
+
+<!-- BREADCRUMBS -->
+<nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
+  <div class="max-w-7xl mx-auto px-4 py-2">
+    <ol class="flex items-center gap-2 text-sm">
+      <li><a href="index.html" class="text-white/70 hover:text-white transition">Domů</a></li>
+      <i data-lucide="chevron-right" class="w-3 h-3 text-white/40"></i>
+      <li class="text-white">Přihlášení</li>
+    </ol>
+  </div>
+</nav>
+
+<main class="flex-1 flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md bg-neutral-900/80 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md p-6">
+    <!-- Logo + claim -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-lg">
+        <span class="text-xl font-bold">K</span>
+      </div>
+      <div>
+        <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
+        <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+      </div>
+    </div>
+
+    <!-- Přepínač Přihlášení / Registrace -->
+    <div class="flex mb-4 rounded-xl bg-neutral-800/80 p-1 text-sm">
+      <button id="tab-login" data-tab="login" type="button" class="flex-1 py-2 rounded-lg font-medium bg-neutral-900 text-white">Přihlášení</button>
+      <button id="tab-register" data-tab="register" type="button" class="flex-1 py-2 rounded-lg font-medium text-white/70 hover:text-white">Registrace</button>
+    </div>
+
+    <!-- Box na hlášky -->
+    <div id="auth-message" class="hidden mb-4 text-sm rounded-lg px-3 py-2 border"></div>
+
+    <!-- FORM: Přihlášení -->
+    <form id="login-form" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-1" for="login-email">E-mail</label>
+        <input id="login-email" type="email" required autocomplete="email"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
+      </div>
+      <div>
+        <label class="block text-sm mb-1" for="login-password">Heslo</label>
+        <input id="login-password" type="password" required autocomplete="current-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
+      </div>
+
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
+        Přihlásit se
+      </button>
+
+      <!-- Tlačítko pro znovu-poslání ověřovacího e-mailu (standardně skryté) -->
+      <button type="button" id="btn-resend" class="hidden w-full py-2 rounded-xl border border-amber-300/60 text-xs text-amber-200 hover:bg-amber-300/10 transition">
+        Znovu poslat ověřovací e-mail
+      </button>
+
+      <div class="mt-3 text-center text-[11px] text-white/40">
+        <span class="inline-block px-2 text-white/60">nebo</span>
+      </div>
+
+      <button type="button" id="btn-google" class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2">
+        <span class="text-lg">G</span>
+        <span>Přihlásit se přes Google</span>
+      </button>
+
+      <button type="button" id="btn-facebook" class="mt-2 w-full py-2.5 rounded-xl border border-white/15 bg-neutral-900/80 text-sm font-medium text-white/80 hover:bg-neutral-800 transition flex items-center justify-center gap-2">
+        <span class="text-lg">f</span>
+        <span>Přihlásit se přes Facebook</span>
+      </button>
+    </form>
+
+    <!-- FORM: Registrace (schovaný, přepíná se tlačítky nahoře) -->
+    <form id="register-form" class="space-y-4 hidden">
+      <div>
+        <label class="block text-sm mb-1" for="reg-email">E-mail</label>
+        <input id="reg-email" type="email" required autocomplete="email"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
+      </div>
+      <div>
+        <label class="block text-sm mb-1" for="reg-password">Heslo</label>
+        <input id="reg-password" type="password" required minlength="6" autocomplete="new-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
+        <p class="mt-1 text-[11px] text-white/50">Min. 6 znaků.</p>
+      </div>
+      <div>
+        <label class="block text-sm mb-1" for="reg-password2">Heslo znovu</label>
+        <input id="reg-password2" type="password" required minlength="6" autocomplete="new-password"
+               class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-fuchsia-400" />
+      </div>
+
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-semibold text-neutral-900 hover:brightness-110 transition">
+        Vytvořit účet a poslat ověření
+      </button>
+
+      <p class="text-[11px] text-white/50 text-center">
+        Registrací souhlasíte s&nbsp;<a href="obchodni-podminky.html" class="underline">podmínkami použití</a> a
+        <a href="ochrana-osobnich-udaju.html" class="underline">zpracováním osobních údajů</a>.
+      </p>
+    </form>
+
+    <p class="mt-5 text-center text-[11px] text-white/40">
+      Potřebujete pomoct? Napište na <a href="mailto:podpora@kartao.cz" class="underline">podpora@kartao.cz</a>
+    </p>
+  </div>
+
+  <script src="form-validation.js"></script>
+  <script>
+    // =========================
+    // 1) Firebase providery
+    // =========================
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    const facebookProvider = new firebase.auth.FacebookAuthProvider();
+
+    // =========================
+    // 1b) Handler pro OAuth redirect (pokud se vrací z Google/Facebook)
+    // =========================
+    auth.getRedirectResult()
+      .then(async (result) => {
+        if (result.user) {
+          console.log('✅ OAuth redirect úspěšné:', result.user.email);
+          await saveUserProfile(result.user);
+          
+          // Získat roli a přesměrovat
+          const userDoc = await db.collection('users').doc(result.user.uid).get();
+          const role = userDoc.exists ? userDoc.data()?.role : null;
+          
+          if (role === 'creator') {
+            window.location.href = "creator-dashboard.html";
+          } else if (role === 'company') {
+            window.location.href = "firm-dashboard.html";
+          } else {
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }
+      })
+      .catch((error) => {
+        if (error.code !== 'auth/popup-closed-by-user') {
+          console.error('❌ Redirect error:', error);
+          showMessage('Chyba při přihlášení: ' + (error.message || error.code), 'error');
+        }
+      });
+
+    // =========================
+    // 2) Helper na hlášky
+    // =========================
+    const messageBox = document.getElementById("auth-message");
+    const btnResend = document.getElementById("btn-resend");
+    const btnGoogle = document.getElementById("btn-google");
+    const btnFacebook = document.getElementById("btn-facebook");
+
+    function showMessage(text, type = "info") {
+      if (!messageBox) return;
+      messageBox.innerHTML = text; // Změněno na innerHTML pro podporu HTML
+      messageBox.classList.remove("hidden", "border-red-400", "bg-red-900/60", "border-emerald-400", "bg-emerald-900/60", "border-amber-300", "bg-amber-900/40");
+
+      if (type === "error") {
+        messageBox.classList.add("border-red-400", "bg-red-900/60");
+      } else if (type === "success") {
+        messageBox.classList.add("border-emerald-400", "bg-emerald-900/60");
+      } else {
+        messageBox.classList.add("border-amber-300", "bg-amber-900/40");
+      }
+    }
+
+    function clearMessage() {
+      if (!messageBox) return;
+      messageBox.classList.add("hidden");
+      messageBox.innerHTML = ""; // Změněno na innerHTML
+    }
+
+    // Uložení / aktualizace profilu uživatele ve Firestore
+    async function saveUserProfile(user) {
+      if (!user || !db) return;
+      try {
+        const userRef = db.collection("users").doc(user.uid);
+        const providerId = user.providerData && user.providerData[0] ? user.providerData[0].providerId : "password";
+        await userRef.set({
+          email: user.email || "",
+          displayName: user.displayName || "",
+          photoURL: user.photoURL || "",
+          provider: providerId,
+          emailVerified: !!user.emailVerified,
+          updatedAt: new Date().toISOString(),
+        }, { merge: true });
+      } catch (err) {
+        console.error("Chyba při ukládání profilu:", err);
+      }
+    }
+
+    // =========================
+    // 3) Přepínání záložek
+    // =========================
+    const tabLogin = document.getElementById("tab-login");
+    const tabRegister = document.getElementById("tab-register");
+    const loginFormEl = document.getElementById("login-form");
+    const registerFormEl = document.getElementById("register-form");
+
+    function setActiveTab(tab) {
+      clearMessage();
+      if (btnResend) btnResend.classList.add("hidden");
+
+      if (tab === "login") {
+        tabLogin.classList.add("bg-neutral-900", "text-white");
+        tabLogin.classList.remove("text-white/70");
+        tabRegister.classList.remove("bg-neutral-900", "text-white");
+        tabRegister.classList.add("text-white/70");
+        loginFormEl.classList.remove("hidden");
+        registerFormEl.classList.add("hidden");
+      } else {
+        tabRegister.classList.add("bg-neutral-900", "text-white");
+        tabRegister.classList.remove("text-white/70");
+        tabLogin.classList.remove("bg-neutral-900", "text-white");
+        tabLogin.classList.add("text-white/70");
+        registerFormEl.classList.remove("hidden");
+        loginFormEl.classList.add("hidden");
+      }
+    }
+
+    tabLogin.addEventListener("click", () => setActiveTab("login"));
+    tabRegister.addEventListener("click", () => setActiveTab("register"));
+
+    // default
+    setActiveTab("login");
+
+    // =========================
+    // 4) Validátory formulářů
+    // =========================
+    const loginValidator = new FormValidator(loginFormEl);
+    loginValidator
+      .addRule('login-email', { required: true, email: true })
+      .addRule('login-password', { required: true, minLength: 6 });
+    loginValidator.enableRealTimeValidation();
+
+    const regValidator = new FormValidator(registerFormEl);
+    regValidator
+      .addRule('reg-email', { required: true, email: true })
+      .addRule('reg-password', { required: true, minLength: 6 })
+      .addRule('reg-password2', { 
+        required: true,
+        custom: (value) => {
+          const pass1 = document.getElementById('reg-password').value;
+          if (value !== pass1) {
+            return 'Hesla se neshodují';
+          }
+          return null;
+        }
+      });
+    regValidator.enableRealTimeValidation();
+
+    // =========================
+    // 4.5) Auth State Observer - Automatické přisměrování
+    // =========================
+    let authStateHandled = false;
+    let isRegistering = false; // Flag pro rozlišení registrace vs. přihlášení
+    
+    auth.onAuthStateChanged(async (user) => {
+      console.log('🔐 Auth state changed:', user ? user.email : 'No user');
+      console.log('📍 isRegistering:', isRegistering, 'authStateHandled:', authStateHandled);
+      
+      // Pokud je uživatel přihlášen
+      if (user) {
+        console.log('👤 Uživatel přihlášen:', user.email);
+        
+        // Přesměruj VŽDY (bez kontroly emailVerified)
+        if (!authStateHandled && !isRegistering) {
+          authStateHandled = true;
+          console.log('🚀 Zahajuji přesměrování...');
+          
+          setTimeout(async () => {
+            try {
+              console.log('📂 Načítám profil uživatele z Firestore...');
+              const userDoc = await db.collection('users').doc(user.uid).get();
+              const userData = userDoc.exists ? userDoc.data() : null;
+              const role = userData?.role;
+              
+              console.log('📊 Role uživatele:', role || 'žádná role (nový uživatel)');
+              
+              if (role === 'creator') {
+                console.log('↪️ Přesměrování na creator-dashboard.html');
+                window.location.href = "creator-dashboard.html";
+              } else if (role === 'company') {
+                console.log('↪️ Přesměrování na firm-dashboard.html');
+                window.location.href = "firm-dashboard.html";
+              } else {
+                console.log('↪️ Přesměrování na kartao-vyber-uctu.html (výběr role)');
+                window.location.href = "kartao-vyber-uctu.html";
+              }
+            } catch (err) {
+              console.error('❌ Chyba při načítání role:', err);
+              console.log('↪️ Fallback na kartao-vyber-uctu.html');
+              window.location.href = "kartao-vyber-uctu.html";
+            }
+          }, 1000);
+        }
+      }
+      
+      // Reset flag po odhlášení
+      if (!user) {
+        console.log('👋 Uživatel odhlášen - reset flagů');
+        authStateHandled = false;
+        isRegistering = false;
+      }
+    });
+
+    // =========================
+    // 5) Registrace + ověření e-mailu
+    // =========================
+    registerFormEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      // Validace
+      if (!regValidator.validate()) {
+        return;
+      }
+
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-password").value;
+      const password2 = document.getElementById("reg-password2").value;
+
+      // Pokud je uživatel již přihlášený, automaticky ho odhlásit
+      if (auth.currentUser) {
+        console.log('⚠️ Uživatel již přihlášen, odhlašuji před registrací...');
+        await auth.signOut();
+        // Krátká pauza pro dokončení odhlášení
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      const btn = registerFormEl.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Vytvářím účet...';
+      btn.disabled = true;
+      
+      isRegistering = true; // Nastavit flag - registrace probíhá
+      console.log('📝 Zahajuji registraci pro:', email);
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        console.log('✅ Účet vytvořen:', cred.user.uid);
+        
+        if (cred.user) {
+          await saveUserProfile(cred.user);
+          console.log('✅ Profil uložen do Firestore');
+          
+          showMessage(
+            `✅ <strong>Registrace úspěšná!</strong><br><br>` +
+            `Účet byl vytvořen pro <strong>${cred.user.email}</strong><br><br>` +
+            `<em>Přesměrovávám...</em>`,
+            "success"
+          );
+          
+          registerFormEl.reset();
+          isRegistering = false;
+          
+          // PŘÍMÉ PŘESMĚROVÁNÍ - KURVA UŽ JEČ!
+          console.log('🚀 PŘESMĚROVÁVÁM NA VYBER UCTU!');
+          setTimeout(() => {
+            window.location.href = "kartao-vyber-uctu.html";
+          }, 500);
+        }
+      } catch (error) {
+        console.error('❌ Chyba při registraci:', error.code, error.message);
+        let errorMsg = "Při registraci došlo k chybě.";
+        
+        if (error.code === 'auth/email-already-in-use') {
+          errorMsg = "⚠️ Tento e-mail je již registrován. <br><br>" +
+                     "<strong>Máte dva možnosti:</strong><br>" +
+                     "1. Přejděte na záložku 'Přihlášení' a přihlašte se<br>" +
+                     "2. Pokud jste zapomněli heslo, klikněte na 'Zapomněli jste heslo?'";
+        } else if (error.code === 'auth/invalid-email') {
+          errorMsg = "Neplatný formát e-mailu.";
+        } else if (error.code === 'auth/weak-password') {
+          errorMsg = "Heslo je příliš slabé. Použijte alespoň 6 znaků.";
+        } else if (error.code === 'auth/operation-not-allowed') {
+          errorMsg = "⚠️ Registrace emailem/heslem není povolena.<br>" +
+                     "Kontaktujte administrátora.";
+        }
+        showMessage(errorMsg, "error");
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // =========================
+    // 6) Přihlášení (kontrola ověření e-mailu)
+    // =========================
+    loginFormEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessage();
+      if (btnResend) btnResend.classList.add("hidden");
+
+      // Validace
+      if (!loginValidator.validate()) {
+        return;
+      }
+
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      const btn = loginFormEl.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Přihlašuji...';
+      btn.disabled = true;
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const user = cred.user;
+
+        await saveUserProfile(user);
+        showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
+
+        // PŘÍMÉ PŘESMĚROVÁNÍ - IHNED!
+        console.log('🚀 PŘESMĚROVÁVÁM!');
+        setTimeout(async () => {
+          try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.exists ? userDoc.data() : null;
+            const role = userData?.role;
+            
+            console.log('📊 Role:', role);
+            
+            if (role === 'creator') {
+              window.location.href = "creator-dashboard.html";
+            } else if (role === 'company') {
+              window.location.href = "firm-dashboard.html";
+            } else {
+              window.location.href = "kartao-vyber-uctu.html";
+            }
+          } catch (err) {
+            console.error('Chyba:', err);
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }, 500);
+
+      } catch (error) {
+        console.error(error);
+        let errorMsg = "Při přihlášení došlo k chybě.";
+        if (error.code === 'auth/user-not-found') {
+          errorMsg = "Uživatel s tímto e-mailem neexistuje.";
+        } else if (error.code === 'auth/wrong-password') {
+          errorMsg = "Nesprávné heslo.";
+        } else if (error.code === 'auth/invalid-email') {
+          errorMsg = "Neplatný formát e-mailu.";
+        } else if (error.code === 'auth/user-disabled') {
+          errorMsg = "Tento účet byl deaktivován.";
+        }
+        showMessage(errorMsg, "error");
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // =========================
+    // 7) Přihlášení přes Google
+    // =========================
+    if (btnGoogle) {
+      btnGoogle.addEventListener("click", async () => {
+        // Prevence duplicitních pokusů
+        if (isOAuthInProgress) {
+          console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+          return;
+        }
+        
+        isOAuthInProgress = true;
+        clearMessage();
+        btnGoogle.disabled = true;
+        const originalText = btnGoogle.textContent;
+        btnGoogle.textContent = 'Přihlašuji přes Google...';
+        
+        try {
+          // Kontrola zda je Google provider správně nakonfigurován
+          if (!googleProvider) {
+            throw new Error('Google provider není inicializovaný');
+          }
+          
+          console.log('🔐 Pokus o Google OAuth...');
+          
+          // Pokus o popup - pokud selže, zkusíme redirect
+          let result;
+          try {
+            result = await auth.signInWithPopup(googleProvider);
+          } catch (popupError) {
+            console.warn('⚠️ Popup selhalo, zkouším redirect:', popupError);
+            
+            // Pokud popup nefunguje (CSP, blokace), použijeme redirect
+            if (popupError.code === 'auth/popup-blocked' || 
+                popupError.code === 'auth/internal-error') {
+              showMessage("Popup bylo zablokováno. Přesměrovávám na Google...", "info");
+              await auth.signInWithRedirect(googleProvider);
+              return; // Redirect způsobí reload stránky
+            }
+            throw popupError;
+          }
+          
+          const user = result.user;
+          if (user) {
+            console.log('✅ Google OAuth úspěšné:', user.email);
+            await saveUserProfile(user);
+            showMessage("Přihlášení přes Google proběhlo úspěšně. Přesměrovávám...", "success");
+            
+            setTimeout(async () => {
+              try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userData = userDoc.exists ? userDoc.data() : null;
+                const role = userData?.role;
+                
+                if (role === 'creator') {
+                  window.location.href = "creator-dashboard.html";
+                } else if (role === 'company') {
+                  window.location.href = "firm-dashboard.html";
+                } else {
+                  window.location.href = "kartao-vyber-uctu.html";
+                }
+              } catch (err) {
+                console.error('Chyba při načítání role:', err);
+                window.location.href = "kartao-vyber-uctu.html";
+              }
+            }, 1500);
+          }
+        } catch (error) {
+          console.error('Google OAuth error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
+          // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+          if (error.code === 'auth/cancelled-popup-request') {
+            console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+            btnGoogle.textContent = originalText;
+            btnGoogle.disabled = false;
+            isOAuthInProgress = false;
+            return;
+          }
+          
+          let errorMsg = "Přihlášení přes Google se nepodařilo.";
+          
+          if (error.code === 'auth/popup-closed-by-user') {
+            errorMsg = "Přihlášení bylo zrušeno.";
+          } else if (error.code === 'auth/popup-blocked') {
+            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna nebo zkuste znovu.";
+          } else if (error.code === 'auth/unauthorized-domain') {
+            errorMsg = "⚠️ Tato doména není autorizovaná pro Google přihlášení.<br><br>" +
+                       "Přidejte do Firebase Console:<br>" +
+                       "Authentication → Settings → Authorized domains → " +
+                       "přidejte: <code>" + window.location.hostname + "</code>";
+          } else if (error.code === 'auth/operation-not-allowed') {
+            errorMsg = "⚠️ Google přihlášení není povoleno!<br><br>" +
+                       "Povolte ve Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Google → Enable";
+          } else if (error.code === 'auth/account-exists-with-different-credential') {
+            errorMsg = "Účet s tímto emailem již existuje s jiným přihlašovacím poskytovatelem.";
+          } else if (error.code === 'auth/internal-error') {
+            errorMsg = "⚠️ Interní chyba Firebase.<br><br>" +
+                       "<strong>Možné příčiny:</strong><br>" +
+                       "1. Google OAuth není povolen ve Firebase Console<br>" +
+                       "2. Doména není v Authorized domains<br>" +
+                       "3. CSP politika blokuje OAuth<br>" +
+                       "4. Nesprávná Firebase konfigurace<br><br>" +
+                       "<strong>Řešení:</strong><br>" +
+                       "• Zkontrolujte konzoli prohlížeče (F12)<br>" +
+                       "• Viz FIREBASE-SETUP.md → Google Sign-In";
+          } else {
+            errorMsg = `Přihlášení přes Google se nepodařilo: ${error.message || error.code || 'Neznámá chyba'}`;
+          }
+          showMessage(errorMsg, "error");
+        } finally {
+          btnGoogle.textContent = originalText;
+          btnGoogle.disabled = false;
+          isOAuthInProgress = false;
+        }
+      });
+    }
+
+    // =========================
+    // 8) Přihlášení přes Facebook
+    // =========================
+    if (btnFacebook) {
+      btnFacebook.addEventListener("click", async () => {
+        // Prevence duplicitních pokusů
+        if (isOAuthInProgress) {
+          console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+          return;
+        }
+        
+        isOAuthInProgress = true;
+        clearMessage();
+        btnFacebook.disabled = true;
+        const originalText = btnFacebook.textContent;
+        btnFacebook.textContent = 'Přihlašuji přes Facebook...';
+        
+        try {
+          // Kontrola zda je Facebook provider správně nakonfigurován
+          if (!facebookProvider) {
+            throw new Error('Facebook provider není inicializovaný');
+          }
+          
+          console.log('🔐 Pokus o Facebook OAuth...');
+          
+          // Pokus o popup - pokud selže, zkusíme redirect
+          let result;
+          try {
+            result = await auth.signInWithPopup(facebookProvider);
+          } catch (popupError) {
+            console.warn('⚠️ Popup selhalo, zkouším redirect:', popupError);
+            
+            // Pokud popup nefunguje (CSP, blokace), použijeme redirect
+            if (popupError.code === 'auth/popup-blocked' || 
+                popupError.code === 'auth/internal-error') {
+              showMessage("Popup bylo zablokováno. Přesměrovávám na Facebook...", "info");
+              await auth.signInWithRedirect(facebookProvider);
+              return; // Redirect způsobí reload stránky
+            }
+            throw popupError;
+          }
+          
+          const user = result.user;
+          if (user) {
+            console.log('✅ Facebook OAuth úspěšné:', user.email);
+            await saveUserProfile(user);
+            showMessage("Přihlášení přes Facebook proběhlo úspěšně. Přesměrovávám...", "success");
+            
+            setTimeout(async () => {
+              try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userData = userDoc.exists ? userDoc.data() : null;
+                const role = userData?.role;
+                
+                if (role === 'creator') {
+                  window.location.href = "creator-dashboard.html";
+                } else if (role === 'company') {
+                  window.location.href = "firm-dashboard.html";
+                } else {
+                  window.location.href = "kartao-vyber-uctu.html";
+                }
+              } catch (err) {
+                console.error('Chyba při načítání role:', err);
+                window.location.href = "kartao-vyber-uctu.html";
+              }
+            }, 1500);
+          }
+        } catch (error) {
+          console.error('Facebook OAuth error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
+          // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+          if (error.code === 'auth/cancelled-popup-request') {
+            console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+            btnFacebook.textContent = originalText;
+            btnFacebook.disabled = false;
+            isOAuthInProgress = false;
+            return;
+          }
+          
+          let errorMsg = "Přihlášení přes Facebook se nepodařilo.";
+          
+          if (error.code === 'auth/popup-closed-by-user') {
+            errorMsg = "Přihlášení bylo zrušeno.";
+          } else if (error.code === 'auth/popup-blocked') {
+            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna nebo zkuste znovu.";
+          } else if (error.code === 'auth/unauthorized-domain') {
+            errorMsg = "⚠️ Tato doména není autorizovaná pro Facebook přihlášení.<br><br>" +
+                       "Přidejte do Firebase Console:<br>" +
+                       "Authentication → Settings → Authorized domains → " +
+                       "přidejte: <code>" + window.location.hostname + "</code>";
+          } else if (error.code === 'auth/operation-not-allowed') {
+            errorMsg = "⚠️ Facebook přihlášení není povoleno!<br><br>" +
+                       "Povolte ve Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Facebook → Enable";
+          } else if (error.code === 'auth/account-exists-with-different-credential') {
+            errorMsg = "Účet s tímto emailem již existuje s jiným přihlašovacím poskytovatelem.";
+          } else if (error.code === 'auth/internal-error') {
+            errorMsg = "⚠️ Interní chyba Firebase.<br><br>" +
+                       "<strong>Možné příčiny:</strong><br>" +
+                       "1. Facebook OAuth není povolen ve Firebase Console<br>" +
+                       "2. Facebook App ID/Secret není nastaveno<br>" +
+                       "3. Doména není v Authorized domains<br>" +
+                       "4. CSP politika blokuje OAuth<br>" +
+                       "5. Facebook App není v režimu Live<br><br>" +
+                       "<strong>Řešení:</strong><br>" +
+                       "• Zkontrolujte konzoli prohlížeče (F12)<br>" +
+                       "• Viz FIREBASE-SETUP.md → Facebook Sign-In";
+          } else if (error.message && error.message.includes('App ID')) {
+            errorMsg = "⚠️ Facebook App ID není správně nakonfigurované!<br><br>" +
+                       "Zkontrolujte Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Facebook<br>" +
+                       "Viz FIREBASE-SETUP.md pro kompletní návod";
+          } else {
+            errorMsg = `Přihlášení přes Facebook se nepodařilo: ${error.message || error.code || 'Neznámá chyba'}`;
+          }
+          showMessage(errorMsg, "error");
+        } finally {
+          btnFacebook.textContent = originalText;
+          btnFacebook.disabled = false;
+          isOAuthInProgress = false;
+        }
+      });
+    }
+
+    // =========================
+    // 9) Znovu poslat ověřovací e-mail
+    // =========================
+    if (btnResend) {
+      btnResend.addEventListener("click", async () => {
+        clearMessage();
+        const user = auth.currentUser;
+        if (!user) {
+          showMessage("Nejste přihlášený. Zkuste se znovu přihlásit.", "error");
+          return;
+        }
+
+        btnResend.disabled = true;
+        const originalText = btnResend.textContent;
+        btnResend.textContent = 'Odesílám...';
+
+        try {
+          console.log('📧 Opětovné odeslání ověřovacího emailu na:', user.email);
+          
+          // Konfigurace Action URL pro ověřovací email
+          const actionCodeSettings = {
+            url: window.location.origin + '/email-verified.html',
+            handleCodeInApp: true
+          };
+          
+          await user.sendEmailVerification(actionCodeSettings);
+          console.log('✅ Email odeslán úspěšně');
+          console.log('🔗 Verification URL:', actionCodeSettings.url);
+          
+          showMessage(
+            `✅ Ověřovací e-mail byl znovu odeslán na ${user.email}. ` +
+            `Zkontrolujte schránku včetně SPAM složky. ` +
+            `Email přichází z noreply@kartao-cz.firebaseapp.com`,
+            "success"
+          );
+        } catch (error) {
+          console.error('❌ Chyba při odesílání emailu:', error);
+          
+          let errorMsg = "Ověřovací e-mail se nepodařilo odeslat.";
+          if (error.code === 'auth/too-many-requests') {
+            errorMsg = "Příliš mnoho pokusů. Počkejte chvíli a zkuste to znovu.";
+          } else if (error.code === 'auth/user-disabled') {
+            errorMsg = "Tento účet byl deaktivován.";
+          } else {
+            errorMsg = `Chyba: ${error.message}`;
+          }
+          showMessage(errorMsg, "error");
+        } finally {
+          btnResend.textContent = originalText;
+          btnResend.disabled = false;
+        }
+      });
+    }
+  </script>
+
+  <script>
+    // Inicializace Lucide ikon
+    lucide.createIcons();
+  </script>
+</main>
+</body>
+</html>
