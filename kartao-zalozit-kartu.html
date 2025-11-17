@@ -506,18 +506,29 @@
       let coverUrl = coverUrlInput.value.trim();
 
       try {
-        // Upload avatar if file was selected
-        if (avatarUploadedFile) {
-          const avatarRef = storage.ref(`cards/${currentUser.uid}/avatar_${now}.${avatarUploadedFile.name.split('.').pop()}`);
-          const avatarSnapshot = await avatarRef.put(avatarUploadedFile);
-          avatarUrl = await avatarSnapshot.ref.getDownloadURL();
+        // DEMO MODE: Použijeme data URL nebo URL přímo bez uploadu do Firebase
+        if (avatarUploadedFile && !avatarUrl) {
+          // V demo módu použijeme data URL z FileReader
+          const reader = new FileReader();
+          await new Promise((resolve) => {
+            reader.onload = (e) => {
+              avatarUrl = e.target.result;
+              resolve();
+            };
+            reader.readAsDataURL(avatarUploadedFile);
+          });
         }
 
-        // Upload cover if file was selected
-        if (coverUploadedFile) {
-          const coverRef = storage.ref(`cards/${currentUser.uid}/cover_${now}.${coverUploadedFile.name.split('.').pop()}`);
-          const coverSnapshot = await coverRef.put(coverUploadedFile);
-          coverUrl = await coverSnapshot.ref.getDownloadURL();
+        if (coverUploadedFile && !coverUrl) {
+          // V demo módu použijeme data URL z FileReader
+          const reader = new FileReader();
+          await new Promise((resolve) => {
+            reader.onload = (e) => {
+              coverUrl = e.target.result;
+              resolve();
+            };
+            reader.readAsDataURL(coverUploadedFile);
+          });
         }
 
         const data = {
@@ -566,7 +577,12 @@
           createdAt: now,
         };
 
-        await db.collection('cards').doc(currentUser.uid).set(data, { merge: true });
+        // DEMO MODE: Uložíme data do localStorage místo Firebase
+        console.log('💾 Ukládám data do localStorage (DEMO MODE)');
+        localStorage.setItem('kartao_creator_card', JSON.stringify(data));
+        
+        // Simulujeme delay pro realistický pocit
+        await new Promise(resolve => setTimeout(resolve, 800));
         
         // Show success screen
         showSuccessScreen(data);
