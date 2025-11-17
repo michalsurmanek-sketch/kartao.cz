@@ -319,11 +319,10 @@
     regValidator.enableRealTimeValidation();
 
     // =========================
-    // 4.5) Auth State Observer - Automatické přesměrování
+    // 4.5) Auth State Observer - Automatické přisměrování
     // =========================
     let authStateHandled = false;
     let isRegistering = false; // Flag pro rozlišení registrace vs. přihlášení
-    let emailCheckInterval = null;
     
     auth.onAuthStateChanged(async (user) => {
       console.log('🔐 Auth state changed:', user ? user.email : 'No user');
@@ -332,19 +331,11 @@
       // Pokud je uživatel přihlášen
       if (user) {
         console.log('👤 Uživatel přihlášen:', user.email);
-        console.log('✉️ Email ověřen:', user.emailVerified);
         
-        // DŮLEŽITÉ: Přesměrujeme POUZE pokud je email ověřený
-        // A současně není registrace a ještě jsme nepřesměrovali
-        if (user.emailVerified && !authStateHandled && !isRegistering) {
+        // Přesměruj VŽDY (bez kontroly emailVerified)
+        if (!authStateHandled && !isRegistering) {
           authStateHandled = true;
-          console.log('🚀 Email je ověřen! Zahajuji přesměrování...');
-          
-          // Zastavit periodickou kontrolu
-          if (emailCheckInterval) {
-            clearInterval(emailCheckInterval);
-            emailCheckInterval = null;
-          }
+          console.log('🚀 Zahajuji přesměrování...');
           
           setTimeout(async () => {
             try {
@@ -371,29 +362,6 @@
               window.location.href = "kartao-vyber-uctu.html";
             }
           }, 1000);
-        } else if (!user.emailVerified && !emailCheckInterval) {
-          console.log('⏳ Email NENÍ ověřen - zahajuji periodickou kontrolu...');
-          console.log('💡 Uživatel musí kliknout na link v emailu');
-          
-          // Periodicky kontrolovat, zda už je email ověřený
-          emailCheckInterval = setInterval(async () => {
-            try {
-              await user.reload();
-              console.log('🔄 Kontrola ověření emailu...');
-              
-              if (user.emailVerified) {
-                console.log('✅ Email byl ověřen! Triggering auth state change...');
-                clearInterval(emailCheckInterval);
-                emailCheckInterval = null;
-                
-                // Znovu zavolat auth observer manuálně
-                authStateHandled = false;
-                auth.onAuthStateChanged.call(auth, user);
-              }
-            } catch (err) {
-              console.error('Chyba při reload uživatele:', err);
-            }
-          }, 3000); // Kontrola každé 3 sekundy
         }
       }
       
@@ -402,11 +370,6 @@
         console.log('👋 Uživatel odhlášen - reset flagů');
         authStateHandled = false;
         isRegistering = false;
-        
-        if (emailCheckInterval) {
-          clearInterval(emailCheckInterval);
-          emailCheckInterval = null;
-        }
       }
     });
 
@@ -546,20 +509,10 @@
         const cred = await auth.signInWithEmailAndPassword(email, password);
         const user = cred.user;
 
-        // Upozornění na neověřený email, ale NEPŘERUŠUJEME přihlášení
-        if (!user.emailVerified) {
-          showMessage("⚠️ Přihlášení úspěšné, ale e-mail ještě není ověřený. Pro plnou funkčnost prosím ověřte e-mail.", "info");
-          if (btnResend) btnResend.classList.remove("hidden");
-          // Pokračujeme dál - nepřerušujeme přihlášení!
-        }
-
         await saveUserProfile(user);
-        if (user.emailVerified) {
-          showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
-        }
+        showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
 
         // Auth observer se postará o přesměrování automaticky
-        // Nemusíme zde nic dělat - onAuthStateChanged to zařídí
 
       } catch (error) {
         console.error(error);
