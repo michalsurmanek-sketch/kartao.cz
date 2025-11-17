@@ -139,16 +139,42 @@
                   <option>Jiné</option>
                 </select>
               </div>
+            </div>
+
+            <!-- FOTOGRAFIE -->
+            <div class="grid md:grid-cols-2 gap-4 mt-4">
               <div>
-                  <label class="block text-xs text-white/60 mb-1">Profilová fotka – avatar (URL) *</label>
-                  <input id="avatar" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://..." />
-                  <p class="text-[11px] text-white/40 mt-1">Profilová fotka (doporučeno 800×800)</p>
+                <label class="block text-xs text-white/60 mb-2">Profilová fotka – avatar *</label>
+                <div class="space-y-3">
+                  <div class="relative group">
+                    <input type="file" id="avatarFile" accept="image/*" class="hidden" />
+                    <label for="avatarFile" class="block cursor-pointer">
+                      <div id="avatarPreview" class="w-full aspect-square rounded-2xl bg-neutral-900 border-2 border-dashed border-white/20 hover:border-amber-400/50 transition flex flex-col items-center justify-center overflow-hidden">
+                        <i data-lucide="upload" class="w-8 h-8 text-white/40 mb-2"></i>
+                        <span class="text-xs text-white/60">Klikněte pro nahrání</span>
+                        <span class="text-[11px] text-white/40 mt-1">Doporučeno 800×800 px</span>
+                      </div>
+                    </label>
+                  </div>
+                  <input id="avatar" type="url" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-xs" placeholder="Nebo vložte URL obrázku" />
+                </div>
               </div>
               
               <div>             
-                  <label class="block text-xs text-white/60 mb-1">Úvodní foto (cover) – URL *</label>
-                  <input id="cover" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="https://..." />
-                  <p class="text-[11px] text-white/40 mt-1">Velký banner za avatarem (doporučeno 1600×600)</p>
+                <label class="block text-xs text-white/60 mb-2">Úvodní foto (cover) *</label>
+                <div class="space-y-3">
+                  <div class="relative group">
+                    <input type="file" id="coverFile" accept="image/*" class="hidden" />
+                    <label for="coverFile" class="block cursor-pointer">
+                      <div id="coverPreview" class="w-full aspect-[2.5/1] rounded-2xl bg-neutral-900 border-2 border-dashed border-white/20 hover:border-fuchsia-400/50 transition flex flex-col items-center justify-center overflow-hidden">
+                        <i data-lucide="image" class="w-8 h-8 text-white/40 mb-2"></i>
+                        <span class="text-xs text-white/60">Klikněte pro nahrání</span>
+                        <span class="text-[11px] text-white/40 mt-1">Doporučeno 1600×600 px</span>
+                      </div>
+                    </label>
+                  </div>
+                  <input id="cover" type="url" class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-xs" placeholder="Nebo vložte URL obrázku" />
+                </div>
               </div>
             </div>
           </div>
@@ -314,6 +340,84 @@
     // Lucide ikony
     lucide.createIcons();
 
+    // === NÁHLED OBRÁZKŮ ===
+    const avatarFileInput = document.getElementById('avatarFile');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarUrlInput = document.getElementById('avatar');
+    
+    const coverFileInput = document.getElementById('coverFile');
+    const coverPreview = document.getElementById('coverPreview');
+    const coverUrlInput = document.getElementById('cover');
+
+    let avatarUploadedFile = null;
+    let coverUploadedFile = null;
+
+    // Avatar file upload handler
+    avatarFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        avatarUploadedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview" class="w-full h-full object-cover" />`;
+          lucide.createIcons();
+        };
+        reader.readAsDataURL(file);
+        avatarUrlInput.value = ''; // Clear URL input when file is selected
+      }
+    });
+
+    // Avatar URL input handler
+    avatarUrlInput.addEventListener('input', (e) => {
+      const url = e.target.value.trim();
+      if (url) {
+        avatarUploadedFile = null; // Clear file when URL is entered
+        avatarPreview.innerHTML = `<img src="${url}" alt="Avatar preview" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
+        lucide.createIcons();
+      } else if (!avatarUploadedFile) {
+        // Reset preview if no URL and no file
+        avatarPreview.innerHTML = `
+          <i data-lucide="upload" class="w-8 h-8 text-white/40 mb-2"></i>
+          <span class="text-xs text-white/60">Klikněte pro nahrání</span>
+          <span class="text-[11px] text-white/40 mt-1">Doporučeno 800×800 px</span>
+        `;
+        lucide.createIcons();
+      }
+    });
+
+    // Cover file upload handler
+    coverFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        coverUploadedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          coverPreview.innerHTML = `<img src="${e.target.result}" alt="Cover preview" class="w-full h-full object-cover" />`;
+          lucide.createIcons();
+        };
+        reader.readAsDataURL(file);
+        coverUrlInput.value = ''; // Clear URL input when file is selected
+      }
+    });
+
+    // Cover URL input handler
+    coverUrlInput.addEventListener('input', (e) => {
+      const url = e.target.value.trim();
+      if (url) {
+        coverUploadedFile = null; // Clear file when URL is entered
+        coverPreview.innerHTML = `<img src="${url}" alt="Cover preview" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
+        lucide.createIcons();
+      } else if (!coverUploadedFile) {
+        // Reset preview if no URL and no file
+        coverPreview.innerHTML = `
+          <i data-lucide="image" class="w-8 h-8 text-white/40 mb-2"></i>
+          <span class="text-xs text-white/60">Klikněte pro nahrání</span>
+          <span class="text-[11px] text-white/40 mt-1">Doporučeno 1600×600 px</span>
+        `;
+        lucide.createIcons();
+      }
+    });
+
     // === FIREBASE ULOŽENÍ KARTY ===
     // POZNÁMKA: tady počítáme s tím, že už máš na stránce načtené a inicializované Firebase (firebase-app, firebase-auth, firebase-firestore)
     // Např. někde výš ve <script> máš:
@@ -357,62 +461,101 @@
         return;
       }
 
+      // Check if avatar and cover are provided (either file or URL)
+      const hasAvatar = avatarUploadedFile || avatarUrlInput.value.trim();
+      const hasCover = coverUploadedFile || coverUrlInput.value.trim();
+      
+      if (!hasAvatar) {
+        showMessage('Prosím nahrajte profilovou fotku nebo vložte URL.', 'error');
+        return;
+      }
+      
+      if (!hasCover) {
+        showMessage('Prosím nahrajte úvodní foto nebo vložte URL.', 'error');
+        return;
+      }
+
       const db = firebase.firestore();
+      const storage = firebase.storage();
+      
+      showMessage('Ukládám kartu...', 'info');
 
       const now = Date.now();
-
-      const data = {
-        uid: currentUser.uid,
-        name: document.getElementById('name').value.trim(),
-        handle: document.getElementById('handle').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        city: document.getElementById('city').value.trim(),
-        category: document.getElementById('category').value || null,
-        avatar: document.getElementById('avatar').value.trim() || null,
-        bio: document.getElementById('bio').value.trim(),
-        metrics: {
-          instagram: {
-            url: document.getElementById('instagramUrl').value.trim() || null,
-            followers: Number(document.getElementById('instagramFollowers').value) || null,
-            engagement: Number(document.getElementById('instagramEngagement').value) || null,
-          },
-          tiktok: {
-            url: document.getElementById('tiktokUrl').value.trim() || null,
-            followers: Number(document.getElementById('tiktokFollowers').value) || null,
-            reach: Number(document.getElementById('tiktokReach').value) || null,
-          },
-          youtube: {
-            url: document.getElementById('youtubeUrl').value.trim() || null,
-            followers: Number(document.getElementById('youtubeFollowers').value) || null,
-          },
-          facebook: {
-            url: document.getElementById('facebookUrl').value.trim() || null,
-            followers: Number(document.getElementById('facebookFollowers').value) || null,
-          },
-          pinterest: {
-            url: document.getElementById('pinterestUrl').value.trim() || null,
-            followers: Number(document.getElementById('pinterestFollowers').value) || null,
-          },
-        },
-        prices: {
-          reels: Number(document.getElementById('priceReels').value) || null,
-          stories: Number(document.getElementById('priceStories').value) || null,
-          custom: document.getElementById('priceCustom').value.trim() || null,
-        },
-        brandInfo: document.getElementById('brandInfo').value.trim() || null,
-        visibility: 'public',
-        updatedAt: now,
-        createdAt: now,
-      };
+      let avatarUrl = avatarUrlInput.value.trim();
+      let coverUrl = coverUrlInput.value.trim();
 
       try {
+        // Upload avatar if file was selected
+        if (avatarUploadedFile) {
+          const avatarRef = storage.ref(`cards/${currentUser.uid}/avatar_${now}.${avatarUploadedFile.name.split('.').pop()}`);
+          const avatarSnapshot = await avatarRef.put(avatarUploadedFile);
+          avatarUrl = await avatarSnapshot.ref.getDownloadURL();
+        }
+
+        // Upload cover if file was selected
+        if (coverUploadedFile) {
+          const coverRef = storage.ref(`cards/${currentUser.uid}/cover_${now}.${coverUploadedFile.name.split('.').pop()}`);
+          const coverSnapshot = await coverRef.put(coverUploadedFile);
+          coverUrl = await coverSnapshot.ref.getDownloadURL();
+        }
+
+        const data = {
+          uid: currentUser.uid,
+          name: document.getElementById('name').value.trim(),
+          handle: document.getElementById('handle').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          city: document.getElementById('city').value.trim(),
+          age: document.getElementById('age').value.trim(),
+          category: document.getElementById('category').value || null,
+          avatar: avatarUrl,
+          cover: coverUrl,
+          bio: document.getElementById('bio').value.trim(),
+          metrics: {
+            instagram: {
+              url: document.getElementById('instagramUrl').value.trim() || null,
+              followers: Number(document.getElementById('instagramFollowers').value) || null,
+              engagement: Number(document.getElementById('instagramEngagement').value) || null,
+            },
+            tiktok: {
+              url: document.getElementById('tiktokUrl').value.trim() || null,
+              followers: Number(document.getElementById('tiktokFollowers').value) || null,
+              reach: Number(document.getElementById('tiktokReach').value) || null,
+            },
+            youtube: {
+              url: document.getElementById('youtubeUrl').value.trim() || null,
+              followers: Number(document.getElementById('youtubeFollowers').value) || null,
+            },
+            facebook: {
+              url: document.getElementById('facebookUrl').value.trim() || null,
+              followers: Number(document.getElementById('facebookFollowers').value) || null,
+            },
+            pinterest: {
+              url: document.getElementById('pinterestUrl').value.trim() || null,
+              followers: Number(document.getElementById('pinterestFollowers').value) || null,
+            },
+          },
+          prices: {
+            reels: Number(document.getElementById('priceReels').value) || null,
+            stories: Number(document.getElementById('priceStories').value) || null,
+            custom: document.getElementById('priceCustom').value.trim() || null,
+          },
+          brandInfo: document.getElementById('brandInfo').value.trim() || null,
+          visibility: 'public',
+          updatedAt: now,
+          createdAt: now,
+        };
+
         await db.collection('cards').doc(currentUser.uid).set(data, { merge: true });
-        showMessage('Karta byla úspěšně uložena. Můžete pokračovat na náhled.', 'success');
-        // Po uložení můžeš přesměrovat na moje-karta.html:
-        // window.location.href = 'moje-karta.html';
+        showMessage('Karta byla úspěšně uložena! Přesměrování...', 'success');
+        
+        // Přesměrování po 1.5 sekundách
+        setTimeout(() => {
+          window.location.href = 'kartao-muj-ucet.html';
+        }, 1500);
+        
       } catch (err) {
         console.error(err);
-        showMessage('Nastala chyba při ukládání karty. Zkuste to prosím znovu.', 'error');
+        showMessage('Nastala chyba při ukládání karty: ' + err.message, 'error');
       }
     });
   </script>
