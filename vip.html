@@ -133,10 +133,10 @@
     </div>
 
     <!-- Mobile menu -->
-    <div id="mobileMenu" class="fixed inset-0 z-50 hidden bg-black/80" role="dialog" aria-modal="true">
-      <div id="menuBackdrop" class="absolute inset-0 bg-black backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-      <div class="relative h-full svh flex flex-col items-stretch">
-        <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+      <div id="menuBackdrop" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-300"></div>
+      <div class="relative h-full svh flex flex-col items-stretch pointer-events-none">
+        <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto">
           <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
             <a href="index.html" class="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 rounded-xl">
               <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
