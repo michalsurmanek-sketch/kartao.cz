@@ -98,6 +98,58 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(168,85,247,0.8);
     }
+
+    /* Range slider styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-track {
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      border-radius: 4px;
+      background: #404040;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d946ef, #f59e0b);
+      cursor: pointer;
+      border: 3px solid #171717;
+      box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.5), 0 4px 12px rgba(217, 70, 239, 0.3);
+      margin-top: -6px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d946ef, #f59e0b);
+      cursor: pointer;
+      border: 3px solid #171717;
+      box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.5), 0 4px 12px rgba(217, 70, 239, 0.3);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 0 2px rgba(217, 70, 239, 0.8), 0 4px 16px rgba(217, 70, 239, 0.5);
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      box-shadow: 0 0 0 2px rgba(217, 70, 239, 0.8), 0 4px 16px rgba(217, 70, 239, 0.5);
+      transform: scale(1.1);
+    }
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white flex flex-col">
@@ -265,50 +317,99 @@
       </div>
 
       <div class="filter-section rounded-2xl border border-white/10 bg-neutral-900/70 p-4 md:p-5 mb-8">
-        <div class="flex flex-col lg:flex-row lg:items-center gap-4 mb-4">
+        <div class="flex flex-col lg:flex-row lg:items-end gap-4 mb-4">
           <div class="flex-1">
             <label class="block text-xs font-medium text-white/60 mb-1.5">Hledat kampaň</label>
             <div class="relative">
               <i data-lucide="search" class="w-4 h-4 text-white/40 absolute left-3 top-1/2 -translate-y-1/2"></i>
-              <input type="text" placeholder="Značka, produkt..." class="w-full rounded-xl bg-neutral-950/80 border border-white/10 pl-9 pr-3 py-2 text-sm" />
+              <input id="searchInput" type="text" placeholder="Značka, produkt, kategorie..." class="w-full rounded-xl bg-neutral-950/80 border border-white/10 pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-white/40 focus:border-fuchsia-500/50 focus:outline-none transition" />
             </div>
           </div>
 
           <div class="w-full lg:w-64">
-            <label class="block text-xs font-medium text-white/60 mb-1.5">Min. velikost profilu</label>
-            <input type="range" min="1" max="5" step="1" class="w-full" />
-            <div class="mt-1 text-right text-[11px] text-white/50">např. 10 000+ sledujících</div>
+            <label class="block text-xs font-medium text-white/60 mb-1.5">Min. sledující: <span id="followerValue" class="text-fuchsia-400 font-semibold">10k+</span></label>
+            <input id="followerRange" type="range" min="1" max="5" value="3" step="1" class="w-full h-2 rounded-lg appearance-none cursor-pointer" style="background: linear-gradient(to right, #d946ef 0%, #d946ef 40%, #404040 40%, #404040 100%);" />
+            <div class="flex justify-between mt-1 text-[10px] text-white/40">
+              <span>1k</span>
+              <span>5k</span>
+              <span>10k</span>
+              <span>25k</span>
+              <span>50k+</span>
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
           <div>
             <label class="block text-xs font-medium text-white/60 mb-1.5">Platforma</label>
-            <select class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2 text-xs">
-              <option>Vše</option><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>UGC</option>
+            <select id="platformFilter" class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2.5 text-xs text-white focus:border-fuchsia-500/50 focus:outline-none transition">
+              <option value="all">Vše</option>
+              <option value="instagram">Instagram</option>
+              <option value="tiktok">TikTok</option>
+              <option value="youtube">YouTube</option>
+              <option value="facebook">Facebook</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-white/60 mb-1.5">Kategorie</label>
+            <select id="categoryFilter" class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2.5 text-xs text-white focus:border-fuchsia-500/50 focus:outline-none transition">
+              <option value="all">Vše</option>
+              <option value="beauty">Beauty</option>
+              <option value="tech">Tech</option>
+              <option value="fashion">Fashion</option>
+              <option value="food">Food</option>
+              <option value="fitness">Fitness</option>
+              <option value="travel">Travel</option>
             </select>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-white/60 mb-1.5">Typ spolupráce</label>
-            <select class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2 text-xs">
-              <option>Vše</option><option>Reels</option><option>Stories</option><option>Feed</option><option>UGC</option>
+            <select id="typeFilter" class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2.5 text-xs text-white focus:border-fuchsia-500/50 focus:outline-none transition">
+              <option value="all">Vše</option>
+              <option value="reels">Reels</option>
+              <option value="stories">Stories</option>
+              <option value="feed">Feed</option>
+              <option value="ugc">UGC</option>
+              <option value="video">Video</option>
             </select>
           </div>
 
           <div>
             <label class="block text-xs font-medium text-white/60 mb-1.5">Rozpočet</label>
-            <select class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2 text-xs">
-              <option>Nezáleží</option><option>Do 5k</option><option>5–20k</option><option>20–50k</option><option>50k+</option>
+            <select id="budgetFilter" class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2.5 text-xs text-white focus:border-fuchsia-500/50 focus:outline-none transition">
+              <option value="all">Nezáleží</option>
+              <option value="0-5000">Do 5k</option>
+              <option value="5000-20000">5k–20k</option>
+              <option value="20000-50000">20k–50k</option>
+              <option value="50000">50k+</option>
+              <option value="barter">Barter</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-white/60 mb-1.5">Odměna</label>
-            <select class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2 text-xs">
-              <option>Vše</option><option>Finance</option><option>Barter</option><option>Mix</option>
+            <label class="block text-xs font-medium text-white/60 mb-1.5">Typ odměny</label>
+            <select id="rewardFilter" class="w-full rounded-xl bg-neutral-950/80 border border-white/10 px-3 py-2.5 text-xs text-white focus:border-fuchsia-500/50 focus:outline-none transition">
+              <option value="all">Vše</option>
+              <option value="paid">Finance</option>
+              <option value="barter">Barter</option>
+              <option value="affiliate">Affiliate</option>
+              <option value="mix">Mix</option>
             </select>
           </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="searchButton" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-fuchsia-500/25">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            Hledat kampaně
+          </button>
+          <button id="resetButton" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 text-sm font-medium transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            Vymazat filtry
+          </button>
+          <div id="activeFilters" class="flex flex-wrap gap-2 ml-auto"></div>
         </div>
       </div>
 
@@ -595,100 +696,245 @@
 <script>lucide.createIcons();</script>
 
 <script>
-  // Hamburger menu - viz hamburger-menu.js
+  // Marketplace filtering system
   document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('input[placeholder="Značka, produkt..."]');
-    const platformSelect = document.querySelectorAll('select')[0];
-    const cooperationTypeSelect = document.querySelectorAll('select')[1];
-    const budgetSelect = document.querySelectorAll('select')[2];
-    const rewardSelect = document.querySelectorAll('select')[3];
-    const campaignCards = document.querySelectorAll('article');
+    const searchInput = document.getElementById('searchInput');
+    const platformFilter = document.getElementById('platformFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const budgetFilter = document.getElementById('budgetFilter');
+    const rewardFilter = document.getElementById('rewardFilter');
+    const followerRange = document.getElementById('followerRange');
+    const followerValue = document.getElementById('followerValue');
+    const searchButton = document.getElementById('searchButton');
+    const resetButton = document.getElementById('resetButton');
+    const activeFilters = document.getElementById('activeFilters');
+    const campaignCards = document.querySelectorAll('article.campaign-card');
+    const campaignGrid = document.getElementById('campaignGrid');
+    const emptyState = document.getElementById('emptyState');
+    const campaignCount = document.getElementById('campaignCount');
 
-    function filterCampaigns() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const selectedPlatform = platformSelect.value;
-      const selectedCooperationType = cooperationTypeSelect.value;
-      const selectedBudget = budgetSelect.value;
-      const selectedReward = rewardSelect.value;
+    // Follower range values
+    const followerRanges = {
+      1: { label: '1k+', min: 1000 },
+      2: { label: '5k+', min: 5000 },
+      3: { label: '10k+', min: 10000 },
+      4: { label: '25k+', min: 25000 },
+      5: { label: '50k+', min: 50000 }
+    };
 
-      campaignCards.forEach(card => {
-        const title = card.querySelector('h2').textContent.toLowerCase();
-        const description = card.querySelector('p').textContent.toLowerCase();
-        const category = card.querySelector('.text-[11px].uppercase').textContent.toLowerCase();
-        
-        // Search filter
-        const matchesSearch = searchTerm === '' || 
-                            title.includes(searchTerm) || 
-                            description.includes(searchTerm) || 
-                            category.includes(searchTerm);
-
-        // Platform filter
-        const platformSpans = card.querySelectorAll('span');
-        let matchesPlatform = selectedPlatform === 'Vše';
-        platformSpans.forEach(span => {
-          if (span.textContent.toLowerCase().includes(selectedPlatform.toLowerCase()) && selectedPlatform !== 'Vše') {
-            matchesPlatform = true;
-          }
-        });
-
-        // Show/hide based on all filters
-        if (matchesSearch && matchesPlatform) {
-          card.style.display = 'block';
-          card.classList.add('animate-fadeIn');
-        } else {
-          card.style.display = 'none';
-        }
-      });
+    // Update range slider
+    function updateFollowerRange() {
+      const value = followerRange.value;
+      followerValue.textContent = followerRanges[value].label;
+      
+      // Update slider background
+      const percentage = ((value - 1) / 4) * 100;
+      followerRange.style.background = `linear-gradient(to right, #d946ef 0%, #d946ef ${percentage}%, #404040 ${percentage}%, #404040 100%)`;
     }
 
-    // Add event listeners for real-time filtering
-    searchInput?.addEventListener('input', filterCampaigns);
-    platformSelect?.addEventListener('change', filterCampaigns);
-    cooperationTypeSelect?.addEventListener('change', filterCampaigns);
-    budgetSelect?.addEventListener('change', filterCampaigns);
-    rewardSelect?.addEventListener('change', filterCampaigns);
+    followerRange?.addEventListener('input', updateFollowerRange);
 
-    // Campaign card click handlers
-    campaignCards.forEach(card => {
-      card.addEventListener('click', function() {
-        const title = this.querySelector('h2').textContent;
-        const category = this.querySelector('.text-[11px].uppercase').textContent;
-        
-        // Simulate opening campaign detail
-        const confirmed = confirm(`Chcete se přihlásit na kampaň "${title}" v kategorii ${category}?\n\nPro přihlášení potřebujete vytvořenou tvůrčí kartu.`);
-        
-        if (confirmed) {
-          // Redirect to card creation if not logged in
-          window.location.href = 'kartao-zalozit-kartu.html';
+    // Extract budget from text
+    function extractBudget(text) {
+      const matches = text.match(/(\d+[\s,]*\d*)/g);
+      if (!matches) return 0;
+      return parseInt(matches[0].replace(/[\s,]/g, ''));
+    }
+
+    // Check if campaign matches filters
+    function matchesCampaign(card) {
+      const title = card.querySelector('h2')?.textContent.toLowerCase() || '';
+      const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+      const category = card.getAttribute('data-category') || '';
+      const platform = card.getAttribute('data-platform') || '';
+      const budgetText = card.querySelector('.font-semibold.text-green-400, .font-semibold.text-purple-400, .font-semibold.text-cyan-400')?.textContent || '';
+      const followersText = card.querySelector('.text-white\\/60')?.textContent.toLowerCase() || '';
+      
+      // Search filter
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const matchesSearch = !searchTerm || 
+        title.includes(searchTerm) || 
+        description.includes(searchTerm) ||
+        category.includes(searchTerm);
+
+      // Platform filter
+      const selectedPlatform = platformFilter.value;
+      const matchesPlatform = selectedPlatform === 'all' || platform.includes(selectedPlatform);
+
+      // Category filter
+      const selectedCategory = categoryFilter.value;
+      const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+
+      // Type filter
+      const selectedType = typeFilter.value;
+      let matchesType = selectedType === 'all';
+      if (!matchesType) {
+        const typeSpans = card.querySelectorAll('span');
+        typeSpans.forEach(span => {
+          if (span.textContent.toLowerCase().includes(selectedType.toLowerCase())) {
+            matchesType = true;
+          }
+        });
+      }
+
+      // Budget filter
+      const selectedBudget = budgetFilter.value;
+      let matchesBudget = selectedBudget === 'all';
+      if (!matchesBudget) {
+        const budget = extractBudget(budgetText);
+        if (selectedBudget === 'barter') {
+          matchesBudget = budgetText.toLowerCase().includes('barter') || budgetText.toLowerCase().includes('deal');
+        } else if (selectedBudget === '0-5000') {
+          matchesBudget = budget > 0 && budget <= 5000;
+        } else if (selectedBudget === '5000-20000') {
+          matchesBudget = budget > 5000 && budget <= 20000;
+        } else if (selectedBudget === '20000-50000') {
+          matchesBudget = budget > 20000 && budget <= 50000;
+        } else if (selectedBudget === '50000') {
+          matchesBudget = budget > 50000;
+        }
+      }
+
+      // Reward filter
+      const selectedReward = rewardFilter.value;
+      let matchesReward = selectedReward === 'all';
+      if (!matchesReward) {
+        const rewardLower = budgetText.toLowerCase();
+        if (selectedReward === 'paid') {
+          matchesReward = rewardLower.includes('kč') || rewardLower.includes('%');
+        } else if (selectedReward === 'barter') {
+          matchesReward = rewardLower.includes('barter') || rewardLower.includes('deal') || rewardLower.includes('hodnota');
+        } else if (selectedReward === 'affiliate') {
+          matchesReward = rewardLower.includes('%') || rewardLower.includes('provize');
+        } else if (selectedReward === 'mix') {
+          matchesReward = rewardLower.includes('+') || rewardLower.includes('&');
+        }
+      }
+
+      // Follower filter
+      const followerMin = followerRanges[followerRange.value].min;
+      const followerMatch = followersText.match(/(\d+)k/);
+      let matchesFollowers = true;
+      if (followerMatch) {
+        const required = parseInt(followerMatch[1]) * 1000;
+        matchesFollowers = required >= followerMin;
+      }
+
+      return matchesSearch && matchesPlatform && matchesCategory && matchesType && matchesBudget && matchesReward && matchesFollowers;
+    }
+
+    // Filter campaigns
+    function filterCampaigns() {
+      let visibleCount = 0;
+
+      campaignCards.forEach(card => {
+        if (matchesCampaign(card)) {
+          card.style.display = 'block';
+          card.classList.add('animate-fadeIn');
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+          card.classList.remove('animate-fadeIn');
         }
       });
-    });
 
-    // Range slider functionality for follower count
-    const followerRange = document.querySelector('input[type="range"]');
-    const rangeDisplay = followerRange?.nextElementSibling;
+      // Update count and empty state
+      if (campaignCount) {
+        campaignCount.textContent = visibleCount;
+      }
 
-    function updateRangeDisplay(value) {
-      const ranges = [
-        'např. 1 000+ sledujících',
-        'např. 5 000+ sledujících', 
-        'např. 10 000+ sledujících',
-        'např. 25 000+ sledujících',
-        'např. 50 000+ sledujících'
-      ];
-      if (rangeDisplay) {
-        rangeDisplay.textContent = ranges[value - 1] || ranges[2];
+      if (visibleCount === 0) {
+        campaignGrid?.classList.add('hidden');
+        emptyState?.classList.remove('hidden');
+      } else {
+        campaignGrid?.classList.remove('hidden');
+        emptyState?.classList.add('hidden');
+      }
+
+      updateActiveFilters();
+    }
+
+    // Update active filters display
+    function updateActiveFilters() {
+      if (!activeFilters) return;
+      
+      activeFilters.innerHTML = '';
+      const filters = [];
+
+      if (searchInput.value.trim()) {
+        filters.push({ label: `Hledání: "${searchInput.value}"`, clear: () => searchInput.value = '' });
+      }
+      if (platformFilter.value !== 'all') {
+        filters.push({ label: `Platforma: ${platformFilter.options[platformFilter.selectedIndex].text}`, clear: () => platformFilter.value = 'all' });
+      }
+      if (categoryFilter.value !== 'all') {
+        filters.push({ label: `Kategorie: ${categoryFilter.options[categoryFilter.selectedIndex].text}`, clear: () => categoryFilter.value = 'all' });
+      }
+      if (typeFilter.value !== 'all') {
+        filters.push({ label: `Typ: ${typeFilter.options[typeFilter.selectedIndex].text}`, clear: () => typeFilter.value = 'all' });
+      }
+      if (budgetFilter.value !== 'all') {
+        filters.push({ label: `Rozpočet: ${budgetFilter.options[budgetFilter.selectedIndex].text}`, clear: () => budgetFilter.value = 'all' });
+      }
+      if (rewardFilter.value !== 'all') {
+        filters.push({ label: `Odměna: ${rewardFilter.options[rewardFilter.selectedIndex].text}`, clear: () => rewardFilter.value = 'all' });
+      }
+      if (followerRange.value !== '3') {
+        filters.push({ label: `Min. ${followerRanges[followerRange.value].label}`, clear: () => { followerRange.value = '3'; updateFollowerRange(); } });
+      }
+
+      filters.forEach(filter => {
+        const badge = document.createElement('button');
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-fuchsia-500/20 border border-fuchsia-500/30 text-fuchsia-300 text-xs hover:bg-fuchsia-500/30 transition';
+        badge.innerHTML = `${filter.label} <i data-lucide="x" class="w-3 h-3"></i>`;
+        badge.onclick = () => {
+          filter.clear();
+          filterCampaigns();
+        };
+        activeFilters.appendChild(badge);
+      });
+
+      // Reinit icons
+      if (filters.length > 0) {
+        setTimeout(() => lucide.createIcons(), 50);
       }
     }
 
-    followerRange?.addEventListener('input', function() {
-      updateRangeDisplay(this.value);
+    // Reset all filters
+    function resetFilters() {
+      searchInput.value = '';
+      platformFilter.value = 'all';
+      categoryFilter.value = 'all';
+      typeFilter.value = 'all';
+      budgetFilter.value = 'all';
+      rewardFilter.value = 'all';
+      followerRange.value = '3';
+      updateFollowerRange();
+      filterCampaigns();
+    }
+
+    // Event listeners
+    searchButton?.addEventListener('click', filterCampaigns);
+    resetButton?.addEventListener('click', resetFilters);
+    searchInput?.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterCampaigns();
     });
 
-    // Initialize range display
-    if (followerRange) {
-      updateRangeDisplay(followerRange.value);
+    // Auto-filter on select change
+    [platformFilter, categoryFilter, typeFilter, budgetFilter, rewardFilter, followerRange].forEach(filter => {
+      filter?.addEventListener('change', filterCampaigns);
+    });
+
+    // Initial state
+    updateFollowerRange();
+    filterCampaigns();
+    
+    // Initialize hamburger menu if available
+    if (typeof initHamburgerMenu === 'function') {
+      initHamburgerMenu();
     }
+  });
 
     // Add CSS animation for filtered results
     const style = document.createElement('style');
