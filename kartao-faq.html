@@ -157,10 +157,14 @@
 
   <!-- Tabs: Pro firmy / Pro tvůrce / Obecné -->
   <main class="max-w-7xl mx-auto px-4 pb-16">
-    <div class="inline-flex rounded-2xl border border-white/10 bg-white/5 p-1 mb-8 text-sm">
-      <button type="button" data-tab="firms" class="tab-btn px-4 py-2 rounded-xl bg-neutral-900 text-white">Pro firmy</button>
-      <button type="button" data-tab="creators" class="tab-btn px-4 py-2 rounded-xl text-white/70 hover:text-white">Pro tvůrce</button>
-      <button type="button" data-tab="general" class="tab-btn px-4 py-2 rounded-xl text-white/70 hover:text-white">Obecné</button>
+    <div class="relative inline-flex rounded-2xl border border-white/10 bg-white/5 p-1 mb-8 text-sm">
+      <!-- Sliding indicator -->
+      <div id="tab-indicator" class="absolute top-1 left-1 h-[calc(100%-8px)] bg-gradient-to-r from-fuchsia-500 to-amber-400 rounded-xl transition-all duration-300 ease-out" style="width: calc(33.333% - 8px);"></div>
+      
+      <!-- Buttons -->
+      <button type="button" data-tab="firms" data-index="0" class="tab-btn relative z-10 px-6 py-2 rounded-xl text-white font-medium transition-colors">Pro firmy</button>
+      <button type="button" data-tab="creators" data-index="1" class="tab-btn relative z-10 px-6 py-2 rounded-xl text-white/70 font-medium transition-colors">Pro tvůrce</button>
+      <button type="button" data-tab="general" data-index="2" class="tab-btn relative z-10 px-6 py-2 rounded-xl text-white/70 font-medium transition-colors">Obecné</button>
     </div>
 
     <!-- Pro firmy -->
@@ -323,21 +327,39 @@
         initHamburgerMenu();
       }
       
-      // Tab funkce pro FAQ
+      // Tab funkce pro FAQ s posuvným indikátorem
       const tabs = document.querySelectorAll('.tab-btn');
+      const indicator = document.getElementById('tab-indicator');
       const sections = {
         firms: document.getElementById('tab-firms'),
         creators: document.getElementById('tab-creators'),
         general: document.getElementById('tab-general')
       };
+      
       tabs.forEach(btn => {
         btn.addEventListener('click', () => {
           const key = btn.getAttribute('data-tab');
-          // přepnout tlačítka
-          tabs.forEach(b => b.classList.remove('bg-neutral-900','text-white'));
-          btn.classList.add('bg-neutral-900','text-white');
-          // přepnout sekce
-          Object.entries(sections).forEach(([k,el]) => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          
+          // Posunout indikátor
+          const buttonWidth = btn.offsetWidth;
+          const gap = 4; // gap mezi tlačítky
+          indicator.style.width = `${buttonWidth}px`;
+          indicator.style.transform = `translateX(${index * (buttonWidth + gap)}px)`;
+          
+          // Přepnout barvy tlačítek
+          tabs.forEach(b => {
+            if (b === btn) {
+              b.classList.remove('text-white/70');
+              b.classList.add('text-white');
+            } else {
+              b.classList.remove('text-white');
+              b.classList.add('text-white/70');
+            }
+          });
+          
+          // Přepnout sekce
+          Object.entries(sections).forEach(([k, el]) => {
             if (k === key) el.classList.remove('hidden');
             else el.classList.add('hidden');
           });
