@@ -186,6 +186,7 @@
         // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
         if (error.code === 'auth/cancelled-popup-request') {
           console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+          isOAuthInProgress = false;
           return;
         }
         
@@ -253,6 +254,7 @@
         // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
         if (error.code === 'auth/cancelled-popup-request') {
           console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+          isOAuthInProgress = false;
           return;
         }
         

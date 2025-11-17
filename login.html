@@ -539,6 +539,7 @@
             console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
             btnGoogle.textContent = originalText;
             btnGoogle.disabled = false;
+            isOAuthInProgress = false;
             return;
           }
           
@@ -658,6 +659,7 @@
             console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
             btnFacebook.textContent = originalText;
             btnFacebook.disabled = false;
+            isOAuthInProgress = false;
             return;
           }
           
