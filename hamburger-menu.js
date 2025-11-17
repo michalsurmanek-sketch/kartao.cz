@@ -28,12 +28,9 @@ function initHamburgerMenu() {
     // Force reflow pro animaci
     mobileMenu.offsetHeight;
     
-    // Animace panelu a backdropu
+    // Animace panelu
     if (menuPanel) {
       menuPanel.classList.remove('-translate-x-full');
-    }
-    if (menuBackdrop) {
-      menuBackdrop.classList.remove('opacity-0');
     }
     
     // Zamknout scroll
@@ -53,9 +50,6 @@ function initHamburgerMenu() {
     
     if (menuPanel) {
       menuPanel.classList.add('-translate-x-full');
-    }
-    if (menuBackdrop) {
-      menuBackdrop.classList.add('opacity-0');
     }
     
     // Počkat na animaci, pak skrýt
