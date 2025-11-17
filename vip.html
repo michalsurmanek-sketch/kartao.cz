@@ -996,7 +996,11 @@
       lucide.createIcons();
     });
 
-    render(vipCreators);
+    // Initialize everything on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      render(vipCreators);
+      lucide.createIcons();
+    });
 
     // Hamburger menu - viz hamburger-menu.js
 
