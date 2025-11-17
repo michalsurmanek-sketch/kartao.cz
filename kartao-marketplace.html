@@ -643,16 +643,16 @@
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-center gap-2 pb-8">
-        <button class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition">
+      <div id="pagination" class="flex items-center justify-center gap-2 pb-8">
+        <button id="prevPage" onclick="changePage(-1)" class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition disabled:opacity-30 disabled:cursor-not-allowed" disabled>
           <i data-lucide="chevron-left" class="w-4 h-4"></i>
         </button>
-        <button class="px-3 py-2 rounded-lg bg-fuchsia-500 text-white font-medium">1</button>
-        <button class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition">2</button>
-        <button class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition">3</button>
+        <button onclick="goToPage(1)" class="page-btn px-3 py-2 rounded-lg bg-fuchsia-500 text-white font-medium" data-page="1">1</button>
+        <button onclick="goToPage(2)" class="page-btn px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition" data-page="2">2</button>
+        <button onclick="goToPage(3)" class="page-btn px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition" data-page="3">3</button>
         <span class="px-2 text-white/40">...</span>
-        <button class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition">12</button>
-        <button class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition">
+        <button onclick="goToPage(12)" class="page-btn px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition" data-page="12">12</button>
+        <button id="nextPage" onclick="changePage(1)" class="px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition disabled:opacity-30 disabled:cursor-not-allowed">
           <i data-lucide="chevron-right" class="w-4 h-4"></i>
         </button>
       </div>
@@ -1417,6 +1417,54 @@
       });
     });
   });
+  
+  // Pagination functionality
+  let currentPage = 1;
+  const itemsPerPage = 6;
+  
+  function goToPage(page) {
+    currentPage = page;
+    updatePagination();
+    
+    // Scroll to top of campaigns
+    document.querySelector('.filter-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // V reálné aplikaci by se zde načetly kampaně z API pro danou stránku
+    showNotification(`Stránka ${page} - V demo verzi jsou pouze ukázkové kampaně`, 'info');
+  }
+  
+  function changePage(direction) {
+    const newPage = currentPage + direction;
+    if (newPage >= 1 && newPage <= 12) {
+      goToPage(newPage);
+    }
+  }
+  
+  function updatePagination() {
+    // Update page buttons
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      const page = parseInt(btn.getAttribute('data-page'));
+      if (page === currentPage) {
+        btn.className = 'page-btn px-3 py-2 rounded-lg bg-fuchsia-500 text-white font-medium';
+      } else {
+        btn.className = 'page-btn px-3 py-2 rounded-lg border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition';
+      }
+    });
+    
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    
+    if (prevBtn) {
+      prevBtn.disabled = currentPage === 1;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = currentPage === 12;
+    }
+    
+    // Reinit icons
+    lucide.createIcons();
+  }
 </script>
 
 <!-- Hamburger Menu -->
