@@ -438,7 +438,8 @@
     function csvBuildRow(headers, payload){ return headers.map(h=> csvEscape(payload[h] ?? '')).join(','); }
 
     document.addEventListener('DOMContentLoaded',()=>{
-      lucide.createIcons();
+      // Inicializace ikon Lucide
+      if (window.lucide?.createIcons) window.lucide.createIcons();
       
       // Footer collapsible na mobilu
       const footerButtons = document.querySelectorAll('footer button[aria-controls]');
@@ -458,6 +459,7 @@
         });
       });
       
+      // Formulář pro tvůrce
       const f = document.getElementById('creatorForm');
       f.addEventListener('submit', (e)=>{
         e.preventDefault();
@@ -490,8 +492,16 @@
       const testHeaders=['a','b'];
       const row = csvBuildRow(testHeaders,{a:'1',b:'2'});
       console.assert(row==='1,2','csvBuildRow basic');
+      
+      // Inicializace hamburger menu
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
     });
   </script>
+  
+  <!-- Hamburger Menu -->
+  <script src="hamburger-menu.js"></script>
 
   <!-- CTA SEKCE -->
   <section class="border-b border-white/10 bg-neutral-900/30">
@@ -541,24 +551,5 @@
     </div>
   </section>
 
-  <!-- Inicializace -->
-  <script>
-    // Inicializace ikon Lucide
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-    
-    window.addEventListener('DOMContentLoaded', () => { 
-      if (window.lucide?.createIcons) window.lucide.createIcons();
-      
-      // Inicializace hamburger menu
-      if (typeof initHamburgerMenu === 'function') {
-        initHamburgerMenu();
-      }
-    });
-  </script>
-  
-  <!-- Hamburger Menu -->
-  <script src="hamburger-menu.js"></script>
 </body>
 </html>
