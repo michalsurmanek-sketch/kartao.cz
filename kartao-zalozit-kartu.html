@@ -546,18 +546,157 @@
         };
 
         await db.collection('cards').doc(currentUser.uid).set(data, { merge: true });
-        showMessage('Karta byla úspěšně uložena! Přesměrování...', 'success');
         
-        // Přesměrování po 1.5 sekundách
-        setTimeout(() => {
-          window.location.href = 'kartao-muj-ucet.html';
-        }, 1500);
+        // Show success screen
+        showSuccessScreen(data);
         
       } catch (err) {
         console.error(err);
         showMessage('Nastala chyba při ukládání karty: ' + err.message, 'error');
       }
     });
+
+    // Success screen
+    function showSuccessScreen(cardData) {
+      const formSection = document.querySelector('section.max-w-3xl');
+      formSection.innerHTML = `
+        <div class="text-center py-12">
+          <!-- Success Animation -->
+          <div class="mb-8 relative inline-block">
+            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-500/30 grid place-items-center animate-bounce">
+              <i data-lucide="check" class="w-12 h-12 text-emerald-400"></i>
+            </div>
+            <div class="absolute inset-0 w-24 h-24 mx-auto rounded-full bg-emerald-400/20 animate-ping"></div>
+          </div>
+
+          <!-- Success Message -->
+          <h1 class="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-emerald-400 to-sky-400 bg-clip-text text-transparent">
+            Karta úspěšně vytvořena! 🎉
+          </h1>
+          <p class="text-white/70 max-w-2xl mx-auto mb-8">
+            Vaše karta tvůrce <strong class="text-white">${cardData.name}</strong> byla úspěšně uložena a je nyní veřejně dostupná v marketplace.
+          </p>
+
+          <!-- Card Preview -->
+          <div class="glass-panel rounded-2xl border border-white/10 p-6 max-w-md mx-auto mb-8">
+            <div class="flex items-center gap-4 mb-4">
+              ${cardData.avatar ? `<img src="${cardData.avatar}" alt="${cardData.name}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-emerald-400/50" />` : 
+                `<div class="w-20 h-20 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20 grid place-items-center">
+                  <i data-lucide="user" class="w-10 h-10 text-white/60"></i>
+                </div>`
+              }
+              <div class="text-left flex-1">
+                <h3 class="font-bold text-xl mb-1">${cardData.name}</h3>
+                <p class="text-sm text-white/60">${cardData.handle || '@' + cardData.name.toLowerCase().replace(/\s+/g, '')}</p>
+                ${cardData.category ? `<span class="inline-block mt-2 px-3 py-1 rounded-full bg-fuchsia-500/20 text-fuchsia-300 text-xs font-medium">${cardData.category}</span>` : ''}
+              </div>
+            </div>
+            
+            ${cardData.bio ? `
+              <div class="text-left mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
+                <p class="text-sm text-white/80">${cardData.bio}</p>
+              </div>
+            ` : ''}
+
+            <!-- Social Stats Preview -->
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              ${cardData.metrics.instagram?.followers ? `
+                <div class="p-2 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-pink-500/5 border border-fuchsia-500/20">
+                  <div class="text-fuchsia-300 font-medium">Instagram</div>
+                  <div class="text-white/90">${cardData.metrics.instagram.followers.toLocaleString()} sledujících</div>
+                </div>
+              ` : ''}
+              ${cardData.metrics.tiktok?.followers ? `
+                <div class="p-2 rounded-lg bg-gradient-to-br from-sky-500/10 to-cyan-500/5 border border-sky-500/20">
+                  <div class="text-sky-300 font-medium">TikTok</div>
+                  <div class="text-white/90">${cardData.metrics.tiktok.followers.toLocaleString()} sledujících</div>
+                </div>
+              ` : ''}
+              ${cardData.metrics.youtube?.followers ? `
+                <div class="p-2 rounded-lg bg-gradient-to-br from-red-500/10 to-rose-500/5 border border-red-500/20">
+                  <div class="text-red-300 font-medium">YouTube</div>
+                  <div class="text-white/90">${cardData.metrics.youtube.followers.toLocaleString()} odběratelů</div>
+                </div>
+              ` : ''}
+              ${cardData.metrics.facebook?.followers ? `
+                <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20">
+                  <div class="text-blue-300 font-medium">Facebook</div>
+                  <div class="text-white/90">${cardData.metrics.facebook.followers.toLocaleString()} sledujících</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+            <a href="kartao-marketplace.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-bold shadow-soft hover:opacity-90 transition">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+              Zobrazit v Marketplace
+            </a>
+            <a href="kartao-muj-ucet.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition">
+              <i data-lucide="user" class="w-5 h-5"></i>
+              Přejít na Můj účet
+            </a>
+          </div>
+
+          <!-- Additional Options -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm">
+            <button onclick="window.location.reload()" class="text-white/60 hover:text-white transition inline-flex items-center gap-2">
+              <i data-lucide="edit" class="w-4 h-4"></i>
+              Upravit kartu
+            </button>
+            <span class="hidden sm:block text-white/30">•</span>
+            <a href="kartao-cenik.html" class="text-white/60 hover:text-white transition inline-flex items-center gap-2">
+              <i data-lucide="tag" class="w-4 h-4"></i>
+              Nastavit ceník
+            </a>
+            <span class="hidden sm:block text-white/30">•</span>
+            <a href="vip.html" class="text-amber-400 hover:text-amber-300 transition inline-flex items-center gap-2">
+              <i data-lucide="crown" class="w-4 h-4"></i>
+              Získat VIP status
+            </a>
+          </div>
+
+          <!-- Pro Tips -->
+          <div class="mt-12 max-w-2xl mx-auto">
+            <div class="glass-panel rounded-2xl border border-sky-500/20 p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-500/30 grid place-items-center flex-shrink-0">
+                  <i data-lucide="lightbulb" class="w-5 h-5 text-sky-400"></i>
+                </div>
+                <div class="text-left">
+                  <h3 class="font-bold text-lg mb-2 text-sky-300">Co dál?</h3>
+                  <ul class="space-y-2 text-sm text-white/70">
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                      <span>Sdílejte odkaz na vaši kartu na sociálních sítích</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                      <span>Aktualizujte pravidelně své statistiky a ceny</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                      <span>Odpovídejte rychle na dotazy od značek</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                      <span>Zvažte upgrade na VIP pro 3× vyšší viditelnost</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Reinitialize Lucide icons
+      setTimeout(() => lucide.createIcons(), 100);
+    }
   </script>
 </body>
 </html>
