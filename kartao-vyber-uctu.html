@@ -164,26 +164,19 @@
           return;
         }
 
-        try {
-          if (typeof db !== "undefined") {
-            await db.collection("users").doc(user.uid).set(
-              { role: role, updatedAt: new Date().toISOString() },
-              { merge: true }
-            );
-          }
-
-          if (role === "firma") {
-            window.location.href = "firm-dashboard.html";
-          } else {
-            window.location.href = "creator-dashboard.html";
-          }
-        } catch (err) {
-          console.error(err);
-          showRoleMessage("Nepodařilo se uložit výběr. Zkuste to prosím znovu.", "error");
+        console.log('✅ Role selected:', role);
+        
+        // Přeskočíme Firestore (offline) - jdeme rovnou na redirect
+        if (role === "firma") {
+          console.log('→ Redirecting to firm-dashboard');
+          window.location.href = "firm-dashboard.html";
+        } else {
+          console.log('→ Redirecting to creator-dashboard');
+          window.location.href = "creator-dashboard.html";
         }
       }
 
-      // Kontrola přihlášení + auto redirect, pokud už role existuje
+      // Kontrola přihlášení
       auth.onAuthStateChanged(async (user) => {
         if (!user) {
           showRoleMessage("Nejste přihlášený, přesměrovávám na přihlášení…", "error");
@@ -191,27 +184,8 @@
           return;
         }
 
-        try {
-          if (typeof db !== "undefined") {
-            const docRef = db.collection("users").doc(user.uid);
-            const snap = await docRef.get();
-            if (snap.exists) {
-              const data = snap.data();
-              if (data.role === "firma") {
-                window.location.href = "firm-dashboard.html";
-                return;
-              }
-              if (data.role === "tvurce") {
-                window.location.href = "creator-dashboard.html";
-                return;
-              }
-            }
-          }
-        } catch (err) {
-          console.error("Chyba při načítání role:", err);
-        }
-
-        // tady necháme uživatele zvolit
+        console.log('✅ User logged in:', user.email);
+        // Necháme uživatele zvolit roli (Firestore offline)
         if (roleCard) roleCard.classList.remove("opacity-50");
       });
 
