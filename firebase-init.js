@@ -14,9 +14,13 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// Firestore instance
-const db = firebase.firestore();
-const auth = firebase.auth();
+// Firestore instance - globální přístup
+window.db = firebase.firestore();
+window.auth = firebase.auth();
+
+// Backwards compatibility
+const db = window.db;
+const auth = window.auth;
 
 // Auth status
 let AOcurrentUser = null;
