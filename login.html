@@ -413,52 +413,21 @@
           await saveUserProfile(cred.user);
           console.log('✅ Profil uložen do Firestore');
           
-          // Pokus o odeslání ověřovacího emailu s detailním logováním
-          try {
-            console.log('📧 Odesílám ověřovací email na:', cred.user.email);
-            
-            // Konfigurace Action URL pro ověřovací email
-            const actionCodeSettings = {
-              url: window.location.origin + '/email-verified.html',
-              handleCodeInApp: true
-            };
-            
-            await cred.user.sendEmailVerification(actionCodeSettings);
-            console.log('✅ Ověřovací email byl odeslán');
-            console.log('🔗 Verification URL:', actionCodeSettings.url);
-            
-            showMessage(
-              `✅ <strong>Registrace úspěšná!</strong><br><br>` +
-              `Ověřovací email byl odeslán na <strong>${cred.user.email}</strong><br><br>` +
-              `📧 <strong>DŮLEŽITÉ: Zkontrolujte schránku (i SPAM složku) a klikněte na odkaz!</strong><br>` +
-              `📨 Email přichází z: noreply@kartao-cz.firebaseapp.com<br><br>` +
-              `<em>Po ověření emailu budete automaticky přesměrováni...</em>`,
-              "success"
-            );
-            
-            // Zobrazit tlačítko pro opětovné odeslání
-            if (btnResend) btnResend.classList.remove("hidden");
-            
-          } catch (emailError) {
-            console.error('❌ Chyba při odesílání ověřovacího emailu:', emailError);
-            showMessage(
-              `⚠️ <strong>Účet byl vytvořen!</strong><br><br>` +
-              `Ověřovací email se bohužel nepodařilo odeslat.<br>` +
-              `Použijte tlačítko níže pro opětovné odeslání.<br><br>` +
-              `<em>Po ověření emailu budete automaticky přesměrováni...</em>`,
-              "info"
-            );
-            
-            if (btnResend) btnResend.classList.remove("hidden");
-          }
-          
-          // DŮLEŽITÉ: NEODHLASUJI uživatele!
-          // Uživatel zůstane přihlášený, ale bez ověřeného emailu
-          // Auth observer ho přesměruje až po ověření emailu
+          showMessage(
+            `✅ <strong>Registrace úspěšná!</strong><br><br>` +
+            `Účet byl vytvořen pro <strong>${cred.user.email}</strong><br><br>` +
+            `<em>Přesměrovávám...</em>`,
+            "success"
+          );
           
           registerFormEl.reset();
           isRegistering = false;
-          console.log('✅ Registrace dokončena, uživatel zůstává přihlášen (čeká na ověření emailu)');
+          
+          // PŘÍMÉ PŘESMĚROVÁNÍ - KURVA UŽ JEČ!
+          console.log('🚀 PŘESMĚROVÁVÁM NA VYBER UCTU!');
+          setTimeout(() => {
+            window.location.href = "kartao-vyber-uctu.html";
+          }, 500);
         }
       } catch (error) {
         console.error('❌ Chyba při registraci:', error.code, error.message);
@@ -512,7 +481,28 @@
         await saveUserProfile(user);
         showMessage("Přihlášení proběhlo úspěšně. Přesměrovávám...", "success");
 
-        // Auth observer se postará o přesměrování automaticky
+        // PŘÍMÉ PŘESMĚROVÁNÍ - IHNED!
+        console.log('🚀 PŘESMĚROVÁVÁM!');
+        setTimeout(async () => {
+          try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.exists ? userDoc.data() : null;
+            const role = userData?.role;
+            
+            console.log('📊 Role:', role);
+            
+            if (role === 'creator') {
+              window.location.href = "creator-dashboard.html";
+            } else if (role === 'company') {
+              window.location.href = "firm-dashboard.html";
+            } else {
+              window.location.href = "kartao-vyber-uctu.html";
+            }
+          } catch (err) {
+            console.error('Chyba:', err);
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }, 500);
 
       } catch (error) {
         console.error(error);
