@@ -249,6 +249,14 @@
           <p class="text-white/70 max-w-2xl text-sm md:text-base">Procházej aktuální nabídky spolupráce od firem. Najdi kampaň, která sedí tvému profilu a začni spolupracovat.</p>
         </div>
 
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-2xl font-bold text-white" id="campaignCount">24</div>
+            <div class="text-xs text-white/60">Aktivních kampaní</div>
+          </div>
+        </div>
+      </div>
+
         <div class="flex flex-wrap gap-2 text-xs">
           <span class="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 border border-white/10"><i data-lucide="flame" class="w-3 h-3 text-amber-300"></i>TOP kampaně</span>
           <span class="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 border border-emerald-400/30"><i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-300"></i>Ověřené značky</span>
@@ -304,10 +312,10 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-12">
+      <div id="campaignGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-12">
         <!-- Kampaň 1 - Beauty -->
-        <article class="campaign-card category-beauty group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-fuchsia-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-beauty group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-fuchsia-400/60 hover:bg-white/10 transition" data-category="beauty" data-platform="instagram" data-type="reels">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-fuchsia-400 font-semibold mb-1">Beauty & Lifestyle</div>
               <h2 class="font-semibold text-base mb-2">Kampaň pleťové kosmetiky</h2>
@@ -320,7 +328,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">Hledáme tvůrce pro autentickou prezentaci skincare rutiny. Měsíční spolupráce s možností dlouhodobé partnerství.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 15k followers</span>
                 <span class="font-semibold text-green-400">25 000 Kč</span>
               </div>
@@ -332,11 +340,19 @@
               <div class="text-[10px] text-white/50">Zbývá 5 dní</div>
             </div>
           </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(1)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          </div>
         </article>
 
         <!-- Kampaň 2 - Tech -->
-        <article class="campaign-card category-tech group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-blue-400/60 hover:bg-white/10 transition cursor-pointer">
-          <div class="flex items-start justify-between gap-3">
+        <article class="campaign-card category-tech group rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-blue-400/60 hover:bg-white/10 transition" data-category="tech" data-platform="youtube">
+          <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
               <div class="text-[11px] uppercase tracking-wide text-blue-400 font-semibold mb-1">Tech & Gaming</div>
               <h2 class="font-semibold text-base mb-2">Gaming sluchátka ZDARMA</h2>
@@ -349,7 +365,7 @@
                 </span>
               </div>
               <p class="text-xs text-white/70 mb-3">Recenze herních sluchátek v hodnotě 4500 Kč. Ideální pro gaming kanály a tech reviewery.</p>
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs mb-3">
                 <span class="text-white/60">Min. 5k subscribers</span>
                 <span class="font-semibold text-purple-400">Barter deal</span>
               </div>
@@ -360,6 +376,14 @@
               </span>
               <div class="text-[10px] text-white/50">Zbývá 12 dní</div>
             </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openCampaignDetail(2)" class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:opacity-90 transition">
+              Detail kampaně
+            </button>
+            <button class="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
           </div>
         </article>
 
@@ -539,6 +563,31 @@
   </section>
 </main>
 
+<!-- MODAL - Detail kampaně -->
+<div id="campaignModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+  <div class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-neutral-900 border border-white/20 shadow-2xl">
+    <button onclick="closeCampaignModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition flex items-center justify-center">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    
+    <div id="modalContent" class="p-6 md:p-8">
+      <!-- Content loaded dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- Empty State (hidden by default) -->
+<div id="emptyState" class="hidden text-center py-16">
+  <div class="inline-flex w-20 h-20 rounded-full bg-white/5 items-center justify-center mb-4">
+    <i data-lucide="search-x" class="w-10 h-10 text-white/40"></i>
+  </div>
+  <h3 class="text-xl font-bold mb-2">Žádné kampaně nenalezeny</h3>
+  <p class="text-white/60 mb-6">Zkuste upravit filtry nebo hledání</p>
+  <button onclick="resetFilters()" class="px-6 py-3 rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 transition font-semibold">
+    Vymazat filtry
+  </button>
+</div>
+
 <footer class="border-t border-white/10 text-center text-white/60 py-6 text-xs">
   © 2025 Kartao.cz – Síť influencerů a tvůrců
 </footer>
@@ -654,9 +703,227 @@
     `;
     document.head.appendChild(style);
     
+    // Update campaign count
+    function updateCampaignCount() {
+      const visibleCampaigns = Array.from(campaignCards).filter(card => card.style.display !== 'none');
+      const countElement = document.getElementById('campaignCount');
+      const emptyState = document.getElementById('emptyState');
+      const campaignGrid = document.getElementById('campaignGrid');
+      
+      if (countElement) {
+        countElement.textContent = visibleCampaigns.length;
+      }
+      
+      // Show/hide empty state
+      if (visibleCampaigns.length === 0) {
+        campaignGrid?.classList.add('hidden');
+        emptyState?.classList.remove('hidden');
+      } else {
+        campaignGrid?.classList.remove('hidden');
+        emptyState?.classList.add('hidden');
+      }
+    }
+    
+    // Override filterCampaigns to update count
+    const originalFilterCampaigns = filterCampaigns;
+    filterCampaigns = function() {
+      originalFilterCampaigns();
+      updateCampaignCount();
+    };
+    
+    // Initial count
+    updateCampaignCount();
+    
     // Inicializace hamburger menu
     if (typeof initHamburgerMenu === 'function') {
       initHamburgerMenu();
+    }
+  });
+  
+  // Campaign detail modal functions
+  function openCampaignDetail(id) {
+    const modal = document.getElementById('campaignModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    // Sample campaign data (v reálné aplikaci by se načetlo z API/databáze)
+    const campaignData = {
+      1: {
+        title: 'Kampaň pleťové kosmetiky',
+        category: 'Beauty & Lifestyle',
+        company: 'BeautyBrand s.r.o.',
+        budget: '25 000 Kč',
+        deadline: '5 dní',
+        minFollowers: '15 000+',
+        platform: 'Instagram Reels + Stories',
+        description: 'Hledáme tvůrce pro autentickou prezentaci skincare rutiny. Měsíční spolupráce s možností dlouhodobé partnerství.',
+        requirements: [
+          'Min. 15 000 sledujících na Instagramu',
+          'Zájem o beauty a péči o pleť',
+          'Autentický a přirozený styl komunikace',
+          'Aktivní engagement (min. 3% engagement rate)'
+        ],
+        deliverables: [
+          '3x Instagram Reels (15-30s)',
+          '5x Instagram Stories denně po dobu 1 týdne',
+          'UGC fotky pro použití značkou',
+          'Authentic review produktů'
+        ],
+        benefits: [
+          'Placená spolupráce: 25 000 Kč',
+          'Produkty v hodnotě 5 000 Kč zdarma',
+          'Možnost dlouhodobé spolupráce',
+          'Affiliate provize 10% z prodejů přes váš kód'
+        ]
+      }
+    };
+    
+    const campaign = campaignData[id];
+    if (!campaign) return;
+    
+    modalContent.innerHTML = `
+      <div class="mb-6">
+        <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-fuchsia-400 mb-2">
+          ${campaign.category}
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold mb-3">${campaign.title}</h2>
+        <div class="flex flex-wrap gap-3 text-sm">
+          <span class="inline-flex items-center gap-2 text-white/70">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            ${campaign.company}
+          </span>
+          <span class="inline-flex items-center gap-2 text-emerald-400 font-semibold">
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+            ${campaign.budget}
+          </span>
+          <span class="inline-flex items-center gap-2 text-amber-400">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+            Zbývá ${campaign.deadline}
+          </span>
+        </div>
+      </div>
+      
+      <div class="space-y-6">
+        <div>
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <i data-lucide="file-text" class="w-5 h-5 text-fuchsia-400"></i>
+            Popis kampaně
+          </h3>
+          <p class="text-white/80">${campaign.description}</p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-5 h-5 text-sky-400"></i>
+            Požadavky
+          </h3>
+          <ul class="space-y-2">
+            ${campaign.requirements.map(req => `
+              <li class="flex items-start gap-2 text-white/80">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                <span>${req}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <i data-lucide="package" class="w-5 h-5 text-amber-400"></i>
+            Co musíš dodat
+          </h3>
+          <ul class="space-y-2">
+            ${campaign.deliverables.map(item => `
+              <li class="flex items-start gap-2 text-white/80">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-fuchsia-400 mt-0.5 flex-shrink-0"></i>
+                <span>${item}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <i data-lucide="gift" class="w-5 h-5 text-emerald-400"></i>
+            Co získáš
+          </h3>
+          <ul class="space-y-2">
+            ${campaign.benefits.map(benefit => `
+              <li class="flex items-start gap-2 text-white/80">
+                <i data-lucide="star" class="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0"></i>
+                <span>${benefit}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        
+        <div class="pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3">
+          <button onclick="applyCampaign(${id})" class="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-bold hover:opacity-90 transition">
+            <i data-lucide="send" class="w-5 h-5 inline mr-2"></i>
+            Přihlásit se na kampaň
+          </button>
+          <button onclick="closeCampaignModal()" class="px-6 py-3 rounded-xl border border-white/20 text-white hover:bg-white/10 transition">
+            Zavřít
+          </button>
+        </div>
+      </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    
+    // Reinit lucide icons
+    setTimeout(() => lucide.createIcons(), 100);
+  }
+  
+  function closeCampaignModal() {
+    const modal = document.getElementById('campaignModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+  
+  function applyCampaign(id) {
+    alert('Pro přihlášení na kampaň musíš mít vytvořenou tvůrčí kartu.\n\nBudeš přesměrován na vytvoření karty.');
+    window.location.href = 'kartao-zalozit-kartu.html';
+  }
+  
+  function resetFilters() {
+    const searchInput = document.querySelector('input[placeholder="Značka, produkt..."]');
+    const selects = document.querySelectorAll('select');
+    
+    if (searchInput) searchInput.value = '';
+    selects.forEach(select => select.selectedIndex = 0);
+    
+    // Show all campaigns
+    const campaignCards = document.querySelectorAll('article');
+    campaignCards.forEach(card => {
+      card.style.display = 'block';
+    });
+    
+    // Update count
+    const countElement = document.getElementById('campaignCount');
+    const emptyState = document.getElementById('emptyState');
+    const campaignGrid = document.getElementById('campaignGrid');
+    
+    if (countElement) countElement.textContent = campaignCards.length;
+    campaignGrid?.classList.remove('hidden');
+    emptyState?.classList.add('hidden');
+  }
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeCampaignModal();
+    }
+  });
+  
+  // Close modal on backdrop click
+  document.getElementById('campaignModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCampaignModal();
+    }
+  });
     }
   });
 </script>
