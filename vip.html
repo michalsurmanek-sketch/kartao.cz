@@ -18,6 +18,23 @@
   <meta property="og:image" content="https://www.kartao.cz/og-image-placeholder.svg">
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'crown-glow': 'crownPulse 1.6s ease-in-out infinite'
+          },
+          keyframes: {
+            crownPulse: {
+              '0%, 100%': { filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.8))' },
+              '50%': { filter: 'drop-shadow(0 0 16px rgba(219,88,246,0.9))' }
+            }
+          }
+        }
+      }
+    }
+  </script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -130,10 +147,15 @@
                 <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
               </div>
             </a>
-            <button type="button" id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50">
-              <i data-lucide="x" class="w-5 h-5"></i>
-              <span class="sr-only">Zavřít</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <a href="vip.html" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
+                <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
+              </a>
+              <button type="button" id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50">
+                <i data-lucide="x" class="w-5 h-5"></i>
+                <span class="sr-only">Zavřít</span>
+              </button>
+            </div>
           </div>
 
           <nav aria-label="Mobilní navigace" class="px-3 py-3 overflow-y-auto flex-1">
@@ -199,9 +221,9 @@
                 <i data-lucide="mail" class="w-5 h-5 text-white/70"></i>
                 <span>Kontakt</span>
               </a>
-              <a href="vip.html" class="block px-3 py-3 rounded-xl bg-amber-500/10 transition text-amber-300 flex items-center gap-3">
+              <a href="vip.html" class="block px-3 py-3 rounded-xl bg-white/10 transition text-amber-300 flex items-center gap-3">
                 <i data-lucide="crown" class="w-5 h-5 text-amber-400"></i>
-                <span>VIP</span>
+                <span>VIP tvůrci</span>
               </a>
             </div>
           </nav>
