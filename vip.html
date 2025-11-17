@@ -1054,6 +1054,11 @@
       // Initial render
       render(vipCreators);
       lucide.createIcons();
+      
+      // Initialize hamburger menu
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
     });
   </script>
 
