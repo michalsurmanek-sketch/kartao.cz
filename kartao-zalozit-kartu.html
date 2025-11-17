@@ -371,6 +371,132 @@
     // Lucide ikony
     lucide.createIcons();
 
+    // === AUTO-SAVE DO LOCALSTORAGE ===
+    const AUTOSAVE_KEY = 'kartao_card_draft';
+    const AUTOSAVE_DEBOUNCE = 500; // ms
+    let autosaveTimeout = null;
+
+    // Funkce pro uložení dat z formuláře
+    function saveFormData() {
+      const formData = {
+        name: document.getElementById('name')?.value || '',
+        handle: document.getElementById('handle')?.value || '',
+        email: document.getElementById('email')?.value || '',
+        city: document.getElementById('city')?.value || '',
+        age: document.getElementById('age')?.value || '',
+        category: document.getElementById('category')?.value || '',
+        bio: document.getElementById('bio')?.value || '',
+        avatar: document.getElementById('avatar')?.value || '',
+        cover: document.getElementById('cover')?.value || '',
+        instagram: document.getElementById('instagram')?.value || '',
+        instagramFollowers: document.getElementById('instagramFollowers')?.value || '',
+        instagramEr: document.getElementById('instagramEr')?.value || '',
+        tiktok: document.getElementById('tiktok')?.value || '',
+        tiktokFollowers: document.getElementById('tiktokFollowers')?.value || '',
+        tiktokEr: document.getElementById('tiktokEr')?.value || '',
+        youtube: document.getElementById('youtube')?.value || '',
+        youtubeFollowers: document.getElementById('youtubeFollowers')?.value || '',
+        youtubeEr: document.getElementById('youtubeEr')?.value || '',
+        facebook: document.getElementById('facebook')?.value || '',
+        facebookFollowers: document.getElementById('facebookFollowers')?.value || '',
+        facebookEr: document.getElementById('facebookEr')?.value || '',
+        pinterest: document.getElementById('pinterest')?.value || '',
+        pinterestFollowers: document.getElementById('pinterestFollowers')?.value || '',
+        pinterestEr: document.getElementById('pinterestEr')?.value || '',
+        reelsPrice: document.getElementById('reelsPrice')?.value || '',
+        storiesPrice: document.getElementById('storiesPrice')?.value || '',
+        customPrice: document.getElementById('customPrice')?.value || '',
+        brandPartners: document.getElementById('brandPartners')?.value || '',
+        savedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
+      console.log('💾 Formulář automaticky uložen do localStorage');
+    }
+
+    // Funkce pro načtení dat do formuláře
+    function loadFormData() {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (!saved) {
+        console.log('ℹ️ Žádná uložená data nenalezena');
+        return false;
+      }
+
+      try {
+        const formData = JSON.parse(saved);
+        console.log('📂 Načítám uložená data z:', new Date(formData.savedAt).toLocaleString('cs-CZ'));
+
+        // Načtení textových polí
+        if (formData.name) document.getElementById('name').value = formData.name;
+        if (formData.handle) document.getElementById('handle').value = formData.handle;
+        if (formData.email) document.getElementById('email').value = formData.email;
+        if (formData.city) document.getElementById('city').value = formData.city;
+        if (formData.age) document.getElementById('age').value = formData.age;
+        if (formData.category) document.getElementById('category').value = formData.category;
+        if (formData.bio) document.getElementById('bio').value = formData.bio;
+        
+        // Načtení URL obrázků
+        if (formData.avatar) {
+          document.getElementById('avatar').value = formData.avatar;
+          // Trigger preview
+          document.getElementById('avatar').dispatchEvent(new Event('input'));
+        }
+        if (formData.cover) {
+          document.getElementById('cover').value = formData.cover;
+          // Trigger preview
+          document.getElementById('cover').dispatchEvent(new Event('input'));
+        }
+
+        // Načtení sociálních sítí
+        if (formData.instagram) document.getElementById('instagram').value = formData.instagram;
+        if (formData.instagramFollowers) document.getElementById('instagramFollowers').value = formData.instagramFollowers;
+        if (formData.instagramEr) document.getElementById('instagramEr').value = formData.instagramEr;
+        
+        if (formData.tiktok) document.getElementById('tiktok').value = formData.tiktok;
+        if (formData.tiktokFollowers) document.getElementById('tiktokFollowers').value = formData.tiktokFollowers;
+        if (formData.tiktokEr) document.getElementById('tiktokEr').value = formData.tiktokEr;
+        
+        if (formData.youtube) document.getElementById('youtube').value = formData.youtube;
+        if (formData.youtubeFollowers) document.getElementById('youtubeFollowers').value = formData.youtubeFollowers;
+        if (formData.youtubeEr) document.getElementById('youtubeEr').value = formData.youtubeEr;
+        
+        if (formData.facebook) document.getElementById('facebook').value = formData.facebook;
+        if (formData.facebookFollowers) document.getElementById('facebookFollowers').value = formData.facebookFollowers;
+        if (formData.facebookEr) document.getElementById('facebookEr').value = formData.facebookEr;
+        
+        if (formData.pinterest) document.getElementById('pinterest').value = formData.pinterest;
+        if (formData.pinterestFollowers) document.getElementById('pinterestFollowers').value = formData.pinterestFollowers;
+        if (formData.pinterestEr) document.getElementById('pinterestEr').value = formData.pinterestEr;
+
+        // Načtení ceníku
+        if (formData.reelsPrice) document.getElementById('reelsPrice').value = formData.reelsPrice;
+        if (formData.storiesPrice) document.getElementById('storiesPrice').value = formData.storiesPrice;
+        if (formData.customPrice) document.getElementById('customPrice').value = formData.customPrice;
+        if (formData.brandPartners) document.getElementById('brandPartners').value = formData.brandPartners;
+
+        // Zobrazit notifikaci
+        const savedDate = new Date(formData.savedAt);
+        const now = new Date();
+        const diffMinutes = Math.round((now - savedDate) / 1000 / 60);
+        let timeText = diffMinutes < 1 ? 'před chvílí' : 
+                       diffMinutes === 1 ? 'před minutou' : 
+                       diffMinutes < 60 ? `před ${diffMinutes} minutami` : 
+                       `před ${Math.round(diffMinutes / 60)} hodinami`;
+        
+        showMessage(`✅ Načtena uložená data z ${timeText}`, 'success');
+        return true;
+      } catch (error) {
+        console.error('❌ Chyba při načítání dat:', error);
+        return false;
+      }
+    }
+
+    // Debounced auto-save při změně formuláře
+    function scheduleAutosave() {
+      if (autosaveTimeout) clearTimeout(autosaveTimeout);
+      autosaveTimeout = setTimeout(saveFormData, AUTOSAVE_DEBOUNCE);
+    }
+
     // === NÁHLED OBRÁZKŮ ===
     const avatarFileInput = document.getElementById('avatarFile');
     const avatarPreview = document.getElementById('avatarPreview');
