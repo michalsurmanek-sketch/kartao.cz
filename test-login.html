@@ -155,12 +155,38 @@
       
       try {
         const googleProvider = new firebase.auth.GoogleAuthProvider();
-        const result = await auth.signInWithPopup(googleProvider);
+        console.log('🔐 Pokus o Google OAuth popup...');
+        
+        let result;
+        try {
+          result = await auth.signInWithPopup(googleProvider);
+        } catch (popupError) {
+          console.warn('⚠️ Popup selhalo, zkouším redirect...');
+          
+          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/internal-error') {
+            resultEl.innerHTML = '<div class="text-amber-400">Popup zablokováno, přesměrovávám...</div>';
+            await auth.signInWithRedirect(googleProvider);
+            return;
+          }
+          throw popupError;
+        }
+        
         resultEl.innerHTML = `<div class="text-emerald-400">✅ Přihlášen přes Google: ${result.user.email}</div>`;
       } catch (error) {
         let msg = `<div class="text-red-400">❌ Google chyba: ${error.code}<br>`;
         
-        if (error.code === 'auth/operation-not-allowed') {
+        console.error('Full error:', error);
+        
+        if (error.code === 'auth/internal-error') {
+          msg += '<strong>INTERNÍ CHYBA - Možné příčiny:</strong><br>';
+          msg += '1. Google OAuth není povolen ve Firebase Console<br>';
+          msg += '2. Doména není v Authorized domains<br>';
+          msg += '3. CSP politika blokuje OAuth<br>';
+          msg += '4. Firebase konfigurace je neplatná<br><br>';
+          msg += '<strong>Řešení:</strong><br>';
+          msg += '• Otevřete konzoli (F12) a zkontrolujte chyby<br>';
+          msg += '• Viz FIREBASE-SETUP.md → Google Sign-In</div>';
+        } else if (error.code === 'auth/operation-not-allowed') {
           msg += '<strong>Google přihlášení není povoleno!</strong><br>';
           msg += 'Postupujte podle FIREBASE-SETUP.md sekce "Google Sign-In"</div>';
         } else if (error.code === 'auth/unauthorized-domain') {
@@ -181,12 +207,38 @@
       
       try {
         const facebookProvider = new firebase.auth.FacebookAuthProvider();
-        const result = await auth.signInWithPopup(facebookProvider);
+        console.log('🔐 Pokus o Facebook OAuth popup...');
+        
+        let result;
+        try {
+          result = await auth.signInWithPopup(facebookProvider);
+        } catch (popupError) {
+          console.warn('⚠️ Popup selhalo, zkouším redirect...');
+          
+          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/internal-error') {
+            resultEl.innerHTML = '<div class="text-amber-400">Popup zablokováno, přesměrovávám...</div>';
+            await auth.signInWithRedirect(facebookProvider);
+            return;
+          }
+          throw popupError;
+        }
+        
         resultEl.innerHTML = `<div class="text-emerald-400">✅ Přihlášen přes Facebook: ${result.user.email}</div>`;
       } catch (error) {
         let msg = `<div class="text-red-400">❌ Facebook chyba: ${error.code}<br>`;
         
-        if (error.code === 'auth/operation-not-allowed') {
+        console.error('Full error:', error);
+        
+        if (error.code === 'auth/internal-error') {
+          msg += '<strong>INTERNÍ CHYBA - Možné příčiny:</strong><br>';
+          msg += '1. Facebook OAuth není povolen ve Firebase Console<br>';
+          msg += '2. Facebook App není správně nakonfigurovaná<br>';
+          msg += '3. CSP politika blokuje OAuth<br>';
+          msg += '4. Doména není v Authorized domains<br><br>';
+          msg += '<strong>Řešení:</strong><br>';
+          msg += '• Otevřete konzoli (F12) a zkontrolujte chyby<br>';
+          msg += '• Viz FIREBASE-SETUP.md → Facebook Sign-In</div>';
+        } else if (error.code === 'auth/operation-not-allowed') {
           msg += '<strong>Facebook přihlášení není povoleno!</strong><br>';
           msg += 'Postupujte podle FIREBASE-SETUP.md sekce "Facebook Sign-In"</div>';
         } else if (error.code === 'auth/unauthorized-domain') {

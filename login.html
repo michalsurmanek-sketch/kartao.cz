@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Přihlaste se do Kartao.cz - platformy pro influencery a značky. Spravujte svůj profil, kampaně a komunikaci s partnery." />
   <meta name="robots" content="noindex, nofollow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://accounts.google.com https://www.facebook.com https://facebook.com wss://*.firebaseio.com; frame-src 'self' https://kartao-cz.firebaseapp.com https://*.firebaseapp.com https://accounts.google.com https://www.facebook.com https://facebook.com; child-src 'self' https://accounts.google.com https://www.facebook.com; form-action 'self' https://accounts.google.com; object-src 'none';">
   <title>Kartao.cz – Přihlášení & Registrace</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔑</text></svg>">
   
@@ -181,6 +181,35 @@
     // =========================
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     const facebookProvider = new firebase.auth.FacebookAuthProvider();
+
+    // =========================
+    // 1b) Handler pro OAuth redirect (pokud se vrací z Google/Facebook)
+    // =========================
+    auth.getRedirectResult()
+      .then(async (result) => {
+        if (result.user) {
+          console.log('✅ OAuth redirect úspěšné:', result.user.email);
+          await saveUserProfile(result.user);
+          
+          // Získat roli a přesměrovat
+          const userDoc = await db.collection('users').doc(result.user.uid).get();
+          const role = userDoc.exists ? userDoc.data()?.role : null;
+          
+          if (role === 'creator') {
+            window.location.href = "creator-dashboard.html";
+          } else if (role === 'company') {
+            window.location.href = "firm-dashboard.html";
+          } else {
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }
+      })
+      .catch((error) => {
+        if (error.code !== 'auth/popup-closed-by-user') {
+          console.error('❌ Redirect error:', error);
+          showMessage('Chyba při přihlášení: ' + (error.message || error.code), 'error');
+        }
+      });
 
     // =========================
     // 2) Helper na hlášky
@@ -449,9 +478,28 @@
             throw new Error('Google provider není inicializovaný');
           }
           
-          const result = await auth.signInWithPopup(googleProvider);
+          console.log('🔐 Pokus o Google OAuth...');
+          
+          // Pokus o popup - pokud selže, zkusíme redirect
+          let result;
+          try {
+            result = await auth.signInWithPopup(googleProvider);
+          } catch (popupError) {
+            console.warn('⚠️ Popup selhalo, zkouším redirect:', popupError);
+            
+            // Pokud popup nefunguje (CSP, blokace), použijeme redirect
+            if (popupError.code === 'auth/popup-blocked' || 
+                popupError.code === 'auth/internal-error') {
+              showMessage("Popup bylo zablokováno. Přesměrovávám na Google...", "info");
+              await auth.signInWithRedirect(googleProvider);
+              return; // Redirect způsobí reload stránky
+            }
+            throw popupError;
+          }
+          
           const user = result.user;
           if (user) {
+            console.log('✅ Google OAuth úspěšné:', user.email);
             await saveUserProfile(user);
             showMessage("Přihlášení přes Google proběhlo úspěšně. Přesměrovávám...", "success");
             
@@ -476,18 +524,36 @@
           }
         } catch (error) {
           console.error('Google OAuth error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
           let errorMsg = "Přihlášení přes Google se nepodařilo.";
           
           if (error.code === 'auth/popup-closed-by-user') {
             errorMsg = "Přihlášení bylo zrušeno.";
           } else if (error.code === 'auth/popup-blocked') {
-            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna.";
+            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna nebo zkuste znovu.";
           } else if (error.code === 'auth/unauthorized-domain') {
-            errorMsg = "Tato doména není autorizovaná pro Google přihlášení. Kontaktujte správce.";
+            errorMsg = "⚠️ Tato doména není autorizovaná pro Google přihlášení.<br><br>" +
+                       "Přidejte do Firebase Console:<br>" +
+                       "Authentication → Settings → Authorized domains → " +
+                       "přidejte: <code>" + window.location.hostname + "</code>";
           } else if (error.code === 'auth/operation-not-allowed') {
-            errorMsg = "Google přihlášení není povoleno. Musí být aktivováno ve Firebase Console.";
+            errorMsg = "⚠️ Google přihlášení není povoleno!<br><br>" +
+                       "Povolte ve Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Google → Enable";
           } else if (error.code === 'auth/account-exists-with-different-credential') {
-            errorMsg = "Účet s tímto emailem již existuje s jiným přihlašovacím poskytovalem.";
+            errorMsg = "Účet s tímto emailem již existuje s jiným přihlašovacím poskytovatelem.";
+          } else if (error.code === 'auth/internal-error') {
+            errorMsg = "⚠️ Interní chyba Firebase.<br><br>" +
+                       "<strong>Možné příčiny:</strong><br>" +
+                       "1. Google OAuth není povolen ve Firebase Console<br>" +
+                       "2. Doména není v Authorized domains<br>" +
+                       "3. CSP politika blokuje OAuth<br>" +
+                       "4. Nesprávná Firebase konfigurace<br><br>" +
+                       "<strong>Řešení:</strong><br>" +
+                       "• Zkontrolujte konzoli prohlížeče (F12)<br>" +
+                       "• Viz FIREBASE-SETUP.md → Google Sign-In";
           } else {
             errorMsg = `Přihlášení přes Google se nepodařilo: ${error.message || error.code || 'Neznámá chyba'}`;
           }
@@ -515,9 +581,28 @@
             throw new Error('Facebook provider není inicializovaný');
           }
           
-          const result = await auth.signInWithPopup(facebookProvider);
+          console.log('🔐 Pokus o Facebook OAuth...');
+          
+          // Pokus o popup - pokud selže, zkusíme redirect
+          let result;
+          try {
+            result = await auth.signInWithPopup(facebookProvider);
+          } catch (popupError) {
+            console.warn('⚠️ Popup selhalo, zkouším redirect:', popupError);
+            
+            // Pokud popup nefunguje (CSP, blokace), použijeme redirect
+            if (popupError.code === 'auth/popup-blocked' || 
+                popupError.code === 'auth/internal-error') {
+              showMessage("Popup bylo zablokováno. Přesměrovávám na Facebook...", "info");
+              await auth.signInWithRedirect(facebookProvider);
+              return; // Redirect způsobí reload stránky
+            }
+            throw popupError;
+          }
+          
           const user = result.user;
           if (user) {
+            console.log('✅ Facebook OAuth úspěšné:', user.email);
             await saveUserProfile(user);
             showMessage("Přihlášení přes Facebook proběhlo úspěšně. Přesměrovávám...", "success");
             
@@ -542,20 +627,42 @@
           }
         } catch (error) {
           console.error('Facebook OAuth error:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
           let errorMsg = "Přihlášení přes Facebook se nepodařilo.";
           
           if (error.code === 'auth/popup-closed-by-user') {
             errorMsg = "Přihlášení bylo zrušeno.";
           } else if (error.code === 'auth/popup-blocked') {
-            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna.";
+            errorMsg = "Popup okno bylo blokováno prohlížečem. Povolte prosím popup okna nebo zkuste znovu.";
           } else if (error.code === 'auth/unauthorized-domain') {
-            errorMsg = "Tato doména není autorizovaná pro Facebook přihlášení. Kontaktujte správce.";
+            errorMsg = "⚠️ Tato doména není autorizovaná pro Facebook přihlášení.<br><br>" +
+                       "Přidejte do Firebase Console:<br>" +
+                       "Authentication → Settings → Authorized domains → " +
+                       "přidejte: <code>" + window.location.hostname + "</code>";
           } else if (error.code === 'auth/operation-not-allowed') {
-            errorMsg = "Facebook přihlášení není povoleno. Musí být aktivováno ve Firebase Console.";
+            errorMsg = "⚠️ Facebook přihlášení není povoleno!<br><br>" +
+                       "Povolte ve Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Facebook → Enable";
           } else if (error.code === 'auth/account-exists-with-different-credential') {
             errorMsg = "Účet s tímto emailem již existuje s jiným přihlašovacím poskytovatelem.";
+          } else if (error.code === 'auth/internal-error') {
+            errorMsg = "⚠️ Interní chyba Firebase.<br><br>" +
+                       "<strong>Možné příčiny:</strong><br>" +
+                       "1. Facebook OAuth není povolen ve Firebase Console<br>" +
+                       "2. Facebook App ID/Secret není nastaveno<br>" +
+                       "3. Doména není v Authorized domains<br>" +
+                       "4. CSP politika blokuje OAuth<br>" +
+                       "5. Facebook App není v režimu Live<br><br>" +
+                       "<strong>Řešení:</strong><br>" +
+                       "• Zkontrolujte konzoli prohlížeče (F12)<br>" +
+                       "• Viz FIREBASE-SETUP.md → Facebook Sign-In";
           } else if (error.message && error.message.includes('App ID')) {
-            errorMsg = "Facebook App ID není správně nakonfigurované. Zkontrolujte Firebase nastavení.";
+            errorMsg = "⚠️ Facebook App ID není správně nakonfigurované!<br><br>" +
+                       "Zkontrolujte Firebase Console:<br>" +
+                       "Authentication → Sign-in method → Facebook<br>" +
+                       "Viz FIREBASE-SETUP.md pro kompletní návod";
           } else {
             errorMsg = `Přihlášení přes Facebook se nepodařilo: ${error.message || error.code || 'Neznámá chyba'}`;
           }
