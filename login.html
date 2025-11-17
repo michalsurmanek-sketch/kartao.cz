@@ -92,8 +92,12 @@
 </div>
 
 <script>
-// Firebase již inicializováno v firebase-init.js
-// Použijeme globální proměnné z firebase-init.js
+console.log('🚀 LOGIN.HTML SCRIPT STARTED');
+console.log('✅ Firebase:', typeof firebase);
+console.log('✅ Auth:', typeof auth);
+console.log('✅ DB:', typeof db);
+
+// Google provider
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 // Elements
@@ -184,7 +188,12 @@ tabRegister.onclick = () => switchMode('register');
 // Login
 formLogin.onsubmit = async (e) => {
   e.preventDefault();
-  if (busy) return;
+  console.log('🔵 Login submit triggered');
+  
+  if (busy) {
+    console.log('⚠️ Already busy, ignoring');
+    return;
+  }
   busy = true;
   hideMsg();
   
@@ -192,15 +201,25 @@ formLogin.onsubmit = async (e) => {
   const password = document.getElementById('login-password').value;
   const btn = formLogin.querySelector('button');
   
+  console.log('📧 Attempting login for:', email);
+  
   btn.disabled = true;
   btn.textContent = 'Přihlašuji...';
   
   try {
+    console.log('🔐 Calling signInWithEmailAndPassword...');
     const cred = await auth.signInWithEmailAndPassword(email, password);
+    console.log('✅ Login successful:', cred.user.email);
+    
     await saveProfile(cred.user);
+    console.log('✅ Profile saved');
+    
     showMsg('Přihlášení úspěšné!', 'success');
+    
+    console.log('⏳ Waiting 500ms before redirect...');
     setTimeout(() => redirect(cred.user), 500);
   } catch (error) {
+    console.error('❌ Login error:', error);
     let msg = 'Chyba při přihlášení';
     if (error.code === 'auth/user-not-found') msg = 'Uživatel nenalezen';
     else if (error.code === 'auth/wrong-password') msg = 'Špatné heslo';
