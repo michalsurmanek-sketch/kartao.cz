@@ -21,9 +21,10 @@ if (!firebase.apps || !firebase.apps.length) {
 if (!window.db) {
   window.db = firebase.firestore();
   
-  // DŮLEŽITÉ: Vypnout offline persistence aby to nečekalo na síť
+  // OPRAVA: Zakázat offline persistence aby to nečekalo
   window.db.settings({
-    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+    merge: true,
+    experimentalForceLongPolling: true, // Fix pro dev prostředí
   });
   
   console.log('✅ Firestore DB created');
