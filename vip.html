@@ -768,266 +768,270 @@
       {name:"Jana Business", cat:"Business", platform:"TikTok", followers:"60k", er:"4.8%", price:"15–25 tis.", img:"https://i.pravatar.cc/120?img=18"},
     ];
 
-    const limit = 20;
-    const grid = document.getElementById('grid');
-    const takenEl = document.getElementById('taken');
-    const progressBar = document.getElementById('progressBar');
-    const resultCount = document.getElementById('resultCount');
-    const emptyState = document.getElementById('emptyState');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const y = document.getElementById('y'); y.textContent = new Date().getFullYear();
-
-    // Modal helpers
-    const modal = document.getElementById('detailModal');
-    const modalClose = () => {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.body.style.overflow = '';
-    };
-    const openDetailByName = (name) => {
-      const src = (window._currentList || vipCreators).find(v => v.name === name);
-      if(!src) return;
-      document.getElementById('modalImg').src = src.img;
-      document.getElementById('modalName').textContent = src.name;
-      document.getElementById('modalMeta').textContent = `${src.cat} • ${src.platform}`;
-      document.getElementById('modalFollowers').textContent = src.followers;
-      document.getElementById('modalEr').textContent = src.er;
-      document.getElementById('modalPrice').textContent = src.price;
-      const contact = document.getElementById('modalContact');
-      contact.href = `mailto:info@kartao.cz?subject=VIP%20spolupráce%20—%20${encodeURIComponent(src.name)}`;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => lucide.createIcons(), 50);
-    };
-
-    document.addEventListener('click', (e)=>{
-      if(e.target && (e.target.id === 'detailModal' || e.target.id === 'modalClose')) modalClose();
-    });
-    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modalClose(); });
-
-    function render(list){
-      grid.innerHTML = '';
-      const sliced = list.slice(0, limit);
-      window._currentList = sliced;
-      takenEl.textContent = sliced.length;
-      resultCount.textContent = list.length;
-
-      // Update progress bar
-      const percentage = (sliced.length / limit) * 100;
-      progressBar.style.width = percentage + '%';
-
-      // Show/hide empty state
-      if (list.length === 0) {
-        emptyState.classList.remove('hidden');
-        grid.classList.add('hidden');
-      } else {
-        emptyState.classList.add('hidden');
-        grid.classList.remove('hidden');
-      }
-
-      for(const c of sliced){
-        grid.insertAdjacentHTML('beforeend', `
-          <article class="glass rounded-2xl p-5 vip-card group">
-            <div class="flex items-start gap-4 mb-4">
-              <div class="relative">
-                <img src="${c.img}" alt="VIP tvůrce ${c.name}" class="w-16 h-16 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-amber-400/50 transition" />
-                <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center">
-                  <i data-lucide="crown" class="w-3 h-3 text-white"></i>
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-lg truncate mb-1">${c.name}</h3>
-                <div class="flex items-center gap-2 text-xs text-white/60">
-                  <span>${c.cat}</span>
-                  <span class="w-1 h-1 rounded-full bg-white/30"></span>
-                  <span>${c.platform}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-3 mb-4">
-              <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
-                <div class="text-xs text-sky-300 mb-1">Sledující</div>
-                <div class="font-bold text-sm">${c.followers}</div>
-              </div>
-              <div class="rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-3 text-center">
-                <div class="text-xs text-emerald-300 mb-1">ER</div>
-                <div class="font-bold text-sm text-emerald-400">${c.er}</div>
-              </div>
-              <div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
-                <div class="text-xs text-amber-300 mb-1">Cena</div>
-                <div class="font-bold text-sm text-amber-400">${c.price}</div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button type="button" class="btn-detail flex-1 rounded-xl px-4 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition text-sm font-medium" data-name="${c.name}">
-                <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
-                Detail
-              </button>
-              <a href="mailto:info@kartao.cz?subject=VIP%20spolupr%C3%A1ce%20%E2%80%94%20${encodeURIComponent(c.name)}"
-                 class="flex-1 rounded-xl px-4 py-2.5 font-semibold text-neutral-900 vip-badge text-sm text-center hover:opacity-90 transition">
-                Kontakt
-              </a>
-            </div>
-          </article>
-        `);
-      }
-
-      // Add empty slot if under limit
-      if (sliced.length < limit) {
-        grid.insertAdjacentHTML('beforeend', `
-          <article class="glass rounded-2xl p-5 border-dashed border-2 hover:border-amber-400/30 transition group">
-            <div class="text-center py-8">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20 border border-white/10 grid place-items-center group-hover:scale-110 transition">
-                <i data-lucide="crown" class="w-8 h-8 crown-anim text-amber-400"></i>
-              </div>
-              <h3 class="font-bold mb-2">Volné místo #${sliced.length + 1}</h3>
-              <p class="text-sm text-white/60 mb-4">Staňte se součástí VIP elit</p>
-              <a href="#vip-apply" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 transition text-sm font-medium">
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
-                Požádat
-              </a>
-            </div>
-          </article>
-        `);
-      }
-
-      lucide.createIcons();
-      attachDetailHandlers();
-    }
-
-    function attachDetailHandlers(){
-      document.querySelectorAll('.btn-detail').forEach(btn => {
-        btn.onclick = () => openDetailByName(btn.getAttribute('data-name'));
-      });
-    }
-
-    const q = document.getElementById('q');
-    const cat = document.getElementById('cat');
-    const platform = document.getElementById('platform');
-    const sortBy = document.getElementById('sortBy');
-
-    function applyFilters(){
-      const term = q.value.toLowerCase().trim();
-      const c = cat.value;
-      const p = platform.value;
-      const sort = sortBy.value;
-
-      let out = vipCreators.filter(v =>
-        (!term || (v.name.toLowerCase().includes(term) || v.cat.toLowerCase().includes(term) || v.platform.toLowerCase().includes(term))) &&
-        (!c || v.cat===c) &&
-        (!p || v.platform===p)
-      );
-
-      // Sorting
-      if (sort === 'followers') {
-        out.sort((a, b) => {
-          const aNum = parseInt(a.followers.replace('k', '')) * 1000;
-          const bNum = parseInt(b.followers.replace('k', '')) * 1000;
-          return bNum - aNum;
-        });
-      } else if (sort === 'er') {
-        out.sort((a, b) => parseFloat(b.er) - parseFloat(a.er));
-      } else if (sort === 'price') {
-        out.sort((a, b) => {
-          const aPrice = parseInt(a.price.split('–')[0]);
-          const bPrice = parseInt(b.price.split('–')[0]);
-          return aPrice - bPrice;
-        });
-      }
-
-      // Show/hide clear filters button
-      if (term || c || p || sort !== 'default') {
-        clearFiltersBtn.classList.remove('hidden');
-      } else {
-        clearFiltersBtn.classList.add('hidden');
-      }
-
-      render(out);
-    }
-
-    [q, cat, platform, sortBy].forEach(el => el.addEventListener('input', applyFilters));
-    [q, cat, platform, sortBy].forEach(el => el.addEventListener('change', applyFilters));
-
-    // Clear filters
-    clearFiltersBtn.addEventListener('click', () => {
-      q.value = '';
-      cat.value = '';
-      platform.value = '';
-      sortBy.value = 'default';
-      applyFilters();
-    });
-
-    // Reset search from empty state
-    document.getElementById('resetSearch')?.addEventListener('click', () => {
-      q.value = '';
-      cat.value = '';
-      platform.value = '';
-      sortBy.value = 'default';
-      applyFilters();
-    });
-
-    // Form submission
-    document.getElementById('vipForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData);
-      console.log('VIP Application:', data);
-
-      // Show success message
-      const form = e.target;
-      form.innerHTML = `
-        <div class="text-center py-12">
-          <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/20 border border-emerald-500/30 grid place-items-center">
-            <i data-lucide="check" class="w-10 h-10 text-emerald-400"></i>
-          </div>
-          <h3 class="text-2xl font-bold mb-3">Žádost odeslána!</h3>
-          <p class="text-white/70 mb-6 max-w-md mx-auto">
-            Děkujeme za zájem o VIP status. Vaši žádost pečlivě prozkoumáme
-            a do 48 hodin se vám ozveme na <strong>${data.email}</strong>.
-          </p>
-          <button onclick="window.location.reload()" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition">
-            Zpět na přehled
-          </button>
-        </div>
-      `;
-      lucide.createIcons();
-    });
-
     // Initialize everything on page load
     document.addEventListener('DOMContentLoaded', () => {
+      // Get all elements
+      const grid = document.getElementById('grid');
+      const takenEl = document.getElementById('taken');
+      const progressBar = document.getElementById('progressBar');
+      const resultCount = document.getElementById('resultCount');
+      const emptyState = document.getElementById('emptyState');
+      const clearFiltersBtn = document.getElementById('clearFilters');
+      const modal = document.getElementById('detailModal');
+      const q = document.getElementById('q');
+      const cat = document.getElementById('cat');
+      const platform = document.getElementById('platform');
+      const sortBy = document.getElementById('sortBy');
+
+      const limit = 20;
+
+      // Modal helpers
+      const modalClose = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      };
+      
+      const openDetailByName = (name) => {
+        const src = (window._currentList || vipCreators).find(v => v.name === name);
+        if(!src) return;
+        document.getElementById('modalImg').src = src.img;
+        document.getElementById('modalName').textContent = src.name;
+        document.getElementById('modalMeta').textContent = `${src.cat} • ${src.platform}`;
+        document.getElementById('modalFollowers').textContent = src.followers;
+        document.getElementById('modalEr').textContent = src.er;
+        document.getElementById('modalPrice').textContent = src.price;
+        const contact = document.getElementById('modalContact');
+        contact.href = `mailto:info@kartao.cz?subject=VIP%20spolupráce%20—%20${encodeURIComponent(src.name)}`;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => lucide.createIcons(), 50);
+      };
+
+      // Modal event listeners
+      document.addEventListener('click', (e)=>{
+        if(e.target && (e.target.id === 'detailModal' || e.target.id === 'modalClose')) modalClose();
+      });
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modalClose(); });
+
+      // Render function
+      function render(list){
+        grid.innerHTML = '';
+        const sliced = list.slice(0, limit);
+        window._currentList = sliced;
+        takenEl.textContent = sliced.length;
+        resultCount.textContent = list.length;
+
+        // Update progress bar
+        const percentage = (sliced.length / limit) * 100;
+        progressBar.style.width = percentage + '%';
+
+        // Show/hide empty state
+        if (list.length === 0) {
+          emptyState.classList.remove('hidden');
+          grid.classList.add('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+          grid.classList.remove('hidden');
+        }
+
+        for(const c of sliced){
+          grid.insertAdjacentHTML('beforeend', `
+            <article class="glass rounded-2xl p-5 vip-card group">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="relative">
+                  <img src="${c.img}" alt="VIP tvůrce ${c.name}" class="w-16 h-16 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-amber-400/50 transition" />
+                  <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center">
+                    <i data-lucide="crown" class="w-3 h-3 text-white"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-bold text-lg truncate mb-1">${c.name}</h3>
+                  <div class="flex items-center gap-2 text-xs text-white/60">
+                    <span>${c.cat}</span>
+                    <span class="w-1 h-1 rounded-full bg-white/30"></span>
+                    <span>${c.platform}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
+                  <div class="text-xs text-sky-300 mb-1">Sledující</div>
+                  <div class="font-bold text-sm">${c.followers}</div>
+                </div>
+                <div class="rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-3 text-center">
+                  <div class="text-xs text-emerald-300 mb-1">ER</div>
+                  <div class="font-bold text-sm text-emerald-400">${c.er}</div>
+                </div>
+                <div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
+                  <div class="text-xs text-amber-300 mb-1">Cena</div>
+                  <div class="font-bold text-sm text-amber-400">${c.price}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" class="btn-detail flex-1 rounded-xl px-4 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition text-sm font-medium" data-name="${c.name}">
+                  <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+                  Detail
+                </button>
+                <a href="mailto:info@kartao.cz?subject=VIP%20spolupr%C3%A1ce%20%E2%80%94%20${encodeURIComponent(c.name)}"
+                   class="flex-1 rounded-xl px-4 py-2.5 font-semibold text-neutral-900 vip-badge text-sm text-center hover:opacity-90 transition">
+                  Kontakt
+                </a>
+              </div>
+            </article>
+          `);
+        }
+
+        // Add empty slot if under limit
+        if (sliced.length < limit) {
+          grid.insertAdjacentHTML('beforeend', `
+            <article class="glass rounded-2xl p-5 border-dashed border-2 hover:border-amber-400/30 transition group">
+              <div class="text-center py-8">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20 border border-white/10 grid place-items-center group-hover:scale-110 transition">
+                  <i data-lucide="crown" class="w-8 h-8 crown-anim text-amber-400"></i>
+                </div>
+                <h3 class="font-bold mb-2">Volné místo #${sliced.length + 1}</h3>
+                <p class="text-sm text-white/60 mb-4">Staňte se součástí VIP elit</p>
+                <a href="#vip-apply" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 transition text-sm font-medium">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  Požádat
+                </a>
+              </div>
+            </article>
+          `);
+        }
+
+        lucide.createIcons();
+        attachDetailHandlers();
+      }
+
+      function attachDetailHandlers(){
+        document.querySelectorAll('.btn-detail').forEach(btn => {
+          btn.onclick = () => openDetailByName(btn.getAttribute('data-name'));
+        });
+      }
+
+      // Filters function
+      function applyFilters(){
+        const term = q.value.toLowerCase().trim();
+        const c = cat.value;
+        const p = platform.value;
+        const sort = sortBy.value;
+
+        let out = vipCreators.filter(v =>
+          (!term || (v.name.toLowerCase().includes(term) || v.cat.toLowerCase().includes(term) || v.platform.toLowerCase().includes(term))) &&
+          (!c || v.cat===c) &&
+          (!p || v.platform===p)
+        );
+
+        // Sorting
+        if (sort === 'followers') {
+          out.sort((a, b) => {
+            const aNum = parseInt(a.followers.replace('k', '')) * 1000;
+            const bNum = parseInt(b.followers.replace('k', '')) * 1000;
+            return bNum - aNum;
+          });
+        } else if (sort === 'er') {
+          out.sort((a, b) => parseFloat(b.er) - parseFloat(a.er));
+        } else if (sort === 'price') {
+          out.sort((a, b) => {
+            const aPrice = parseInt(a.price.split('–')[0]);
+            const bPrice = parseInt(b.price.split('–')[0]);
+            return aPrice - bPrice;
+          });
+        }
+
+        // Show/hide clear filters button
+        if (term || c || p || sort !== 'default') {
+          clearFiltersBtn.classList.remove('hidden');
+        } else {
+          clearFiltersBtn.classList.add('hidden');
+        }
+
+        render(out);
+      }
+
+      // Filter event listeners
+      [q, cat, platform, sortBy].forEach(el => el.addEventListener('input', applyFilters));
+      [q, cat, platform, sortBy].forEach(el => el.addEventListener('change', applyFilters));
+
+      // Clear filters
+      clearFiltersBtn.addEventListener('click', () => {
+        q.value = '';
+        cat.value = '';
+        platform.value = '';
+        sortBy.value = 'default';
+        applyFilters();
+      });
+
+      // Reset search from empty state
+      document.getElementById('resetSearch')?.addEventListener('click', () => {
+        q.value = '';
+        cat.value = '';
+        platform.value = '';
+        sortBy.value = 'default';
+        applyFilters();
+      });
+
+      // Form submission
+      document.getElementById('vipForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        console.log('VIP Application:', data);
+
+        // Show success message
+        const form = e.target;
+        form.innerHTML = `
+          <div class="text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/20 border border-emerald-500/30 grid place-items-center">
+              <i data-lucide="check" class="w-10 h-10 text-emerald-400"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Žádost odeslána!</h3>
+            <p class="text-white/70 mb-6 max-w-md mx-auto">
+              Děkujeme za zájem o VIP status. Vaši žádost pečlivě prozkoumáme
+              a do 48 hodin se vám ozveme na <strong>${data.email}</strong>.
+            </p>
+            <button onclick="window.location.reload()" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition">
+              Zpět na přehled
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+      });
+
+      // Footer collapsible sections (mobile only)
+      document.querySelectorAll('footer button[aria-controls]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('aria-controls');
+          const target = document.getElementById(targetId);
+          const chevron = btn.querySelector('[data-lucide="chevron-down"]');
+          const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+          // Toggle
+          btn.setAttribute('aria-expanded', !isExpanded);
+          target.classList.toggle('hidden');
+          if (chevron) {
+            chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+          }
+        });
+      });
+
+      // Newsletter form
+      document.getElementById('footer-newsletter')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        console.log('Newsletter subscription:', email);
+        alert('Děkujeme! Přihlášení k odběru novinek bylo úspěšné.');
+        e.target.reset();
+      });
+
+      // Initial render
       render(vipCreators);
       lucide.createIcons();
-    });
-
-    // Hamburger menu - viz hamburger-menu.js
-
-    // Footer collapsible sections (mobile only)
-    document.querySelectorAll('footer button[aria-controls]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('aria-controls');
-        const target = document.getElementById(targetId);
-        const chevron = btn.querySelector('[data-lucide="chevron-down"]');
-        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-
-        // Toggle
-        btn.setAttribute('aria-expanded', !isExpanded);
-        target.classList.toggle('hidden');
-        if (chevron) {
-          chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
-        }
-      });
-    });
-
-    // Newsletter form
-    document.getElementById('footer-newsletter')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = e.target.email.value;
-      console.log('Newsletter subscription:', email);
-      alert('Děkujeme! Přihlášení k odběru novinek bylo úspěšné.');
-      e.target.reset();
     });
   </script>
 
