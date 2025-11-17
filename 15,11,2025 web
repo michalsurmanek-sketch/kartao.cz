@@ -566,6 +566,7 @@
           <option value="instagram">Instagram</option>
           <option value="tiktok">TikTok</option>
           <option value="youtube">YouTube</option>
+          <option value="pinterest">Pinterest</option>
         </select>
 
         <select id="mode" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
