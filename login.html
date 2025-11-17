@@ -319,6 +319,54 @@
     regValidator.enableRealTimeValidation();
 
     // =========================
+    // 4.5) Auth State Observer - Automatické přesměrování
+    // =========================
+    let authStateHandled = false;
+    let isRegistering = false; // Flag pro rozlišení registrace vs. přihlášení
+    
+    auth.onAuthStateChanged(async (user) => {
+      console.log('🔐 Auth state changed:', user ? user.email : 'No user');
+      
+      // Pokud je uživatel přihlášen, NENÍ to registrace, a ještě jsme nepřesměrovali
+      if (user && !authStateHandled && !isRegistering) {
+        authStateHandled = true;
+        console.log('👤 Uživatel přihlášen:', user.email);
+        console.log('✉️ Email ověřen:', user.emailVerified);
+        
+        // Malá prodleva pro zobrazení úspěšné zprávy
+        setTimeout(async () => {
+          try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.exists ? userDoc.data() : null;
+            const role = userData?.role;
+            
+            console.log('📊 Role uživatele:', role);
+            
+            if (role === 'creator') {
+              console.log('↪️ Přesměrování na creator-dashboard.html');
+              window.location.href = "creator-dashboard.html";
+            } else if (role === 'company') {
+              console.log('↪️ Přesměrování na firm-dashboard.html');
+              window.location.href = "firm-dashboard.html";
+            } else {
+              console.log('↪️ Přesměrování na kartao-vyber-uctu.html');
+              window.location.href = "kartao-vyber-uctu.html";
+            }
+          } catch (err) {
+            console.error('Chyba při načítání role:', err);
+            window.location.href = "kartao-vyber-uctu.html";
+          }
+        }, 1500);
+      }
+      
+      // Reset flag po odhlášení
+      if (!user) {
+        authStateHandled = false;
+        isRegistering = false;
+      }
+    });
+
+    // =========================
     // 5) Registrace + ověření e-mailu
     // =========================
     registerFormEl.addEventListener("submit", async (e) => {
@@ -345,6 +393,7 @@
       btn.textContent = 'Vytvářím účet...';
       btn.disabled = true;
       
+      isRegistering = true; // Nastavit flag - registrace probíhá
       console.log('📝 Zahajuji registraci pro:', email);
 
       try {
@@ -374,7 +423,7 @@
               `Ověřovací email byl odeslán na <strong>${cred.user.email}</strong><br><br>` +
               `📧 Zkontrolujte schránku (i SPAM složku)<br>` +
               `📨 Email přichází z: noreply@kartao-cz.firebaseapp.com<br><br>` +
-              `<em>Za chvíli budete přesměrováni na přihlášení...</em>`,
+              `<em>Nyní se můžete přihlásit...</em>`,
               "success"
             );
           } catch (emailError) {
@@ -383,17 +432,23 @@
               `⚠️ <strong>Účet byl vytvořen!</strong><br><br>` +
               `Ověřovací email se bohužel nepodařilo odeslat.<br>` +
               `Můžete se přihlásit a použít tlačítko "Znovu poslat ověřovací e-mail".<br><br>` +
-              `<em>Za chvíli budete přesměrováni na přihlášení...</em>`,
+              `<em>Nyní se můžete přihlásit...</em>`,
               "info"
             );
           }
           
-          // Počkat 3 sekundy a pak přepnout na login tab
+          // DŮLEŽITÉ: Odhlásit uživatele po registraci
+          // Firebase automaticky přihlásí po createUserWithEmailAndPassword
+          // Ale chceme, aby se uživatel přihlásil manuálně
+          await auth.signOut();
+          console.log('👋 Uživatel odhlášen po registraci - může se přihlásit');
+          
+          // Počkat chvilku a pak přepnout na login tab
           setTimeout(() => {
             registerFormEl.reset();
             setActiveTab("login");
-            console.log('↪️ Přesměrováno na přihlášení');
-          }, 3000);
+            console.log('↪️ Přepnuto na přihlášení');
+          }, 2000);
         }
       } catch (error) {
         console.error('❌ Chyba při registraci:', error.code, error.message);
