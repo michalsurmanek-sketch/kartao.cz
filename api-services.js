@@ -690,3 +690,11 @@ class ChatService {
     }
   }
 }
+
+// Export služeb pro použití v modulech i globálně
+if (typeof window !== 'undefined') {
+  window.CreatorService = CreatorService;
+  window.UserService = UserService;
+  window.CampaignService = CampaignService;
+  window.DataHelpers = DataHelpers;
+}
