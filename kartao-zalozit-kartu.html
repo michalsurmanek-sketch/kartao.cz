@@ -30,6 +30,12 @@
   <!-- Lucide ikony -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
   <style>
     body {
       background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
@@ -336,6 +342,31 @@
     </footer>
   </div>
 
+  <!-- Firebase Configuration & Initialization -->
+  <script>
+    // Firebase konfigurace - NAHRAĎTE svými skutečnými hodnotami z Firebase Console
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEMO_API_KEY_REPLACE_ME",
+      authDomain: "kartao-cz.firebaseapp.com",
+      projectId: "kartao-cz",
+      storageBucket: "kartao-cz.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
+    };
+
+    // Inicializace Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    // Firebase služby
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    console.log('Firebase inicializováno úspěšně');
+  </script>
+
   <script>
     // Lucide ikony
     lucide.createIcons();
@@ -419,46 +450,39 @@
     });
 
     // === FIREBASE ULOŽENÍ KARTY ===
-    // POZNÁMKA: tady počítáme s tím, že už máš na stránce načtené a inicializované Firebase (firebase-app, firebase-auth, firebase-firestore)
-    // Např. někde výš ve <script> máš:
-    //   const firebaseConfig = { ... };
-    //   firebase.initializeApp(firebaseConfig);
-    //   const db = firebase.firestore();
-
     const form = document.getElementById('cardForm');
     const formMessage = document.getElementById('formMessage');
 
     let currentUser = null;
 
-    if (window.firebase && firebase.auth) {
-      firebase.auth().onAuthStateChanged((user) => {
-        currentUser = user || null;
-        // případně můžeš přesměrovat nepřihlášené na login
-        // if (!currentUser) window.location.href = 'index.html';
-      });
-    }
+    // Sledování přihlášení uživatele
+    auth.onAuthStateChanged((user) => {
+      currentUser = user || null;
+      console.log('Auth state changed:', currentUser ? currentUser.email : 'Not logged in');
+    });
 
     function showMessage(text, type = 'info') {
       if (!formMessage) return;
       formMessage.textContent = text;
       formMessage.classList.remove('hidden');
-      formMessage.classList.remove('text-emerald-300', 'text-red-300');
+      formMessage.classList.remove('text-emerald-300', 'text-red-300', 'text-sky-300');
       if (type === 'success') formMessage.classList.add('text-emerald-300');
       if (type === 'error') formMessage.classList.add('text-red-300');
+      if (type === 'info') formMessage.classList.add('text-sky-300');
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!window.firebase || !firebase.firestore) {
-        showMessage('Firebase není na stránce inicializovaný. Zkontrolujte skripty.', 'error');
-        return;
-      }
-
+      // PRO DEMO ÚČELY: Pokud není přihlášený uživatel, vytvoříme testovacího
       if (!currentUser) {
-        showMessage('Pro uložení karty se prosím nejdřív přihlaste.', 'error');
-        if (typeof openLogin === 'function') openLogin();
-        return;
+        showMessage('⚠️ DEMO MODE: Používám testovacího uživatele. V produkci vyžadujte přihlášení.', 'info');
+        // Simulujeme přihlášeného uživatele pro demo
+        currentUser = {
+          uid: 'demo-user-' + Date.now(),
+          email: 'demo@kartao.cz'
+        };
+        console.warn('DEMO MODE: Using test user');
       }
 
       // Check if avatar and cover are provided (either file or URL)
@@ -474,9 +498,6 @@
         showMessage('Prosím nahrajte úvodní foto nebo vložte URL.', 'error');
         return;
       }
-
-      const db = firebase.firestore();
-      const storage = firebase.storage();
       
       showMessage('Ukládám kartu...', 'info');
 
