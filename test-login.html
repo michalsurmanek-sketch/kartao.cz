@@ -86,6 +86,9 @@
     const resultEl = document.getElementById('result');
     const currentUserEl = document.getElementById('current-user');
     const logoutBtn = document.getElementById('logout-btn');
+    
+    // Prevence duplicitních OAuth pokusů
+    let isOAuthInProgress = false;
 
     function checkFirebase() {
       let status = [];
@@ -151,6 +154,13 @@
 
     // Testovací přihlášení přes Google
     document.getElementById('google-test-btn').addEventListener('click', async () => {
+      // Prevence duplicitních pokusů
+      if (isOAuthInProgress) {
+        console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+        return;
+      }
+      
+      isOAuthInProgress = true;
       resultEl.innerHTML = '<div class="text-amber-400">Přihlašuji přes Google...</div>';
       
       try {
@@ -173,6 +183,12 @@
         
         resultEl.innerHTML = `<div class="text-emerald-400">✅ Přihlášen přes Google: ${result.user.email}</div>`;
       } catch (error) {
+        // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+        if (error.code === 'auth/cancelled-popup-request') {
+          console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+          return;
+        }
+        
         let msg = `<div class="text-red-400">❌ Google chyba: ${error.code}<br>`;
         
         console.error('Full error:', error);
@@ -198,11 +214,20 @@
         
         resultEl.innerHTML = msg;
         console.error('Google error:', error);
+      } finally {
+        isOAuthInProgress = false;
       }
     });
 
     // Testovací přihlášení přes Facebook
     document.getElementById('facebook-test-btn').addEventListener('click', async () => {
+      // Prevence duplicitních pokusů
+      if (isOAuthInProgress) {
+        console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+        return;
+      }
+      
+      isOAuthInProgress = true;
       resultEl.innerHTML = '<div class="text-amber-400">Přihlašuji přes Facebook...</div>';
       
       try {
@@ -225,6 +250,12 @@
         
         resultEl.innerHTML = `<div class="text-emerald-400">✅ Přihlášen přes Facebook: ${result.user.email}</div>`;
       } catch (error) {
+        // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+        if (error.code === 'auth/cancelled-popup-request') {
+          console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+          return;
+        }
+        
         let msg = `<div class="text-red-400">❌ Facebook chyba: ${error.code}<br>`;
         
         console.error('Full error:', error);
@@ -253,6 +284,8 @@
         
         resultEl.innerHTML = msg;
         console.error('Facebook error:', error);
+      } finally {
+        isOAuthInProgress = false;
       }
     });
 

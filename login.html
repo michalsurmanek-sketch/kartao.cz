@@ -467,6 +467,13 @@
     // =========================
     if (btnGoogle) {
       btnGoogle.addEventListener("click", async () => {
+        // Prevence duplicitních pokusů
+        if (isOAuthInProgress) {
+          console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+          return;
+        }
+        
+        isOAuthInProgress = true;
         clearMessage();
         btnGoogle.disabled = true;
         const originalText = btnGoogle.textContent;
@@ -527,6 +534,14 @@
           console.error('Error code:', error.code);
           console.error('Error message:', error.message);
           
+          // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+          if (error.code === 'auth/cancelled-popup-request') {
+            console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+            btnGoogle.textContent = originalText;
+            btnGoogle.disabled = false;
+            return;
+          }
+          
           let errorMsg = "Přihlášení přes Google se nepodařilo.";
           
           if (error.code === 'auth/popup-closed-by-user') {
@@ -561,6 +576,7 @@
         } finally {
           btnGoogle.textContent = originalText;
           btnGoogle.disabled = false;
+          isOAuthInProgress = false;
         }
       });
     }
@@ -570,6 +586,13 @@
     // =========================
     if (btnFacebook) {
       btnFacebook.addEventListener("click", async () => {
+        // Prevence duplicitních pokusů
+        if (isOAuthInProgress) {
+          console.warn('⚠️ OAuth již probíhá, ignoruji duplicitní kliknutí');
+          return;
+        }
+        
+        isOAuthInProgress = true;
         clearMessage();
         btnFacebook.disabled = true;
         const originalText = btnFacebook.textContent;
@@ -630,6 +653,14 @@
           console.error('Error code:', error.code);
           console.error('Error message:', error.message);
           
+          // Tichá ignorace zrušeného popupu (uživatel klikl vícekrát)
+          if (error.code === 'auth/cancelled-popup-request') {
+            console.warn('⚠️ Popup zrušen kvůli duplicitnímu pokusu');
+            btnFacebook.textContent = originalText;
+            btnFacebook.disabled = false;
+            return;
+          }
+          
           let errorMsg = "Přihlášení přes Facebook se nepodařilo.";
           
           if (error.code === 'auth/popup-closed-by-user') {
@@ -670,6 +701,7 @@
         } finally {
           btnFacebook.textContent = originalText;
           btnFacebook.disabled = false;
+          isOAuthInProgress = false;
         }
       });
     }
