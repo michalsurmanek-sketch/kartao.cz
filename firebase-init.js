@@ -20,6 +20,12 @@ if (!firebase.apps || !firebase.apps.length) {
 // Firestore instance - globální přístup (pouze pokud ještě není)
 if (!window.db) {
   window.db = firebase.firestore();
+  
+  // DŮLEŽITÉ: Vypnout offline persistence aby to nečekalo na síť
+  window.db.settings({
+    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+  });
+  
   console.log('✅ Firestore DB created');
 }
 
