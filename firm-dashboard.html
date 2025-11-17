@@ -127,8 +127,8 @@ FILE: firm-dashboard.html
         
         // Zkontroluj roli uživatele
         const role = await userService.getUserRole(user.uid);
-        if (role !== 'company') {
-          if (role === 'creator') {
+        if (role !== 'firma') {
+          if (role === 'tvurce') {
             window.location.href = 'creator-dashboard.html';
           } else {
             window.location.href = 'kartao-vyber-uctu.html';
@@ -144,8 +144,8 @@ FILE: firm-dashboard.html
         
         // Zkontroluj roli uživatele
         const role = await userService.getUserRole(user.uid);
-        if (role !== 'company') {
-          if (role === 'creator') {
+        if (role !== 'firma') {
+          if (role === 'tvurce') {
             window.location.href = 'creator-dashboard.html';
           } else {
             window.location.href = 'kartao-vyber-uctu.html';

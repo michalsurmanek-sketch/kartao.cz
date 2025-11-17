@@ -157,9 +157,9 @@ async function redirect(user) {
     const doc = await db.collection('users').doc(user.uid).get();
     const role = doc.exists ? doc.data()?.role : null;
     
-    if (role === 'creator') {
+    if (role === 'tvurce') {
       window.location.href = 'creator-dashboard.html';
-    } else if (role === 'company') {
+    } else if (role === 'firma') {
       window.location.href = 'firm-dashboard.html';
     } else {
       window.location.href = 'kartao-vyber-uctu.html';

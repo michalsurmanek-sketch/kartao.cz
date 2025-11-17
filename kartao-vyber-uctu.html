@@ -173,9 +173,9 @@
           }
 
           if (role === "firma") {
-            window.location.href = "kartao-pro-firmy.html";
+            window.location.href = "firm-dashboard.html";
           } else {
-            window.location.href = "kartao-pro-tvurce.html";
+            window.location.href = "creator-dashboard.html";
           }
         } catch (err) {
           console.error(err);
@@ -198,11 +198,11 @@
             if (snap.exists) {
               const data = snap.data();
               if (data.role === "firma") {
-                window.location.href = "kartao-pro-firmy.html";
+                window.location.href = "firm-dashboard.html";
                 return;
               }
               if (data.role === "tvurce") {
-                window.location.href = "kartao-pro-tvurce.html";
+                window.location.href = "creator-dashboard.html";
                 return;
               }
             }

@@ -197,8 +197,8 @@ FILE: creator-dashboard.html
         
         // Zkontroluj roli uživatele
         const role = await userService.getUserRole(user.uid);
-        if (role !== 'creator') {
-          if (role === 'company') {
+        if (role !== 'tvurce') {
+          if (role === 'firma') {
             window.location.href = 'firm-dashboard.html';
           } else {
             window.location.href = 'kartao-vyber-uctu.html';
