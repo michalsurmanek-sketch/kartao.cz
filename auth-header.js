@@ -18,6 +18,12 @@
     const loginBtnMobile = document.getElementById('loginBtnMobile');
     const userMenuMobile = document.getElementById('userMenuMobile');
     
+    // Hamburger menu elementy
+    const mobileMenuLoginBtn = document.getElementById('mobileMenuLoginBtn');
+    const mobileMenuUserBtn = document.getElementById('mobileMenuUserBtn');
+    const mobileMenuUserName = document.getElementById('mobileMenuUserName');
+    const mobileMenuLogoutBtn = document.getElementById('mobileMenuLogoutBtn');
+    
     if (user) {
       // Přihlášen
       if (loginBtnDesktop) loginBtnDesktop.classList.add('hidden');
@@ -31,18 +37,29 @@
         userMenuMobile.classList.add('flex');
       }
       
-      // Zobraz jméno
-      if (userNameDesktop) {
-        if (user.displayName) {
-          userNameDesktop.textContent = user.displayName;
-        } else if (user.email) {
-          userNameDesktop.textContent = user.email.split('@')[0];
-        }
-      }
+      // Hamburger menu - přihlášen
+      if (mobileMenuLoginBtn) mobileMenuLoginBtn.classList.add('hidden');
+      if (mobileMenuUserBtn) mobileMenuUserBtn.classList.remove('hidden');
+      if (mobileMenuLogoutBtn) mobileMenuLogoutBtn.classList.remove('hidden');
       
-      // Odhlášení handler
+      // Zobraz jméno
+      const displayName = user.displayName || user.email?.split('@')[0] || 'Uživatel';
+      if (userNameDesktop) userNameDesktop.textContent = displayName;
+      if (mobileMenuUserName) mobileMenuUserName.textContent = displayName;
+      
+      // Odhlášení handlery
       if (logoutBtnDesktop) {
         logoutBtnDesktop.addEventListener('click', async () => {
+          try {
+            await firebase.auth().signOut();
+            window.location.reload();
+          } catch (error) {
+            console.error('Chyba odhlášení:', error);
+          }
+        });
+      }
+      if (mobileMenuLogoutBtn) {
+        mobileMenuLogoutBtn.addEventListener('click', async () => {
           try {
             await firebase.auth().signOut();
             window.location.reload();
@@ -57,6 +74,11 @@
       if (userMenuDesktop) userMenuDesktop.classList.add('hidden');
       if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
       if (userMenuMobile) userMenuMobile.classList.add('hidden');
+      
+      // Hamburger menu - nepřihlášen
+      if (mobileMenuLoginBtn) mobileMenuLoginBtn.classList.remove('hidden');
+      if (mobileMenuUserBtn) mobileMenuUserBtn.classList.add('hidden');
+      if (mobileMenuLogoutBtn) mobileMenuLogoutBtn.classList.add('hidden');
     }
     
     // Reinit Lucide icons
