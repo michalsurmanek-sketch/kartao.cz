@@ -36,6 +36,25 @@
         <span class="text-white/40">/</span>
         <span class="text-white">Magazín</span>
       </nav>
+      
+      <div class="hidden md:flex items-center gap-3">
+        <!-- Nepřihlášen -->
+        <a id="loginBtnDesktop" href="login.html" class="btn btn-outline text-sm">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          Přihlásit se
+        </a>
+        <!-- Přihlášen -->
+        <div id="userMenuDesktop" class="hidden items-center gap-2">
+          <a href="kartao-muj-ucet.html" class="btn btn-outline text-sm">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span id="userNameDesktop">Můj účet</span>
+          </a>
+          <button id="logoutBtnDesktop" class="btn btn-outline text-sm">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            Odhlásit
+          </button>
+        </div>
+      </div>
 
       <!-- Search tlačítko -->
       <button id="searchToggle" class="p-2 rounded-lg hover:bg-white/5 transition">
@@ -464,5 +483,9 @@
     renderArticles();
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="auth-header.js"></script>
 </body>
 </html>

@@ -178,7 +178,22 @@
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="login.html" class="hidden sm:inline-flex px-3 py-1.5 rounded-full border border-white/15 text-xs font-medium text-white/80 hover:bg-white/10">Přihlásit se</a>
+      <!-- Auth buttons - desktop -->
+      <div id="authButtons" class="hidden sm:flex items-center gap-2">
+        <!-- Nepřihlášen -->
+        <a id="loginBtnDesktop" href="login.html" class="px-3 py-1.5 rounded-full border border-white/15 text-xs font-medium text-white/80 hover:bg-white/10">Přihlásit se</a>
+        <!-- Přihlášen -->
+        <div id="userMenuDesktop" class="hidden items-center gap-2">
+          <a href="kartao-muj-ucet.html" class="px-3 py-1.5 rounded-full border border-white/15 text-xs font-medium text-white/80 hover:bg-white/10 flex items-center gap-2">
+            <i data-lucide="user" class="w-3 h-3"></i>
+            <span id="userNameDesktop">Můj účet</span>
+          </a>
+          <button id="logoutBtnDesktop" class="px-3 py-1.5 rounded-full border border-white/15 text-xs font-medium text-white/80 hover:bg-white/10 flex items-center gap-2">
+            <i data-lucide="log-out" class="w-3 h-3"></i>
+            Odhlásit
+          </button>
+        </div>
+      </div>
       <a href="kartao-zalozit-kartu.html" class="px-4 py-1.5 rounded-full bg-fuchsia-500 text-xs sm:text-sm font-semibold hover:bg-fuchsia-600">Založit kartu</a>
       
       <!-- HAMBURGER MENU BUTTON -->
@@ -1470,5 +1485,8 @@
 
 <!-- Hamburger Menu -->
 <script src="hamburger-menu.js"></script>
+<!-- Auth Header Logic -->
+<script src="auth-header.js"></script>
 </body>
 </html>
+
