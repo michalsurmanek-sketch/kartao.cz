@@ -828,9 +828,10 @@
       const selectedReward = rewardFilter.value;
       const matchesReward = selectedReward === 'all' || reward === selectedReward;
 
-      // Follower filter
-      const followerMin = followerRanges[followerRange.value].min;
-      const matchesFollowers = followers >= followerMin;
+      // Follower filter - kampaň vyžaduje alespoň tento počet followers
+      const userFollowerLevel = followerRanges[followerRange.value].min;
+      // Pokud má uživatel víc followerů než vyžaduje kampaň, splňuje podmínku
+      const matchesFollowers = userFollowerLevel >= followers;
 
       return matchesSearch && matchesPlatform && matchesCategory && matchesType && matchesBudget && matchesReward && matchesFollowers;
     }
