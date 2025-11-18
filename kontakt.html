@@ -426,139 +426,163 @@
   </footer>
   <!-- =============== UNIFIED FOOTER END =============== -->
 
- <script src="form-validation.js"></script>
- <script>
-   // Validace kontaktního formuláře
-   const contactForm = document.getElementById('contact-form');
-   if (contactForm) {
-     const validator = new FormValidator(contactForm);
-     validator
-       .addRule('name', { required: true, minLength: 2 })
-       .addRule('email', { required: true, email: true })
-       .addRule('message', { required: true, minLength: 10 });
-     
-     validator.enableRealTimeValidation();
-     
-     validator.onSubmit(async (data) => {
-       const btn = contactForm.querySelector('button[type="submit"]');
-       const btnText = btn.querySelector('.submit-text');
-       const btnLoading = btn.querySelector('.submit-loading');
-       
-       btnText.classList.add('hidden');
-       btnLoading.classList.remove('hidden');
-       btn.disabled = true;
-       
-       try {
-         // Simulace odeslání (zde by bylo volání API)
-         await new Promise(resolve => setTimeout(resolve, 1500));
-         
-         Toast.success('Zpráva byla úspěšně odeslána! Odpovíme vám co nejdříve.');
-         contactForm.reset();
-       } catch (error) {
-         Toast.error('Chyba při odesílání. Zkuste to prosím znovu.');
-       } finally {
-         btnText.classList.remove('hidden');
-         btnLoading.classList.add('hidden');
-         btn.disabled = false;
-       }
-     });
-   }
-   
-   // Validace newsletteru
-   // Newsletter submission (top form)
-   const newsletterForm = document.getElementById('newsletter-form');
-   if (newsletterForm) {
-     newsletterForm.addEventListener('submit', async (e) => {
-       e.preventDefault();
-       const email = newsletterForm.elements.email.value;
-       
-       if (!isValidEmail(email)) {
-         Toast.error('Zadejte prosím platnou e-mailovou adresu');
-         return;
-       }
-       
-       const btn = newsletterForm.querySelector('button');
-       const originalText = btn.textContent;
-       btn.textContent = 'Ukládám...';
-       btn.disabled = true;
-       
-       try {
-         await new Promise(resolve => setTimeout(resolve, 1000));
-         Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
-         newsletterForm.reset();
-       } catch (error) {
-         Toast.error('Nepodařilo se přihlásit k odběru');
-       } finally {
-         btn.textContent = originalText;
-         btn.disabled = false;
-       }
-     });
-   }
+  <!-- JAVASCRIPT LIBRARIES -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- SCRIPTS -->
+  <script>
+    // Simple Toast notification system
+    const Toast = {
+      success: (message) => {
+        alert('✅ ' + message);
+      },
+      error: (message) => {
+        alert('❌ ' + message);
+      }
+    };
 
-   // Footer newsletter submission
-   const footerNewsletter = document.getElementById('footer-newsletter-bottom');
+    // Email validation helper
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-   // Footer newsletter submission
-   const footerNewsletter = document.getElementById('footer-newsletter-bottom');
-   if (footerNewsletter) {
-     footerNewsletter.addEventListener('submit', async (e) => {
-       e.preventDefault();
-       const email = footerNewsletter.elements.email.value;
-       
-       if (!isValidEmail(email)) {
-         Toast.error('Zadejte prosím platnou e-mailovou adresu');
-         return;
-       }
-       
-       const btn = footerNewsletter.querySelector('button');
-       const originalText = btn.textContent;
-       btn.textContent = 'Ukládám...';
-       btn.disabled = true;
-       
-       try {
-         await new Promise(resolve => setTimeout(resolve, 1000));
-         Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
-         footerNewsletter.reset();
-       } catch (error) {
-         Toast.error('Nepodařilo se přihlásit k odběru');
-       } finally {
-         btn.textContent = originalText;
-         btn.disabled = false;
-       }
-     });
-   }
+    // Contact form submission
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = contactForm.elements.name.value.trim();
+        const email = contactForm.elements.email.value.trim();
+        const message = contactForm.elements.message.value.trim();
+        
+        // Validation
+        if (name.length < 2) {
+          Toast.error('Jméno musí mít alespoň 2 znaky');
+          return;
+        }
+        
+        if (!isValidEmail(email)) {
+          Toast.error('Zadejte prosím platnou e-mailovou adresu');
+          return;
+        }
+        
+        if (message.length < 10) {
+          Toast.error('Zpráva musí mít alespoň 10 znaků');
+          return;
+        }
+        
+        const btn = contactForm.querySelector('button[type="submit"]');
+        const btnText = btn.querySelector('.submit-text');
+        const btnLoading = btn.querySelector('.submit-loading');
+        
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+        btn.disabled = true;
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          Toast.success('Zpráva byla úspěšně odeslána! Odpovíme vám co nejdříve.');
+          contactForm.reset();
+        } catch (error) {
+          Toast.error('Chyba při odesílání. Zkuste to prosím znovu.');
+        } finally {
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+          btn.disabled = false;
+        }
+      });
+    }
+    
+    // Newsletter form (top section)
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = newsletterForm.elements.email.value;
+        
+        if (!isValidEmail(email)) {
+          Toast.error('Zadejte prosím platnou e-mailovou adresu');
+          return;
+        }
+        
+        const btn = newsletterForm.querySelector('button');
+        const originalText = btn.textContent;
+        btn.textContent = 'Ukládám...';
+        btn.disabled = true;
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
+          newsletterForm.reset();
+        } catch (error) {
+          Toast.error('Nepodařilo se přihlásit k odběru');
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      });
+    }
 
-   // Footer collapsible accordion (mobile only)
-   const footerButtons = document.querySelectorAll('footer button[aria-controls]');
-   footerButtons.forEach(btn => {
-     btn.addEventListener('click', () => {
-       const panelId = btn.getAttribute('aria-controls');
-       const panel = document.getElementById(panelId);
-       const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-       
-       // Toggle expanded state
-       btn.setAttribute('aria-expanded', !isExpanded);
-       
-       // Toggle panel visibility
-       panel.classList.toggle('hidden');
-       
-       // Rotate chevron icon
-       const chevron = btn.querySelector('[data-lucide="chevron-down"]');
-       if (chevron) {
-         chevron.style.transform = isExpanded ? '' : 'rotate(180deg)';
-       }
-     });
-   });
+    // Footer newsletter
+    const footerNewsletter = document.getElementById('footer-newsletter-bottom');
+    if (footerNewsletter) {
+      footerNewsletter.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = footerNewsletter.elements.email.value;
+        
+        if (!isValidEmail(email)) {
+          Toast.error('Zadejte prosím platnou e-mailovou adresu');
+          return;
+        }
+        
+        const btn = footerNewsletter.querySelector('button');
+        const originalText = btn.textContent;
+        btn.textContent = 'Ukládám...';
+        btn.disabled = true;
+        
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
+          footerNewsletter.reset();
+        } catch (error) {
+          Toast.error('Nepodařilo se přihlásit k odběru');
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      });
+    }
 
-   // Lucide ikony
-   lucide.createIcons();
- </script>
- 
- <!-- Hamburger Menu -->
- <script src="hamburger-menu.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-<script src="auth-header.js"></script>
+    // Footer collapsible accordion (mobile only)
+    const footerButtons = document.querySelectorAll('footer button[aria-controls]');
+    footerButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelId = btn.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        
+        btn.setAttribute('aria-expanded', !isExpanded);
+        panel.classList.toggle('hidden');
+        
+        const chevron = btn.querySelector('[data-lucide="chevron-down"]');
+        if (chevron) {
+          chevron.style.transform = isExpanded ? '' : 'rotate(180deg)';
+        }
+      });
+    });
+
+    // Initialize Lucide icons after DOM is ready
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
+  
+  <!-- Hamburger Menu -->
+  <script src="hamburger-menu.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="auth-header.js"></script>
 </body>
 </html>
