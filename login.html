@@ -138,6 +138,14 @@
 </main>
 
 <script>
+// Počkat na Firebase inicializaci
+window.addEventListener('load', () => {
+  // Kontrola že Firebase je načtený
+  if (typeof firebase === 'undefined' || typeof auth === 'undefined') {
+    console.error('Firebase není načtený!');
+    return;
+  }
+
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 const msg = document.getElementById('message');
 const tabLogin = document.getElementById('tab-login');
@@ -276,6 +284,8 @@ btnGoogle.onclick = async () => {
 
 // Init icons
 lucide.createIcons();
+
+}); // Konec window.onload
 </script>
 
 </body>
