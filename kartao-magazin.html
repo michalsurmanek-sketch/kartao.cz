@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white">
@@ -72,6 +74,38 @@
       </button>
     </div>
   </header>
+
+  <!-- KATEGORIE NAVIGACE (desktop only) -->
+  <nav class="hidden md:block border-b border-white/10 bg-neutral-900/50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <a href="#vse" class="px-4 py-3 text-sm font-medium text-white border-b-2 border-fuchsia-500 whitespace-nowrap hover:bg-white/5 transition">
+          Vše
+        </a>
+        <a href="#influencer-marketing" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Influencer Marketing
+        </a>
+        <a href="#social-media" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Social Media
+        </a>
+        <a href="#trendy" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Trendy
+        </a>
+        <a href="#pruvodce" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Průvodce
+        </a>
+        <a href="#case-study" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Case Study
+        </a>
+        <a href="#tipy" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Tipy & Triky
+        </a>
+        <a href="#novinky" class="px-4 py-3 text-sm text-white/70 border-b-2 border-transparent whitespace-nowrap hover:text-white hover:bg-white/5 transition">
+          Novinky
+        </a>
+      </div>
+    </div>
+  </nav>
 
   <!-- Mobilní menu -->
   <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
