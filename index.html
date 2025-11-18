@@ -256,7 +256,36 @@
         </a>
       </nav>
 
+      <div class="hidden md:flex items-center gap-3">
+        <!-- Přihlášen - zobrazí se po načtení Firebase -->
+        <div id="userMenu" class="hidden items-center gap-3">
+          <a href="kartao-muj-ucet.html" class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span id="userName">Můj účet</span>
+          </a>
+          <button id="logoutBtn" class="btn btn-outline text-sm hover:bg-white/5 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            Odhlásit
+          </button>
+        </div>
+        <!-- Nepřihlášen -->
+        <a id="loginBtn" href="login.html" class="btn btn-primary text-sm">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          Přihlásit se
+        </a>
+      </div>
+
       <div class="md:hidden flex items-center gap-2">
+        <!-- User menu mobile - přihlášen -->
+        <a id="userMenuMobile" href="kartao-muj-ucet.html" class="hidden items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="user" class="w-5 h-5"></i>
+          <span class="sr-only">Můj účet</span>
+        </a>
+        <!-- Login button mobile - nepřihlášen -->
+        <a id="loginBtnMobile" href="login.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition">
+          <i data-lucide="log-in" class="w-5 h-5"></i>
+          <span class="sr-only">Přihlásit se</span>
+        </a>
         <a href="vip.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
           <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
           <span class="sr-only">VIP</span>
@@ -1645,6 +1674,57 @@
     // Inicializace hamburger menu
     if (typeof initHamburgerMenu === 'function') {
       initHamburgerMenu();
+    }
+    
+    // Firebase Auth - zobrazení správných tlačítek
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged((user) => {
+        const userMenu = document.getElementById('userMenu');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userName = document.getElementById('userName');
+        const userMenuMobile = document.getElementById('userMenuMobile');
+        const loginBtnMobile = document.getElementById('loginBtnMobile');
+        
+        if (user) {
+          // Přihlášen
+          if (userMenu) {
+            userMenu.classList.remove('hidden');
+            userMenu.classList.add('flex');
+          }
+          if (loginBtn) loginBtn.classList.add('hidden');
+          if (userMenuMobile) {
+            userMenuMobile.classList.remove('hidden');
+            userMenuMobile.classList.add('flex');
+          }
+          if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
+          
+          // Zobraz jméno
+          if (userName && user.displayName) {
+            userName.textContent = user.displayName;
+          } else if (userName && user.email) {
+            userName.textContent = user.email.split('@')[0];
+          }
+          
+          // Odhlášení
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+              try {
+                await firebase.auth().signOut();
+                window.location.reload();
+              } catch (error) {
+                console.error('Chyba odhlášení:', error);
+              }
+            });
+          }
+        } else {
+          // Nepřihlášen
+          if (userMenu) userMenu.classList.add('hidden');
+          if (loginBtn) loginBtn.classList.remove('hidden');
+          if (userMenuMobile) userMenuMobile.classList.add('hidden');
+          if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
+        }
+      });
     }
   });
 
