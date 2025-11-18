@@ -9,40 +9,13 @@ const firebaseConfig = {
   measurementId: "G-QC38M7X2KT"
 };
 
-// Inicializace Firebase (pouze jednou)
+// Inicializace Firebase
 if (!firebase.apps || !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
-  console.log('✅ Firebase initialized');
-} else {
-  console.log('ℹ️ Firebase already initialized');
 }
 
-// Firestore instance - globální přístup (pouze pokud ještě není)
-if (!window.db) {
-  window.db = firebase.firestore();
-  
-  // OPRAVA: Zakázat offline persistence aby to nečekalo
-  window.db.settings({
-    merge: true,
-    experimentalForceLongPolling: true, // Fix pro dev prostředí
-  });
-  
-  console.log('✅ Firestore DB created');
-}
-
-if (!window.auth) {
-  window.auth = firebase.auth();
-  console.log('✅ Firebase Auth created');
-}
-
-// Backwards compatibility
+// Globální proměnné
+window.db = firebase.firestore();
+window.auth = firebase.auth();
 const db = window.db;
 const auth = window.auth;
-
-// Auth status
-let AOcurrentUser = null;
-
-firebase.auth().onAuthStateChanged((user) => {
-  AOcurrentUser = user || null;
-  console.log('🔐 Auth state changed:', user ? user.email : 'Not logged in');
-});
