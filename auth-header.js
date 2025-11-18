@@ -39,8 +39,14 @@
       
       // Hamburger menu - přihlášen
       if (mobileMenuLoginBtn) mobileMenuLoginBtn.classList.add('hidden');
-      if (mobileMenuUserBtn) mobileMenuUserBtn.classList.remove('hidden');
-      if (mobileMenuLogoutBtn) mobileMenuLogoutBtn.classList.remove('hidden');
+      if (mobileMenuUserBtn) {
+        mobileMenuUserBtn.classList.remove('hidden');
+        mobileMenuUserBtn.classList.add('block');
+      }
+      if (mobileMenuLogoutBtn) {
+        mobileMenuLogoutBtn.classList.remove('hidden');
+        mobileMenuLogoutBtn.classList.add('block');
+      }
       
       // Zobraz jméno
       const displayName = user.displayName || user.email?.split('@')[0] || 'Uživatel';
@@ -76,7 +82,10 @@
       if (userMenuMobile) userMenuMobile.classList.add('hidden');
       
       // Hamburger menu - nepřihlášen
-      if (mobileMenuLoginBtn) mobileMenuLoginBtn.classList.remove('hidden');
+      if (mobileMenuLoginBtn) {
+        mobileMenuLoginBtn.classList.remove('hidden');
+        mobileMenuLoginBtn.classList.add('block');
+      }
       if (mobileMenuUserBtn) mobileMenuUserBtn.classList.add('hidden');
       if (mobileMenuLogoutBtn) mobileMenuLogoutBtn.classList.add('hidden');
     }
