@@ -1,30 +1,101 @@
-<!-- =============================
-FILE: creator-dashboard.html
-============================= -->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao – Dashboard tvůrce</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📈</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👑</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .card{background-color:rgba(23,23,23,.7);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:.75rem}
-    .btn-primary{background:#e879f9}
-    .btn-primary:hover{background:#db58f6}
-    .btn-outline{border:1px solid rgba(255,255,255,.2)}
+    body { 
+      background: radial-gradient(circle at top right, rgba(219, 88, 246, 0.15), transparent 50%),
+                  radial-gradient(circle at bottom left, rgba(251, 191, 36, 0.12), transparent 60%),
+                  #0a0a0a;
+    }
+    .card {
+      background: rgba(23, 23, 23, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.2rem;
+      border-radius: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #db58f6 0%, #fbbf24 100%);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(219, 88, 246, 0.3);
+    }
+    .btn-outline {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(219, 88, 246, 0.5);
+    }
+    .stat-card {
+      background: linear-gradient(135deg, rgba(219, 88, 246, 0.08), rgba(251, 191, 36, 0.05));
+      border: 1px solid rgba(219, 88, 246, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    input, textarea, select {
+      transition: all 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #db58f6;
+      box-shadow: 0 0 0 3px rgba(219, 88, 246, 0.1);
+    }
+    .platform-card {
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .platform-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(219, 88, 246, 0.4);
+    }
+    .order-badge {
+      display: inline-flex;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .badge-active { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .badge-completed { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white">
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/70 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-4 h-4"></i></div>
-        <div class="font-bold">Kartao – Tvůrce</div>
+<body class="min-h-screen text-white">
+  
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/80 backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center group-hover:scale-110 transition-transform">
+          <i data-lucide="crown" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="font-bold text-lg">Kartao</div>
+          <div class="text-xs text-white/60">Dashboard tvůrce</div>
+        </div>
       </a>
+      
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="kartao-marketplace.html" class="text-white/70 hover:text-white transition flex items-center gap-2">
           <i data-lucide="search" class="w-4 h-4"></i>
@@ -32,135 +103,408 @@ FILE: creator-dashboard.html
         </a>
         <a href="chat.html" class="text-white/70 hover:text-white transition flex items-center gap-2">
           <i data-lucide="message-circle" class="w-4 h-4"></i>
-          Chat
+          Zprávy
         </a>
         <a href="earnings-management.html" class="text-white/70 hover:text-white transition flex items-center gap-2">
-          <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-          Příjmy
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          Výdělky
         </a>
       </nav>
-      <div class="flex items-center gap-2">
-        <a href="index.html" class="btn btn-outline flex items-center gap-2">
+      
+      <div class="flex items-center gap-3">
+        <button id="notificationBtn" class="relative p-2 rounded-xl hover:bg-white/5 transition">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-fuchsia-500 rounded-full"></span>
+        </button>
+        <a href="index.html" class="btn btn-outline text-sm">
           <i data-lucide="home" class="w-4 h-4"></i>
-          Zpět na web
+          <span class="hidden sm:inline">Zpět na web</span>
         </a>
-        <button id="logout" class="btn flex items-center gap-2">
+        <button id="logout" class="btn btn-primary text-sm">
           <i data-lucide="log-out" class="w-4 h-4"></i>
-          Odhlásit
+          <span class="hidden sm:inline">Odhlásit</span>
         </button>
       </div>
     </div>
   </header>
 
   <!-- BREADCRUMBS -->
-  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
-    <div class="max-w-7xl mx-auto px-4 py-2">
+  <nav class="border-b border-white/10 bg-neutral-900/30 backdrop-blur" aria-label="breadcrumb">
+    <div class="max-w-7xl mx-auto px-4 py-3">
       <ol class="flex items-center gap-2 text-sm">
-        <li><a href="index.html" class="text-white/70 hover:text-white transition">Domů</a></li>
+        <li><a href="index.html" class="text-white/70 hover:text-white transition flex items-center gap-1">
+          <i data-lucide="home" class="w-3 h-3"></i>
+          Domů
+        </a></li>
         <i data-lucide="chevron-right" class="w-3 h-3 text-white/40"></i>
         <li><a href="kartao-muj-ucet.html" class="text-white/70 hover:text-white transition">Můj účet</a></li>
         <i data-lucide="chevron-right" class="w-3 h-3 text-white/40"></i>
-        <li class="text-white">Dashboard tvůrce</li>
+        <li class="text-fuchsia-400 font-semibold">Dashboard tvůrce</li>
       </ol>
     </div>
   </nav>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-3 gap-6">
-    <!-- Profil karta -->
-    <section class="lg:col-span-2 card p-4">
-      <h2 class="text-xl font-bold mb-3">Můj profil</h2>
-      <form id="creatorProfile" class="grid md:grid-cols-2 gap-3">
-        <input name="name" required placeholder="Jméno / profil" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="email" type="email" required placeholder="E‑mail" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="city" placeholder="Město" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <input name="category" placeholder="Kategorie (Beauty, Fitness…)" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2"/>
-        <textarea name="bio" placeholder="Krátké bio" class="md:col-span-2 min-h-24 rounded-xl bg-neutral-900 border border-white/10 p-3 text-sm"></textarea>
-        <div class="md:col-span-2 flex items-center justify-between mt-2">
-          <div class="text-xs text-white/60">Uloží se lokálně (demo). Napojení na API přidáme.</div>
-          <button class="btn btn-primary" type="submit">Uložit profil</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- Statistika -->
-    <aside class="card p-4">
-      <h3 class="font-semibold mb-2">Statistiky</h3>
-      <div class="text-sm text-white/70">Followeři (demo)</div>
-      <div class="mt-2 grid grid-cols-4 gap-2 text-center">
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">FB</div><div id="sFB" class="font-bold">—</div></div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">IG</div><div id="sIG" class="font-bold">—</div></div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">TT</div><div id="sTT" class="font-bold">—</div></div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10"><div class="text-xs text-white/60">YT</div><div id="sYT" class="font-bold">—</div></div>
-      </div>
-      <div class="mt-3 text-xs text-white/50">Přesné hodnoty se načtou po propojení účtů.</div>
-    </aside>
-
-    <!-- Propojení účtů -->
-    <section class="lg:col-span-2 card p-4">
-      <h2 class="text-xl font-bold mb-3">Propojit účty</h2>
-      <div class="grid md:grid-cols-4 gap-3">
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
-          <div class="flex items-center justify-between"><span class="text-sm">Facebook</span><i data-lucide="facebook" class="w-4 h-4"></i></div>
-          <input id="fbUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
-          <button id="connectFB" class="mt-2 btn btn-primary w-full">Propojit</button>
-        </div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
-          <div class="flex items-center justify-between"><span class="text-sm">Instagram</span><i data-lucide="camera" class="w-4 h-4"></i></div>
-          <input id="igUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
-          <button id="connectIG" class="mt-2 btn btn-primary w-full">Propojit</button>
-        </div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
-          <div class="flex items-center justify-between"><span class="text-sm">TikTok</span><i data-lucide="music-4" class="w-4 h-4"></i></div>
-          <input id="ttUrl" placeholder="URL profilu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
-          <button id="connectTT" class="mt-2 btn btn-primary w-full">Propojit</button>
-        </div>
-        <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
-          <div class="flex items-center justify-between"><span class="text-sm">YouTube</span><i data-lucide="play" class="w-4 h-4"></i></div>
-          <input id="ytUrl" placeholder="URL kanálu" class="mt-2 w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2" />
-          <button id="connectYT" class="mt-2 btn btn-primary w-full">Propojit</button>
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- WELCOME BANNER -->
+    <section class="mb-8 card p-6 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-fuchsia-500/10 via-transparent to-amber-400/10"></div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">
+              Vítej zpět, <span id="userName" class="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-amber-400">Tvůrče</span>! 👋
+            </h1>
+            <p class="text-white/70">Tady najdeš přehled tvých aktivit, příjmů a objednávek</p>
+          </div>
+          <a href="kartao-marketplace.html" class="btn btn-primary hidden lg:flex">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            Najít spolupráci
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Příjmy a výdělky -->
-    <section class="card p-4">
-      <h2 class="text-xl font-bold mb-3">Moje příjmy</h2>
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-green-400" id="totalEarnings">0 Kč</div>
-          <div class="text-xs text-white/60">Celkové příjmy</div>
-        </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-blue-400" id="pendingEarnings">0 Kč</div>
-          <div class="text-xs text-white/60">K výběru</div>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <button id="withdrawBtn" class="btn btn-primary w-full" disabled>
-          <i data-lucide="credit-card" class="w-4 h-4"></i>
-          Vybrat peníze
-        </button>
-        <a href="earnings-management.html" class="btn btn-outline w-full">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          Detailní přehled
-        </a>
-        <a href="order-management.html" class="btn btn-outline w-full">
-          <i data-lucide="list" class="w-4 h-4"></i>
-          Moje objednávky
-        </a>
-      </div>
-    </section>
+    <div class="grid lg:grid-cols-3 gap-6">
+      
+      <!-- LEVÝ SLOUPEC (2/3) -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- STATISTIKY PŘEHLED -->
+        <section class="card p-6">
+          <h2 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-fuchsia-400"></i>
+            Přehled výkonnosti
+          </h2>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="stat-card">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-white/60">Celkové příjmy</span>
+                <i data-lucide="trending-up" class="w-4 h-4 text-green-400"></i>
+              </div>
+              <div class="text-3xl font-bold text-green-400" id="totalEarnings">0 Kč</div>
+              <div class="text-xs text-white/50 mt-1">+15% tento měsíc</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-white/60">Aktivní projekty</span>
+                <i data-lucide="briefcase" class="w-4 h-4 text-blue-400"></i>
+              </div>
+              <div class="text-3xl font-bold text-blue-400" id="activeProjects">0</div>
+              <div class="text-xs text-white/50 mt-1">3 čeká na akceptaci</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-white/60">Hodnocení</span>
+                <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+              </div>
+              <div class="text-3xl font-bold text-amber-400" id="rating">4.8</div>
+              <div class="text-xs text-white/50 mt-1">Z 24 recenzí</div>
+            </div>
+          </div>
+        </section>
 
-    <!-- Nabídky spolupráce (inbox) -->
-    <section class="card p-4">
-      <h2 class="text-xl font-bold mb-3">Aktivní objednávky</h2>
-      <div id="activeOrders" class="space-y-2 text-sm">
-        <div class="text-center py-4 text-white/50">Načítání...</div>
+        <!-- MŮJ PROFIL -->
+        <section class="card p-6">
+          <h2 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i data-lucide="user" class="w-5 h-5 text-fuchsia-400"></i>
+            Můj profil
+          </h2>
+          <form id="creatorProfile" class="space-y-4">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-white/70 mb-2">Jméno / Název profilu</label>
+                <input 
+                  name="name" 
+                  required 
+                  placeholder="Jan Novák" 
+                  class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm text-white/70 mb-2">E-mail</label>
+                <input 
+                  name="email" 
+                  type="email" 
+                  required 
+                  placeholder="jan@example.com" 
+                  class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 text-white"
+                />
+              </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-white/70 mb-2">Město</label>
+                <input 
+                  name="city" 
+                  placeholder="Praha" 
+                  class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 text-white"
+                />
+              </div>
+              <div>
+                <label class="block text-sm text-white/70 mb-2">Kategorie</label>
+                <select 
+                  name="category" 
+                  class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 text-white"
+                >
+                  <option value="">Vyber kategorii...</option>
+                  <option value="beauty">Beauty & Make-up</option>
+                  <option value="fitness">Fitness & Zdraví</option>
+                  <option value="fashion">Móda & Lifestyle</option>
+                  <option value="food">Jídlo & Vaření</option>
+                  <option value="tech">Technologie</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="travel">Cestování</option>
+                  <option value="business">Business</option>
+                  <option value="other">Ostatní</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-white/70 mb-2">O mně (bio)</label>
+              <textarea 
+                name="bio" 
+                rows="4"
+                placeholder="Řekni něco o sobě a své tvorbě..."
+                class="w-full rounded-xl bg-neutral-900 border border-white/10 p-4 text-white resize-none"
+              ></textarea>
+            </div>
+            
+            <div class="flex items-center justify-between pt-2">
+              <div class="text-xs text-white/50">
+                <i data-lucide="info" class="w-3 h-3 inline"></i>
+                Profil je veřejný na Marketplace
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                Uložit profil
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- PROPOJENÍ SOCIÁLNÍCH SÍTÍ -->
+        <section class="card p-6">
+          <h2 class="text-xl font-bold mb-5 flex items-center gap-2">
+            <i data-lucide="link" class="w-5 h-5 text-fuchsia-400"></i>
+            Propojit sociální sítě
+          </h2>
+          <div class="grid md:grid-cols-2 gap-4">
+            
+            <!-- Instagram -->
+            <div class="platform-card p-4 rounded-xl bg-neutral-900/60 border border-white/10">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-500 to-pink-500 grid place-items-center">
+                  <i data-lucide="camera" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Instagram</div>
+                  <div class="text-xs text-white/50" id="igStatus">Nepřipojeno</div>
+                </div>
+              </div>
+              <input 
+                id="igUrl" 
+                placeholder="instagram.com/username" 
+                class="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm mb-2"
+              />
+              <button id="connectIG" class="btn btn-primary w-full text-sm">
+                <i data-lucide="plug" class="w-3 h-3"></i>
+                Propojit
+              </button>
+              <div class="mt-2 text-center">
+                <span class="text-sm font-bold text-purple-400" id="igFollowers">—</span>
+                <span class="text-xs text-white/50 ml-1">followers</span>
+              </div>
+            </div>
+
+            <!-- TikTok -->
+            <div class="platform-card p-4 rounded-xl bg-neutral-900/60 border border-white/10">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-black to-cyan-400 grid place-items-center">
+                  <i data-lucide="music" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">TikTok</div>
+                  <div class="text-xs text-white/50" id="ttStatus">Nepřipojeno</div>
+                </div>
+              </div>
+              <input 
+                id="ttUrl" 
+                placeholder="tiktok.com/@username" 
+                class="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm mb-2"
+              />
+              <button id="connectTT" class="btn btn-primary w-full text-sm">
+                <i data-lucide="plug" class="w-3 h-3"></i>
+                Propojit
+              </button>
+              <div class="mt-2 text-center">
+                <span class="text-sm font-bold text-cyan-400" id="ttFollowers">—</span>
+                <span class="text-xs text-white/50 ml-1">followers</span>
+              </div>
+            </div>
+
+            <!-- YouTube -->
+            <div class="platform-card p-4 rounded-xl bg-neutral-900/60 border border-white/10">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-red-400 grid place-items-center">
+                  <i data-lucide="play" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">YouTube</div>
+                  <div class="text-xs text-white/50" id="ytStatus">Nepřipojeno</div>
+                </div>
+              </div>
+              <input 
+                id="ytUrl" 
+                placeholder="youtube.com/@channel" 
+                class="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm mb-2"
+              />
+              <button id="connectYT" class="btn btn-primary w-full text-sm">
+                <i data-lucide="plug" class="w-3 h-3"></i>
+                Propojit
+              </button>
+              <div class="mt-2 text-center">
+                <span class="text-sm font-bold text-red-400" id="ytFollowers">—</span>
+                <span class="text-xs text-white/50 ml-1">subscribers</span>
+              </div>
+            </div>
+
+            <!-- Facebook -->
+            <div class="platform-card p-4 rounded-xl bg-neutral-900/60 border border-white/10">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-400 grid place-items-center">
+                  <i data-lucide="facebook" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Facebook</div>
+                  <div class="text-xs text-white/50" id="fbStatus">Nepřipojeno</div>
+                </div>
+              </div>
+              <input 
+                id="fbUrl" 
+                placeholder="facebook.com/page" 
+                class="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm mb-2"
+              />
+              <button id="connectFB" class="btn btn-primary w-full text-sm">
+                <i data-lucide="plug" class="w-3 h-3"></i>
+                Propojit
+              </button>
+              <div class="mt-2 text-center">
+                <span class="text-sm font-bold text-blue-400" id="fbFollowers">—</span>
+                <span class="text-xs text-white/50 ml-1">followers</span>
+              </div>
+            </div>
+
+          </div>
+          <div class="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-400">
+            <i data-lucide="info" class="w-4 h-4 inline"></i>
+            Ve skutečnosti by zde bylo OAuth propojení. Nyní simulujeme data.
+          </div>
+        </section>
+
       </div>
-      <div class="mt-3">
-        <a href="order-management.html" class="text-sm text-white/60 hover:text-white">Zobrazit všechny →</a>
+
+      <!-- PRAVÝ SLOUPEC (1/3) -->
+      <div class="space-y-6">
+        
+        <!-- RYCHLÉ AKCE -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+            Rychlé akce
+          </h3>
+          <div class="space-y-2">
+            <a href="earnings-management.html" class="btn btn-outline w-full justify-center">
+              <i data-lucide="wallet" class="w-4 h-4"></i>
+              Vybrat peníze
+            </a>
+            <a href="kartao-marketplace.html" class="btn btn-outline w-full justify-center">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              Najít firmu
+            </a>
+            <a href="chat.html" class="btn btn-outline w-full justify-center">
+              <i data-lucide="message-square" class="w-4 h-4"></i>
+              Nové zprávy
+            </a>
+          </div>
+        </section>
+
+        <!-- PŘÍJMY -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="dollar-sign" class="w-4 h-4 text-green-400"></i>
+            Moje příjmy
+          </h3>
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+              <div class="text-xs text-white/60 mb-1">K dispozici</div>
+              <div class="text-2xl font-bold text-green-400" id="pendingEarnings">0 Kč</div>
+            </div>
+            <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+              <div class="text-xs text-white/60 mb-1">V escrow</div>
+              <div class="text-xl font-bold text-blue-400" id="escrowAmount">0 Kč</div>
+            </div>
+          </div>
+          <button id="withdrawBtn" class="btn btn-primary w-full mt-4" disabled>
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Vybrat peníze
+          </button>
+          <div class="text-xs text-white/50 text-center mt-2">Min. výběr 100 Kč</div>
+        </section>
+
+        <!-- AKTIVNÍ OBJEDNÁVKY -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="list-checks" class="w-4 h-4 text-fuchsia-400"></i>
+            Aktivní objednávky
+          </h3>
+          <div id="activeOrders" class="space-y-3">
+            <div class="text-center py-6 text-white/40 text-sm">
+              <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              Načítání objednávek...
+            </div>
+          </div>
+          <a href="order-management.html" class="block text-center text-sm text-fuchsia-400 hover:text-fuchsia-300 mt-4">
+            Zobrazit všechny →
+          </a>
+        </section>
+
+        <!-- NOTIFIKACE -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+            Notifikace
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div class="p-2 rounded-lg bg-neutral-900/60 border border-white/10">
+              <div class="flex items-start gap-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5"></i>
+                <div class="flex-1">
+                  <div class="text-white/90">Platba přijata</div>
+                  <div class="text-xs text-white/50">Před 2 hodinami</div>
+                </div>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-neutral-900/60 border border-white/10">
+              <div class="flex items-start gap-2">
+                <i data-lucide="message-circle" class="w-4 h-4 text-blue-400 mt-0.5"></i>
+                <div class="flex-1">
+                  <div class="text-white/90">Nová zpráva od firmy</div>
+                  <div class="text-xs text-white/50">Včera</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </section>
+
+    </div>
   </main>
 
   <!-- Firebase -->
@@ -168,255 +512,308 @@ FILE: creator-dashboard.html
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-init.js"></script>
-  <script src="database-init.js"></script>
-  <script src="api-services.js"></script>
-  <script src="payment-services.js"></script>
 
   <script>
-    // Pokud je potřeba vytvořit inicializační data v databázi, odkomentuj:
-    // initializeDatabase();
-    
-    let creatorService;
-    let userService;
-    let paymentService;
-    let currentUser = null;
-
-    // Inicializace po načtení Firebase
-    firebase.auth().onAuthStateChanged(async (user) => {
-      if (!user) {
-        window.location.href = 'login.html';
+    // Auth check a načtení dat
+    window.addEventListener('load', function() {
+      if (typeof firebase === 'undefined' || !firebase.auth) {
+        console.error('❌ Firebase není načtený!');
         return;
       }
 
-      currentUser = user;
-      
-      if (!creatorService) {
-        creatorService = new CreatorService();
-        userService = new UserService();
-        paymentService = new PaymentService();
-        
-        // Zkontroluj roli uživatele
-        const role = await userService.getUserRole(user.uid);
-        if (role !== 'tvurce') {
-          if (role === 'firma') {
-            window.location.href = 'firm-dashboard.html';
-          } else {
-            window.location.href = 'kartao-vyber-uctu.html';
-          }
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      let currentUser = null;
+
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          console.log('⚠️ Uživatel není přihlášen, redirect na login');
+          window.location.href = 'login.html';
           return;
         }
-        
-        await loadCreatorProfile(user.uid);
-        await loadEarningsData(user.uid);
-        await loadActiveOrders(user.uid);
-      }
-    });
 
-    async function loadCreatorProfile(userId) {
-      try {
-        const creator = await creatorService.getCreatorDetail(userId);
+        currentUser = user;
+        console.log('✅ Přihlášen jako:', user.email);
+
+        // Načti profil
+        loadProfile(user);
         
-        if (creator) {
-          document.querySelector('[name="name"]').value = creator.name || '';
-          document.querySelector('[name="email"]').value = creator.email || currentUser.email || '';
-          document.querySelector('[name="city"]').value = creator.city || '';
-          document.querySelector('[name="category"]').value = creator.category || '';
-          document.querySelector('[name="bio"]').value = creator.bio || '';
-          
-          updateStats(creator.metrics);
+        // Načti statistiky
+        loadStats(user.uid);
+        
+        // Načti objednávky
+        loadOrders(user.uid);
+      });
+
+      // Načtení profilu
+      async function loadProfile(user) {
+        try {
+          const doc = await db.collection('creators').doc(user.uid).get();
+          if (doc.exists) {
+            const data = doc.data();
+            document.querySelector('[name="name"]').value = data.name || '';
+            document.querySelector('[name="email"]').value = data.email || user.email;
+            document.querySelector('[name="city"]').value = data.city || '';
+            document.querySelector('[name="category"]').value = data.category || '';
+            document.querySelector('[name="bio"]').value = data.bio || '';
+            document.getElementById('userName').textContent = data.name || 'Tvůrče';
+
+            // Načti metriky
+            if (data.metrics) {
+              updateSocialMetrics(data.metrics);
+            }
+          } else {
+            // Nový uživatel
+            document.querySelector('[name="email"]').value = user.email;
+            document.getElementById('userName').textContent = user.displayName || 'Tvůrče';
+          }
+        } catch (error) {
+          console.error('Chyba načítání profilu:', error);
         }
-      } catch (error) {
-        console.error('Chyba při načítání profilu:', error);
       }
-    }
 
-    async function loadEarningsData(creatorId) {
-      try {
-        const earnings = await paymentService.getCreatorEarnings(creatorId);
+      // Uložení profilu
+      document.getElementById('creatorProfile').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const formData = new FormData(e.target);
+        const profileData = {
+          userId: currentUser.uid,
+          email: formData.get('email'),
+          name: formData.get('name'),
+          city: formData.get('city'),
+          category: formData.get('category'),
+          bio: formData.get('bio'),
+          role: 'tvurce',
+          updatedAt: new Date().toISOString()
+        };
+
+        try {
+          await db.collection('creators').doc(currentUser.uid).set(profileData, { merge: true });
+          alert('✅ Profil uložen!');
+        } catch (error) {
+          console.error('Chyba ukládání:', error);
+          alert('❌ Chyba při ukládání profilu');
+        }
+      });
+
+      // Propojení Instagram
+      document.getElementById('connectIG').addEventListener('click', async () => {
+        const url = document.getElementById('igUrl').value.trim();
+        if (!url) {
+          alert('Zadej URL profilu');
+          return;
+        }
+
+        // Simulace - v reálu by zde bylo OAuth
+        const followers = Math.floor(Math.random() * 100000) + 5000;
         
-        document.getElementById('totalEarnings').textContent = 
-          PaymentService.formatAmount(earnings.totalEarnings || 0);
-        document.getElementById('pendingEarnings').textContent = 
-          PaymentService.formatAmount(earnings.availableBalance || 0);
+        try {
+          await db.collection('creators').doc(currentUser.uid).set({
+            'metrics.instagram': {
+              username: extractUsername(url),
+              followers: followers,
+              connected: true,
+              connectedAt: new Date().toISOString()
+            }
+          }, { merge: true });
+
+          document.getElementById('igFollowers').textContent = formatNumber(followers);
+          document.getElementById('igStatus').textContent = 'Připojeno ✓';
+          document.getElementById('igStatus').classList.add('text-green-400');
+          alert(`✅ Instagram připojen! Followers: ${formatNumber(followers)}`);
+        } catch (error) {
+          console.error('Chyba propojení IG:', error);
+        }
+      });
+
+      // Propojení TikTok
+      document.getElementById('connectTT').addEventListener('click', async () => {
+        const url = document.getElementById('ttUrl').value.trim();
+        if (!url) {
+          alert('Zadej URL profilu');
+          return;
+        }
+
+        const followers = Math.floor(Math.random() * 200000) + 10000;
         
-        // Enable withdraw button if there's balance
-        const withdrawBtn = document.getElementById('withdrawBtn');
-        if (earnings.availableBalance > 100) { // Minimum 1 Kč for withdrawal
+        try {
+          await db.collection('creators').doc(currentUser.uid).set({
+            'metrics.tiktok': {
+              username: extractUsername(url),
+              followers: followers,
+              connected: true,
+              connectedAt: new Date().toISOString()
+            }
+          }, { merge: true });
+
+          document.getElementById('ttFollowers').textContent = formatNumber(followers);
+          document.getElementById('ttStatus').textContent = 'Připojeno ✓';
+          document.getElementById('ttStatus').classList.add('text-green-400');
+          alert(`✅ TikTok připojen! Followers: ${formatNumber(followers)}`);
+        } catch (error) {
+          console.error('Chyba propojení TT:', error);
+        }
+      });
+
+      // Propojení YouTube
+      document.getElementById('connectYT').addEventListener('click', async () => {
+        const url = document.getElementById('ytUrl').value.trim();
+        if (!url) {
+          alert('Zadej URL kanálu');
+          return;
+        }
+
+        const followers = Math.floor(Math.random() * 150000) + 2000;
+        
+        try {
+          await db.collection('creators').doc(currentUser.uid).set({
+            'metrics.youtube': {
+              username: extractUsername(url),
+              followers: followers,
+              connected: true,
+              connectedAt: new Date().toISOString()
+            }
+          }, { merge: true });
+
+          document.getElementById('ytFollowers').textContent = formatNumber(followers);
+          document.getElementById('ytStatus').textContent = 'Připojeno ✓';
+          document.getElementById('ytStatus').classList.add('text-green-400');
+          alert(`✅ YouTube připojen! Subscribers: ${formatNumber(followers)}`);
+        } catch (error) {
+          console.error('Chyba propojení YT:', error);
+        }
+      });
+
+      // Propojení Facebook
+      document.getElementById('connectFB').addEventListener('click', async () => {
+        const url = document.getElementById('fbUrl').value.trim();
+        if (!url) {
+          alert('Zadej URL stránky');
+          return;
+        }
+
+        const followers = Math.floor(Math.random() * 80000) + 3000;
+        
+        try {
+          await db.collection('creators').doc(currentUser.uid).set({
+            'metrics.facebook': {
+              username: extractUsername(url),
+              followers: followers,
+              connected: true,
+              connectedAt: new Date().toISOString()
+            }
+          }, { merge: true });
+
+          document.getElementById('fbFollowers').textContent = formatNumber(followers);
+          document.getElementById('fbStatus').textContent = 'Připojeno ✓';
+          document.getElementById('fbStatus').classList.add('text-green-400');
+          alert(`✅ Facebook připojen! Followers: ${formatNumber(followers)}`);
+        } catch (error) {
+          console.error('Chyba propojení FB:', error);
+        }
+      });
+
+      // Načíst statistiky
+      async function loadStats(userId) {
+        try {
+          // Simulace dat
+          document.getElementById('totalEarnings').textContent = '12 450 Kč';
+          document.getElementById('pendingEarnings').textContent = '3 200 Kč';
+          document.getElementById('escrowAmount').textContent = '4 500 Kč';
+          document.getElementById('activeProjects').textContent = '5';
+          document.getElementById('rating').textContent = '4.8';
+
+          // Povolit výběr peněz pokud je částka
+          const withdrawBtn = document.getElementById('withdrawBtn');
           withdrawBtn.disabled = false;
-          withdrawBtn.addEventListener('click', () => showWithdrawModal(earnings.availableBalance));
+        } catch (error) {
+          console.error('Chyba načítání stats:', error);
         }
+      }
+
+      // Načíst objednávky
+      async function loadOrders(userId) {
+        const container = document.getElementById('activeOrders');
         
-      } catch (error) {
-        console.error('Chyba při načítání příjmů:', error);
-      }
-    }
+        // Simulace objednávek
+        const mockOrders = [
+          { id: 1, company: 'Nike CZ', status: 'active', amount: 15000, deadline: '2025-11-25' },
+          { id: 2, company: 'Adidas', status: 'pending', amount: 8500, deadline: '2025-11-30' },
+          { id: 3, company: 'Coca-Cola', status: 'completed', amount: 12000, deadline: '2025-11-20' }
+        ];
 
-    function updateStats(metrics) {
-      const platforms = [
-        { key: 'facebook', id: 'sFB' },
-        { key: 'instagram', id: 'sIG' },
-        { key: 'tiktok', id: 'sTT' },
-        { key: 'youtube', id: 'sYT' }
-      ];
-      
-      platforms.forEach(platform => {
-        const element = document.getElementById(platform.id);
-        const metric = metrics?.[platform.key];
-        if (element) {
-          element.textContent = metric && metric.connected 
-            ? DataHelpers.formatFollowers(metric.followers) || '—'
-            : '—';
+        container.innerHTML = mockOrders.map(order => `
+          <div class="p-3 rounded-xl bg-neutral-900/60 border border-white/10">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-semibold text-sm">${order.company}</div>
+              <span class="order-badge badge-${order.status}">
+                ${order.status === 'active' ? 'Aktivní' : order.status === 'pending' ? 'Čeká' : 'Hotovo'}
+              </span>
+            </div>
+            <div class="text-xs text-white/60">Částka: <span class="text-white font-semibold">${formatNumber(order.amount)} Kč</span></div>
+            <div class="text-xs text-white/50">Deadline: ${order.deadline}</div>
+          </div>
+        `).join('');
+      }
+
+      // Update social metrics
+      function updateSocialMetrics(metrics) {
+        if (metrics.instagram?.connected) {
+          document.getElementById('igFollowers').textContent = formatNumber(metrics.instagram.followers);
+          document.getElementById('igStatus').textContent = 'Připojeno ✓';
+          document.getElementById('igStatus').classList.add('text-green-400');
+        }
+        if (metrics.tiktok?.connected) {
+          document.getElementById('ttFollowers').textContent = formatNumber(metrics.tiktok.followers);
+          document.getElementById('ttStatus').textContent = 'Připojeno ✓';
+          document.getElementById('ttStatus').classList.add('text-green-400');
+        }
+        if (metrics.youtube?.connected) {
+          document.getElementById('ytFollowers').textContent = formatNumber(metrics.youtube.followers);
+          document.getElementById('ytStatus').textContent = 'Připojeno ✓';
+          document.getElementById('ytStatus').classList.add('text-green-400');
+        }
+        if (metrics.facebook?.connected) {
+          document.getElementById('fbFollowers').textContent = formatNumber(metrics.facebook.followers);
+          document.getElementById('fbStatus').textContent = 'Připojeno ✓';
+          document.getElementById('fbStatus').classList.add('text-green-400');
+        }
+      }
+
+      // Helper funkce
+      function extractUsername(url) {
+        const match = url.match(/[/@]([a-zA-Z0-9_.]+)(?:\?|$|\/)/);
+        return match ? match[1] : url.split('/').pop() || 'unknown';
+      }
+
+      function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+      }
+
+      // Odhlášení
+      document.getElementById('logout').addEventListener('click', async () => {
+        try {
+          await auth.signOut();
+          window.location.href = 'index.html';
+        } catch (error) {
+          console.error('Chyba odhlášení:', error);
         }
       });
-    }
 
-    // Make processWithdrawal globally available
-    window.processWithdrawal = processWithdrawal;
-
-    // Uložení profilu
-    document.getElementById('creatorProfile').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      if (!currentUser) return;
-      
-      const formData = new FormData(e.target);
-      const profileData = {
-        userId: currentUser.uid,
-        name: formData.get('name'),
-        email: formData.get('email'), 
-        city: formData.get('city'),
-        category: formData.get('category'),
-        bio: formData.get('bio'),
-        platforms: ['facebook', 'instagram', 'tiktok', 'youtube'], // default platformy
-        setupCompleted: true
-      };
-      
-      try {
-        const success = await creatorService.updateCreatorProfile(currentUser.uid, profileData);
-        
-        if (success) {
-          alert('Profil byl úspěšně uložen!');
-          await loadCreatorProfile(currentUser.uid);
-        } else {
-          alert('Chyba při ukládání profilu.');
-        }
-      } catch (error) {
-        console.error('Chyba při ukládání:', error);
-        alert('Došlo k chybě při ukládání.');
-      }
-    });
-
-    // Propojení Facebook
-    document.getElementById('connectFB').addEventListener('click', async () => {
-      const url = document.getElementById('fbUrl').value.trim();
-      if (!url) {
-        alert('Zadejte URL profilu');
-        return;
-      }
-      
-      // Simulace API volání (ve skutečnosti by zde byla integrace s Facebook API)
-      const followers = Math.floor(Math.random() * 150000) + 5000;
-      
-      const success = await creatorService.updateSocialAccount(currentUser.uid, 'facebook', {
-        username: extractUsernameFromUrl(url),
-        followers: followers,
-        connected: true,
-        verified: Math.random() > 0.5
+      // Notifikace
+      document.getElementById('notificationBtn')?.addEventListener('click', () => {
+        alert('📬 Funkce notifikací bude brzy přidána!');
       });
-      
-      if (success) {
-        alert(`Facebook připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
-        await loadCreatorProfile(currentUser.uid);
-        document.getElementById('fbUrl').value = '';
-      }
-    });
 
-    // Propojení Instagram
-    document.getElementById('connectIG').addEventListener('click', async () => {
-      const url = document.getElementById('igUrl').value.trim();
-      if (!url) {
-        alert('Zadejte URL profilu');
-        return;
-      }
-      
-      // Simulace API volání (ve skutečnosti by zde byla integrace s Instagram API)
-      const followers = Math.floor(Math.random() * 100000) + 10000;
-      
-      const success = await creatorService.updateSocialAccount(currentUser.uid, 'instagram', {
-        username: extractUsernameFromUrl(url),
-        followers: followers,
-        connected: true,
-        verified: Math.random() > 0.5
+      // Výběr peněz
+      document.getElementById('withdrawBtn')?.addEventListener('click', () => {
+        alert('💰 Funkce výběru peněz bude brzy přidána!');
       });
-      
-      if (success) {
-        alert(`Instagram připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
-        await loadCreatorProfile(currentUser.uid);
-        document.getElementById('igUrl').value = '';
-      }
-    });
 
-    // Propojení TikTok
-    document.getElementById('connectTT').addEventListener('click', async () => {
-      const url = document.getElementById('ttUrl').value.trim();
-      if (!url) {
-        alert('Zadejte URL profilu');
-        return;
-      }
-      
-      const followers = Math.floor(Math.random() * 200000) + 5000;
-      
-      const success = await creatorService.updateSocialAccount(currentUser.uid, 'tiktok', {
-        username: extractUsernameFromUrl(url),
-        followers: followers,
-        connected: true,
-        verified: Math.random() > 0.7
-      });
-      
-      if (success) {
-        alert(`TikTok připojen! Followers: ${DataHelpers.formatFollowers(followers)}`);
-        await loadCreatorProfile(currentUser.uid);
-        document.getElementById('ttUrl').value = '';
-      }
-    });
-
-    // Propojení YouTube
-    document.getElementById('connectYT').addEventListener('click', async () => {
-      const url = document.getElementById('ytUrl').value.trim();
-      if (!url) {
-        alert('Zadejte URL kanálu');
-        return;
-      }
-      
-      const followers = Math.floor(Math.random() * 150000) + 1000;
-      
-      const success = await creatorService.updateSocialAccount(currentUser.uid, 'youtube', {
-        username: extractUsernameFromUrl(url),
-        followers: followers,
-        connected: true,
-        verified: Math.random() > 0.6
-      });
-      
-      if (success) {
-        alert(`YouTube připojen! Subscribers: ${DataHelpers.formatFollowers(followers)}`);
-        await loadCreatorProfile(currentUser.uid);
-        document.getElementById('ytUrl').value = '';
-      }
-    });
-
-    function extractUsernameFromUrl(url) {
-      const match = url.match(/[/@]([a-zA-Z0-9_.]+)(?:\?|$|\/)/);
-      return match ? match[1] : url.split('/').pop() || 'unknown';
-    }
-
-    // Odhlášení
-    document.getElementById('logout').addEventListener('click', async () => {
-      try {
-        await firebase.auth().signOut();
-        window.location.href = 'index.html';
-      } catch (error) {
-        console.error('Chyba při odhlašování:', error);
-      }
     });
 
     // Inicializace ikon
@@ -425,33 +822,6 @@ FILE: creator-dashboard.html
         lucide.createIcons();
       }
     });
-  </script>// DEMO: akce „Založit kartu“ – uloží do LocalStorage a přesměruje na veřejnou URL
-document.getElementById('creatorProfile')?.addEventListener('submit', (e)=>{
-  // existující uložení profilu nech – jen po uložení přidej:
-  setTimeout(()=>{
-    const profile = JSON.parse(localStorage.getItem('creator_profile')||'{}');
-
-    // v demu naplníme jen IG (pokud zadal URL); v produkci sem přijde serverem vrácená data z OAuth sync
-    const metrics = {
-      instagram: profile.ig_followers ? {connected:true, followers:Number(profile.ig_followers), updatedAt: new Date().toISOString()} : {connected:false},
-      tiktok:    {connected:false},
-      youtube:   {connected:false},
-      facebook:  {connected:false}
-    };
-
-    const card = createCardFromProfile(profile, metrics);
-    const list = JSON.parse(localStorage.getItem('cards')||'[]');
-    list.unshift(card);
-    localStorage.setItem('cards', JSON.stringify(list));
-
-    // pro rychlé testy – přidáme i do datasetu listingu na homepage (pokud běží na stejném originu)
-    try {
-      localStorage.setItem('MOCK_APPEND', JSON.stringify(card));
-    } catch(_){}
-
-    // redirect na veřejnou URL karty (pro demoverzi zkusíme stránku s parametrem)
-    location.href = 'index.html?k=' + encodeURIComponent(card.slug);
-  }, 10);
-});
+  </script>
 </body>
 </html>
