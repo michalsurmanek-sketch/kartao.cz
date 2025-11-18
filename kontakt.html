@@ -245,11 +245,17 @@
         
         <!-- O Kartao -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-fuchsia-400">
-            <i data-lucide="sparkles" class="w-5 h-5"></i>
-            <span>O Kartao</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-1" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+              <span>O Kartao</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-1" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-o-nas.html">
               <i data-lucide="info" class="w-4 h-4"></i>O nás
             </a></li>
@@ -267,11 +273,17 @@
 
         <!-- Pro firmy -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-amber-400">
-            <i data-lucide="building" class="w-5 h-5"></i>
-            <span>Pro firmy</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-amber-400"
+                  aria-controls="footer-section-2" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="building" class="w-5 h-5"></i>
+              <span>Pro firmy</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-2" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-firmy.html">
               <i data-lucide="megaphone" class="w-4 h-4"></i>Zadat kampaň
             </a></li>
@@ -289,11 +301,17 @@
 
         <!-- Pro tvůrce -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-fuchsia-400">
-            <i data-lucide="camera" class="w-5 h-5"></i>
-            <span>Pro tvůrce</span>
-          </div>
-          <ul class="space-y-2 text-sm text-white/70">
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
+                  aria-controls="footer-section-3" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="camera" class="w-5 h-5"></i>
+              <span>Pro tvůrce</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <ul id="footer-section-3" class="hidden sm:block space-y-2 text-sm text-white/70">
             <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-tvurce.html">
               <i data-lucide="user-plus" class="w-4 h-4"></i>Začít jako tvůrce
             </a></li>
@@ -311,46 +329,54 @@
 
         <!-- Newsletter & Social -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-sky-400">
-            <i data-lucide="mail" class="w-5 h-5"></i>
-            <span>Novinky</span>
-          </div>
-          <p class="text-sm text-white/60 mb-3">Žádný spam. Jen podstatné novinky a tipy.</p>
-          <form id="footer-newsletter-bottom" class="flex gap-2 mb-4">
-            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail" 
-                   class="flex-1 rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
-            <button type="submit" class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium text-sm whitespace-nowrap transition">
-              Odebírat
-            </button>
-          </form>
-          
-          <!-- Social Icons -->
-          <div class="flex items-center gap-2">
-            <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener" 
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Facebook">
-              <i data-lucide="facebook" class="w-4 h-4"></i>
-            </a>
-            <a href="https://instagram.com/kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Instagram">
-              <i data-lucide="instagram" class="w-4 h-4"></i>
-            </a>
-            <a href="https://youtube.com/@kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="YouTube">
-              <i data-lucide="youtube" class="w-4 h-4"></i>
-            </a>
-            <a href="https://tiktok.com/@kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="TikTok">
-              <i data-lucide="music" class="w-4 h-4"></i>
-            </a>
-            <a href="https://pinterest.com/kartao_cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Pinterest">
-              <i data-lucide="image" class="w-4 h-4"></i>
-            </a>
+          <button type="button" 
+                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-sky-400"
+                  aria-controls="footer-section-4" 
+                  aria-expanded="false">
+            <div class="flex items-center gap-2">
+              <i data-lucide="mail" class="w-5 h-5"></i>
+              <span>Novinky</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform"></i>
+          </button>
+          <div id="footer-section-4" class="hidden sm:block">
+            <p class="text-sm text-white/60 mb-3">Žádný spam. Jen podstatné novinky a tipy.</p>
+            <form id="footer-newsletter-bottom" class="flex gap-2 mb-4">
+              <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail" 
+                     class="flex-1 rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
+              <button type="submit" class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium text-sm whitespace-nowrap transition">
+                Odebírat
+              </button>
+            </form>
+            
+            <!-- Social Icons -->
+            <div class="flex items-center gap-2">
+              <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener" 
+                 class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+                 aria-label="Facebook">
+                <i data-lucide="facebook" class="w-4 h-4"></i>
+              </a>
+              <a href="https://instagram.com/kartao.cz" target="_blank" rel="noopener"
+                 class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+                 aria-label="Instagram">
+                <i data-lucide="instagram" class="w-4 h-4"></i>
+              </a>
+              <a href="https://youtube.com/@kartao.cz" target="_blank" rel="noopener"
+                 class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+                 aria-label="YouTube">
+                <i data-lucide="youtube" class="w-4 h-4"></i>
+              </a>
+              <a href="https://tiktok.com/@kartao.cz" target="_blank" rel="noopener"
+                 class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+                 aria-label="TikTok">
+                <i data-lucide="music" class="w-4 h-4"></i>
+              </a>
+              <a href="https://pinterest.com/kartao_cz" target="_blank" rel="noopener"
+                 class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+                 aria-label="Pinterest">
+                <i data-lucide="image" class="w-4 h-4"></i>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -452,7 +478,57 @@
      });
    }
 
-   // Hamburger menu - viz hamburger-menu.js
+   // Footer newsletter submission
+   const footerNewsletter = document.getElementById('footer-newsletter-bottom');
+   if (footerNewsletter) {
+     footerNewsletter.addEventListener('submit', async (e) => {
+       e.preventDefault();
+       const email = footerNewsletter.elements.email.value;
+       
+       if (!isValidEmail(email)) {
+         Toast.error('Zadejte prosím platnou e-mailovou adresu');
+         return;
+       }
+       
+       const btn = footerNewsletter.querySelector('button');
+       const originalText = btn.textContent;
+       btn.textContent = 'Ukládám...';
+       btn.disabled = true;
+       
+       try {
+         await new Promise(resolve => setTimeout(resolve, 1000));
+         Toast.success('Děkujeme! Nyní odebíráte naše novinky.');
+         footerNewsletter.reset();
+       } catch (error) {
+         Toast.error('Nepodařilo se přihlásit k odběru');
+       } finally {
+         btn.textContent = originalText;
+         btn.disabled = false;
+       }
+     });
+   }
+
+   // Footer collapsible accordion (mobile only)
+   const footerButtons = document.querySelectorAll('footer button[aria-controls]');
+   footerButtons.forEach(btn => {
+     btn.addEventListener('click', () => {
+       const panelId = btn.getAttribute('aria-controls');
+       const panel = document.getElementById(panelId);
+       const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+       
+       // Toggle expanded state
+       btn.setAttribute('aria-expanded', !isExpanded);
+       
+       // Toggle panel visibility
+       panel.classList.toggle('hidden');
+       
+       // Rotate chevron icon
+       const chevron = btn.querySelector('[data-lucide="chevron-down"]');
+       if (chevron) {
+         chevron.style.transform = isExpanded ? '' : 'rotate(180deg)';
+       }
+     });
+   });
 
    // Lucide ikony
    lucide.createIcons();
@@ -460,18 +536,6 @@
  
  <!-- Hamburger Menu -->
  <script src="hamburger-menu.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-<script src="auth-header.js"></script>
-</body>
-</html>
-  </div>
-</footer>
-
-
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>lucide.createIcons()</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase-init.js"></script>
