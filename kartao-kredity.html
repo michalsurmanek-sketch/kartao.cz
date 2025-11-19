@@ -159,6 +159,15 @@
     var adTimer = null;
     var adInProgress = false;
 
+    // ===== KREDITY – držíme je v proměnné, neparsujeme pokaždé z textu =====
+    var credits = 0;
+    if (creditsValueEl) {
+      // vezmeme jen číslice (kdyby tam byly mezery nebo jiný text)
+      var base = creditsValueEl.textContent.replace(/[^0-9]/g, "");
+      credits = parseInt(base, 10) || 0;
+      creditsValueEl.textContent = formatNumber(credits);
+    }
+
     function todayStr() {
       var d = new Date();
       var m = String(d.getMonth() + 1);
@@ -244,13 +253,13 @@
           adInProgress = false;
           adOverlay.classList.add("hidden");
 
+          // reklama doběhla → přičíst odměnu
           state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
           saveAdState(state);
 
+          credits += rewardPerAd;
           if (creditsValueEl) {
-            var current = parseInt(creditsValueEl.textContent, 10) || 0;
-            var updated = current + rewardPerAd;
-            creditsValueEl.textContent = formatNumber(updated);
+            creditsValueEl.textContent = formatNumber(credits);
           }
 
           if (adMessage) {
@@ -295,6 +304,6 @@
       });
     }
   });
-</script>
+  </script>
 </body>
 </html>
