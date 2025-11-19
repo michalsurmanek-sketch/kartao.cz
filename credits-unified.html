@@ -83,44 +83,31 @@
         <span id="adCounter" class="text-amber-300">Dnes: 0 / 5</span>
       </div>
 
-      <div id="adOverlay" class="mt-4 rounded-2xl border border-amber-400/40 bg-neutral-950/95 px-4 py-4 flex flex-col gap-4 hidden">
-  <div class="flex items-center gap-3">
-    <div class="w-8 h-8 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
-    <div>
-      <p class="text-sm font-medium">Reklama běží…</p>
-      <p class="text-xs text-white/60">Počkej <span id="adCountdown">15</span> s a pak získáš kredity.</p>
-    </div>
-  </div>
-
-  <!-- REALNÍ UKÁZKA REKLAMNÍHO VIDEA -->
-  <div class="w-full rounded-xl overflow-hidden bg-black aspect-video shadow-soft border border-white/10">
-    <video id="adVideo" class="w-full h-full" muted playsinline>
-      <source src="https://cdn.pixabay.com/vimeo/332006921/tech-23207.mp4?width=1280&hash=8b873bb2074fa3437ea1bf4d0df3a4b9f5fe9ad0" type="video/mp4" />
-      Váš prohlížeč nepodporuje HTML5 video.
-    </video>
-  </div>
-
-  <div class="flex justify-end">
-    <button id="cancelAdButton" class="text-xs text-white/60 hover:text-white underline underline-offset-2">Přerušit</button>
-  </div>
-</div>
-          <div>
-            <p class="text-sm font-medium">Reklama běží…</p>
-            <p class="text-xs text-white/60">Počkej <span id="adCountdown">15</span> s a pak získáš kredity.</p>
-          </div>
-        </div>
-        <button id="cancelAdButton" class="text-xs text-white/60 hover:text-white underline underline-offset-2">
-          Přerušit
+      <!-- RESET LIMITU -->
+      <div class="mt-2 flex justify-end">
+        <button id="resetAdsButton" class="text-[11px] text-white/40 hover:text-white underline underline-offset-2">
+          Resetovat denní limit
         </button>
       </div>
-          <div>
-            <p class="font-medium text-sm">Sleduj reklamu a získej kredity</p>
-            <p class="text-xs text-white/60">Limit: 5 reklam denně · 20 K-Coins maximálně</p>
+
+      <div id="adOverlay" class="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 gap-4 hidden">
+        <div class="w-full max-w-5xl">
+          <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-soft border border-white/10">
+            <video id="adVideo" class="w-full h-auto max-h-[90vh] object-contain" muted playsinline>
+  <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+</video>
+            <!-- Badge s odpočtem v rohu přes video (varianta A) -->
+            <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs">
+              <div class="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
+              <div class="text-right">
+                <p class="font-medium text-white/90">Reklama běží…</p>
+                <p class="text-[11px] text-white/70">Počkej <span id="adCountdown">15</span> s a získáš kredity</p>
+              </div>
+            </div>
           </div>
         </div>
-        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 font-semibold text-neutral-900 text-sm shadow-soft">
-          Spustit reklamu
-        </button>
+
+        <button id="cancelAdButton" class="text-xs text-white/70 hover:text-white underline underline-offset-2">Přerušit</button>
       </div>
     </section>
 
@@ -173,6 +160,7 @@
     var adMessage = document.getElementById("adMessage");
     var adCounter = document.getElementById("adCounter");
     var creditsValueEl = document.getElementById("creditsValue");
+    var adVideo = document.getElementById("adVideo");
 
     var adTimer = null;
     var adInProgress = false;
@@ -251,6 +239,34 @@
 
     updateUIFromState();
 
+    // === PLAYLIST 5 VIDEÍ – všechny se přehrají po sobě ===
+    var videos = [
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+    ];
+    var currentVideo = 0;
+
+    adVideo.addEventListener("ended", function(){
+      // po skončení videa jen zastavíme přehrávání, další video už nenačítáme
+      try {
+        adVideo.pause();
+      } catch (e) {}
+    });
+
+    // RESET FUNKCE
+    var resetButton = document.getElementById("resetAdsButton");
+    if (resetButton) {
+      resetButton.addEventListener("click", function () {
+        localStorage.removeItem(storageKey);
+        state = { date: todayStr(), adsWatchedToday: 0 };
+        if (adMessage) adMessage.textContent = "Denní limit byl resetován.";
+        updateUIFromState();
+      });
+    }
+
     function startAd() {
       if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
       if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
@@ -261,6 +277,23 @@
       adOverlay.classList.remove("hidden");
       if (adMessage) adMessage.textContent = "Reklama běží…";
 
+      // vybereme video podle pořadí dnešní reklamy (5 různých videí)
+      if (adVideo) {
+        try {
+          currentVideo = state.adsWatchedToday % videos.length;
+          var srcEl = document.getElementById("adSrc");
+          if (srcEl) {
+            srcEl.src = videos[currentVideo];
+            adVideo.load();
+          }
+          adVideo.currentTime = 0;
+          var playPromise = adVideo.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function(){});
+          }
+        } catch (e) {}
+      }
+
       updateUIFromState();
 
       adTimer = window.setInterval(function () {
@@ -270,6 +303,12 @@
           adTimer = null;
           adInProgress = false;
           adOverlay.classList.add("hidden");
+      if (adVideo) {
+        try {
+          adVideo.pause();
+          adVideo.currentTime = 0;
+        } catch (e) {}
+      }
 
           // reklama doběhla → přičíst odměnu
           state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
@@ -298,6 +337,12 @@
       }
       adInProgress = false;
       if (adOverlay) adOverlay.classList.add("hidden");
+      if (adVideo) {
+        try {
+          adVideo.pause();
+          adVideo.currentTime = 0;
+        } catch (e) {}
+      }
       if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
       updateUIFromState();
     }
