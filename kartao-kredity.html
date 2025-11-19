@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Kreditní systém</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900 text-white">
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur"><div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4"><a href="#" class="flex items-center gap-3"><div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft"><i data-lucide="crown" class="w-5 h-5"></i></div><div><div class="flex items-center gap-2"><span class="font-semibold text-lg">Kartao.cz</span><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Kreditní zóna</span></div><p class="text-xs text-white/60">K-Coins · gamifikace pro tvůrce</p></div></a><div class="flex items-center gap-3"><div class="hidden sm:flex flex-col items-end text-xs"><span class="text-white/60">Tvoje současné kredity</span><span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">2350</span> K-Coins</span></div><button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Dobít kredity</span></button></div></div></header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <!-- HERO + ÚKOLY + ODMĚNY (zkrácená verze pro náhled) -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft text-center">
+      <h1 class="text-3xl font-semibold mb-2">Kreditní systém <span class="text-amber-300">K-Coins</span></h1>
+      <p class="text-white/70 max-w-xl mx-auto mb-6">Plň úkoly, dokončuj kampaně a získávej kredity. Za kredity můžeš kupovat VIP, zvýraznění profilu, mystery boxy a další bonusy.</p>
+
+      <div class="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Kredity</p>
+          <p class="text-2xl font-semibold text-amber-300">2 350</p>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Streak</p>
+          <p class="text-2xl font-semibold text-emerald-300">12 dní</p>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Level</p>
+          <p class="text-2xl font-semibold text-fuchsia-300">18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sekce: Reklamní odměny -->
+    <section class="rounded-3xl border border-amber-400/30 bg-amber-500/5 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i data-lucide="play" class="w-5 h-5 text-amber-300"></i>
+        Reklamní odměny
+      </h2>
+
+      <p class="text-white/70 text-sm mb-4 max-w-2xl">
+        Sleduj krátké reklamy (15–30 sekund) a získej okamžité kredity. Reklamy jsou bezpečné,
+        neobtěžující a vždy relevantní pro tvůrce. Každá reklama dává <span class="text-amber-300 font-semibold">+4 K-Coins</span>.
+      </p>
+
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center justify-between gap-4 flex-col sm:flex-row">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-amber-400/20 flex items-center justify-center">
+            <i data-lucide="play-circle" class="w-6 h-6 text-amber-300"></i>
+          </div>
+          <div>
+            <p class="font-medium text-sm">Sleduj reklamu a získej kredity</p>
+            <p class="text-xs text-white/60">Limit: 5 reklam denně · 20 K-Coins maximálně</p>
+          </div>
+        </div>
+        <button id="watchAdButton" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 font-semibold text-neutral-900 text-sm shadow-soft w-full sm:w-auto">
+          Spustit reklamu
+        </button>
+      </div>
+
+      <div id="adStatus" class="mt-4 text-xs text-white/70 flex items-center justify-between gap-3 flex-col sm:flex-row">
+        <span id="adMessage">Připraveno ke spuštění reklamy.</span>
+        <span id="adCounter" class="text-amber-300">Dnes: 0 / 5</span>
+      </div>
+
+      <div id="adOverlay" class="mt-4 rounded-2xl border border-amber-400/40 bg-neutral-950/90 px-4 py-3 flex items-center justify-between gap-3 hidden">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
+          <div>
+            <p class="text-sm font-medium">Reklama běží…</p>
+            <p class="text-xs text-white/60">Počkej <span id="adCountdown">15</span> s a pak získáš kredity.</p>
+          </div>
+        </div>
+        <button id="cancelAdButton" class="text-xs text-white/60 hover:text-white underline underline-offset-2">
+          Přerušit
+        </button>
+      </div>
+          <div>
+            <p class="font-medium text-sm">Sleduj reklamu a získej kredity</p>
+            <p class="text-xs text-white/60">Limit: 5 reklam denně · 20 K-Coins maximálně</p>
+          </div>
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 font-semibold text-neutral-900 text-sm shadow-soft">
+          Spustit reklamu
+        </button>
+      </div>
+    </section>
+
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2"><i data-lucide="list-checks" class="w-5 h-5 text-amber-300"></i> Denní úkoly</h2>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Přihlas se dnes</span><span class="text-emerald-300 text-xs flex items-center gap-1">+2 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
+        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Aktualizuj statistiky</span><span class="text-emerald-300 text-xs flex items-center gap-1">+5 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
+        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Odpověz na kampaň</span><span class="text-emerald-300 text-xs flex items-center gap-1">+6 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
+        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <span class="flex items-center gap-2">
+            <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
+            <span>Sleduj krátkou reklamu (15–30 s)</span>
+          </span>
+          <span class="text-emerald-300 text-xs flex flex-col items-end gap-0.5">
+            <span class="inline-flex items-center gap-1">+4 <i data-lucide="coins" class="w-3 h-3"></i></span>
+            <span class="text-[10px] text-white/60">Max. 5× denně</span>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i> Odměny za kredity</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm"><p class="font-semibold mb-1">Zvýraznění karty</p><p class="text-xs text-white/70 mb-2">24 hodin top pozice v Marketplace.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-amber-300 text-xs">40 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
+        <div class="rounded-xl border border-fuchsia-400/40 bg-fuchsia-500/10 p-4 text-sm"><p class="font-semibold mb-1">VIP profil 7 dní</p><p class="text-xs text-white/70 mb-2">Lepší pozice & VIP styl.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-fuchsia-300 text-xs">300 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 text-center text-white/50 py-4 text-xs">
+    © 2025 Kartao.cz – Kreditní systém K-Coins
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
+    var maxAdsPerDay = 5;
+    var rewardPerAd = 4;
+    var storageKey = "kartao_ad_state";
+
+    var watchAdButton = document.getElementById("watchAdButton");
+    var cancelAdButton = document.getElementById("cancelAdButton");
+    var adOverlay = document.getElementById("adOverlay");
+    var adCountdownSpan = document.getElementById("adCountdown");
+    var adMessage = document.getElementById("adMessage");
+    var adCounter = document.getElementById("adCounter");
+    var creditsValueEl = document.getElementById("creditsValue");
+
+    var adTimer = null;
+    var adInProgress = false;
+
+    function todayStr() {
+      var d = new Date();
+      var m = String(d.getMonth() + 1);
+      var day = String(d.getDate());
+      if (m.length < 2) m = "0" + m;
+      if (day.length < 2) day = "0" + day;
+      return d.getFullYear() + "-" + m + "-" + day;
+    }
+
+    function loadAdState() {
+      try {
+        var raw = localStorage.getItem(storageKey);
+        if (!raw) return { date: todayStr(), adsWatchedToday: 0 };
+        var parsed = JSON.parse(raw);
+        if (!parsed.date || parsed.date !== todayStr()) {
+          return { date: todayStr(), adsWatchedToday: 0 };
+        }
+        if (typeof parsed.adsWatchedToday !== "number") {
+          parsed.adsWatchedToday = 0;
+        }
+        return parsed;
+      } catch (e) {
+        return { date: todayStr(), adsWatchedToday: 0 };
+      }
+    }
+
+    function saveAdState(state) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function formatNumber(num) {
+      var s = String(num);
+      var out = "";
+      var count = 0;
+      for (var i = s.length - 1; i >= 0; i--) {
+        out = s[i] + out;
+        count++;
+        if (count === 3 && i > 0) {
+          out = " " + out;
+          count = 0;
+        }
+      }
+      return out;
+    }
+
+    var state = loadAdState();
+
+    function updateUIFromState() {
+      if (adCounter) {
+        adCounter.textContent = "Dnes: " + state.adsWatchedToday + " / " + maxAdsPerDay;
+      }
+      if (watchAdButton) {
+        var reachedLimit = state.adsWatchedToday >= maxAdsPerDay;
+        watchAdButton.disabled = reachedLimit || adInProgress;
+        watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
+        watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
+      }
+    }
+
+    updateUIFromState();
+
+    function startAd() {
+      if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
+      if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
+
+      adInProgress = true;
+      var remaining = 15;
+      adCountdownSpan.textContent = String(remaining);
+      adOverlay.classList.remove("hidden");
+      if (adMessage) adMessage.textContent = "Reklama běží…";
+
+      updateUIFromState();
+
+      adTimer = window.setInterval(function () {
+        remaining -= 1;
+        if (remaining <= 0) {
+          window.clearInterval(adTimer);
+          adTimer = null;
+          adInProgress = false;
+          adOverlay.classList.add("hidden");
+
+          state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
+          saveAdState(state);
+
+          if (creditsValueEl) {
+            var current = parseInt(creditsValueEl.textContent, 10) || 0;
+            var updated = current + rewardPerAd;
+            creditsValueEl.textContent = formatNumber(updated);
+          }
+
+          if (adMessage) {
+            adMessage.textContent = "Reklama dokončena. Připsáno +" + rewardPerAd + " K-Coins.";
+          }
+
+          updateUIFromState();
+        } else {
+          adCountdownSpan.textContent = String(remaining);
+        }
+      }, 1000);
+    }
+
+    function cancelAd() {
+      if (adTimer) {
+        window.clearInterval(adTimer);
+        adTimer = null;
+      }
+      adInProgress = false;
+      if (adOverlay) adOverlay.classList.add("hidden");
+      if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
+      updateUIFromState();
+    }
+
+    if (watchAdButton) {
+      watchAdButton.addEventListener("click", function () {
+        state = loadAdState();
+        if (state.adsWatchedToday >= maxAdsPerDay) {
+          if (adMessage) {
+            adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
+          }
+          updateUIFromState();
+          return;
+        }
+        startAd();
+      });
+    }
+
+    if (cancelAdButton) {
+      cancelAdButton.addEventListener("click", function () {
+        cancelAd();
+      });
+    }
+  });
+</script>
+</body>
+</html>
