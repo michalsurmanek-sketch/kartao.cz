@@ -264,6 +264,62 @@
         </div>
     </div>
 
+    <!-- Ad Viewer Modal -->
+    <div id="adViewerModal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden z-50 flex items-center justify-center">
+        <div class="bg-slate-800 rounded-2xl max-w-4xl w-full mx-4 overflow-hidden border border-white/10 shadow-2xl">
+            <!-- Ad Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                        <i data-lucide="tv" class="w-5 h-5 text-green-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">Sledování reklamy</h3>
+                        <p class="text-slate-400 text-sm">Získej +5 kreditů</p>
+                    </div>
+                </div>
+                <button id="closeAdBtn" class="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:text-red-300 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <!-- Ad Content -->
+            <div class="relative h-96 bg-gradient-to-br from-green-400/20 to-blue-400/20 flex items-center justify-center">
+                <div class="text-center">
+                    <div id="adVideoPlaceholder" class="w-24 h-24 bg-green-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="play" class="w-12 h-12 text-green-400"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-white mb-2">Simulace reklamy</h4>
+                    <p class="text-slate-300 mb-4">Toto je ukázka reklamního obsahu</p>
+                    <div class="flex items-center justify-center space-x-2 text-amber-400">
+                        <i data-lucide="timer" class="w-5 h-5"></i>
+                        <span id="adTimer" class="font-mono text-lg">15s</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ad Controls -->
+            <div class="p-4 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-full bg-slate-700 rounded-full h-2 max-w-xs">
+                            <div id="adProgress" class="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="skipAdBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <span id="skipText">Přeskočit za <span id="skipTimer">10</span>s</span>
+                        </button>
+                        <button id="finishAdBtn" class="px-6 py-2 btn-primary rounded-lg hidden">
+                            <i data-lucide="check" class="w-4 h-4 mr-2"></i>
+                            Dokončit (+5 kreditů)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="firebase-init.js"></script>
     <script src="credits-system-unified.js"></script>
@@ -347,12 +403,101 @@
             });
             
             document.getElementById('watchAdBtn').addEventListener('click', () => {
-                performQuickAction('WATCH_AD', 'Reklama zhlédnuta');
+                openAdViewer();
             });
             
             document.getElementById('updateProfileBtn').addEventListener('click', () => {
                 performQuickAction('PROFILE_UPDATE', 'Profil aktualizován');
             });
+            
+            // Ad Viewer Event Listeners
+            document.getElementById('closeAdBtn').addEventListener('click', closeAdViewer);
+            document.getElementById('skipAdBtn').addEventListener('click', closeAdViewer);
+            document.getElementById('finishAdBtn').addEventListener('click', finishAd);
+        }
+
+        // Ad Viewer Functions
+        let adTimer = null;
+        let adTimeRemaining = 15;
+        let skipTimeRemaining = 10;
+
+        function openAdViewer() {
+            document.getElementById('adViewerModal').classList.remove('hidden');
+            startAdTimer();
+            lucide.createIcons();
+        }
+
+        function closeAdViewer() {
+            document.getElementById('adViewerModal').classList.add('hidden');
+            if (adTimer) {
+                clearInterval(adTimer);
+                adTimer = null;
+            }
+            resetAdViewer();
+        }
+
+        function resetAdViewer() {
+            adTimeRemaining = 15;
+            skipTimeRemaining = 10;
+            document.getElementById('adTimer').textContent = '15s';
+            document.getElementById('skipTimer').textContent = '10';
+            document.getElementById('adProgress').style.width = '0%';
+            document.getElementById('skipAdBtn').disabled = true;
+            document.getElementById('skipAdBtn').classList.remove('hidden');
+            document.getElementById('finishAdBtn').classList.add('hidden');
+            document.getElementById('skipText').innerHTML = 'Přeskočit za <span id="skipTimer">10</span>s';
+        }
+
+        function startAdTimer() {
+            adTimer = setInterval(() => {
+                adTimeRemaining--;
+                skipTimeRemaining--;
+                
+                // Update timer display
+                document.getElementById('adTimer').textContent = adTimeRemaining + 's';
+                document.getElementById('adProgress').style.width = ((15 - adTimeRemaining) / 15 * 100) + '%';
+                
+                // Update skip button
+                if (skipTimeRemaining > 0) {
+                    document.getElementById('skipTimer').textContent = skipTimeRemaining;
+                } else {
+                    document.getElementById('skipAdBtn').disabled = false;
+                    document.getElementById('skipText').textContent = 'Přeskočit reklamu';
+                }
+                
+                // Show finish button when ad is complete
+                if (adTimeRemaining <= 0) {
+                    clearInterval(adTimer);
+                    document.getElementById('skipAdBtn').classList.add('hidden');
+                    document.getElementById('finishAdBtn').classList.remove('hidden');
+                    document.getElementById('adTimer').textContent = 'Dokončeno!';
+                }
+            }, 1000);
+        }
+
+        async function finishAd() {
+            closeAdViewer();
+            showLoading(true);
+            
+            try {
+                const result = await creditsSystem.addCredits(currentUser.uid, 'WATCH_AD', {
+                    source: 'ad_viewer',
+                    watchedFully: true,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (result && result.success) {
+                    showSuccess(`Reklama zhlédnuta! +${result.creditsEarned || 5} kreditů`);
+                    await loadUserData();
+                    await loadDailyTasks();
+                } else {
+                    showError(result?.message || 'Chyba při připisování kreditů');
+                }
+            } catch (error) {
+                showError('Chyba při dokončování reklamy: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
         }
 
         // Quick action handler
