@@ -528,7 +528,7 @@
 
       // Inicializace systémů
       rewardsSystem = new RewardsFollowersSystem();
-      creditsSystem = new CreditsSystem();
+      creditsSystem = new UnifiedCreditsSystem();
 
       // Auth listener
       firebase.auth().onAuthStateChanged(async (user) => {
