@@ -897,6 +897,11 @@
         await loadRecentTransactions();
         startCountdown();
         showRandomFloatingAd();
+        
+        // Aktualizace časů úkolů každou sekundu
+        setInterval(() => {
+          updateTaskCountdowns();
+        }, 1000);
       });
     });
 
@@ -949,6 +954,9 @@
                 <div>
                   <div class="font-semibold">${task.name}</div>
                   <div class="text-xs text-white/60">${task.credits} kreditů</div>
+                  <div class="text-xs text-orange-400 mt-1">
+                    Reset za: <span class="task-countdown font-mono"></span>
+                  </div>
                 </div>
               </div>
               <div class="flex items-center gap-2">
@@ -1204,6 +1212,46 @@
       return transaction.type;
     }
 
+    // Aktualizace countdown pro jednotlivé úkoly
+    function updateTaskCountdowns() {
+      if (typeof creditsSystem === 'undefined') return;
+      
+      const timeUntilReset = creditsSystem.getTimeUntilReset();
+      
+      // Aktualizace hlavního countdown
+      const resetElement = document.getElementById('resetCountdown');
+      if (resetElement) {
+        resetElement.textContent = timeUntilReset.formatted;
+      }
+      
+      // Aktualizace countdown pro jednotlivé úkoly
+      document.querySelectorAll('.task-countdown').forEach(element => {
+        element.textContent = timeUntilReset.formatted;
+      });
+    }
+    
+    // Aktualizace countdown pro jednotlivé úkoly
+    function updateTaskCountdowns() {
+      if (typeof creditsSystem === 'undefined') return;
+      
+      try {
+        const timeUntilReset = creditsSystem.getTimeUntilReset();
+        
+        // Aktualizace hlavního countdown
+        const resetElement = document.getElementById('resetCountdown');
+        if (resetElement) {
+          resetElement.textContent = timeUntilReset.formatted;
+        }
+        
+        // Aktualizace countdown pro jednotlivé úkoly
+        document.querySelectorAll('.task-countdown').forEach(element => {
+          element.textContent = timeUntilReset.formatted;
+        });
+      } catch (error) {
+        console.error('Chyba při aktualizaci countdown:', error);
+      }
+    }
+    
     // Odpočet do reset denních úkolů
     function startCountdown() {
       function updateCountdown() {
@@ -1217,8 +1265,17 @@
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        document.getElementById('resetCountdown').textContent = 
-          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        const resetElement = document.getElementById('resetCountdown');
+        if (resetElement) {
+          resetElement.textContent = formatted;
+        }
+        
+        // Aktualizace countdown pro úkoly
+        document.querySelectorAll('.task-countdown').forEach(element => {
+          element.textContent = formatted;
+        });
       }
 
       updateCountdown();

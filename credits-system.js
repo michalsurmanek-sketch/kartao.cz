@@ -295,6 +295,33 @@ class CreditsSystem {
     }
   }
 
+  // Získání času do půlnoci
+  getTomorrowMidnight() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    return tomorrow;
+  }
+
+  // Výpočet zbývajícího času do resetu úkolů
+  getTimeUntilReset() {
+    const now = new Date();
+    const tomorrow = this.getTomorrowMidnight();
+    const diff = tomorrow.getTime() - now.getTime();
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return {
+      hours,
+      minutes,
+      seconds,
+      totalMs: diff,
+      formatted: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    };
+  }
+
   // Získání denních úkolů pro uživatele
   async getDailyTasks(userId) {
     // Kontrola role - úkoly pouze pro tvůrce
@@ -313,7 +340,10 @@ class CreditsSystem {
         .get();
 
       if (!tasksSnapshot.empty) {
-        return tasksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const tasks = tasksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Přidání času do resetu pro každý úkol
+        const timeUntilReset = this.getTimeUntilReset();
+        return tasks.map(task => ({ ...task, timeUntilReset }));
       }
 
       // Generuj nové úkoly pro dnešní den
@@ -351,7 +381,8 @@ class CreditsSystem {
           progress: task.progress,
           completed: false,
           credits: this.taskTypes[task.type].credits,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          expiresAt: this.getTomorrowMidnight().toISOString()
         };
 
         batch.set(taskRef, taskData);

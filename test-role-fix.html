@@ -55,6 +55,9 @@
                 <button id="testTasks" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400">
                     Test Denní Úkoly
                 </button>
+                <button id="testCountdown" class="bg-yellow-600 text-white px-4 py-3 rounded-lg hover:bg-yellow-700 transition-colors disabled:bg-gray-400">
+                    Test Časový Odpočet
+                </button>
             </div>
 
             <!-- Results -->
@@ -156,12 +159,42 @@
             try {
                 const tasks = await creditsSystem.getDailyTasks(currentUser.uid);
                 if (tasks.length > 0) {
-                    addResult(`✅ ${currentUser.role} má přístup k ${tasks.length} úkolům`, 'text-green-600');
+                    const timeInfo = tasks[0].timeUntilReset ? ` (Reset za: ${tasks[0].timeUntilReset.formatted})` : '';
+                    addResult(`✅ ${currentUser.role} má přístup k ${tasks.length} úkolům${timeInfo}`, 'text-green-600');
+                    
+                    // Zobraz detaily prvního úkolu
+                    const firstTask = tasks[0];
+                    addResult(`📋 Úkol: ${firstTask.name} (${firstTask.progress}/${firstTask.target})`, 'text-blue-600');
                 } else {
                     addResult(`🚫 ${currentUser.role} nemá přístup k úkolům`, 'text-yellow-600');
                 }
             } catch (error) {
                 addResult(`❌ Chyba při načítání úkolů: ${error.message}`, 'text-red-600');
+            }
+        });
+
+        // Test countdown
+        document.getElementById('testCountdown').addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            try {
+                const timeUntilReset = creditsSystem.getTimeUntilReset();
+                addResult(`⏰ Čas do resetu úkolů: ${timeUntilReset.formatted}`, 'text-blue-600');
+                addResult(`📊 Celkem ms: ${timeUntilReset.totalMs} | Hodiny: ${timeUntilReset.hours}`, 'text-gray-600');
+                
+                // Spusť živý odpočet na 10 sekund
+                let counter = 10;
+                const interval = setInterval(() => {
+                    const liveTime = creditsSystem.getTimeUntilReset();
+                    addResult(`🔄 Živý odpočet: ${liveTime.formatted} (zbývá ${counter}s testů)`, 'text-purple-600');
+                    counter--;
+                    if (counter <= 0) {
+                        clearInterval(interval);
+                        addResult(`✅ Test živého odpočtu dokončen`, 'text-green-600');
+                    }
+                }, 1000);
+            } catch (error) {
+                addResult(`❌ Chyba při testu odpočtu: ${error.message}`, 'text-red-600');
             }
         });
 
@@ -182,7 +215,7 @@
 
         // Toggle test buttons
         function toggleTestButtons(enabled) {
-            ['testCredits', 'testCheckIn', 'testTasks'].forEach(id => {
+            ['testCredits', 'testCheckIn', 'testTasks', 'testCountdown'].forEach(id => {
                 document.getElementById(id).disabled = !enabled;
             });
         }
