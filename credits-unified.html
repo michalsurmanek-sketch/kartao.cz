@@ -27,7 +27,32 @@
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900 text-white">
-  <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur"><div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4"><a href="#" class="flex items-center gap-3"><div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft"><i data-lucide="crown" class="w-5 h-5"></i></div><div><div class="flex items-center gap-2"><span class="font-semibold text-lg">Kartao.cz</span><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Kreditní zóna</span></div><p class="text-xs text-white/60">K-Coins · gamifikace pro tvůrce</p></div></a><div class="flex items-center gap-3"><div class="hidden sm:flex flex-col items-end text-xs"><span class="text-white/60">Tvoje současné kredity</span><span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">2350</span> K-Coins</span></div><button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Dobít kredity</span></button></div></div></header>
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-lg">Kartao.cz</span>
+            <span class="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Kreditní zóna</span>
+          </div>
+          <p class="text-xs text-white/60">K-Coins · gamifikace pro tvůrce</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex flex-col items-end text-xs">
+          <span class="text-white/60">Tvoje současné kredity</span>
+          <span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">2350</span> K-Coins</span>
+        </div>
+        <button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span>Dobít kredity</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
     <!-- HERO + ÚKOLY + ODMĚNY (zkrácená verze pro náhled) -->
@@ -59,7 +84,7 @@
       </h2>
 
       <p class="text-white/70 text-sm mb-4 max-w-2xl">
-        Sleduj krátké reklamy (15–30 sekund) a získej okamžité kredity. Reklamy jsou bezpečné,
+        Sleduj krátké reklamy (10–30 sekund) a získej okamžité kredity. Reklamy jsou bezpečné,
         neobtěžující a vždy relevantní pro tvůrce. Každá reklama dává <span class="text-amber-300 font-semibold">+4 K-Coins</span>.
       </p>
 
@@ -94,16 +119,21 @@
         <div class="w-full max-w-5xl">
           <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-soft border border-white/10">
             <video id="adVideo" class="w-full h-auto max-h-[90vh] object-contain" muted playsinline>
-  <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-</video>
-            <!-- Badge s odpočtem v rohu přes video (varianta A) -->
+              <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            </video>
+            <!-- Badge s odpočtem v rohu přes video -->
             <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs">
               <div class="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
               <div class="text-right">
                 <p class="font-medium text-white/90">Reklama běží…</p>
-                <p class="text-[11px] text-white/70">Počkej <span id="adCountdown">15</span> s a získáš kredity</p>
+                <p class="text-[11px] text-white/70"><span id="adCountdown">10</span></p>
               </div>
             </div>
+            <!-- Tlačítko Další reklama (zobrazí se po připsání kreditů) -->
+            <button id="nextAdButton" class="hidden absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs text-amber-300 font-medium">
+              <i data-lucide="skip-forward" class="w-4 h-4 text-amber-300"></i>
+              <span>Další reklama</span>
+            </button>
           </div>
         </div>
 
@@ -120,7 +150,7 @@
         <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
           <span class="flex items-center gap-2">
             <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
-            <span>Sleduj krátkou reklamu (15–30 s)</span>
+            <span>Sleduj krátkou reklamu (10–30 s)</span>
           </span>
           <span class="text-emerald-300 text-xs flex flex-col items-end gap-0.5">
             <span class="inline-flex items-center gap-1">+4 <i data-lucide="coins" class="w-3 h-3"></i></span>
@@ -161,6 +191,7 @@
     var adCounter = document.getElementById("adCounter");
     var creditsValueEl = document.getElementById("creditsValue");
     var adVideo = document.getElementById("adVideo");
+    var nextAdButton = document.getElementById("nextAdButton");
 
     var adTimer = null;
     var adInProgress = false;
@@ -168,7 +199,6 @@
     // ===== KREDITY – držíme je v proměnné, neparsujeme pokaždé z textu =====
     var credits = 0;
     if (creditsValueEl) {
-      // vezmeme jen číslice (kdyby tam byly mezery nebo jiný text)
       var base = creditsValueEl.textContent.replace(/[^0-9]/g, "");
       credits = parseInt(base, 10) || 0;
       creditsValueEl.textContent = formatNumber(credits);
@@ -203,9 +233,7 @@
     function saveAdState(state) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(state));
-      } catch (e) {
-        // ignore
-      }
+      } catch (e) {}
     }
 
     function formatNumber(num) {
@@ -239,7 +267,6 @@
 
     updateUIFromState();
 
-    // === PLAYLIST 5 VIDEÍ – všechny se přehrají po sobě ===
     var videos = [
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
@@ -247,16 +274,15 @@
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
     ];
-    var currentVideo = 0;
 
-    adVideo.addEventListener("ended", function(){
-      // po skončení videa jen zastavíme přehrávání, další video už nenačítáme
-      try {
-        adVideo.pause();
-      } catch (e) {}
-    });
+    if (adVideo) {
+      adVideo.addEventListener("ended", function () {
+        try {
+          adVideo.pause();
+        } catch (e) {}
+      });
+    }
 
-    // RESET FUNKCE
     var resetButton = document.getElementById("resetAdsButton");
     if (resetButton) {
       resetButton.addEventListener("click", function () {
@@ -272,45 +298,42 @@
       if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
 
       adInProgress = true;
-      var remaining = 15;
+      var remaining = 10;
       adCountdownSpan.textContent = String(remaining);
       adOverlay.classList.remove("hidden");
+      if (nextAdButton) {
+        nextAdButton.classList.add("hidden");
+      }
       if (adMessage) adMessage.textContent = "Reklama běží…";
 
-      // vybereme video podle pořadí dnešní reklamy (5 různých videí)
       if (adVideo) {
         try {
-          currentVideo = state.adsWatchedToday % videos.length;
           var srcEl = document.getElementById("adSrc");
+          var index = state.adsWatchedToday % videos.length;
           if (srcEl) {
-            srcEl.src = videos[currentVideo];
+            srcEl.src = videos[index];
             adVideo.load();
           }
           adVideo.currentTime = 0;
           var playPromise = adVideo.play();
           if (playPromise && playPromise.catch) {
-            playPromise.catch(function(){});
+            playPromise.catch(function () {});
           }
         } catch (e) {}
       }
 
       updateUIFromState();
 
+      if (adTimer) {
+        window.clearInterval(adTimer);
+      }
       adTimer = window.setInterval(function () {
         remaining -= 1;
         if (remaining <= 0) {
           window.clearInterval(adTimer);
           adTimer = null;
           adInProgress = false;
-          adOverlay.classList.add("hidden");
-      if (adVideo) {
-        try {
-          adVideo.pause();
-          adVideo.currentTime = 0;
-        } catch (e) {}
-      }
 
-          // reklama doběhla → přičíst odměnu
           state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
           saveAdState(state);
 
@@ -319,13 +342,34 @@
             creditsValueEl.textContent = formatNumber(credits);
           }
 
+          if (adCountdownSpan) {
+            adCountdownSpan.innerHTML = "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
+          }
+
+          // po připsání odměny – buď nabídneme další reklamu, nebo zavření po 5. videu
+          if (nextAdButton) {
+            if (state.adsWatchedToday < maxAdsPerDay) {
+              // další reklama
+              nextAdButton.innerHTML = "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
+            } else {
+              // už 5. reklama – jen zavřít
+              nextAdButton.innerHTML = "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
+            }
+            nextAdButton.classList.remove("hidden");
+            if (window.lucide) {
+              window.lucide.createIcons();
+            }
+          }
+
           if (adMessage) {
-            adMessage.textContent = "Reklama dokončena. Připsáno +" + rewardPerAd + " K-Coins.";
+            adMessage.textContent = "Reklama dokončena. Kredity připsány.";
           }
 
           updateUIFromState();
         } else {
-          adCountdownSpan.textContent = String(remaining);
+          if (adCountdownSpan) {
+            adCountdownSpan.textContent = String(remaining);
+          }
         }
       }, 1000);
     }
@@ -364,6 +408,22 @@
     if (cancelAdButton) {
       cancelAdButton.addEventListener("click", function () {
         cancelAd();
+      });
+    }
+
+    // Klikání na tlačítko Další reklama / Zavřít
+    if (nextAdButton) {
+      nextAdButton.addEventListener("click", function () {
+        state = loadAdState();
+
+        // pokud už je po 5. videu → tlačítko funguje jako Zavřít
+        if (state.adsWatchedToday >= maxAdsPerDay) {
+          cancelAd();
+          return;
+        }
+
+        // jinak spustíme další reklamu
+        startAd();
       });
     }
   });
