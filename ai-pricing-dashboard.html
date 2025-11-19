@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Oceňování - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="ai-pricing-system.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen p-6">
+        <!-- Header -->
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">🤖 AI Oceňování Influencerů</h1>
+                <p class="text-gray-600">Inteligentní systém pro automatické oceňování na základě metrik a tržních dat</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto">
+            <!-- Quick Pricing Calculator -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="calculator" class="w-5 h-5 mr-2 text-blue-600"></i>
+                        Kalkulačka cen
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Creator Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Vyberte tvůrce</label>
+                            <select id="creatorSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Načítání tvůrců...</option>
+                            </select>
+                        </div>
+
+                        <!-- Content Type Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Typ obsahu</label>
+                            <select id="contentTypeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="instagram_post">Instagram Post</option>
+                                <option value="instagram_story">Instagram Story</option>
+                                <option value="instagram_reel">Instagram Reel</option>
+                                <option value="tiktok_video">TikTok Video</option>
+                                <option value="youtube_video">YouTube Video</option>
+                                <option value="youtube_short">YouTube Short</option>
+                                <option value="sponsored_post">Sponzorovaný post</option>
+                                <option value="brand_collaboration">Brand spolupráce</option>
+                                <option value="event_appearance">Účast na události</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="calculatePriceBtn" class="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 mr-2"></i>
+                        Vypočítat cenu
+                    </button>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Rychlé statistiky</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-blue-600">Průměrná cena (Instagram post)</span>
+                                <span class="text-lg font-bold text-blue-800" id="avgInstagramPrice">2,500 Kč</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-600">Aktivních tvůrců</span>
+                                <span class="text-lg font-bold text-green-800" id="activeCreatorsCount">0</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-purple-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-purple-600">Oceněných profilů</span>
+                                <span class="text-lg font-bold text-purple-800" id="pricedProfilesCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Results -->
+            <div id="pricingResults" class="hidden mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i data-lucide="target" class="w-5 h-5 mr-2 text-green-600"></i>
+                        Výsledky oceňování
+                    </h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Price Recommendation -->
+                        <div>
+                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 mb-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-4">🎯 Doporučená cena</h4>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-blue-600 mb-2" id="recommendedPrice">0 Kč</div>
+                                    <div class="text-sm text-gray-600 mb-4">
+                                        Rozmezí: <span id="priceRange">0 - 0 Kč</span>
+                                    </div>
+                                    <div class="flex items-center justify-center">
+                                        <span class="text-sm font-medium text-gray-600">Spolehlivost:</span>
+                                        <div class="ml-2 flex items-center">
+                                            <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                                <div id="confidenceBar" class="h-2 bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="confidenceText" class="ml-2 text-sm font-semibold">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Factors Breakdown -->
+                            <div id="factorsBreakdown" class="space-y-3">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+
+                        <!-- Creator Analysis -->
+                        <div>
+                            <div class="bg-gray-50 rounded-xl p-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-4">📊 Analýza profilu</h4>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600">Celkem followerů</span>
+                                        <span class="font-semibold" id="totalFollowers">0</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600">Průměrný engagement</span>
+                                        <span class="font-semibold" id="avgEngagement">0%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600">Tier followerů</span>
+                                        <span class="font-semibold" id="followerTier">-</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600">Kvalita engagementu</span>
+                                        <span class="font-semibold" id="engagementQuality">-</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                        <span class="text-sm font-medium text-gray-600">Reputace</span>
+                                        <span class="font-semibold" id="reputationQuality">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Comparison -->
+                    <div id="marketComparison" class="mt-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Trends -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="trending-up" class="w-5 h-5 mr-2 text-green-600"></i>
+                        Trendy podle kategorií
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-pink-500 rounded-full mr-3"></div>
+                                <span class="font-medium">Beauty & Fashion</span>
+                            </div>
+                            <span class="text-green-600 font-semibold">+12%</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                <span class="font-medium">Tech & Gaming</span>
+                            </div>
+                            <span class="text-red-600 font-semibold">-5%</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                <span class="font-medium">Fitness & Health</span>
+                            </div>
+                            <span class="text-green-600 font-semibold">+8%</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                <span class="font-medium">Food & Travel</span>
+                            </div>
+                            <span class="text-yellow-600 font-semibold">0%</span>
+                        </div>
+                    </div>
+
+                    <button id="analyzeTrendsBtn" class="mt-4 w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition duration-300">
+                        Podrobná analýza trendů
+                    </button>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="brain" class="w-5 h-5 mr-2 text-purple-600"></i>
+                        AI Doporučení
+                    </h3>
+
+                    <div id="aiInsights" class="space-y-4">
+                        <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                            <p class="text-sm text-blue-800 font-medium">💡 Tip: Influenceři s vyšším engagementem než 3% dosahují v průměru o 40% vyšších cen</p>
+                        </div>
+                        <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                            <p class="text-sm text-green-800 font-medium">📈 Trend: Beauty kategorie zaznamenává největší nárůst cen tento měsíc</p>
+                        </div>
+                        <div class="p-4 bg-purple-50 border-l-4 border-purple-500 rounded">
+                            <p class="text-sm text-purple-800 font-medium">🎯 Optimalizace: Tvůrci s ověřenými účty dosahují v průměru o 15% vyšších cen</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Operations -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i data-lucide="settings" class="w-5 h-5 mr-2 text-gray-600"></i>
+                    Hromadné operace
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button id="updateAllPricesBtn" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                        <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
+                        Aktualizovat všechny ceny
+                    </button>
+                    
+                    <button id="exportDataBtn" class="bg-gradient-to-r from-green-500 to-teal-500 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                        <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                        Exportovat data
+                    </button>
+                    
+                    <button id="generateReportBtn" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                        <i data-lucide="file-text" class="w-5 h-5 mr-2"></i>
+                        Vygenerovat report
+                    </button>
+                </div>
+
+                <!-- Batch Progress -->
+                <div id="batchProgress" class="hidden mt-6">
+                    <div class="bg-gray-200 rounded-full h-3">
+                        <div id="batchProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="batchProgressText" class="text-sm text-gray-600 mt-2">Zpracováváno...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-sm w-full mx-4 text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Vypočítávám cenu...</h3>
+                <p class="text-sm text-gray-600">Analyzuji metriky a tržní data</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize AI Pricing System
+        let pricingSystem = null;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Inicializuji AI Pricing Dashboard...');
+            
+            // Initialize Lucide icons
+            lucide.createIcons();
+            
+            // Wait for Firebase to be ready
+            firebase.auth().onAuthStateChanged(async (user) => {
+                if (user) {
+                    await initializePricingSystem();
+                } else {
+                    // Redirect to login if needed
+                    console.log('👤 Uživatel není přihlášen');
+                }
+            });
+        });
+
+        async function initializePricingSystem() {
+            try {
+                pricingSystem = new AIPricingSystem();
+                await loadCreators();
+                await loadQuickStats();
+                setupEventListeners();
+                console.log('✅ AI Pricing System inicializován');
+            } catch (error) {
+                console.error('❌ Chyba při inicializaci:', error);
+            }
+        }
+
+        async function loadCreators() {
+            try {
+                const select = document.getElementById('creatorSelect');
+                select.innerHTML = '<option value="">Načítání tvůrců...</option>';
+
+                const snapshot = await firebase.firestore().collection('creators')
+                    .where('role', '==', 'tvurce')
+                    .orderBy('displayName')
+                    .get();
+
+                select.innerHTML = '<option value="">Vyberte tvůrce</option>';
+                
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${data.displayName} (${data.category || 'Bez kategorie'})`;
+                    select.appendChild(option);
+                });
+
+                console.log(`✅ Načteno ${snapshot.docs.length} tvůrců`);
+            } catch (error) {
+                console.error('❌ Chyba při načítání tvůrců:', error);
+                const select = document.getElementById('creatorSelect');
+                select.innerHTML = '<option value="">Chyba při načítání</option>';
+            }
+        }
+
+        async function loadQuickStats() {
+            try {
+                // Load active creators count
+                const creatorsSnapshot = await firebase.firestore().collection('creators')
+                    .where('role', '==', 'tvurce')
+                    .get();
+                
+                document.getElementById('activeCreatorsCount').textContent = creatorsSnapshot.docs.length;
+
+                // Load priced profiles count
+                const pricingSnapshot = await firebase.firestore().collection('pricingRecommendations')
+                    .get();
+                
+                document.getElementById('pricedProfilesCount').textContent = pricingSnapshot.docs.length;
+
+                console.log('✅ Rychlé statistiky načteny');
+            } catch (error) {
+                console.error('❌ Chyba při načítání statistik:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            // Calculate price button
+            document.getElementById('calculatePriceBtn').addEventListener('click', calculatePrice);
+
+            // Batch operations
+            document.getElementById('updateAllPricesBtn').addEventListener('click', updateAllPrices);
+            document.getElementById('exportDataBtn').addEventListener('click', exportData);
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+            document.getElementById('analyzeTrendsBtn').addEventListener('click', analyzeTrends);
+        }
+
+        async function calculatePrice() {
+            const creatorId = document.getElementById('creatorSelect').value;
+            const contentType = document.getElementById('contentTypeSelect').value;
+
+            if (!creatorId) {
+                alert('Prosím vyberte tvůrce');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const result = await pricingSystem.calculateInfluencerPrice(creatorId, contentType);
+                
+                // Show results
+                displayPricingResults(result);
+                
+                // Load market comparison
+                const marketData = await pricingSystem.getMarketComparison(creatorId, contentType);
+                if (marketData) {
+                    displayMarketComparison(marketData);
+                }
+
+            } catch (error) {
+                console.error('❌ Chyba při výpočtu ceny:', error);
+                alert('Nastala chyba při výpočtu ceny: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayPricingResults(result) {
+            // Show results section
+            document.getElementById('pricingResults').classList.remove('hidden');
+
+            // Update price info
+            document.getElementById('recommendedPrice').textContent = `${result.recommendedPrice.toLocaleString()} Kč`;
+            document.getElementById('priceRange').textContent = `${result.priceRange.min.toLocaleString()} - ${result.priceRange.max.toLocaleString()} Kč`;
+            
+            // Update confidence
+            const confidence = result.confidence;
+            document.getElementById('confidenceBar').style.width = `${confidence}%`;
+            document.getElementById('confidenceText').textContent = `${confidence}%`;
+
+            // Display factors breakdown
+            displayFactorsBreakdown(result.factors);
+
+            // Display creator analysis
+            if (result.factors.followers) {
+                document.getElementById('totalFollowers').textContent = result.factors.followers.totalFollowers.toLocaleString();
+                document.getElementById('followerTier').textContent = result.factors.followers.tier;
+            }
+            
+            if (result.factors.engagement) {
+                document.getElementById('avgEngagement').textContent = `${result.factors.engagement.rate.toFixed(2)}%`;
+                document.getElementById('engagementQuality').textContent = result.factors.engagement.quality;
+            }
+            
+            if (result.factors.reputation) {
+                document.getElementById('reputationQuality').textContent = result.factors.reputation.quality;
+            }
+
+            // Scroll to results
+            document.getElementById('pricingResults').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayFactorsBreakdown(factors) {
+            const container = document.getElementById('factorsBreakdown');
+            container.innerHTML = '';
+
+            const factorData = [
+                { name: 'Followeři', score: factors.followers?.score || 0, color: 'blue' },
+                { name: 'Engagement', score: factors.engagement?.score || 0, color: 'green' },
+                { name: 'Niche', score: factors.niche?.score || 0, color: 'purple' },
+                { name: 'Reputace', score: factors.reputation?.score || 0, color: 'yellow' },
+                { name: 'Trh', score: factors.market?.score || 0, color: 'red' }
+            ];
+
+            factorData.forEach(factor => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+                div.innerHTML = `
+                    <span class="text-sm font-medium text-gray-600">${factor.name}</span>
+                    <div class="flex items-center">
+                        <div class="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                            <div class="h-2 bg-${factor.color}-500 rounded-full" style="width: ${factor.score}%"></div>
+                        </div>
+                        <span class="text-sm font-semibold">${Math.round(factor.score)}/100</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayMarketComparison(marketData) {
+            const container = document.getElementById('marketComparison');
+            container.innerHTML = `
+                <h4 class="text-lg font-bold text-gray-800 mb-4">📊 Srovnání s trhem</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-800">${marketData.median.toLocaleString()} Kč</div>
+                        <div class="text-sm text-gray-600">Medián</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-800">${marketData.average.toLocaleString()} Kč</div>
+                        <div class="text-sm text-gray-600">Průměr</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-800">${marketData.sampleSize}</div>
+                        <div class="text-sm text-gray-600">Vzorků</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-green-600">${marketData.recommendation}</div>
+                        <div class="text-sm text-gray-600">Doporučení</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function updateAllPrices() {
+            if (!confirm('Opravdu chcete aktualizovat ceny všech tvůrců? Tato operace může trvat několik minut.')) {
+                return;
+            }
+
+            showBatchProgress(true);
+            
+            try {
+                await pricingSystem.updateAllPrices();
+                alert('✅ Hromadná aktualizace cen dokončena');
+            } catch (error) {
+                console.error('❌ Chyba při hromadné aktualizaci:', error);
+                alert('❌ Nastala chyba při aktualizaci cen');
+            } finally {
+                showBatchProgress(false);
+            }
+        }
+
+        async function exportData() {
+            try {
+                const snapshot = await firebase.firestore().collection('pricingRecommendations')
+                    .orderBy('calculatedAt', 'desc')
+                    .limit(1000)
+                    .get();
+
+                const data = snapshot.docs.map(doc => doc.data());
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kartao-pricing-data-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                
+                console.log('✅ Data exportována');
+            } catch (error) {
+                console.error('❌ Chyba při exportu:', error);
+                alert('❌ Nastala chyba při exportu dat');
+            }
+        }
+
+        async function generateReport() {
+            // Placeholder for report generation
+            alert('📊 Generování reportu bude implementováno v další verzi');
+        }
+
+        async function analyzeTrends() {
+            // Placeholder for detailed trend analysis
+            alert('📈 Podrobná analýza trendů bude implementována v další verzi');
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function showBatchProgress(show) {
+            const container = document.getElementById('batchProgress');
+            if (show) {
+                container.classList.remove('hidden');
+                // Simulate progress
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 10;
+                    if (progress > 100) progress = 100;
+                    
+                    document.getElementById('batchProgressBar').style.width = `${progress}%`;
+                    document.getElementById('batchProgressText').textContent = `Zpracováno ${Math.round(progress)}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            container.classList.add('hidden');
+                        }, 2000);
+                    }
+                }, 500);
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

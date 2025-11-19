@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao – Síť tvůrců</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👥</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { 
+      background: radial-gradient(circle at top right, rgba(219, 88, 246, 0.15), transparent 50%),
+                  radial-gradient(circle at bottom left, rgba(251, 191, 36, 0.12), transparent 60%),
+                  #0a0a0a;
+    }
+    .card {
+      background: rgba(23, 23, 23, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.2rem;
+      border-radius: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #db58f6 0%, #fbbf24 100%);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(219, 88, 246, 0.3);
+    }
+    .btn-outline {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(219, 88, 246, 0.5);
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+    }
+    .btn-following {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #22c55e;
+    }
+    .tier-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .tier-bronze { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
+    .tier-silver { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; }
+    .tier-gold { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+    .tier-diamond { background: rgba(185, 242, 255, 0.2); color: #b9f2ff; }
+    .tier-legend { background: rgba(147, 51, 234, 0.2); color: #9333ea; }
+    .creator-card {
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .creator-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(219, 88, 246, 0.4);
+    }
+    .stats-card {
+      background: linear-gradient(135deg, rgba(219, 88, 246, 0.08), rgba(251, 191, 36, 0.05));
+      border: 1px solid rgba(219, 88, 246, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    .follower-item {
+      transition: all 0.2s;
+    }
+    .follower-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(219, 88, 246, 0.3);
+    }
+    .interaction-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .interaction-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    .interaction-btn:hover::before {
+      left: 100%;
+    }
+    .growth-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+    }
+    .growth-positive { color: #22c55e; }
+    .growth-negative { color: #ef4444; }
+    .growth-neutral { color: #6b7280; }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+  
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/80 backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="creator-dashboard.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center group-hover:scale-110 transition-transform">
+          <i data-lucide="users" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="font-bold text-lg">Síť tvůrců</div>
+          <div class="text-xs text-white/60">Sleduj a komunikuj s ostatními</div>
+        </div>
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="#discover" class="text-white/70 hover:text-white transition flex items-center gap-2">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          Objevovat
+        </a>
+        <a href="#followers" class="text-white/70 hover:text-white transition flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          Followeři
+        </a>
+        <a href="#following" class="text-white/70 hover:text-white transition flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          Sleduji
+        </a>
+      </nav>
+      
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1 rounded-xl bg-gradient-to-r from-fuchsia-500/20 to-amber-400/20 border border-fuchsia-400/30">
+          <span id="userTier" class="tier-badge tier-bronze">🥉 Začátečník</span>
+        </div>
+        <a href="credits-dashboard.html" class="btn btn-outline text-sm">
+          <i data-lucide="coins" class="w-4 h-4"></i>
+          <span id="userCredits">0</span> kreditů
+        </a>
+        <a href="creator-dashboard.html" class="btn btn-outline text-sm">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Zpět
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    
+    <div class="grid lg:grid-cols-3 gap-6">
+      
+      <!-- LEVÝ SLOUPEC (2/3) -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- OBJEVOVAT TVŮRCE -->
+        <section id="discover" class="card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <i data-lucide="compass" class="w-5 h-5 text-fuchsia-400"></i>
+              Doporučení tvůrci
+            </h2>
+            <button id="refreshRecommendations" class="btn btn-outline text-sm">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              Obnovit
+            </button>
+          </div>
+          
+          <div id="recommendedCreators" class="grid md:grid-cols-2 gap-4">
+            <!-- Doporučení se načtou zde -->
+          </div>
+          
+          <div class="mt-6 text-center">
+            <button id="loadMoreRecommendations" class="btn btn-outline">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Načíst další doporučení
+            </button>
+          </div>
+        </section>
+
+        <!-- INTERAKCE A ODMĚNY -->
+        <section class="card p-6">
+          <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <i data-lucide="heart" class="w-5 h-5 text-red-400"></i>
+            Interakce a odměny
+          </h2>
+          
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-gradient-to-r from-red-500/10 to-pink-500/10 border border-red-500/20">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-500 to-pink-500 grid place-items-center">
+                  <i data-lucide="heart" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Lajkování příspěvků</div>
+                  <div class="text-xs text-white/60">1 kredit za lajk</div>
+                </div>
+              </div>
+              <div class="text-sm text-white/80 mb-3">Lajkuj příspěvky ostatních tvůrců a získávej kredity. Čím vyšší tier máš, tím víc kreditů dostaneš!</div>
+              <button class="interaction-btn btn btn-primary w-full text-sm" onclick="simulateInteraction('LIKE_POST')">
+                <i data-lucide="heart" class="w-4 h-4"></i>
+                Simulovat lajk
+              </button>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-500 grid place-items-center">
+                  <i data-lucide="message-circle" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Komentáře</div>
+                  <div class="text-xs text-white/60">3 kredity za komentář</div>
+                </div>
+              </div>
+              <div class="text-sm text-white/80 mb-3">Piš smysluplné komentáře pod příspěvky ostatních a buduj komunitu.</div>
+              <button class="interaction-btn btn btn-primary w-full text-sm" onclick="simulateInteraction('COMMENT')">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                Simulovat komentář
+              </button>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-green-500 to-emerald-500 grid place-items-center">
+                  <i data-lucide="share-2" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Sdílení</div>
+                  <div class="text-xs text-white/60">5 kreditů za sdílení</div>
+                </div>
+              </div>
+              <div class="text-sm text-white/80 mb-3">Sdílej kvalitní obsah na svých sociálních sítích a pomáhej budovat dosah.</div>
+              <button class="interaction-btn btn btn-primary w-full text-sm" onclick="simulateInteraction('SHARE')">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+                Simulovat sdílení
+              </button>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-500 grid place-items-center">
+                  <i data-lucide="handshake" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <div class="font-semibold">Spolupráce</div>
+                  <div class="text-xs text-white/60">20 kreditů za spolupráci</div>
+                </div>
+              </div>
+              <div class="text-sm text-white/80 mb-3">Navrhni či přijmi spolupráci s jiným tvůrcem a získej bonusové kredity.</div>
+              <button class="interaction-btn btn btn-primary w-full text-sm" onclick="simulateInteraction('COLLABORATE')">
+                <i data-lucide="handshake" class="w-4 h-4"></i>
+                Simulovat spolupráci
+              </button>
+            </div>
+          </div>
+          
+          <div class="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <div class="flex items-start gap-3">
+              <i data-lucide="info" class="w-5 h-5 text-amber-400 mt-0.5"></i>
+              <div>
+                <div class="font-semibold text-amber-400">Tier multiplier</div>
+                <div class="text-sm text-white/80 mt-1">
+                  Všechny kredity se násobí podle tvého tier: 
+                  <span class="text-amber-400 font-bold" id="currentMultiplier">1.0x</span>
+                  <br>
+                  Získej více followerů pro vyšší tier a více kreditů!
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FOLLOWEŘI -->
+        <section id="followers" class="card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <i data-lucide="users" class="w-5 h-5 text-blue-400"></i>
+              Moji followeři
+              <span id="followersCount" class="text-blue-400 font-bold">(0)</span>
+            </h2>
+            <button id="inviteFollowers" class="btn btn-outline text-sm">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              Pozvat přátele
+            </button>
+          </div>
+          
+          <div id="followersList" class="space-y-3">
+            <!-- Followeři se načtou zde -->
+          </div>
+          
+          <div class="mt-6 text-center">
+            <button id="loadMoreFollowers" class="btn btn-outline">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Načíst další
+            </button>
+          </div>
+        </section>
+
+        <!-- SLEDOVANÍ -->
+        <section id="following" class="card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <i data-lucide="user-plus" class="w-5 h-5 text-green-400"></i>
+              Sledovaní tvůrci
+              <span id="followingCount" class="text-green-400 font-bold">(0)</span>
+            </h2>
+          </div>
+          
+          <div id="followingList" class="space-y-3">
+            <!-- Sledovaní se načtou zde -->
+          </div>
+          
+          <div class="mt-6 text-center">
+            <button id="loadMoreFollowing" class="btn btn-outline">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Načíst další
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- PRAVÝ SLOUPEC (1/3) -->
+      <div class="space-y-6">
+        
+        <!-- MŮJ TIER A STATISTIKY -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+            Můj tier a statistiky
+          </h3>
+          
+          <div class="stats-card mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm text-white/70">Aktuální tier</span>
+              <span id="currentTier" class="tier-badge tier-bronze">🥉 Začátečník</span>
+            </div>
+            <div class="text-center mb-4">
+              <div class="text-2xl font-bold" id="myFollowersCount">0</div>
+              <div class="text-xs text-white/50">followeři</div>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-white/70">K dalšímu tier:</span>
+                <span id="toNextTier" class="text-fuchsia-400 font-bold">100 followeři</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-white/70">Kredity multiplier:</span>
+                <span id="tierMultiplier" class="text-amber-400 font-bold">1.0x</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-white/60">Týdenní růst</div>
+                  <div class="font-bold text-green-400" id="weeklyGrowth">+0</div>
+                </div>
+                <div class="growth-indicator growth-positive">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-white/60">Měsíční růst</div>
+                  <div class="font-bold text-blue-400" id="monthlyGrowth">+0</div>
+                </div>
+                <div class="growth-indicator growth-positive">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-white/60">Celkové interakce</div>
+                  <div class="font-bold text-purple-400" id="totalInteractions">0</div>
+                </div>
+                <div class="growth-indicator growth-neutral">
+                  <i data-lucide="activity" class="w-4 h-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TIER SYSTÉM -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-purple-400"></i>
+            Tier systém
+          </h3>
+          
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl border border-white/10" data-tier="bronze">
+              <div class="flex items-center justify-between">
+                <div class="tier-badge tier-bronze">🥉 Začátečník</div>
+                <span class="text-xs text-white/60">0-99 followeři</span>
+              </div>
+              <div class="text-xs text-white/50 mt-1">Kredity multiplier: 1.0x</div>
+            </div>
+            
+            <div class="p-3 rounded-xl border border-white/10" data-tier="silver">
+              <div class="flex items-center justify-between">
+                <div class="tier-badge tier-silver">🥈 Pokročilý</div>
+                <span class="text-xs text-white/60">100-499 followeři</span>
+              </div>
+              <div class="text-xs text-white/50 mt-1">Kredity multiplier: 1.2x</div>
+            </div>
+            
+            <div class="p-3 rounded-xl border border-white/10" data-tier="gold">
+              <div class="flex items-center justify-between">
+                <div class="tier-badge tier-gold">🥇 Expert</div>
+                <span class="text-xs text-white/60">500-1999 followeři</span>
+              </div>
+              <div class="text-xs text-white/50 mt-1">Kredity multiplier: 1.5x</div>
+            </div>
+            
+            <div class="p-3 rounded-xl border border-white/10" data-tier="diamond">
+              <div class="flex items-center justify-between">
+                <div class="tier-badge tier-diamond">💎 Master</div>
+                <span class="text-xs text-white/60">2000-9999 followeři</span>
+              </div>
+              <div class="text-xs text-white/50 mt-1">Kredity multiplier: 2.0x</div>
+            </div>
+            
+            <div class="p-3 rounded-xl border border-white/10" data-tier="legend">
+              <div class="flex items-center justify-between">
+                <div class="tier-badge tier-legend">👑 Legenda</div>
+                <span class="text-xs text-white/60">10000+ followeři</span>
+              </div>
+              <div class="text-xs text-white/50 mt-1">Kredity multiplier: 3.0x</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RYCHLÉ AKCE -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+            Rychlé akce
+          </h3>
+          <div class="space-y-2">
+            <button onclick="findInfluencersInCity()" class="btn btn-outline w-full justify-center">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              Najít tvůrce v mém městě
+            </button>
+            <button onclick="findInfluencersInCategory()" class="btn btn-outline w-full justify-center">
+              <i data-lucide="tag" class="w-4 h-4"></i>
+              Najít tvůrce v mé kategorii
+            </button>
+            <button onclick="inviteFriends()" class="btn btn-outline w-full justify-center">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              Pozvat přátele (25 kreditů)
+            </button>
+            <button onclick="sharePlatform()" class="btn btn-outline w-full justify-center">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              Sdílet Kartao
+            </button>
+          </div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section class="card p-5">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <i data-lucide="podium" class="w-4 h-4 text-gold-400"></i>
+            Top tvůrci tento měsíc
+          </h3>
+          
+          <div id="leaderboard" class="space-y-2">
+            <!-- Leaderboard se načte zde -->
+          </div>
+          
+          <a href="leaderboards.html" class="block text-center text-sm text-fuchsia-400 hover:text-fuchsia-300 mt-4">
+            Zobrazit kompletní žebříček →
+          </a>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="credits-system.js"></script>
+  <script src="rewards-followers-system.js"></script>
+
+  <script>
+    let rewardsSystem;
+    let creditsSystem;
+    let currentUser;
+    let userTierData;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Inicializace ikon
+      if (window.lucide) lucide.createIcons();
+
+      // Inicializace systémů
+      rewardsSystem = new RewardsFollowersSystem();
+      creditsSystem = new CreditsSystem();
+
+      // Auth listener
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        currentUser = user;
+        console.log('✅ Přihlášen jako:', user.email);
+
+        await loadUserData();
+        await loadRecommendations();
+        await loadFollowers();
+        await loadFollowing();
+        await loadLeaderboard();
+      });
+    });
+
+    // Načtení uživatelských dat
+    async function loadUserData() {
+      try {
+        // Načti kredity
+        const credits = await creditsSystem.getUserCredits(currentUser.uid);
+        if (credits) {
+          document.getElementById('userCredits').textContent = credits.availableCredits || 0;
+        }
+
+        // Načti follower data
+        const followerData = await rewardsSystem.getUserFollowerData(currentUser.uid);
+        if (followerData) {
+          userTierData = followerData;
+          updateTierUI(followerData);
+        }
+
+        // Aktualizuj growth stats
+        await rewardsSystem.updateGrowthStats(currentUser.uid);
+
+      } catch (error) {
+        console.error('Chyba načítání uživatelských dat:', error);
+      }
+    }
+
+    // Aktualizace UI pro tier
+    function updateTierUI(followerData) {
+      const tier = followerData.tier || 'BRONZE';
+      const followersCount = followerData.followersCount || 0;
+      const multiplier = followerData.multiplier || 1.0;
+
+      // Tier badge
+      const tierInfo = getTierInfo(tier);
+      document.getElementById('userTier').className = `tier-badge tier-${tier.toLowerCase()}`;
+      document.getElementById('userTier').innerHTML = `${tierInfo.badge} ${tierInfo.name}`;
+      document.getElementById('currentTier').className = `tier-badge tier-${tier.toLowerCase()}`;
+      document.getElementById('currentTier').innerHTML = `${tierInfo.badge} ${tierInfo.name}`;
+
+      // Statistiky
+      document.getElementById('myFollowersCount').textContent = followersCount;
+      document.getElementById('followersCount').textContent = `(${followersCount})`;
+      document.getElementById('tierMultiplier').textContent = multiplier.toFixed(1) + 'x';
+      document.getElementById('currentMultiplier').textContent = multiplier.toFixed(1) + 'x';
+
+      // K dalšímu tier
+      const nextTierInfo = getNextTierInfo(tier, followersCount);
+      document.getElementById('toNextTier').textContent = nextTierInfo;
+
+      // Growth stats
+      document.getElementById('weeklyGrowth').textContent = `+${followerData.weeklyGrowth || 0}`;
+      document.getElementById('monthlyGrowth').textContent = `+${followerData.monthlyGrowth || 0}`;
+      document.getElementById('totalInteractions').textContent = followerData.totalInteractions || 0;
+
+      // Zvýrazni aktuální tier
+      document.querySelectorAll('[data-tier]').forEach(el => {
+        el.style.borderColor = el.dataset.tier === tier.toLowerCase() ? '#db58f6' : 'rgba(255,255,255,0.1)';
+        el.style.background = el.dataset.tier === tier.toLowerCase() ? 'rgba(219,88,246,0.1)' : '';
+      });
+    }
+
+    function getTierInfo(tier) {
+      const tiers = {
+        BRONZE: { badge: '🥉', name: 'Začátečník' },
+        SILVER: { badge: '🥈', name: 'Pokročilý' },
+        GOLD: { badge: '🥇', name: 'Expert' },
+        DIAMOND: { badge: '💎', name: 'Master' },
+        LEGEND: { badge: '👑', name: 'Legenda' }
+      };
+      return tiers[tier] || tiers.BRONZE;
+    }
+
+    function getNextTierInfo(currentTier, followersCount) {
+      const tiers = [
+        { name: 'SILVER', min: 100, label: '100 followeři' },
+        { name: 'GOLD', min: 500, label: '500 followeři' },
+        { name: 'DIAMOND', min: 2000, label: '2000 followeři' },
+        { name: 'LEGEND', min: 10000, label: '10000 followeři' }
+      ];
+
+      for (const tier of tiers) {
+        if (followersCount < tier.min) {
+          const needed = tier.min - followersCount;
+          return `${needed} do ${tier.label}`;
+        }
+      }
+      return 'Max level dosažen!';
+    }
+
+    // Načtení doporučení
+    async function loadRecommendations() {
+      try {
+        const recommendations = await rewardsSystem.getRecommendedInfluencers(currentUser.uid, 6);
+        const container = document.getElementById('recommendedCreators');
+        
+        if (recommendations.length === 0) {
+          container.innerHTML = '<div class="col-span-2 text-center py-8 text-white/60">Žádná doporučení k dispozici</div>';
+          return;
+        }
+
+        container.innerHTML = recommendations.map(creator => `
+          <div class="creator-card p-4 rounded-xl border border-white/10">
+            <div class="flex items-start gap-3 mb-3">
+              <img src="${creator.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face'}" 
+                   alt="Avatar ${creator.name}" class="w-12 h-12 rounded-xl object-cover"/>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <div class="font-semibold truncate">${creator.name}</div>
+                  ${creator.verified ? '<i data-lucide="badge-check" class="w-4 h-4 text-blue-400"></i>' : ''}
+                </div>
+                <div class="text-xs text-white/60 mb-1">${creator.handle || '@' + creator.name.toLowerCase()}</div>
+                <div class="text-xs text-white/50">${creator.reason}</div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3 text-xs text-white/60">
+                <span><i data-lucide="users" class="w-3 h-3 inline"></i> ${formatNumber(creator.followersCount || 0)}</span>
+                <span><i data-lucide="map-pin" class="w-3 h-3 inline"></i> ${creator.city}</span>
+              </div>
+              <span class="text-xs px-2 py-1 rounded bg-white/10">${creator.category}</span>
+            </div>
+            <button onclick="followUser('${creator.userId}', '${creator.name}')" 
+                    class="btn btn-primary w-full text-sm">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              Sledovat (+2 kredity)
+            </button>
+          </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+
+      } catch (error) {
+        console.error('Chyba načítání doporučení:', error);
+      }
+    }
+
+    // Sledování uživatele
+    async function followUser(targetUserId, targetName) {
+      try {
+        const result = await rewardsSystem.followInfluencer(currentUser.uid, targetUserId);
+        
+        if (result.success) {
+          showNotification(`✅ Začal jsi sledovat ${targetName}! (+2 kredity)`, 'success');
+          await loadUserData();
+          await loadRecommendations();
+          await loadFollowing();
+          
+          // Zkontroluj mutual follow bonus
+          const mutualBonus = await rewardsSystem.checkMutualFollowBonus(currentUser.uid, targetUserId);
+          if (mutualBonus > 0) {
+            showNotification(`🎉 Vzájemné sledování! (+${mutualBonus} bonus kreditů)`, 'success');
+          }
+        }
+      } catch (error) {
+        console.error('Chyba při sledování:', error);
+        showNotification('❌ ' + error.message, 'error');
+      }
+    }
+
+    // Ukončení sledování
+    async function unfollowUser(targetUserId, targetName) {
+      if (confirm(`Opravdu chceš přestat sledovat ${targetName}?`)) {
+        try {
+          await rewardsSystem.unfollowInfluencer(currentUser.uid, targetUserId);
+          showNotification(`Přestal jsi sledovat ${targetName}`, 'info');
+          await loadUserData();
+          await loadFollowing();
+        } catch (error) {
+          console.error('Chyba při ukončení sledování:', error);
+          showNotification('❌ ' + error.message, 'error');
+        }
+      }
+    }
+
+    // Načtení followerů
+    async function loadFollowers() {
+      try {
+        const followers = await rewardsSystem.getFollowers(currentUser.uid, 20);
+        const container = document.getElementById('followersList');
+        
+        if (followers.length === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-white/60">Zatím tě nikdo nesleduje</div>';
+          return;
+        }
+
+        container.innerHTML = followers.map(follower => `
+          <div class="follower-item p-3 rounded-xl border border-white/10">
+            <div class="flex items-center gap-3">
+              <img src="${follower.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face'}" 
+                   alt="Avatar ${follower.name}" class="w-10 h-10 rounded-xl object-cover"/>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <div class="font-semibold text-sm truncate">${follower.name}</div>
+                  ${follower.verified ? '<i data-lucide="badge-check" class="w-3 h-3 text-blue-400"></i>' : ''}
+                </div>
+                <div class="text-xs text-white/60">${follower.handle}</div>
+              </div>
+              <div class="text-xs text-white/50">${formatDate(follower.followedAt)}</div>
+            </div>
+          </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+
+      } catch (error) {
+        console.error('Chyba načítání followerů:', error);
+      }
+    }
+
+    // Načtení sledovaných
+    async function loadFollowing() {
+      try {
+        const following = await rewardsSystem.getFollowing(currentUser.uid, 20);
+        const container = document.getElementById('followingList');
+        
+        document.getElementById('followingCount').textContent = `(${following.length})`;
+        
+        if (following.length === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-white/60">Zatím nikoho nesleduješ</div>';
+          return;
+        }
+
+        container.innerHTML = following.map(user => `
+          <div class="follower-item p-3 rounded-xl border border-white/10">
+            <div class="flex items-center gap-3">
+              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face'}" 
+                   alt="Avatar ${user.name}" class="w-10 h-10 rounded-xl object-cover"/>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <div class="font-semibold text-sm truncate">${user.name}</div>
+                  ${user.verified ? '<i data-lucide="badge-check" class="w-3 h-3 text-blue-400"></i>' : ''}
+                </div>
+                <div class="text-xs text-white/60">${user.handle}</div>
+              </div>
+              <button onclick="unfollowUser('${user.userId}', '${user.name}')" 
+                      class="btn-following px-3 py-1 rounded-lg text-xs">
+                <i data-lucide="user-check" class="w-3 h-3"></i>
+                Sledováno
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+
+      } catch (error) {
+        console.error('Chyba načítání sledovaných:', error);
+      }
+    }
+
+    // Simulace interakce
+    async function simulateInteraction(type) {
+      const interactions = {
+        LIKE_POST: { name: 'lajkování', credits: 1 },
+        COMMENT: { name: 'komentář', credits: 3 },
+        SHARE: { name: 'sdílení', credits: 5 },
+        COLLABORATE: { name: 'spolupráce', credits: 20 }
+      };
+
+      const interaction = interactions[type];
+      if (!interaction) return;
+
+      try {
+        // Simulace s náhodným tvůrcem
+        const randomUserId = 'demo_user_' + Math.random().toString(36).substr(2, 9);
+        const contentId = 'demo_content_' + Math.random().toString(36).substr(2, 9);
+        
+        await rewardsSystem.interactWithContent(currentUser.uid, randomUserId, contentId, type, {
+          simulated: true
+        });
+
+        const multiplier = userTierData?.multiplier || 1.0;
+        const finalCredits = Math.floor(interaction.credits * multiplier);
+        
+        showNotification(`✅ Simulace ${interaction.name} dokončena! (+${finalCredits} kreditů)`, 'success');
+        await loadUserData();
+
+      } catch (error) {
+        console.error('Chyba při simulaci interakce:', error);
+        showNotification('❌ Chyba při simulaci interakce', 'error');
+      }
+    }
+
+    // Načtení leaderboard
+    async function loadLeaderboard() {
+      try {
+        // Simulace top tvůrců
+        const mockLeaderboard = [
+          { name: 'Jana Nováková', followers: 15240, tier: 'LEGEND', growth: '+245' },
+          { name: 'Martin Svoboda', followers: 8930, tier: 'DIAMOND', growth: '+156' },
+          { name: 'Petra Krásná', followers: 6750, tier: 'DIAMOND', growth: '+134' },
+          { name: 'Tomáš Novotný', followers: 4320, tier: 'GOLD', growth: '+89' },
+          { name: 'Anna Zelenková', followers: 2890, tier: 'GOLD', growth: '+67' }
+        ];
+
+        const container = document.getElementById('leaderboard');
+        container.innerHTML = mockLeaderboard.map((user, index) => `
+          <div class="flex items-center gap-3 p-2 rounded-lg bg-neutral-900/60">
+            <div class="w-6 h-6 rounded-full grid place-items-center text-xs font-bold ${
+              index === 0 ? 'bg-yellow-500 text-black' :
+              index === 1 ? 'bg-gray-400 text-black' :
+              index === 2 ? 'bg-orange-600 text-white' : 'bg-white/10'
+            }">
+              ${index + 1}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate">${user.name}</div>
+              <div class="text-xs text-white/60">${formatNumber(user.followers)} followeři</div>
+            </div>
+            <div class="text-right">
+              <div class="tier-badge tier-${user.tier.toLowerCase()} text-xs">${getTierInfo(user.tier).badge}</div>
+              <div class="text-xs text-green-400">${user.growth}</div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Chyba načítání leaderboard:', error);
+      }
+    }
+
+    // Rychlé akce
+    function findInfluencersInCity() {
+      showNotification('🏙️ Funkce hledání tvůrců v městě bude brzy přidána!');
+    }
+
+    function findInfluencersInCategory() {
+      showNotification('🏷️ Funkce hledání tvůrců v kategorii bude brzy přidána!');
+    }
+
+    function inviteFriends() {
+      showNotification('👥 Funkce pozvánek přátel bude brzy přidána! (+25 kreditů za každého)');
+    }
+
+    function sharePlatform() {
+      const text = 'Připoj se ke mně na Kartao.cz - síť influencerů a tvůrců! 🚀';
+      if (navigator.share) {
+        navigator.share({
+          title: 'Kartao.cz',
+          text: text,
+          url: window.location.origin
+        });
+      } else {
+        navigator.clipboard.writeText(text + ' ' + window.location.origin);
+        showNotification('📋 Odkaz zkopírován do schránky!');
+      }
+    }
+
+    // Event listenery
+    document.getElementById('refreshRecommendations')?.addEventListener('click', loadRecommendations);
+    document.getElementById('loadMoreRecommendations')?.addEventListener('click', () => {
+      showNotification('📚 Funkce načítání dalších doporučení bude brzy přidána!');
+    });
+    document.getElementById('loadMoreFollowers')?.addEventListener('click', () => {
+      showNotification('📚 Funkce načítání dalších followerů bude brzy přidána!');
+    });
+    document.getElementById('loadMoreFollowing')?.addEventListener('click', () => {
+      showNotification('📚 Funkce načítání dalších sledovaných bude brzy přidána!');
+    });
+    document.getElementById('inviteFollowers')?.addEventListener('click', inviteFriends);
+
+    // Utility funkce
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      
+      if (diffInDays === 0) return 'Dnes';
+      if (diffInDays === 1) return 'Včera';
+      if (diffInDays < 7) return diffInDays + 'd';
+      if (diffInDays < 30) return Math.floor(diffInDays / 7) + 't';
+      return Math.floor(diffInDays / 30) + 'm';
+    }
+
+    // Notifikace
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl border max-w-sm ${
+        type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+        type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+        'bg-blue-500/10 border-blue-500/20 text-blue-400'
+      }`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
