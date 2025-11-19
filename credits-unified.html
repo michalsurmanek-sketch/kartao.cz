@@ -15,13 +15,13 @@
             neutral: tailwind.colors.neutral,
             emerald: tailwind.colors.emerald,
             sky: tailwind.colors.sky,
-            rose: tailwind.colors.rose,
+            rose: tailwind.colors.rose
           },
           boxShadow: {
-            soft: "0 18px 45px rgba(15,23,42,0.85)",
+            soft: "0 18px 45px rgba(15,23,42,0.85)"
           }
-        },
-      },
+        }
+      }
     };
   </script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -46,7 +46,7 @@
           <span class="text-white/60">Tvoje současné kredity</span>
           <span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">2350</span> K-Coins</span>
         </div>
-        <button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
+        <button id="topUpTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>Dobít kredity</span>
         </button>
@@ -63,7 +63,9 @@
       <div class="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
         <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
           <p class="text-xs text-white/60">Kredity</p>
-          <p class="text-2xl font-semibold text-amber-300">2 350</p>
+          <p class="text-2xl font-semibold text-amber-300">
+            <span id="creditsValueHero">2 350</span>
+          </p>
         </div>
         <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
           <p class="text-xs text-white/60">Streak</p>
@@ -129,7 +131,7 @@
                 <p class="text-[11px] text-white/70"><span id="adCountdown">10</span></p>
               </div>
             </div>
-            <!-- Tlačítko Další reklama (zobrazí se po připsání kreditů) -->
+            <!-- Tlačítko Další reklama / Zavřít (zobrazí se po připsání kreditů) -->
             <button id="nextAdButton" class="hidden absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs text-amber-300 font-medium">
               <i data-lucide="skip-forward" class="w-4 h-4 text-amber-300"></i>
               <span>Další reklama</span>
@@ -161,7 +163,7 @@
     </section>
 
     <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
-      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i> Odměny za kredity</h2>
+      <h2 class="text-xl font-semibold mb-4 flex items:center gap-2"><i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i> Odměny za kredity</h2>
       <div class="grid sm:grid-cols-2 gap-4">
         <div class="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm"><p class="font-semibold mb-1">Zvýraznění karty</p><p class="text-xs text-white/70 mb-2">24 hodin top pozice v Marketplace.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-amber-300 text-xs">40 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
         <div class="rounded-xl border border-fuchsia-400/40 bg-fuchsia-500/10 p-4 text-sm"><p class="font-semibold mb-1">VIP profil 7 dní</p><p class="text-xs text-white/70 mb-2">Lepší pozice & VIP styl.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-fuchsia-300 text-xs">300 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
@@ -174,259 +176,313 @@
   </footer>
 
   <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
 
-    var maxAdsPerDay = 5;
-    var rewardPerAd = 4;
-    var storageKey = "kartao_ad_state";
+      var maxAdsPerDay = 5;
+      var rewardPerAd = 4;
+      var adStateKey = "kartao_ad_state";
+      var creditsKey = "kartao_credits_total";
 
-    var watchAdButton = document.getElementById("watchAdButton");
-    var cancelAdButton = document.getElementById("cancelAdButton");
-    var adOverlay = document.getElementById("adOverlay");
-    var adCountdownSpan = document.getElementById("adCountdown");
-    var adMessage = document.getElementById("adMessage");
-    var adCounter = document.getElementById("adCounter");
-    var creditsValueEl = document.getElementById("creditsValue");
-    var adVideo = document.getElementById("adVideo");
-    var nextAdButton = document.getElementById("nextAdButton");
+      var watchAdButton = document.getElementById("watchAdButton");
+      var cancelAdButton = document.getElementById("cancelAdButton");
+      var adOverlay = document.getElementById("adOverlay");
+      var adCountdownSpan = document.getElementById("adCountdown");
+      var adMessage = document.getElementById("adMessage");
+      var adCounter = document.getElementById("adCounter");
+      var creditsValueEl = document.getElementById("creditsValue");
+      var creditsValueHeroEl = document.getElementById("creditsValueHero");
+      var adVideo = document.getElementById("adVideo");
+      var nextAdButton = document.getElementById("nextAdButton");
+      var resetButton = document.getElementById("resetAdsButton");
+      var topUpTestButton = document.getElementById("topUpTestButton");
 
-    var adTimer = null;
-    var adInProgress = false;
+      var adTimer = null;
+      var adInProgress = false;
 
-    // ===== KREDITY – držíme je v proměnné, neparsujeme pokaždé z textu =====
-    var credits = 0;
-    if (creditsValueEl) {
-      var base = creditsValueEl.textContent.replace(/[^0-9]/g, "");
-      credits = parseInt(base, 10) || 0;
-      creditsValueEl.textContent = formatNumber(credits);
-    }
+      function formatNumber(num) {
+        var s = String(num);
+        var out = "";
+        var count = 0;
+        for (var i = s.length - 1; i >= 0; i--) {
+          out = s[i] + out;
+          count++;
+          if (count === 3 && i > 0) {
+            out = " " + out;
+            count = 0;
+          }
+        }
+        return out;
+      }
 
-    function todayStr() {
-      var d = new Date();
-      var m = String(d.getMonth() + 1);
-      var day = String(d.getDate());
-      if (m.length < 2) m = "0" + m;
-      if (day.length < 2) day = "0" + day;
-      return d.getFullYear() + "-" + m + "-" + day;
-    }
-
-    function loadAdState() {
+      // ===== KREDITY – držíme je v proměnné =====
+      var credits = 0;
       try {
-        var raw = localStorage.getItem(storageKey);
-        if (!raw) return { date: todayStr(), adsWatchedToday: 0 };
-        var parsed = JSON.parse(raw);
-        if (!parsed.date || parsed.date !== todayStr()) {
+        var storedCredits = localStorage.getItem(creditsKey);
+        if (storedCredits !== null) {
+          credits = parseInt(storedCredits, 10) || 0;
+        }
+      } catch (e) {}
+
+      if (!credits && creditsValueEl) {
+        var base = creditsValueEl.textContent.replace(/[^0-9]/g, "");
+        credits = parseInt(base, 10) || 0;
+      }
+
+      function syncCreditsDisplay() {
+        var formatted = formatNumber(credits);
+        if (creditsValueEl) {
+          creditsValueEl.textContent = formatted;
+        }
+        if (creditsValueHeroEl) {
+          creditsValueHeroEl.textContent = formatted;
+        }
+      }
+
+      function saveCredits() {
+        try {
+          localStorage.setItem(creditsKey, String(credits));
+        } catch (e) {}
+      }
+
+      syncCreditsDisplay();
+
+      function todayStr() {
+        var d = new Date();
+        var m = String(d.getMonth() + 1);
+        var day = String(d.getDate());
+        if (m.length < 2) m = "0" + m;
+        if (day.length < 2) day = "0" + day;
+        return d.getFullYear() + "-" + m + "-" + day;
+      }
+
+      function loadAdState() {
+        try {
+          var raw = localStorage.getItem(adStateKey);
+          if (!raw) return { date: todayStr(), adsWatchedToday: 0 };
+          var parsed = JSON.parse(raw);
+          if (!parsed.date || parsed.date !== todayStr()) {
+            return { date: todayStr(), adsWatchedToday: 0 };
+          }
+          if (typeof parsed.adsWatchedToday !== "number") {
+            parsed.adsWatchedToday = 0;
+          }
+          return parsed;
+        } catch (e) {
           return { date: todayStr(), adsWatchedToday: 0 };
         }
-        if (typeof parsed.adsWatchedToday !== "number") {
-          parsed.adsWatchedToday = 0;
-        }
-        return parsed;
-      } catch (e) {
-        return { date: todayStr(), adsWatchedToday: 0 };
       }
-    }
 
-    function saveAdState(state) {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(state));
-      } catch (e) {}
-    }
-
-    function formatNumber(num) {
-      var s = String(num);
-      var out = "";
-      var count = 0;
-      for (var i = s.length - 1; i >= 0; i--) {
-        out = s[i] + out;
-        count++;
-        if (count === 3 && i > 0) {
-          out = " " + out;
-          count = 0;
-        }
-      }
-      return out;
-    }
-
-    var state = loadAdState();
-
-    function updateUIFromState() {
-      if (adCounter) {
-        adCounter.textContent = "Dnes: " + state.adsWatchedToday + " / " + maxAdsPerDay;
-      }
-      if (watchAdButton) {
-        var reachedLimit = state.adsWatchedToday >= maxAdsPerDay;
-        watchAdButton.disabled = reachedLimit || adInProgress;
-        watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
-        watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
-      }
-    }
-
-    updateUIFromState();
-
-    var videos = [
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
-    ];
-
-    if (adVideo) {
-      adVideo.addEventListener("ended", function () {
+      function saveAdState(state) {
         try {
-          adVideo.pause();
+          localStorage.setItem(adStateKey, JSON.stringify(state));
         } catch (e) {}
-      });
-    }
-
-    var resetButton = document.getElementById("resetAdsButton");
-    if (resetButton) {
-      resetButton.addEventListener("click", function () {
-        localStorage.removeItem(storageKey);
-        state = { date: todayStr(), adsWatchedToday: 0 };
-        if (adMessage) adMessage.textContent = "Denní limit byl resetován.";
-        updateUIFromState();
-      });
-    }
-
-    function startAd() {
-      if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
-      if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
-
-      adInProgress = true;
-      var remaining = 10;
-      adCountdownSpan.textContent = String(remaining);
-      adOverlay.classList.remove("hidden");
-      if (nextAdButton) {
-        nextAdButton.classList.add("hidden");
       }
-      if (adMessage) adMessage.textContent = "Reklama běží…";
 
-      if (adVideo) {
-        try {
-          var srcEl = document.getElementById("adSrc");
-          var index = state.adsWatchedToday % videos.length;
-          if (srcEl) {
-            srcEl.src = videos[index];
-            adVideo.load();
-          }
-          adVideo.currentTime = 0;
-          var playPromise = adVideo.play();
-          if (playPromise && playPromise.catch) {
-            playPromise.catch(function () {});
-          }
-        } catch (e) {}
+      var state = loadAdState();
+
+      function updateUIFromState() {
+        if (adCounter) {
+          adCounter.textContent = "Dnes: " + state.adsWatchedToday + " / " + maxAdsPerDay;
+        }
+        if (watchAdButton) {
+          var reachedLimit = state.adsWatchedToday >= maxAdsPerDay;
+          watchAdButton.disabled = reachedLimit || adInProgress;
+          watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
+          watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
+        }
       }
 
       updateUIFromState();
 
-      if (adTimer) {
-        window.clearInterval(adTimer);
+      // TESTOVACÍ DOBITÍ KREDITŮ – varianta 1 (+100 K-Coins na klik)
+      if (topUpTestButton) {
+        topUpTestButton.addEventListener("click", function () {
+          credits += 100;
+          syncCreditsDisplay();
+          saveCredits();
+          if (adMessage) {
+            adMessage.textContent = "Test: Dobito +100 K-Coins.";
+          }
+        });
       }
-      adTimer = window.setInterval(function () {
-        remaining -= 1;
-        if (remaining <= 0) {
+
+      var videos = [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+      ];
+
+      if (adVideo) {
+        adVideo.addEventListener("ended", function () {
+          try {
+            adVideo.pause();
+          } catch (e) {}
+        });
+      }
+
+      if (resetButton) {
+        resetButton.addEventListener("click", function () {
+          localStorage.removeItem(adStateKey);
+          state = { date: todayStr(), adsWatchedToday: 0 };
+          if (adMessage) adMessage.textContent = "Denní limit byl resetován.";
+          updateUIFromState();
+        });
+      }
+
+      function startAd() {
+        if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
+        if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
+
+        adInProgress = true;
+        var remaining = 10;
+        adCountdownSpan.textContent = String(remaining);
+        adOverlay.classList.remove("hidden");
+        if (nextAdButton) {
+          nextAdButton.classList.add("hidden");
+        }
+        if (adMessage) adMessage.textContent = "Reklama běží…";
+
+        if (adVideo) {
+          try {
+            var srcEl = document.getElementById("adSrc");
+            var index = state.adsWatchedToday % videos.length;
+            if (srcEl) {
+              srcEl.src = videos[index];
+              adVideo.load();
+            }
+            adVideo.currentTime = 0;
+            var playPromise = adVideo.play();
+            if (playPromise && playPromise.catch) {
+              playPromise.catch(function () {});
+            }
+          } catch (e) {}
+        }
+
+        updateUIFromState();
+
+        if (adTimer) {
+          window.clearInterval(adTimer);
+        }
+
+        adTimer = window.setInterval(function () {
+          remaining -= 1;
+
+          if (remaining <= 0) {
+            window.clearInterval(adTimer);
+            adTimer = null;
+            adInProgress = false;
+
+            // navýšíme počítadlo reklam pro dnešek
+            state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
+            saveAdState(state);
+
+            // zobrazíme zelený text o připsání
+            if (adCountdownSpan) {
+              adCountdownSpan.innerHTML = "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
+            }
+
+            // a hned fyzicky připíšeme kredity
+            credits += rewardPerAd;
+            syncCreditsDisplay();
+            saveCredits();
+
+            // po připsání odměny – buď nabídneme další reklamu, nebo zavření po 5. videu
+            if (nextAdButton) {
+              if (state.adsWatchedToday < maxAdsPerDay) {
+                // další reklama
+                nextAdButton.innerHTML = "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
+              } else {
+                // už 5. reklama – jen zavřít
+                nextAdButton.innerHTML = "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
+              }
+              nextAdButton.classList.remove("hidden");
+              if (window.lucide) {
+                window.lucide.createIcons();
+              }
+            }
+
+            if (adMessage) {
+              adMessage.textContent = "Reklama dokončena. Kredity připsány.";
+            }
+
+            updateUIFromState();
+          } else {
+            if (adCountdownSpan) {
+              adCountdownSpan.textContent = String(remaining);
+            }
+          }
+        }, 1000);
+      }
+
+      function cancelAd() {
+        if (adTimer) {
           window.clearInterval(adTimer);
           adTimer = null;
-          adInProgress = false;
-
-          state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
-          saveAdState(state);
-
-          credits += rewardPerAd;
-          if (creditsValueEl) {
-            creditsValueEl.textContent = formatNumber(credits);
-          }
-
-          if (adCountdownSpan) {
-            adCountdownSpan.innerHTML = "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
-          }
-
-          // po připsání odměny – buď nabídneme další reklamu, nebo zavření po 5. videu
-          if (nextAdButton) {
-            if (state.adsWatchedToday < maxAdsPerDay) {
-              // další reklama
-              nextAdButton.innerHTML = "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
-            } else {
-              // už 5. reklama – jen zavřít
-              nextAdButton.innerHTML = "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
-            }
-            nextAdButton.classList.remove("hidden");
-            if (window.lucide) {
-              window.lucide.createIcons();
-            }
-          }
-
-          if (adMessage) {
-            adMessage.textContent = "Reklama dokončena. Kredity připsány.";
-          }
-
-          updateUIFromState();
-        } else {
-          if (adCountdownSpan) {
-            adCountdownSpan.textContent = String(remaining);
-          }
         }
-      }, 1000);
-    }
-
-    function cancelAd() {
-      if (adTimer) {
-        window.clearInterval(adTimer);
-        adTimer = null;
-      }
-      adInProgress = false;
-      if (adOverlay) adOverlay.classList.add("hidden");
-      if (adVideo) {
-        try {
-          adVideo.pause();
-          adVideo.currentTime = 0;
-        } catch (e) {}
-      }
-      if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
-      updateUIFromState();
-    }
-
-    if (watchAdButton) {
-      watchAdButton.addEventListener("click", function () {
-        state = loadAdState();
-        if (state.adsWatchedToday >= maxAdsPerDay) {
-          if (adMessage) {
-            adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
-          }
-          updateUIFromState();
-          return;
+        adInProgress = false;
+        if (adOverlay) adOverlay.classList.add("hidden");
+        if (adVideo) {
+          try {
+            adVideo.pause();
+            adVideo.currentTime = 0;
+          } catch (e) {}
         }
-        startAd();
-      });
-    }
+        if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
+        updateUIFromState();
+      }
 
-    if (cancelAdButton) {
-      cancelAdButton.addEventListener("click", function () {
-        cancelAd();
-      });
-    }
+      if (watchAdButton) {
+        watchAdButton.addEventListener("click", function () {
+          state = loadAdState();
+          if (state.adsWatchedToday >= maxAdsPerDay) {
+            if (adMessage) {
+              adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
+            }
+            updateUIFromState();
+            return;
+          }
+          startAd();
+        });
+      }
 
-    // Klikání na tlačítko Další reklama / Zavřít
-    if (nextAdButton) {
-      nextAdButton.addEventListener("click", function () {
-        state = loadAdState();
-
-        // pokud už je po 5. videu → tlačítko funguje jako Zavřít
-        if (state.adsWatchedToday >= maxAdsPerDay) {
+      if (cancelAdButton) {
+        cancelAdButton.addEventListener("click", function () {
           cancelAd();
-          return;
-        }
+        });
+      }
 
-        // jinak spustíme další reklamu
-        startAd();
-      });
-    }
-  });
+      // Klikání na tlačítko Další reklama / Zavřít
+      if (nextAdButton) {
+        nextAdButton.addEventListener("click", function () {
+          state = loadAdState();
+
+          // pokud už je po 5. videu → tlačítko funguje jako korektní Zavřít
+          if (state.adsWatchedToday >= maxAdsPerDay) {
+            if (adOverlay) adOverlay.classList.add("hidden");
+            if (adVideo) {
+              try {
+                adVideo.pause();
+                adVideo.currentTime = 0;
+              } catch (e) {}
+            }
+            adInProgress = false;
+            if (adMessage) {
+              adMessage.textContent = "Dnešní limit reklam je splněn. Kredity máš připsané.";
+            }
+            updateUIFromState();
+            return;
+          }
+
+          // jinak spustíme další reklamu
+          startAd();
+        });
+      }
+    });
   </script>
 </body>
 </html>
