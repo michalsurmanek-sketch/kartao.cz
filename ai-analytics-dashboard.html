@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="firebase-init.js"></script>
-    <script src="ai-analytics-generator.js"></script>
+    <script src="ai-analytics-system.js"></script>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen p-6">
@@ -396,7 +396,7 @@
 
         async function initializeSystem() {
             try {
-                analyticsSystem = new AIAnalyticsGenerator();
+                analyticsSystem = new AIAnalyticsSystem();
                 await loadCreators();
                 setupEventListeners();
                 loadAnalysisCount();

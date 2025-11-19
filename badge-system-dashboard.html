@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge systém - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white min-h-screen">
+    <div id="app" class="container mx-auto p-6">
+        <!-- Header s navigací zpět -->
+        <div class="mb-8">
+            <a href="index.html" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-4">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Zpět na hlavní stránku
+            </a>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                Badge Systém
+            </h1>
+            <p class="text-gray-400 mt-2">Spravujte odznaky a achievementy</p>
+        </div>
+
+        <!-- Dashboard obsah -->
+        <div id="badge-content">
+            <div class="text-center py-20">
+                <i data-lucide="award" class="w-16 h-16 text-yellow-400 mx-auto mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-2">Načítání badge systému...</h2>
+                <p class="text-gray-400">Připojování k databázi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase inicializace -->
+    <script src="firebase-init.js"></script>
+    <!-- Badge systém -->
+    <script src="badge-system.js"></script>
+    
+    <script>
+        // Inicializace Lucide icons
+        lucide.createIcons();
+        
+        // Inicializace badge systému při načtení
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof BadgeSystem !== 'undefined') {
+                window.badgeSystem = new BadgeSystem();
+                window.badgeSystem.init();
+            }
+        });
+    </script>
+</body>
+</html>
