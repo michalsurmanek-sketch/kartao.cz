@@ -244,10 +244,152 @@
         </div>
       </a>
 
-      <nav class="hidden md:flex items-center gap-6">
+      <nav class="hidden lg:flex items-center gap-6">
+        <!-- Hlavní funkce dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>Platformy</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900/95 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Základní systémy</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <a href="credits-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <i data-lucide="coins" class="w-4 h-4 text-blue-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Kredity</div>
+                    <div class="text-xs text-white/60">Gamifikace</div>
+                  </div>
+                </a>
+                <a href="rewards-followers-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Odměny</div>
+                    <div class="text-xs text-white/60">Sociální síť</div>
+                  </div>
+                </a>
+                <a href="badge-system-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                    <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Odznaky</div>
+                    <div class="text-xs text-white/60">Achievements</div>
+                  </div>
+                </a>
+                <a href="leaderboards-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <i data-lucide="trophy" class="w-4 h-4 text-purple-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Žebříčky</div>
+                    <div class="text-xs text-white/60">Rankings</div>
+                  </div>
+                </a>
+              </div>
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">AI & Pokročilé</div>
+              <div class="grid grid-cols-2 gap-2">
+                <a href="ai-pricing-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="brain" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Pricing</div>
+                    <div class="text-xs text-white/60">Smart ceny</div>
+                  </div>
+                </a>
+                <a href="ai-analytics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <i data-lucide="bar-chart" class="w-4 h-4 text-orange-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Analytics</div>
+                    <div class="text-xs text-white/60">Analýzy</div>
+                  </div>
+                </a>
+                <a href="intelligent-recommendation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Doporučení</div>
+                    <div class="text-xs text-white/60">ML systém</div>
+                  </div>
+                </a>
+                <a href="ai-price-negotiation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <i data-lucide="handshake" class="w-4 h-4 text-amber-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Vyjednávání</div>
+                    <div class="text-xs text-white/60">AI negotiation</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business systémy dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            <span>Business</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900/95 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Business nástroje</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <a href="comments-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Komentáře</div>
+                    <div class="text-xs text-white/60">Feedback</div>
+                  </div>
+                </a>
+                <a href="ecommerce-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">E-shop</div>
+                    <div class="text-xs text-white/60">Prodej</div>
+                  </div>
+                </a>
+                <a href="world-class-statistics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Statistiky</div>
+                    <div class="text-xs text-white/60">Real-time</div>
+                  </div>
+                </a>
+                <a href="company-mini-websites-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                    <i data-lucide="globe" class="w-4 h-4 text-violet-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Mini Weby</div>
+                    <div class="text-xs text-white/60">Website builder</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <a href="kartao-marketplace.html" class="text-white/80 hover:text-white transition flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně</a>
         <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
-        <a href="kartao-pro-firmy.html#brief" class="text-white/80 hover:text-white transition">Zadat kampaň</a>
         <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
         <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
         <a href="vip.html" class="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
@@ -330,6 +472,69 @@
             <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3"><i data-lucide="building" class="w-5 h-5 text-white/70"></i><span>Pro firmy</span></a>
           </div>
           
+          <!-- Účet a akce -->
+          <div class="pb-2 mb-2 border-b border-white/10">
+            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">🎮 Gamifikace</div>
+            <a href="credits-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="coins" class="w-5 h-5 text-blue-400"></i>
+              <span>Kredity & Úkoly</span>
+            </a>
+            <a href="rewards-followers-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="users" class="w-5 h-5 text-green-400"></i>
+              <span>Odměny & Followers</span>
+            </a>
+            <a href="badge-system-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="award" class="w-5 h-5 text-yellow-400"></i>
+              <span>Odznaky & Achievementy</span>
+            </a>
+            <a href="leaderboards-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="trophy" class="w-5 h-5 text-purple-400"></i>
+              <span>Žebříčky & Rankings</span>
+            </a>
+          </div>
+
+          <!-- AI systémy -->
+          <div class="pb-2 mb-2 border-b border-white/10">
+            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">🤖 AI systémy</div>
+            <a href="ai-pricing-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="brain" class="w-5 h-5 text-pink-400"></i>
+              <span>AI Pricing</span>
+            </a>
+            <a href="ai-analytics-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="bar-chart" class="w-5 h-5 text-orange-400"></i>
+              <span>AI Analytics & Kampaně</span>
+            </a>
+            <a href="intelligent-recommendation-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="sparkles" class="w-5 h-5 text-emerald-400"></i>
+              <span>Inteligentní doporučení</span>
+            </a>
+            <a href="ai-price-negotiation-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="handshake" class="w-5 h-5 text-amber-400"></i>
+              <span>AI Vyjednávání cen</span>
+            </a>
+          </div>
+
+          <!-- Business nástroje -->
+          <div class="pb-2 mb-2 border-b border-white/10">
+            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">💼 Business</div>
+            <a href="comments-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="message-circle" class="w-5 h-5 text-indigo-400"></i>
+              <span>Komentáře & Feedback</span>
+            </a>
+            <a href="ecommerce-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="shopping-bag" class="w-5 h-5 text-pink-400"></i>
+              <span>E-shop produktů</span>
+            </a>
+            <a href="world-class-statistics-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="activity" class="w-5 h-5 text-cyan-400"></i>
+              <span>Světové statistiky</span>
+            </a>
+            <a href="company-mini-websites-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+              <i data-lucide="globe" class="w-5 h-5 text-violet-400"></i>
+              <span>Mini weby firem</span>
+            </a>
+          </div>
+
           <!-- Účet a akce -->
           <div class="pb-2 mb-2 border-b border-white/10">
             <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">Účet</div>
