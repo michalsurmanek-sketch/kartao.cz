@@ -1,1014 +1,1041 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systém komentářů - Demo - Kartao.cz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="firebase-init.js"></script>
-    <script src="comments-system.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Komentáře ke kampani – Kartao.cz</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose,
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Ikony + Firebase -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="comments-system.js"></script>
 </head>
-<body class="bg-gray-50">
-    <div class="min-h-screen">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8">
-            <div class="max-w-4xl mx-auto px-6">
-                <h1 class="text-4xl font-bold mb-2 flex items-center">
-                    <i data-lucide="message-square" class="w-10 h-10 mr-4"></i>
-                    Systém Komentářů
+<body class="bg-gradient-to-b from-neutral-950 via-neutral-950 to-black text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- HEADER Kartao -->
+    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/80 bg-neutral-950/60 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
+            <i data-lucide="crown" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <span class="font-semibold text-white text-lg">Kartao.cz</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-white/80 text-sm">
+          <a href="kartao-marketplace.html" class="hover:text-white transition">Marketplace</a>
+          <a href="kartao-zalozit-kartu.html" class="hover:text-white transition">Založit kartu</a>
+          <a href="kartao-zadat-kampan.html" class="hover:text-white transition">Zadat kampaň</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <!-- HERO / Info o kampani -->
+      <section class="border-b border-white/10 bg-gradient-to-r from-fuchsia-600/15 via-amber-400/10 to-emerald-500/15">
+        <div class="max-w-5xl mx-auto px-4 py-8 md:py-10">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="flex items-start gap-4">
+              <div class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 ring-2 ring-amber-300/70">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&h=200&fit=crop&crop=face" alt="Kampaň" class="w-full h-full object-cover" />
+              </div>
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 border border-white/10 mb-3">
+                  <i data-lucide="message-square" class="w-4 h-4 text-amber-300"></i>
+                  <span class="text-xs font-semibold tracking-wide uppercase text-white/70">Komentáře ke kampani</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                  Demo kampaň: Ekologické produkty 2025
                 </h1>
-                <p class="text-xl text-purple-100">Komunikuj s komunitou a sdílej názory na kampaně</p>
+                <p class="text-sm md:text-base text-white/70 max-w-xl">
+                  Diskuze ke spolupráci na kampani zaměřené na udržitelný, zero‑waste a eco‑friendly životní styl.
+                </p>
+              </div>
             </div>
+            <div class="flex flex-col items-start md:items-end gap-3 text-sm text-white/70">
+              <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1"><i data-lucide="user" class="w-4 h-4 text-emerald-300"></i>EcoInfluencer</span>
+                <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4 text-amber-300"></i>15. 11. 2025</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1 text-white/60"><i data-lucide="eye" class="w-4 h-4"></i>1 234 zobrazení</span>
+                <span id="campaignCommentCount" class="flex items-center gap-1 text-white/60">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>0 komentářů
+                </span>
+              </div>
+              <button class="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 text-xs font-semibold shadow hover:shadow-[0_0_25px_rgba(250,204,21,0.4)] transition">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                Sledovat kampaň
+              </button>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <!-- Demo Campaign Info -->
-        <div class="max-w-4xl mx-auto px-6 py-8">
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <div class="flex items-start space-x-4">
-                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=100&h=100&fit=crop&crop=face" 
-                         alt="Campaign" class="w-20 h-20 rounded-xl object-cover">
-                    <div class="flex-1">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Demo Kampaň: Ekologické produkty 2025</h2>
-                        <p class="text-gray-600 mb-4">Propagace udržitelných produktů pro mladé lidi zaměřené na zero waste a eco-friendly životní styl.</p>
-                        <div class="flex items-center space-x-6 text-sm text-gray-500">
-                            <span class="flex items-center"><i data-lucide="user" class="w-4 h-4 mr-1"></i> EcoInfluencer</span>
-                            <span class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-1"></i> 15. 11. 2025</span>
-                            <span class="flex items-center"><i data-lucide="eye" class="w-4 h-4 mr-1"></i> 1,234 zobrazení</span>
-                            <span id="campaignCommentCount" class="flex items-center"><i data-lucide="message-square" class="w-4 h-4 mr-1"></i> 0 komentářů</span>
-                        </div>
-                    </div>
-                    <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
-                        Sledovat
-                    </button>
-                </div>
+      <!-- OBSAH KOMENTÁŘŮ -->
+      <section class="max-w-5xl mx-auto px-4 py-8 md:py-10">
+        <!-- Blok komentářů -->
+        <div class="bg-neutral-950/80 border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.7)] p-5 md:p-7">
+          <!-- Formulář komentáře -->
+          <div id="commentForm" class="mb-8">
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <i data-lucide="edit-3" class="w-5 h-5 text-amber-300"></i>
+              <span>Napsat komentář</span>
+            </h2>
+
+            <!-- Výzva k přihlášení -->
+            <div id="loginPrompt" class="text-center py-8 border-2 border-dashed border-white/15 rounded-2xl bg-neutral-900/40">
+              <div class="text-4xl mb-3">👤</div>
+              <h3 class="text-lg font-semibold text-white mb-1">Přihlaste se pro komentování</h3>
+              <p class="text-sm text-white/60 mb-4">Pro přidání komentáře je potřeba mít účet na Kartao.cz.</p>
+              <button id="loginBtn" class="inline-flex items-center gap-2 bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 px-6 py-2.5 rounded-full text-sm font-semibold hover:shadow-[0_0_30px_rgba(250,204,21,0.45)] transition">
+                <i data-lucide="log-in" class="w-4 h-4"></i>
+                Přihlásit se
+              </button>
             </div>
 
-            <!-- Comments Section -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <!-- Comment Form -->
-                <div id="commentForm" class="mb-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <i data-lucide="edit-3" class="w-5 h-5 mr-2"></i>
-                        Přidat komentář
-                    </h3>
-                    
-                    <div id="loginPrompt" class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                        <div class="text-4xl mb-4">👤</div>
-                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Přihlaste se pro komentování</h4>
-                        <p class="text-gray-600 mb-4">Pro přidání komentáře se musíte přihlásit do svého účtu.</p>
-                        <button id="loginBtn" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
-                            Přihlásit se
-                        </button>
-                    </div>
-
-                    <div id="commentEditor" class="hidden">
-                        <div class="flex items-start space-x-4">
-                            <div id="currentUserAvatar" class="w-12 h-12 bg-gray-300 rounded-full flex-shrink-0">
-                                <!-- User avatar will be inserted here -->
-                            </div>
-                            <div class="flex-1">
-                                <textarea 
-                                    id="commentTextarea" 
-                                    placeholder="Napište svůj komentář..."
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    rows="4"
-                                    maxlength="1000"></textarea>
-                                <div class="flex items-center justify-between mt-3">
-                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                        <span id="charCount">0/1000</span>
-                                        <div class="flex items-center space-x-2">
-                                            <input type="checkbox" id="notifyReplies" class="rounded">
-                                            <label for="notifyReplies">Notifikovat o odpovědích</label>
-                                        </div>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button id="cancelComment" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
-                                            Zrušit
-                                        </button>
-                                        <button id="submitComment" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50">
-                                            Publikovat
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment Filter and Sort -->
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-                    <div class="flex items-center space-x-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Komentáře</h3>
-                        <span id="totalCommentsCount" class="text-sm text-gray-500">(0)</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <select id="commentSort" class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-purple-500">
-                            <option value="newest">Nejnovější</option>
-                            <option value="oldest">Nejstarší</option>
-                            <option value="popular">Nejoblíbenější</option>
-                        </select>
-                        <button id="toggleCommentSearch" class="text-gray-600 hover:text-purple-600 transition">
-                            <i data-lucide="search" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Search Bar (Hidden by default) -->
-                <div id="commentSearchBar" class="hidden mb-6">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="commentSearchInput" 
-                            placeholder="Hledat v komentářích..."
-                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-3 top-3.5"></i>
-                        <button id="clearSearch" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
-                            <i data-lucide="x" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Comments List -->
-                <div id="commentsList" class="space-y-6">
-                    <!-- Comments will be populated here -->
-                </div>
-
-                <!-- Load More Comments -->
-                <div id="loadMoreSection" class="hidden text-center mt-8">
-                    <button id="loadMoreBtn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition">
-                        Načíst více komentářů
-                    </button>
-                </div>
-
-                <!-- No Comments Message -->
-                <div id="noCommentsMessage" class="text-center py-12">
-                    <div class="text-6xl mb-4">💬</div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">Zatím žádné komentáře</h3>
-                    <p class="text-gray-600">Buďte první, kdo okomentuje tuto kampaň!</p>
-                </div>
-
-                <!-- Loading State -->
-                <div id="commentsLoading" class="hidden text-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                    <p class="text-gray-600">Načítám komentáře...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Comment Modal for Editing -->
-        <div id="editCommentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Upravit komentář</h3>
-                <textarea 
-                    id="editCommentTextarea" 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-purple-500"
+            <!-- Editor komentáře -->
+            <div id="commentEditor" class="hidden">
+              <div class="flex items-start gap-4">
+                <div id="currentUserAvatar" class="w-11 h-11 rounded-full bg-white/10 flex-shrink-0"></div>
+                <div class="flex-1">
+                  <textarea
+                    id="commentTextarea"
+                    placeholder="Napište svůj komentář ke kampani..."
+                    class="w-full px-4 py-3 rounded-2xl bg-neutral-900/80 border border-white/10 text-sm text-white placeholder:text-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400/70 focus:border-transparent"
                     rows="4"
-                    maxlength="1000"></textarea>
-                <div class="flex items-center justify-between mt-4">
-                    <span id="editCharCount" class="text-sm text-gray-500">0/1000</span>
-                    <div class="flex space-x-3">
-                        <button id="cancelEdit" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
-                            Zrušit
-                        </button>
-                        <button id="saveEdit" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-                            Uložit
-                        </button>
+                    maxlength="1000"
+                  ></textarea>
+                  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mt-3 text-xs md:text-sm">
+                    <div class="flex items-center gap-4 text-white/50">
+                      <span id="charCount">0/1000</span>
+                      <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="notifyReplies" class="rounded border-white/20 bg-neutral-900" />
+                        <span>Upozornit mě na odpovědi</span>
+                      </label>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reply Modal -->
-        <div id="replyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Odpovědět na komentář</h3>
-                <div id="replyToComment" class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <!-- Original comment will be shown here -->
-                </div>
-                <textarea 
-                    id="replyTextarea" 
-                    placeholder="Napište svou odpověď..."
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-purple-500"
-                    rows="4"
-                    maxlength="1000"></textarea>
-                <div class="flex items-center justify-between mt-4">
-                    <span id="replyCharCount" class="text-sm text-gray-500">0/1000</span>
-                    <div class="flex space-x-3">
-                        <button id="cancelReply" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
-                            Zrušit
-                        </button>
-                        <button id="submitReply" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-                            Odpovědět
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Flag Comment Modal -->
-        <div id="flagModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Nahlásit komentář</h3>
-                <p class="text-gray-600 mb-4">Proč chcete nahlásit tento komentář?</p>
-                <div class="space-y-3 mb-6">
-                    <label class="flex items-center">
-                        <input type="radio" name="flagReason" value="spam" class="mr-3">
-                        <span>Spam nebo reklama</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="flagReason" value="inappropriate" class="mr-3">
-                        <span>Nevhodný obsah</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="flagReason" value="harassment" class="mr-3">
-                        <span>Obtěžování</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="flagReason" value="misinformation" class="mr-3">
-                        <span>Dezinformace</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="flagReason" value="other" class="mr-3">
-                        <span>Jiný důvod</span>
-                    </label>
-                </div>
-                <div class="flex space-x-3">
-                    <button id="cancelFlag" class="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                    <div class="flex items-center gap-2 justify-end">
+                      <button id="cancelComment" class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 transition">
                         Zrušit
-                    </button>
-                    <button id="submitFlag" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
-                        Nahlásit
-                    </button>
+                      </button>
+                      <button id="submitComment" class="px-6 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition disabled:opacity-50">
+                        Publikovat komentář
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Filtr + řazení -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+            <div class="flex items-center gap-3">
+              <h3 class="text-lg font-semibold text-white">Komentáře</h3>
+              <span id="totalCommentsCount" class="text-sm text-white/50">(0)</span>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+              <select
+                id="commentSort"
+                class="bg-neutral-900/80 border border-white/15 rounded-xl px-3 py-1.5 text-white/80 focus:outline-none focus:ring-2 focus:ring-amber-400/70"
+              >
+                <option value="newest">Nejnovější</option>
+                <option value="oldest">Nejstarší</option>
+                <option value="popular">Nejoblíbenější</option>
+              </select>
+              <button
+                id="toggleCommentSearch"
+                class="w-9 h-9 rounded-full border border-white/15 bg-neutral-900/80 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/5 transition"
+              >
+                <i data-lucide="search" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Vyhledávání v komentářích -->
+          <div id="commentSearchBar" class="hidden mb-6">
+            <div class="relative">
+              <input
+                type="text"
+                id="commentSearchInput"
+                placeholder="Hledat v komentářích..."
+                class="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-neutral-900/80 border border-white/15 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-amber-400/70"
+              />
+              <i data-lucide="search" class="w-4 h-4 text-white/40 absolute left-3 top-2.5"></i>
+              <button id="clearSearch" class="absolute right-3 top-2.5 text-white/40 hover:text-white/80">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Seznam komentářů -->
+          <div id="commentsList" class="space-y-5 hidden"></div>
+
+          <!-- Načíst více -->
+          <div id="loadMoreSection" class="hidden text-center mt-8">
+            <button
+              id="loadMoreBtn"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-900/80 border border-white/15 text-sm text-white/80 hover:bg-white/5 transition"
+            >
+              <i data-lucide="loader-2" class="w-4 h-4 animate-spin hidden"></i>
+              <span>Načíst více komentářů</span>
+            </button>
+          </div>
+
+          <!-- Žádné komentáře -->
+          <div id="noCommentsMessage" class="text-center py-10 text-white/60">
+            <div class="text-5xl mb-3">💬</div>
+            <h3 class="text-lg font-semibold text-white mb-1">Zatím žádné komentáře</h3>
+            <p class="text-sm">Buďte první, kdo se k této kampani vyjádří.</p>
+          </div>
+
+          <!-- Loading stav -->
+          <div id="commentsLoading" class="hidden text-center py-8">
+            <div class="mx-auto mb-3 h-8 w-8 rounded-full border-2 border-fuchsia-500/40 border-t-transparent animate-spin"></div>
+            <p class="text-sm text-white/60">Načítám komentáře...</p>
+          </div>
         </div>
+      </section>
 
-        <!-- Toast Notifications -->
-        <div id="toast" class="hidden fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            <span id="toastMessage">Úspěch!</span>
+      <!-- MODAL – editace komentáře -->
+      <div
+        id="editCommentModal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+      >
+        <div class="bg-neutral-950 border border-white/15 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+          <h3 class="text-lg font-bold text-white mb-3">Upravit komentář</h3>
+          <textarea
+            id="editCommentTextarea"
+            class="w-full px-4 py-3 rounded-2xl bg-neutral-900/80 border border-white/15 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-amber-400/70"
+            rows="4"
+            maxlength="1000"
+          ></textarea>
+          <div class="flex items-center justify-between mt-3 text-xs text-white/50">
+            <span id="editCharCount">0/1000</span>
+            <div class="flex items-center gap-2">
+              <button id="cancelEdit" class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 transition">
+                Zrušit
+              </button>
+              <button
+                id="saveEdit"
+                class="px-6 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition"
+              >
+                Uložit
+              </button>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <script>
-        let commentsSystem = null;
-        let currentUserId = null;
-        let currentCampaignId = 'demo-campaign-123';
-        let comments = [];
-        let currentEditingCommentId = null;
-        let currentReplyingToCommentId = null;
-        let currentFlaggingCommentId = null;
+      <!-- MODAL – odpověď -->
+      <div
+        id="replyModal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+      >
+        <div class="bg-neutral-950 border border-white/15 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+          <h3 class="text-lg font-bold text-white mb-4">Odpovědět na komentář</h3>
+          <div id="replyToComment" class="bg-neutral-900/60 border border-white/10 rounded-2xl p-4 mb-4 text-sm text-white/70"></div>
+          <textarea
+            id="replyTextarea"
+            placeholder="Napište svou odpověď..."
+            class="w-full px-4 py-3 rounded-2xl bg-neutral-900/80 border border-white/15 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-amber-400/70"
+            rows="4"
+            maxlength="1000"
+          ></textarea>
+          <div class="flex items-center justify-between mt-3 text-xs text-white/50">
+            <span id="replyCharCount">0/1000</span>
+            <div class="flex items-center gap-2">
+              <button id="cancelReply" class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 transition">
+                Zrušit
+              </button>
+              <button
+                id="submitReply"
+                class="px-6 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition"
+              >
+                Odpovědět
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Inicializuji Comments System...');
-            
-            lucide.createIcons();
-            commentsSystem = new CommentsSystem();
-            
-            setupEventListeners();
-            setupAuthStateListener();
-            
-            // Načíst komentáře
-            await loadComments();
+      <!-- MODAL – nahlášení -->
+      <div
+        id="flagModal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+      >
+        <div class="bg-neutral-950 border border-white/15 rounded-2xl p-6 max-w-md w-full mx-4 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+          <h3 class="text-lg font-bold text-white mb-3">Nahlásit komentář</h3>
+          <p class="text-sm text-white/70 mb-4">Vyberte důvod, proč je komentář problémový.</p>
+          <div class="space-y-2 mb-5 text-sm text-white/80">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="flagReason" value="spam" class="accent-fuchsia-500" />
+              <span>Spam nebo reklama</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="flagReason" value="inappropriate" class="accent-fuchsia-500" />
+              <span>Nevhodný obsah</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="flagReason" value="harassment" class="accent-fuchsia-500" />
+              <span>Obtěžování nebo útok</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="flagReason" value="misinformation" class="accent-fuchsia-500" />
+              <span>Dezinformace</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="flagReason" value="other" class="accent-fuchsia-500" />
+              <span>Jiný důvod</span>
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              id="cancelFlag"
+              class="flex-1 px-4 py-2 rounded-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 transition"
+            >
+              Zrušit
+            </button>
+            <button
+              id="submitFlag"
+              class="flex-1 px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-sm hover:bg-red-500 transition"
+            >
+              Nahlásit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOAST -->
+      <div
+        id="toast"
+        class="hidden fixed top-4 right-4 max-w-xs bg-emerald-500 text-white text-sm px-4 py-3 rounded-xl shadow-lg z-50 flex items-start gap-2"
+      >
+        <i data-lucide="check-circle" class="w-4 h-4 mt-0.5"></i>
+        <span id="toastMessage">Úspěch!</span>
+      </div>
+    </main>
+
+    <!-- FOOTER Kartao -->
+    <footer class="border-t border-white/10 text-center text-white/60 py-8 text-sm mt-8">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+        <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+        <span class="hidden md:block">•</span>
+        <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+        <span class="hidden md:block">•</span>
+        <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+      </div>
+      © 2025 <i data-lucide="crown" class="inline w-4 h-4 text-amber-300 align-text-bottom"></i> Kartao.cz – Síť influencerů a tvůrců
+    </footer>
+  </div>
+
+  <script>
+    let commentsSystem = null;
+    let currentUserId = null;
+    let currentCampaignId = 'demo-campaign-123';
+    let comments = [];
+    let currentEditingCommentId = null;
+    let currentReplyingToCommentId = null;
+    let currentFlaggingCommentId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🚀 Inicializuji Comments System...');
+      lucide.createIcons();
+
+      try {
+        commentsSystem = new CommentsSystem();
+      } catch (e) {
+        console.warn('CommentsSystem není dostupný, poběží pouze demo režim.');
+      }
+
+      setupEventListeners();
+      setupAuthStateListener();
+      await loadComments();
+    });
+
+    function setupAuthStateListener() {
+      if (firebase?.auth) {
+        firebase.auth().onAuthStateChanged((user) => {
+          currentUserId = user?.uid || null;
+          updateUIForAuthState(user);
         });
+      } else {
+        // fallback – demo uživatel není automaticky přihlášen
+        updateUIForAuthState(null);
+      }
+    }
 
-        function setupAuthStateListener() {
-            firebase.auth().onAuthStateChanged(user => {
-                currentUserId = user?.uid;
-                updateUIForAuthState(user);
-            });
+    function updateUIForAuthState(user) {
+      const loginPrompt = document.getElementById('loginPrompt');
+      const commentEditor = document.getElementById('commentEditor');
+      const currentUserAvatar = document.getElementById('currentUserAvatar');
+
+      if (user) {
+        loginPrompt.classList.add('hidden');
+        commentEditor.classList.remove('hidden');
+
+        const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+        if (user.photoURL) {
+          currentUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName || ''}" class="w-full h-full rounded-full object-cover" />`;
+        } else {
+          currentUserAvatar.innerHTML = `<div class="w-full h-full rounded-full bg-gradient-to-br from-fuchsia-500 to-amber-400 text-neutral-950 flex items-center justify-center font-semibold">${initial}</div>`;
+        }
+      } else {
+        loginPrompt.classList.remove('hidden');
+        commentEditor.classList.add('hidden');
+      }
+    }
+
+    function setupEventListeners() {
+      // Login (demo)
+      document.getElementById('loginBtn').addEventListener('click', simulateLogin);
+
+      // Komentář
+      document.getElementById('submitComment').addEventListener('click', submitComment);
+      document.getElementById('cancelComment').addEventListener('click', cancelComment);
+      document.getElementById('commentTextarea').addEventListener('input', updateCharCount);
+
+      // Edit
+      document.getElementById('editCommentTextarea').addEventListener('input', updateEditCharCount);
+      document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
+      document.getElementById('saveEdit').addEventListener('click', saveEdit);
+
+      // Reply
+      document.getElementById('replyTextarea').addEventListener('input', updateReplyCharCount);
+      document.getElementById('cancelReply').addEventListener('click', closeReplyModal);
+      document.getElementById('submitReply').addEventListener('click', submitReply);
+
+      // Flag
+      document.getElementById('cancelFlag').addEventListener('click', closeFlagModal);
+      document.getElementById('submitFlag').addEventListener('click', submitFlag);
+
+      // Řazení + hledání
+      document.getElementById('commentSort').addEventListener('change', sortComments);
+      document.getElementById('toggleCommentSearch').addEventListener('click', toggleSearch);
+      document.getElementById('commentSearchInput').addEventListener('input', searchComments);
+      document.getElementById('clearSearch').addEventListener('click', clearSearch);
+    }
+
+    async function simulateLogin() {
+      try {
+        const mockUser = {
+          uid: 'demo-user-' + Date.now(),
+          displayName: 'Demo uživatel',
+          email: 'demo@kartao.cz',
+          photoURL:
+            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+        };
+
+        currentUserId = mockUser.uid;
+        updateUIForAuthState(mockUser);
+        showToast('Úspěšně přihlášen (demo režim).', 'success');
+      } catch (error) {
+        console.error('❌ Chyba při simulaci přihlášení:', error);
+        showToast('Chyba při přihlášení', 'error');
+      }
+    }
+
+    async function loadComments() {
+      showLoading(true);
+      try {
+        if (commentsSystem) {
+          comments = await commentsSystem.getComments(currentCampaignId, {
+            sortBy: 'timestamp',
+            sortOrder: 'desc',
+            limit: 20,
+          });
         }
 
-        function updateUIForAuthState(user) {
-            const loginPrompt = document.getElementById('loginPrompt');
-            const commentEditor = document.getElementById('commentEditor');
-            const currentUserAvatar = document.getElementById('currentUserAvatar');
-
-            if (user) {
-                loginPrompt.classList.add('hidden');
-                commentEditor.classList.remove('hidden');
-                
-                // Nastavit avatar uživatele
-                if (user.photoURL) {
-                    currentUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}" class="w-full h-full rounded-full object-cover">`;
-                } else {
-                    currentUserAvatar.innerHTML = `<div class="w-full h-full rounded-full bg-purple-500 text-white flex items-center justify-center font-semibold">${(user.displayName || 'U').charAt(0).toUpperCase()}</div>`;
-                }
-            } else {
-                loginPrompt.classList.remove('hidden');
-                commentEditor.classList.add('hidden');
-            }
+        if (!comments || comments.length === 0) {
+          displayDemoComments();
+        } else {
+          displayComments(comments);
+          updateCommentCount(comments.length);
         }
+      } catch (error) {
+        console.error('❌ Chyba při načítání komentářů:', error);
+        displayDemoComments();
+      } finally {
+        showLoading(false);
+      }
+    }
 
-        function setupEventListeners() {
-            // Login
-            document.getElementById('loginBtn').addEventListener('click', simulateLogin);
-            
-            // Comment submission
-            document.getElementById('submitComment').addEventListener('click', submitComment);
-            document.getElementById('cancelComment').addEventListener('click', cancelComment);
-            
-            // Character counting
-            document.getElementById('commentTextarea').addEventListener('input', updateCharCount);
-            document.getElementById('editCommentTextarea').addEventListener('input', updateEditCharCount);
-            document.getElementById('replyTextarea').addEventListener('input', updateReplyCharCount);
-            
-            // Sorting and searching
-            document.getElementById('commentSort').addEventListener('change', sortComments);
-            document.getElementById('toggleCommentSearch').addEventListener('click', toggleSearch);
-            document.getElementById('commentSearchInput').addEventListener('input', searchComments);
-            document.getElementById('clearSearch').addEventListener('click', clearSearch);
-            
-            // Modal controls
-            document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
-            document.getElementById('saveEdit').addEventListener('click', saveEdit);
-            document.getElementById('cancelReply').addEventListener('click', closeReplyModal);
-            document.getElementById('submitReply').addEventListener('click', submitReply);
-            document.getElementById('cancelFlag').addEventListener('click', closeFlagModal);
-            document.getElementById('submitFlag').addEventListener('click', submitFlag);
-        }
+    function displayDemoComments() {
+      const demoComments = [
+        {
+          id: 'demo-1',
+          content:
+            'Skvělá kampaň! Konečně někdo, kdo se zaměřuje na skutečně udržitelné produkty. Určitě budu sledovat další spolupráce.',
+          authorName: 'Ekonadšenec',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          likes: 12,
+          dislikes: 1,
+          likedBy: [],
+          dislikedBy: [],
+          replies: [
+            {
+              id: 'demo-1-reply-1',
+              content: 'Souhlasím, tohle je přesně směr, kterým by se značky měly ubírat.',
+              authorName: 'ZeroWasteGuru',
+              timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000),
+              likes: 3,
+              parentCommentId: 'demo-1',
+            },
+          ],
+        },
+        {
+          id: 'demo-2',
+          content:
+            'Mám zkušenosti s podobnými produkty. Bylo by super, kdyby přibyly i reálné recenze od lidí, ne jen influencerů.',
+          authorName: 'PraktickáMáma',
+          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+          likes: 8,
+          dislikes: 0,
+          likedBy: [],
+          dislikedBy: [],
+          replies: [],
+        },
+        {
+          id: 'demo-3',
+          content:
+            'Zajímavé, ale chybí mi konkrétní data o dopadu na životní prostředí. Máte nějaké studie nebo čísla?',
+          authorName: 'DataAnalyst2025',
+          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+          likes: 15,
+          dislikes: 2,
+          likedBy: [],
+          dislikedBy: [],
+          replies: [],
+        },
+      ];
 
-        async function simulateLogin() {
-            try {
-                // Simulace přihlášení pro demo
-                const mockUser = {
-                    uid: 'demo-user-' + Date.now(),
-                    displayName: 'Demo Uživatel',
-                    email: 'demo@kartao.cz',
-                    photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
-                };
-                
-                currentUserId = mockUser.uid;
-                updateUIForAuthState(mockUser);
-                showToast('Úspěšně přihlášen!', 'success');
-                
-            } catch (error) {
-                console.error('❌ Chyba při simulaci přihlášení:', error);
-                showToast('Chyba při přihlášení', 'error');
-            }
-        }
+      comments = demoComments;
+      displayComments(comments);
+      updateCommentCount(comments.length);
+    }
 
-        async function loadComments() {
-            showLoading(true);
-            
-            try {
-                comments = await commentsSystem.getComments(currentCampaignId, {
-                    sortBy: 'timestamp',
-                    sortOrder: 'desc',
-                    limit: 20
-                });
-                
-                displayComments(comments);
-                updateCommentCount(comments.length);
-                
-                console.log(`💬 Načteno ${comments.length} komentářů`);
-                
-            } catch (error) {
-                console.error('❌ Chyba při načítání komentářů:', error);
-                // Zobrazit demo komentáře pro ukázku
-                displayDemoComments();
-            } finally {
-                showLoading(false);
-            }
-        }
+    function displayComments(commentsToShow) {
+      const container = document.getElementById('commentsList');
+      const noMsg = document.getElementById('noCommentsMessage');
 
-        function displayDemoComments() {
-            const demoComments = [
-                {
-                    id: 'demo-1',
-                    content: 'Skvělá kampaň! Konečně někdo, kdo se zaměřuje na skutečně udržitelné produkty. Určitě budu sledovat další články.',
-                    authorName: 'Ekonadšenec',
-                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-                    likes: 12,
-                    dislikes: 1,
-                    likedBy: [],
-                    dislikedBy: [],
-                    replies: [
-                        {
-                            id: 'demo-1-reply-1',
-                            content: 'Souhlasím! Tento směr je přesně to, co potřebujeme.',
-                            authorName: 'ZeroWasteGuru',
-                            timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000),
-                            likes: 3,
-                            dislikes: 0
-                        }
-                    ]
-                },
-                {
-                    id: 'demo-2', 
-                    content: 'Mám zkušenosti s podobnými produkty. Bylo by super, kdybyste přidali i sekci s recenzemi od běžných uživatelů, ne jen influencerů.',
-                    authorName: 'PraktickáMáma',
-                    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-                    likes: 8,
-                    dislikes: 0,
-                    likedBy: [],
-                    dislikedBy: [],
-                    replies: []
-                },
-                {
-                    id: 'demo-3',
-                    content: 'Zajímavé, ale chybí mi konkrétní data o dopadu na životní prostředí. Máte k tomu nějaké studie?',
-                    authorName: 'DataAnalyst2025',
-                    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-                    likes: 15,
-                    dislikes: 2,
-                    likedBy: [],
-                    dislikedBy: [],
-                    replies: []
-                }
-            ];
-            
-            displayComments(demoComments);
-            updateCommentCount(demoComments.length);
-        }
+      if (!commentsToShow || commentsToShow.length === 0) {
+        container.classList.add('hidden');
+        noMsg.classList.remove('hidden');
+        return;
+      }
 
-        function displayComments(commentsToShow) {
-            const container = document.getElementById('commentsList');
-            const noMessage = document.getElementById('noCommentsMessage');
-            
-            if (commentsToShow.length === 0) {
-                container.classList.add('hidden');
-                noMessage.classList.remove('hidden');
-                return;
-            }
-            
-            container.classList.remove('hidden');
-            noMessage.classList.add('hidden');
-            
-            container.innerHTML = commentsToShow.map(comment => 
-                createCommentHTML(comment)
-            ).join('');
-            
-            lucide.createIcons();
-        }
+      container.classList.remove('hidden');
+      noMsg.classList.add('hidden');
 
-        function createCommentHTML(comment) {
-            const timeAgo = getTimeAgo(comment.timestamp);
-            const avatarUrl = comment.authorAvatar || `https://ui-avatars.io/api/?name=${encodeURIComponent(comment.authorName)}&background=random`;
-            
-            return `
-                <div class="comment-item border border-gray-200 rounded-xl p-6 hover:shadow-lg transition" data-comment-id="${comment.id}">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                            <img src="${avatarUrl}" alt="${comment.authorName}" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <div class="flex-1 min-w-0">
-                            <!-- Author and timestamp -->
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center space-x-3">
-                                    <h4 class="font-semibold text-gray-800">${comment.authorName}</h4>
-                                    <span class="text-sm text-gray-500">${timeAgo}</span>
-                                    ${comment.isEdited ? '<span class="text-xs text-gray-400">(upraveno)</span>' : ''}
-                                </div>
-                                
-                                <div class="flex items-center space-x-2">
-                                    <button class="comment-menu-btn text-gray-400 hover:text-gray-600 transition" onclick="toggleCommentMenu('${comment.id}')">
-                                        <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-                                    </button>
-                                    
-                                    <!-- Comment menu -->
-                                    <div id="menu-${comment.id}" class="hidden absolute right-0 mt-2 bg-white rounded-lg shadow-lg border py-2 z-10">
-                                        ${currentUserId === comment.authorId ? 
-                                            '<button onclick="editComment(\'' + comment.id + '\')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Upravit</button>' +
-                                            '<button onclick="deleteComment(\'' + comment.id + '\')" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Smazat</button>' 
-                                            : ''
-                                        }
-                                        <button onclick="flagComment('${comment.id}')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Nahlásit</button>
-                                        <button onclick="shareComment('${comment.id}')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Sdílet</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Comment content -->
-                            <div class="prose prose-sm max-w-none mb-4">
-                                <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">${comment.content}</p>
-                            </div>
-                            
-                            <!-- Comment actions -->
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <button class="comment-like-btn flex items-center space-x-1 text-gray-500 hover:text-green-600 transition ${comment.likedBy?.includes(currentUserId) ? 'text-green-600' : ''}" 
-                                            onclick="toggleLike('${comment.id}')">
-                                        <i data-lucide="thumbs-up" class="w-4 h-4"></i>
-                                        <span>${comment.likes || 0}</span>
-                                    </button>
-                                    
-                                    <button class="comment-dislike-btn flex items-center space-x-1 text-gray-500 hover:text-red-600 transition ${comment.dislikedBy?.includes(currentUserId) ? 'text-red-600' : ''}" 
-                                            onclick="toggleDislike('${comment.id}')">
-                                        <i data-lucide="thumbs-down" class="w-4 h-4"></i>
-                                        <span>${comment.dislikes || 0}</span>
-                                    </button>
-                                    
-                                    <button class="reply-btn flex items-center space-x-1 text-gray-500 hover:text-purple-600 transition" 
-                                            onclick="replyToComment('${comment.id}')">
-                                        <i data-lucide="reply" class="w-4 h-4"></i>
-                                        <span>Odpovědět</span>
-                                    </button>
-                                </div>
-                                
-                                <div class="flex items-center space-x-2 text-sm text-gray-400">
-                                    ${(comment.replies?.length || 0) > 0 ? 
-                                        `<button class="toggle-replies-btn hover:text-gray-600 transition" onclick="toggleReplies('${comment.id}')">
-                                            ${comment.replies.length} ${comment.replies.length === 1 ? 'odpověď' : comment.replies.length < 5 ? 'odpovědi' : 'odpovědí'}
-                                        </button>` : ''
-                                    }
-                                </div>
-                            </div>
-                            
-                            <!-- Replies -->
-                            ${(comment.replies?.length || 0) > 0 ? 
-                                `<div id="replies-${comment.id}" class="mt-6 ml-8 space-y-4 border-l-2 border-gray-100 pl-6">
-                                    ${comment.replies.map(reply => createReplyHTML(reply)).join('')}
-                                </div>` : ''
-                            }
-                        </div>
-                    </div>
+      container.innerHTML = commentsToShow.map((c) => createCommentHTML(c)).join('');
+      lucide.createIcons();
+    }
+
+    function createCommentHTML(comment) {
+      const timeAgo = getTimeAgo(comment.timestamp);
+      const avatarUrl =
+        comment.authorAvatar ||
+        `https://ui-avatars.io/api/?name=${encodeURIComponent(comment.authorName)}&background=random&color=ffffff`;
+
+      const repliesCount = comment.replies?.length || 0;
+
+      return `
+        <div class="comment-item border border-white/10 rounded-2xl p-5 bg-neutral-900/70 hover:bg-neutral-900/90 transition" data-comment-id="${
+          comment.id
+        }">
+          <div class="flex items-start gap-4">
+            <div class="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-amber-300/60">
+              <img src="${avatarUrl}" alt="${comment.authorName}" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h4 class="font-semibold text-sm text-white">${comment.authorName}</h4>
+                  <span class="text-xs text-white/50">${timeAgo}</span>
+                  ${comment.isEdited ? '<span class="text-[11px] text-white/40">(upraveno)</span>' : ''}
                 </div>
-            `;
-        }
-
-        function createReplyHTML(reply) {
-            const timeAgo = getTimeAgo(reply.timestamp);
-            const avatarUrl = reply.authorAvatar || `https://ui-avatars.io/api/?name=${encodeURIComponent(reply.authorName)}&background=random`;
-            
-            return `
-                <div class="reply-item flex items-start space-x-3">
-                    <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                        <img src="${avatarUrl}" alt="${reply.authorName}" class="w-full h-full object-cover">
-                    </div>
-                    
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-2 mb-1">
-                            <h5 class="font-semibold text-gray-700 text-sm">${reply.authorName}</h5>
-                            <span class="text-xs text-gray-500">${timeAgo}</span>
-                        </div>
-                        
-                        <p class="text-gray-800 text-sm leading-relaxed mb-2">${reply.content}</p>
-                        
-                        <div class="flex items-center space-x-3">
-                            <button class="flex items-center space-x-1 text-gray-400 hover:text-green-600 transition text-xs" 
-                                    onclick="toggleReplyLike('${reply.id}')">
-                                <i data-lucide="thumbs-up" class="w-3 h-3"></i>
-                                <span>${reply.likes || 0}</span>
-                            </button>
-                            
-                            <button class="text-gray-400 hover:text-purple-600 transition text-xs" 
-                                    onclick="replyToComment('${reply.parentCommentId}')">
-                                Odpovědět
-                            </button>
-                        </div>
-                    </div>
+                <div class="relative">
+                  <button class="comment-menu-btn text-white/40 hover:text-white/80 transition" onclick="toggleCommentMenu('${
+                    comment.id
+                  }')">
+                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                  </button>
+                  <div id="menu-${
+                    comment.id
+                  }" class="hidden absolute right-0 mt-2 w-40 bg-neutral-950 border border-white/10 rounded-xl shadow-xl text-xs text-white/80 z-20">
+                    ${
+                      currentUserId && currentUserId === comment.authorId
+                        ? `<button onclick="editComment('${comment.id}')" class="block w-full text-left px-3 py-2 hover:bg-white/5">Upravit</button>
+                           <button onclick="deleteComment('${comment.id}')" class="block w-full text-left px-3 py-2 text-red-400 hover:bg-white/5">Smazat</button>`
+                        : ''
+                    }
+                    <button onclick="flagComment('${comment.id}')" class="block w-full text-left px-3 py-2 hover:bg-white/5">Nahlásit</button>
+                    <button onclick="shareComment('${comment.id}')" class="block w-full text-left px-3 py-2 hover:bg-white/5">Sdílet</button>
+                  </div>
                 </div>
-            `;
-        }
+              </div>
 
-        async function submitComment() {
-            const textarea = document.getElementById('commentTextarea');
-            const content = textarea.value.trim();
-            
-            if (!content) {
-                showToast('Komentář nesmí být prázdný', 'error');
-                return;
-            }
-            
-            if (!currentUserId) {
-                showToast('Musíte se přihlásit', 'error');
-                return;
-            }
-            
-            try {
-                // Pro demo vytvoříme nový komentář lokálně
-                const newComment = {
-                    id: 'new-' + Date.now(),
-                    content: content,
-                    authorName: 'Demo Uživatel',
-                    authorId: currentUserId,
-                    timestamp: new Date(),
-                    likes: 0,
-                    dislikes: 0,
-                    likedBy: [],
-                    dislikedBy: [],
-                    replies: []
-                };
-                
-                comments.unshift(newComment);
-                displayComments(comments);
-                updateCommentCount(comments.length);
-                
-                textarea.value = '';
-                updateCharCount();
-                
-                showToast('Komentář byl přidán!', 'success');
-                
-            } catch (error) {
-                console.error('❌ Chyba při přidávání komentáře:', error);
-                showToast('Chyba při přidávání komentáře', 'error');
-            }
-        }
+              <div class="text-sm text-white/90 leading-relaxed whitespace-pre-wrap mb-3">${comment.content}</div>
 
-        function cancelComment() {
-            document.getElementById('commentTextarea').value = '';
-            updateCharCount();
-        }
-
-        function updateCharCount() {
-            const textarea = document.getElementById('commentTextarea');
-            const charCount = document.getElementById('charCount');
-            charCount.textContent = `${textarea.value.length}/1000`;
-        }
-
-        function updateEditCharCount() {
-            const textarea = document.getElementById('editCommentTextarea');
-            const charCount = document.getElementById('editCharCount');
-            charCount.textContent = `${textarea.value.length}/1000`;
-        }
-
-        function updateReplyCharCount() {
-            const textarea = document.getElementById('replyTextarea');
-            const charCount = document.getElementById('replyCharCount');
-            charCount.textContent = `${textarea.value.length}/1000`;
-        }
-
-        function updateCommentCount(count) {
-            document.getElementById('totalCommentsCount').textContent = `(${count})`;
-            document.getElementById('campaignCommentCount').innerHTML = `<i data-lucide="message-square" class="w-4 h-4 mr-1"></i> ${count} komentářů`;
-            lucide.createIcons();
-        }
-
-        function sortComments() {
-            const sortBy = document.getElementById('commentSort').value;
-            
-            let sortedComments = [...comments];
-            
-            switch (sortBy) {
-                case 'newest':
-                    sortedComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                    break;
-                case 'oldest':
-                    sortedComments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                    break;
-                case 'popular':
-                    sortedComments.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-                    break;
-            }
-            
-            displayComments(sortedComments);
-        }
-
-        function toggleSearch() {
-            const searchBar = document.getElementById('commentSearchBar');
-            searchBar.classList.toggle('hidden');
-            
-            if (!searchBar.classList.contains('hidden')) {
-                document.getElementById('commentSearchInput').focus();
-            }
-        }
-
-        function searchComments() {
-            const searchTerm = document.getElementById('commentSearchInput').value.toLowerCase();
-            
-            if (!searchTerm) {
-                displayComments(comments);
-                return;
-            }
-            
-            const filteredComments = comments.filter(comment => 
-                comment.content.toLowerCase().includes(searchTerm) ||
-                comment.authorName.toLowerCase().includes(searchTerm)
-            );
-            
-            displayComments(filteredComments);
-        }
-
-        function clearSearch() {
-            document.getElementById('commentSearchInput').value = '';
-            displayComments(comments);
-        }
-
-        function toggleCommentMenu(commentId) {
-            const menu = document.getElementById(`menu-${commentId}`);
-            // Close all other menus
-            document.querySelectorAll('[id^="menu-"]').forEach(m => {
-                if (m.id !== `menu-${commentId}`) {
-                    m.classList.add('hidden');
-                }
-            });
-            menu.classList.toggle('hidden');
-        }
-
-        function editComment(commentId) {
-            const comment = comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            currentEditingCommentId = commentId;
-            document.getElementById('editCommentTextarea').value = comment.content;
-            updateEditCharCount();
-            document.getElementById('editCommentModal').classList.remove('hidden');
-            
-            // Close menu
-            document.getElementById(`menu-${commentId}`).classList.add('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editCommentModal').classList.add('hidden');
-            currentEditingCommentId = null;
-        }
-
-        async function saveEdit() {
-            const content = document.getElementById('editCommentTextarea').value.trim();
-            
-            if (!content) {
-                showToast('Komentář nesmí být prázdný', 'error');
-                return;
-            }
-            
-            try {
-                // Pro demo aktualizujeme lokálně
-                const comment = comments.find(c => c.id === currentEditingCommentId);
-                if (comment) {
-                    comment.content = content;
-                    comment.isEdited = true;
-                    displayComments(comments);
-                }
-                
-                closeEditModal();
-                showToast('Komentář byl upraven', 'success');
-                
-            } catch (error) {
-                console.error('❌ Chyba při úpravě komentáře:', error);
-                showToast('Chyba při úpravě komentáře', 'error');
-            }
-        }
-
-        function deleteComment(commentId) {
-            if (!confirm('Opravdu chcete smazat tento komentář?')) return;
-            
-            try {
-                comments = comments.filter(c => c.id !== commentId);
-                displayComments(comments);
-                updateCommentCount(comments.length);
-                showToast('Komentář byl smazán', 'success');
-                
-                // Close menu
-                document.getElementById(`menu-${commentId}`).classList.add('hidden');
-                
-            } catch (error) {
-                console.error('❌ Chyba při mazání komentáře:', error);
-                showToast('Chyba při mazání komentáře', 'error');
-            }
-        }
-
-        function replyToComment(commentId) {
-            const comment = comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            currentReplyingToCommentId = commentId;
-            
-            // Show original comment in modal
-            document.getElementById('replyToComment').innerHTML = `
-                <div class="flex items-start space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-300"></div>
-                    <div>
-                        <h5 class="font-semibold text-gray-700 text-sm">${comment.authorName}</h5>
-                        <p class="text-gray-600 text-sm mt-1">${comment.content.substring(0, 100)}${comment.content.length > 100 ? '...' : ''}</p>
-                    </div>
+              <div class="flex items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-3">
+                  <button class="flex items-center gap-1 text-white/60 hover:text-emerald-300 transition ${
+                    comment.likedBy?.includes(currentUserId) ? 'text-emerald-300' : ''
+                  }" onclick="toggleLike('${comment.id}')">
+                    <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+                    <span>${comment.likes || 0}</span>
+                  </button>
+                  <button class="flex items-center gap-1 text-white/60 hover:text-rose-300 transition ${
+                    comment.dislikedBy?.includes(currentUserId) ? 'text-rose-300' : ''
+                  }" onclick="toggleDislike('${comment.id}')">
+                    <i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i>
+                    <span>${comment.dislikes || 0}</span>
+                  </button>
+                  <button class="flex items-center gap-1 text-white/60 hover:text-fuchsia-300 transition" onclick="replyToComment('${
+                    comment.id
+                  }')">
+                    <i data-lucide="reply" class="w-3.5 h-3.5"></i>
+                    <span>Odpovědět</span>
+                  </button>
                 </div>
-            `;
-            
-            document.getElementById('replyTextarea').value = '';
-            updateReplyCharCount();
-            document.getElementById('replyModal').classList.remove('hidden');
-        }
+                <div class="flex items-center gap-2 text-white/50">
+                  ${
+                    repliesCount > 0
+                      ? `<button class="hover:text-white/80" onclick="toggleReplies('${comment.id}')">${repliesCount} ${{
+                          1: 'odpověď',
+                          2: 'odpovědi',
+                          3: 'odpovědi',
+                          4: 'odpovědi',
+                        }[repliesCount] || 'odpovědí'}</button>`
+                      : ''
+                  }
+                </div>
+              </div>
 
-        function closeReplyModal() {
-            document.getElementById('replyModal').classList.add('hidden');
-            currentReplyingToCommentId = null;
-        }
+              ${
+                repliesCount > 0
+                  ? `<div id="replies-${comment.id}" class="mt-4 ml-3 pl-4 border-l border-white/10 space-y-3">
+                      ${comment.replies.map((r) => createReplyHTML(r)).join('')}
+                     </div>`
+                  : ''
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-        async function submitReply() {
-            const content = document.getElementById('replyTextarea').value.trim();
-            
-            if (!content) {
-                showToast('Odpověď nesmí být prázdná', 'error');
-                return;
-            }
-            
-            try {
-                // Pro demo přidáme odpověď lokálně
-                const comment = comments.find(c => c.id === currentReplyingToCommentId);
-                if (comment) {
-                    const newReply = {
-                        id: 'reply-' + Date.now(),
-                        content: content,
-                        authorName: 'Demo Uživatel',
-                        authorId: currentUserId,
-                        timestamp: new Date(),
-                        likes: 0,
-                        parentCommentId: currentReplyingToCommentId
-                    };
-                    
-                    if (!comment.replies) comment.replies = [];
-                    comment.replies.push(newReply);
-                    
-                    displayComments(comments);
-                    showToast('Odpověď byla přidána', 'success');
-                }
-                
-                closeReplyModal();
-                
-            } catch (error) {
-                console.error('❌ Chyba při přidávání odpovědi:', error);
-                showToast('Chyba při přidávání odpovědi', 'error');
-            }
-        }
+    function createReplyHTML(reply) {
+      const timeAgo = getTimeAgo(reply.timestamp);
+      const avatarUrl =
+        reply.authorAvatar ||
+        `https://ui-avatars.io/api/?name=${encodeURIComponent(reply.authorName)}&background=random&color=ffffff`;
 
-        function flagComment(commentId) {
-            currentFlaggingCommentId = commentId;
-            document.getElementById('flagModal').classList.remove('hidden');
-            
-            // Close menu
-            document.getElementById(`menu-${commentId}`).classList.add('hidden');
-        }
+      return `
+        <div class="flex items-start gap-3 text-xs">
+          <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-amber-200/60">
+            <img src="${avatarUrl}" alt="${reply.authorName}" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-semibold text-white/90">${reply.authorName}</span>
+              <span class="text-[11px] text-white/50">${timeAgo}</span>
+            </div>
+            <p class="text-white/80 leading-relaxed mb-1">${reply.content}</p>
+            <div class="flex items-center gap-3 text-[11px] text-white/60">
+              <button class="flex items-center gap-1 hover:text-emerald-300" onclick="toggleReplyLike('${reply.id}')">
+                <i data-lucide="thumbs-up" class="w-3 h-3"></i>
+                <span>${reply.likes || 0}</span>
+              </button>
+              <button class="hover:text-fuchsia-300" onclick="replyToComment('${reply.parentCommentId}')">Odpovědět</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-        function closeFlagModal() {
-            document.getElementById('flagModal').classList.add('hidden');
-            currentFlaggingCommentId = null;
-            
-            // Clear selection
-            document.querySelectorAll('input[name="flagReason"]').forEach(radio => {
-                radio.checked = false;
-            });
-        }
+    async function submitComment() {
+      const textarea = document.getElementById('commentTextarea');
+      const content = textarea.value.trim();
 
-        async function submitFlag() {
-            const selectedReason = document.querySelector('input[name="flagReason"]:checked');
-            
-            if (!selectedReason) {
-                showToast('Vyberte důvod nahlášení', 'error');
-                return;
-            }
-            
-            try {
-                // Pro demo jen zobrazíme zprávu
-                showToast('Komentář byl nahlášen', 'success');
-                closeFlagModal();
-                
-            } catch (error) {
-                console.error('❌ Chyba při nahlašování komentáře:', error);
-                showToast('Chyba při nahlašování komentáře', 'error');
-            }
-        }
+      if (!content) {
+        showToast('Komentář nesmí být prázdný.', 'error');
+        return;
+      }
+      if (!currentUserId) {
+        showToast('Pro komentování se musíte přihlásit.', 'error');
+        return;
+      }
 
-        function toggleLike(commentId) {
-            const comment = comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            if (!comment.likedBy) comment.likedBy = [];
-            if (!comment.dislikedBy) comment.dislikedBy = [];
-            
-            const hasLiked = comment.likedBy.includes(currentUserId);
-            const hasDisliked = comment.dislikedBy.includes(currentUserId);
-            
-            if (hasLiked) {
-                // Remove like
-                comment.likedBy = comment.likedBy.filter(id => id !== currentUserId);
-                comment.likes = Math.max(0, (comment.likes || 0) - 1);
-            } else {
-                // Add like
-                comment.likedBy.push(currentUserId);
-                comment.likes = (comment.likes || 0) + 1;
-                
-                // Remove dislike if exists
-                if (hasDisliked) {
-                    comment.dislikedBy = comment.dislikedBy.filter(id => id !== currentUserId);
-                    comment.dislikes = Math.max(0, (comment.dislikes || 0) - 1);
-                }
-            }
-            
-            displayComments(comments);
-        }
+      try {
+        const newComment = {
+          id: 'local-' + Date.now(),
+          content,
+          authorName: 'Demo uživatel',
+          authorId: currentUserId,
+          timestamp: new Date(),
+          likes: 0,
+          dislikes: 0,
+          likedBy: [],
+          dislikedBy: [],
+          replies: [],
+        };
 
-        function toggleDislike(commentId) {
-            const comment = comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            if (!comment.likedBy) comment.likedBy = [];
-            if (!comment.dislikedBy) comment.dislikedBy = [];
-            
-            const hasLiked = comment.likedBy.includes(currentUserId);
-            const hasDisliked = comment.dislikedBy.includes(currentUserId);
-            
-            if (hasDisliked) {
-                // Remove dislike
-                comment.dislikedBy = comment.dislikedBy.filter(id => id !== currentUserId);
-                comment.dislikes = Math.max(0, (comment.dislikes || 0) - 1);
-            } else {
-                // Add dislike
-                comment.dislikedBy.push(currentUserId);
-                comment.dislikes = (comment.dislikes || 0) + 1;
-                
-                // Remove like if exists
-                if (hasLiked) {
-                    comment.likedBy = comment.likedBy.filter(id => id !== currentUserId);
-                    comment.likes = Math.max(0, (comment.likes || 0) - 1);
-                }
-            }
-            
-            displayComments(comments);
-        }
+        comments.unshift(newComment);
+        displayComments(comments);
+        updateCommentCount(comments.length);
 
-        function toggleReplies(commentId) {
-            const repliesContainer = document.getElementById(`replies-${commentId}`);
-            repliesContainer.classList.toggle('hidden');
-        }
+        textarea.value = '';
+        updateCharCount();
+        showToast('Komentář byl přidán.', 'success');
+      } catch (error) {
+        console.error('❌ Chyba při přidávání komentáře:', error);
+        showToast('Chyba při přidávání komentáře.', 'error');
+      }
+    }
 
-        function shareComment(commentId) {
-            // Pro demo jen zkopírujeme do schránky
-            const url = `${window.location.href}#comment-${commentId}`;
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(url).then(() => {
-                    showToast('Odkaz na komentář byl zkopírován', 'success');
-                });
-            } else {
-                showToast('Odkaz: ' + url, 'info');
-            }
-            
-            // Close menu
-            document.getElementById(`menu-${commentId}`).classList.add('hidden');
-        }
+    function cancelComment() {
+      const textarea = document.getElementById('commentTextarea');
+      textarea.value = '';
+      updateCharCount();
+    }
 
-        function getTimeAgo(timestamp) {
-            const now = new Date();
-            const time = new Date(timestamp);
-            const diff = now - time;
-            
-            const minutes = Math.floor(diff / (1000 * 60));
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            
-            if (minutes < 60) {
-                return `před ${minutes}m`;
-            } else if (hours < 24) {
-                return `před ${hours}h`;
-            } else {
-                return `před ${days}d`;
-            }
-        }
+    function updateCharCount() {
+      const textarea = document.getElementById('commentTextarea');
+      const charCount = document.getElementById('charCount');
+      charCount.textContent = `${textarea.value.length}/1000`;
+    }
 
-        function showLoading(show) {
-            const loading = document.getElementById('commentsLoading');
-            const content = document.getElementById('commentsList');
-            
-            if (show) {
-                loading.classList.remove('hidden');
-                content.classList.add('hidden');
-            } else {
-                loading.classList.add('hidden');
-                content.classList.remove('hidden');
-            }
-        }
+    function updateEditCharCount() {
+      const textarea = document.getElementById('editCommentTextarea');
+      const charCount = document.getElementById('editCharCount');
+      charCount.textContent = `${textarea.value.length}/1000`;
+    }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            toastMessage.textContent = message;
-            
-            // Set color based on type
-            toast.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50';
-            
-            switch (type) {
-                case 'success':
-                    toast.classList.add('bg-green-500', 'text-white');
-                    break;
-                case 'error':
-                    toast.classList.add('bg-red-500', 'text-white');
-                    break;
-                case 'info':
-                    toast.classList.add('bg-blue-500', 'text-white');
-                    break;
-            }
-            
-            toast.classList.remove('hidden');
-            
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
-        }
+    function updateReplyCharCount() {
+      const textarea = document.getElementById('replyTextarea');
+      const charCount = document.getElementById('replyCharCount');
+      charCount.textContent = `${textarea.value.length}/1000`;
+    }
 
-        // Close menus when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.comment-menu-btn')) {
-                document.querySelectorAll('[id^="menu-"]').forEach(menu => {
-                    menu.classList.add('hidden');
-                });
-            }
+    function updateCommentCount(count) {
+      document.getElementById('totalCommentsCount').textContent = `(${count})`;
+      document.getElementById('campaignCommentCount').innerHTML = `<i data-lucide="message-square" class="w-4 h-4 mr-1"></i> ${count} komentářů`;
+      lucide.createIcons();
+    }
+
+    function sortComments() {
+      const sortBy = document.getElementById('commentSort').value;
+      let sorted = [...comments];
+
+      if (sortBy === 'newest') {
+        sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      } else if (sortBy === 'oldest') {
+        sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      } else if (sortBy === 'popular') {
+        sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
+
+      displayComments(sorted);
+    }
+
+    function toggleSearch() {
+      const bar = document.getElementById('commentSearchBar');
+      bar.classList.toggle('hidden');
+      if (!bar.classList.contains('hidden')) {
+        document.getElementById('commentSearchInput').focus();
+      }
+    }
+
+    function searchComments() {
+      const term = document.getElementById('commentSearchInput').value.toLowerCase();
+      if (!term) {
+        displayComments(comments);
+        return;
+      }
+
+      const filtered = comments.filter(
+        (c) =>
+          c.content.toLowerCase().includes(term) ||
+          (c.authorName && c.authorName.toLowerCase().includes(term))
+      );
+      displayComments(filtered);
+    }
+
+    function clearSearch() {
+      document.getElementById('commentSearchInput').value = '';
+      displayComments(comments);
+    }
+
+    function toggleCommentMenu(commentId) {
+      const menu = document.getElementById(`menu-${commentId}`);
+      document.querySelectorAll('[id^="menu-"]').forEach((m) => {
+        if (m !== menu) m.classList.add('hidden');
+      });
+      menu.classList.toggle('hidden');
+    }
+
+    function editComment(commentId) {
+      const comment = comments.find((c) => c.id === commentId);
+      if (!comment) return;
+      currentEditingCommentId = commentId;
+      document.getElementById('editCommentTextarea').value = comment.content;
+      updateEditCharCount();
+      document.getElementById('editCommentModal').classList.remove('hidden');
+      document.getElementById(`menu-${commentId}`).classList.add('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editCommentModal').classList.add('hidden');
+      currentEditingCommentId = null;
+    }
+
+    async function saveEdit() {
+      const content = document.getElementById('editCommentTextarea').value.trim();
+      if (!content) {
+        showToast('Komentář nesmí být prázdný.', 'error');
+        return;
+      }
+
+      const comment = comments.find((c) => c.id === currentEditingCommentId);
+      if (comment) {
+        comment.content = content;
+        comment.isEdited = true;
+        displayComments(comments);
+        closeEditModal();
+        showToast('Komentář byl upraven.', 'success');
+      }
+    }
+
+    function deleteComment(commentId) {
+      if (!confirm('Opravdu chcete komentář smazat?')) return;
+      comments = comments.filter((c) => c.id !== commentId);
+      displayComments(comments);
+      updateCommentCount(comments.length);
+      showToast('Komentář byl smazán.', 'success');
+    }
+
+    function replyToComment(commentId) {
+      const comment = comments.find((c) => c.id === commentId);
+      if (!comment) return;
+      if (!currentUserId) {
+        showToast('Pro odpověď se musíte přihlásit.', 'error');
+        return;
+      }
+
+      currentReplyingToCommentId = commentId;
+      document.getElementById('replyToComment').innerHTML = `
+        <div class="text-xs text-white/70">
+          <div class="font-semibold mb-1">${comment.authorName}</div>
+          <div class="text-white/80">${comment.content.substring(0, 140)}${
+        comment.content.length > 140 ? '…' : ''
+      }</div>
+        </div>
+      `;
+      document.getElementById('replyTextarea').value = '';
+      updateReplyCharCount();
+      document.getElementById('replyModal').classList.remove('hidden');
+    }
+
+    function closeReplyModal() {
+      document.getElementById('replyModal').classList.add('hidden');
+      currentReplyingToCommentId = null;
+    }
+
+    async function submitReply() {
+      const textarea = document.getElementById('replyTextarea');
+      const content = textarea.value.trim();
+      if (!content) {
+        showToast('Odpověď nesmí být prázdná.', 'error');
+        return;
+      }
+      if (!currentUserId) {
+        showToast('Pro odpověď se musíte přihlásit.', 'error');
+        return;
+      }
+
+      const parent = comments.find((c) => c.id === currentReplyingToCommentId);
+      if (!parent) return;
+
+      const reply = {
+        id: 'reply-' + Date.now(),
+        content,
+        authorName: 'Demo uživatel',
+        authorId: currentUserId,
+        timestamp: new Date(),
+        likes: 0,
+        parentCommentId: parent.id,
+      };
+
+      if (!parent.replies) parent.replies = [];
+      parent.replies.push(reply);
+
+      displayComments(comments);
+      closeReplyModal();
+      showToast('Odpověď byla přidána.', 'success');
+    }
+
+    function flagComment(commentId) {
+      currentFlaggingCommentId = commentId;
+      document.querySelectorAll('input[name="flagReason"]').forEach((r) => (r.checked = false));
+      document.getElementById('flagModal').classList.remove('hidden');
+      const menu = document.getElementById(`menu-${commentId}`);
+      if (menu) menu.classList.add('hidden');
+    }
+
+    function closeFlagModal() {
+      document.getElementById('flagModal').classList.add('hidden');
+      currentFlaggingCommentId = null;
+    }
+
+    function submitFlag() {
+      const selected = document.querySelector('input[name="flagReason"]:checked');
+      if (!selected) {
+        showToast('Vyberte prosím důvod nahlášení.', 'error');
+        return;
+      }
+      closeFlagModal();
+      showToast('Komentář byl nahlášen moderátorům.', 'success');
+    }
+
+    function toggleReplies(commentId) {
+      const el = document.getElementById(`replies-${commentId}`);
+      if (!el) return;
+      el.classList.toggle('hidden');
+    }
+
+    function toggleLike(commentId) {
+      const comment = comments.find((c) => c.id === commentId);
+      if (!comment || !currentUserId) {
+        showToast('Pro hodnocení se musíte přihlásit.', 'error');
+        return;
+      }
+
+      comment.likedBy = comment.likedBy || [];
+      comment.dislikedBy = comment.dislikedBy || [];
+      comment.likes = comment.likes || 0;
+      comment.dislikes = comment.dislikes || 0;
+
+      if (comment.likedBy.includes(currentUserId)) {
+        comment.likedBy = comment.likedBy.filter((id) => id !== currentUserId);
+        comment.likes--;
+      } else {
+        comment.likedBy.push(currentUserId);
+        comment.likes++;
+        if (comment.dislikedBy.includes(currentUserId)) {
+          comment.dislikedBy = comment.dislikedBy.filter((id) => id !== currentUserId);
+          comment.dislikes--;
+        }
+      }
+      displayComments(comments);
+    }
+
+    function toggleDislike(commentId) {
+      const comment = comments.find((c) => c.id === commentId);
+      if (!comment || !currentUserId) {
+        showToast('Pro hodnocení se musíte přihlásit.', 'error');
+        return;
+      }
+
+      comment.likedBy = comment.likedBy || [];
+      comment.dislikedBy = comment.dislikedBy || [];
+      comment.likes = comment.likes || 0;
+      comment.dislikes = comment.dislikes || 0;
+
+      if (comment.dislikedBy.includes(currentUserId)) {
+        comment.dislikedBy = comment.dislikedBy.filter((id) => id !== currentUserId);
+        comment.dislikes--;
+      } else {
+        comment.dislikedBy.push(currentUserId);
+        comment.dislikes++;
+        if (comment.likedBy.includes(currentUserId)) {
+          comment.likedBy = comment.likedBy.filter((id) => id !== currentUserId);
+          comment.likes--;
+        }
+      }
+      displayComments(comments);
+    }
+
+    function toggleReplyLike(replyId) {
+      // Jednoduché lokální +1/-1 bez vazby na uživatele
+      for (const c of comments) {
+        if (!c.replies) continue;
+        const r = c.replies.find((x) => x.id === replyId);
+        if (r) {
+          r.likes = (r.likes || 0) + 1;
+          break;
+        }
+      }
+      displayComments(comments);
+    }
+
+    function shareComment(commentId) {
+      const url = window.location.href.split('#')[0] + `#comment-${commentId}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('Odkaz na komentář byl zkopírován.', 'success');
         });
-    </script>
+      } else {
+        showToast('Kopírování odkazu není podporováno v tomto prohlížeči.', 'error');
+      }
+    }
+
+    function getTimeAgo(timestamp) {
+      const t = timestamp instanceof Date ? timestamp : new Date(timestamp);
+      const diffMs = Date.now() - t.getTime();
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 1) return 'právě teď';
+      if (diffMin < 60) return `${diffMin} min zpět`;
+      const diffH = Math.floor(diffMin / 60);
+      if (diffH < 24) return `${diffH} h zpět`;
+      const diffD = Math.floor(diffH / 24);
+      if (diffD < 7) return `${diffD} d zpět`;
+      return t.toLocaleDateString('cs-CZ');
+    }
+
+    function showLoading(show) {
+      const loading = document.getElementById('commentsLoading');
+      if (show) loading.classList.remove('hidden');
+      else loading.classList.add('hidden');
+    }
+
+    let toastTimeout = null;
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toastMessage');
+      msg.textContent = message;
+
+      toast.classList.remove('hidden');
+      toast.classList.remove('bg-emerald-500', 'bg-red-500');
+      toast.classList.add(type === 'error' ? 'bg-red-500' : 'bg-emerald-500');
+      lucide.createIcons();
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+    }
+  </script>
 </body>
 </html>
