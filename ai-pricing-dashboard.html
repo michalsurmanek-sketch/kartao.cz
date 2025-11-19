@@ -30,35 +30,24 @@
 </head>
 <body class="bg-gradient-to-b from-neutral-950 via-neutral-950 to-black text-white">
     <div class="min-h-screen p-4 md:p-8">
-        <!-- Header -->
-        <div class="max-w-7xl mx-auto mb-8">
-            <div class="bg-neutral-950/80 border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.6)] p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-fuchsia-500/20 via-amber-400/20 to-emerald-400/20 border border-white/10 mb-3">
-                        <i data-lucide="crown" class="w-4 h-4 text-amber-300"></i>
-                        <span class="text-xs font-semibold tracking-wide uppercase text-white/70">Kartao.cz · AI oceňování</span>
-                    </div>
-                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
-                        🤖 AI Oceňování Influencerů
-                    </h1>
-                    <p class="text-sm md:text-base text-white/60 max-w-2xl">
-                        Inteligentní systém, který propojuje data z karet tvůrců Kartao.cz s tržními cenami a navrhne férovou cenu za spolupráci.
-                    </p>
-                </div>
-                <div class="flex flex-col items-start md:items-end gap-2 text-sm text-white/60">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-white/5 border border-white/10">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-                        <span>Interní nástroj pro tým Kartao</span>
-                    </span>
-                    <span class="inline-flex items-center gap-2 text-xs text-white/40">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
-                        <span>Verze 1.0 · BETA</span>
-                    </span>
-                </div>
-            </div>
-        </div>
+        <!-- Header (Kartao styl) -->
+<header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/80 bg-neutral-950/60 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
+        <i data-lucide="crown" class="w-5 h-5 text-neutral-900"></i>
+      </div>
+      <span class="font-semibold text-white text-lg">Kartao.cz</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-white/80">
+      <a href="kartao-marketplace.html" class="hover:text-white transition">Marketplace</a>
+      <a href="kartao-zalozit-kartu.html" class="hover:text-white transition">Založit kartu</a>
+      <a href="kartao-zadat-kampan.html" class="hover:text-white transition">Zadat kampaň</a>
+    </nav>
+  </div>
+</header>
 
-        <!-- Main Content -->
+<!-- Main Content -->
         <div class="max-w-7xl mx-auto">
             <!-- Quick Pricing Calculator -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
@@ -617,5 +606,17 @@
             }
         }
     </script>
+<!-- Footer (Kartao styl) -->
+<footer class="border-t border-white/10 text-center text-white/60 py-8 text-sm mt-12">
+  <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+    <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
+    <span class="hidden md:block">•</span>
+    <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
+    <span class="hidden md:block">•</span>
+    <a href="kontakt.html" class="hover:text-white">Kontakt</a>
+  </div>
+  © 2025 <i data-lucide="crown" class="inline w-4 h-4 text-amber-300"></i> Kartao.cz – Síť influencerů a tvůrců
+</footer>
+
 </body>
 </html>
