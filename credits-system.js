@@ -29,10 +29,41 @@ class CreditsSystem {
   async init() {
     this.auth.onAuthStateChanged(user => {
       this.currentUser = user;
-      if (user && user.role === 'tvurce') {
+      // Kredity jsou pouze pro tvůrce, ne pro firmy
+      if (user && this.getUserRole(user.uid) === 'tvurce') {
         this.setupUserCredits(user.uid);
       }
     });
+  }
+  
+  // Získání role uživatele
+  async getUserRole(userId) {
+    try {
+      // Zkus demo auth nejdřív
+      if (typeof window !== 'undefined' && window.demoAuth) {
+        const demoUser = window.demoAuth.getCurrentUser();
+        if (demoUser && demoUser.uid === userId) {
+          return demoUser.role;
+        }
+      }
+      
+      // Zkontroluj v creators kolekci
+      const creatorDoc = await this.db.collection('creators').doc(userId).get();
+      if (creatorDoc.exists) {
+        return 'tvurce';
+      }
+      
+      // Zkontroluj v companies kolekci
+      const companyDoc = await this.db.collection('companies').doc(userId).get();
+      if (companyDoc.exists) {
+        return 'firma';
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Chyba při získávání role uživatele:', error);
+      return null;
+    }
   }
 
   // Inicializace kreditního účtu pro nového uživatele
@@ -63,6 +94,12 @@ class CreditsSystem {
 
   // Získání aktuálního stavu kreditů uživatele
   async getUserCredits(userId) {
+    // Kontrola role - kredity pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      return { balance: 0, level: 1, streak: 0, totalEarned: 0, message: 'Kredity jsou dostupné pouze pro tvůrce' };
+    }
+    
     try {
       const doc = await this.db.collection('userCredits').doc(userId).get();
       if (doc.exists) {
@@ -77,6 +114,13 @@ class CreditsSystem {
 
   // Přidání kreditů za splnění úkolu
   async addCredits(userId, taskType, additionalData = {}) {
+    // Kontrola role - kredity pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      console.log('Kredity jsou dostupné pouze pro tvůrce');
+      return { success: false, message: 'Kredity jsou dostupné pouze pro tvůrce' };
+    }
+    
     if (!this.taskTypes[taskType]) {
       throw new Error('Neplatný typ úkolu');
     }
@@ -134,6 +178,13 @@ class CreditsSystem {
 
   // Utracení kreditů
   async spendCredits(userId, amount, reason, metadata = {}) {
+    // Kontrola role - kredity pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      console.log('Kredity jsou dostupné pouze pro tvůrce');
+      throw new Error('Kredity jsou dostupné pouze pro tvůrce');
+    }
+    
     try {
       const creditsRef = this.db.collection('userCredits').doc(userId);
       const creditsDoc = await creditsRef.get();
@@ -185,8 +236,74 @@ class CreditsSystem {
     return Math.floor(Math.sqrt(experience / 100)) + 1;
   }
 
+  // Denní check-in pro streak bonus
+  async dailyCheckIn(userId) {
+    // Kontrola role - check-in pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      return { success: false, message: 'Check-in je dostupný pouze pro tvůrce' };
+    }
+    
+    try {
+      const creditsRef = this.db.collection('userCredits').doc(userId);
+      const creditsDoc = await creditsRef.get();
+      const creditsData = creditsDoc.data() || {};
+      
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const lastActivityDate = creditsData.lastActivityDate;
+      const lastActivityStr = lastActivityDate ? lastActivityDate.split('T')[0] : null;
+      
+      // Kontrola zda už dnes nebyl check-in
+      if (lastActivityStr === todayStr) {
+        return { success: false, message: 'Dnes už jsi se přihlásil' };
+      }
+      
+      let newStreak = 1;
+      let bonusCredits = 3; // Základní bonus
+      
+      if (lastActivityStr) {
+        const lastDate = new Date(lastActivityStr);
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (lastDate.toDateString() === yesterday.toDateString()) {
+          // Pokračování streaku
+          newStreak = (creditsData.streak || 0) + 1;
+          bonusCredits = 3 + Math.floor(newStreak / 7) * 2; // Bonus za dlouhý streak
+        }
+      }
+      
+      // Aktualizace streaku a přidání kreditů
+      await creditsRef.update({
+        streak: newStreak,
+        lastActivityDate: today.toISOString()
+      });
+      
+      await this.addCredits(userId, 'DAILY_LOGIN', { streak: newStreak, bonus: bonusCredits });
+      
+      return {
+        success: true,
+        streak: newStreak,
+        credits: bonusCredits,
+        message: `Denní check-in! Streak: ${newStreak} dní (+${bonusCredits} kreditů)`
+      };
+      
+    } catch (error) {
+      console.error('Chyba při denním check-in:', error);
+      throw error;
+    }
+  }
+
   // Získání denních úkolů pro uživatele
   async getDailyTasks(userId) {
+    // Kontrola role - úkoly pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      console.log('Úkoly jsou dostupné pouze pro tvůrce');
+      return [];
+    }
+    
     const today = new Date().toISOString().split('T')[0];
     
     try {
@@ -419,6 +536,12 @@ class CreditsSystem {
 
   // Získání historie transakcí
   async getTransactionHistory(userId, limit = 50) {
+    // Kontrola role - historie pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      return [];
+    }
+    
     try {
       const snapshot = await this.db.collection('creditTransactions')
         .where('userId', '==', userId)
@@ -497,6 +620,12 @@ class CreditsSystem {
 
   // Kontrola aktivních odměn uživatele
   async getActiveRewards(userId) {
+    // Kontrola role - odměny pouze pro tvůrce
+    const userRole = await this.getUserRole(userId);
+    if (userRole !== 'tvurce') {
+      return [];
+    }
+    
     try {
       const snapshot = await this.db.collection('activeRewards')
         .where('userId', '==', userId)
@@ -523,6 +652,123 @@ class CreditsSystem {
     } catch (error) {
       console.error('Chyba při načítání aktivních odměn:', error);
       return [];
+    }
+  }
+  
+  // Získání žebříčku uživatelů podle kreditů
+  async getCreditsLeaderboard(limit = 50) {
+    try {
+      const snapshot = await this.db.collection('userCredits')
+        .orderBy('totalCredits', 'desc')
+        .limit(limit)
+        .get();
+      
+      const leaderboard = [];
+      
+      for (const doc of snapshot.docs) {
+        const creditsData = doc.data();
+        
+        // Získání informací o uživateli
+        const userDoc = await this.db.collection('creators').doc(creditsData.userId).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          leaderboard.push({
+            userId: creditsData.userId,
+            displayName: userData.displayName || 'Neznámý uživatel',
+            avatar: userData.avatar || null,
+            totalCredits: creditsData.totalCredits || 0,
+            level: creditsData.level || 1,
+            streak: creditsData.streak || 0,
+            achievements: (creditsData.achievements || []).length
+          });
+        }
+      }
+      
+      return leaderboard;
+      
+    } catch (error) {
+      console.error('Chyba při načítání žebříčku:', error);
+      return [];
+    }
+  }
+  
+  // Získání statistik systému
+  async getSystemStats() {
+    try {
+      // Celkový počet uživatelů s kredity
+      const usersSnapshot = await this.db.collection('userCredits').get();
+      const totalUsers = usersSnapshot.docs.length;
+      
+      // Celkové kredity v systému
+      let totalCreditsInSystem = 0;
+      let totalTransactions = 0;
+      
+      usersSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        totalCreditsInSystem += data.totalCredits || 0;
+      });
+      
+      // Počet transakcí
+      const transactionsSnapshot = await this.db.collection('creditTransactions').get();
+      totalTransactions = transactionsSnapshot.docs.length;
+      
+      // Nejpopulárnější úkoly
+      const taskStats = {};
+      transactionsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.taskType) {
+          taskStats[data.taskType] = (taskStats[data.taskType] || 0) + 1;
+        }
+      });
+      
+      return {
+        totalUsers,
+        totalCreditsInSystem,
+        totalTransactions,
+        averageCreditsPerUser: totalUsers > 0 ? Math.floor(totalCreditsInSystem / totalUsers) : 0,
+        popularTasks: Object.entries(taskStats)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 5)
+          .map(([task, count]) => ({ task, count, name: this.taskTypes[task]?.name || task }))
+      };
+      
+    } catch (error) {
+      console.error('Chyba při načítání statistik systému:', error);
+      return {
+        totalUsers: 0,
+        totalCreditsInSystem: 0,
+        totalTransactions: 0,
+        averageCreditsPerUser: 0,
+        popularTasks: []
+      };
+    }
+  }
+  
+  // Simulace různých akcí pro testování
+  async simulateUserActivity(userId, activityType) {
+    switch (activityType) {
+      case 'watch_ads':
+        // Simulace sledování několika reklam
+        for (let i = 0; i < 3; i++) {
+          await this.watchAd(userId, `ad_${Date.now()}_${i}`, 30);
+          await new Promise(resolve => setTimeout(resolve, 100)); // Krátká pauza
+        }
+        break;
+        
+      case 'social_share':
+        await this.updateTaskProgress(userId, 'SOCIAL_SHARE', 1);
+        break;
+        
+      case 'profile_update':
+        await this.updateTaskProgress(userId, 'PROFILE_UPDATE', 1);
+        break;
+        
+      case 'complete_survey':
+        await this.addCredits(userId, 'COMPLETE_SURVEY', { surveyId: `survey_${Date.now()}` });
+        break;
+        
+      default:
+        console.log('Neznámá aktivita:', activityType);
     }
   }
 }

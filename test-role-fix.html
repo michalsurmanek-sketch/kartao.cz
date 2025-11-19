@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Opravy Role - Kreditní Systém</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Test panel -->
+    <div class="max-w-4xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i data-lucide="test-tube" class="w-6 h-6 mr-2 text-blue-600"></i>
+                Test Opravy Role v Kreditním Systému
+            </h1>
+
+            <!-- Quick login buttons -->
+            <div class="grid md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-3">Test jako Tvůrce</h3>
+                    <button id="loginCreator" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full mb-3">
+                        Přihlásit se jako Tvůrce
+                    </button>
+                    <div id="creatorResult" class="text-sm text-gray-600"></div>
+                </div>
+
+                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-orange-800 mb-3">Test jako Firma</h3>
+                    <button id="loginCompany" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors w-full mb-3">
+                        Přihlásit se jako Firma
+                    </button>
+                    <div id="companyResult" class="text-sm text-gray-600"></div>
+                </div>
+            </div>
+
+            <!-- Current user status -->
+            <div id="currentStatus" class="bg-gray-100 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-gray-800 mb-2">Aktuální stav:</h3>
+                <div id="statusContent" class="text-gray-600">Nepřihlášen</div>
+            </div>
+
+            <!-- Test buttons -->
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <button id="testCredits" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400">
+                    Test Získání Kreditů
+                </button>
+                <button id="testCheckIn" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400">
+                    Test Daily Check-in
+                </button>
+                <button id="testTasks" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400">
+                    Test Denní Úkoly
+                </button>
+            </div>
+
+            <!-- Results -->
+            <div id="testResults" class="bg-gray-50 rounded-lg p-4 min-h-32">
+                <h3 class="font-semibold text-gray-800 mb-2">Výsledky testů:</h3>
+                <div id="resultsContent" class="text-gray-600 space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="demo-auth.js"></script>
+    <script src="credits-system.js"></script>
+
+    <script>
+        // Initialize icons
+        lucide.createIcons();
+
+        let creditsSystem;
+        let currentUser = null;
+
+        // Initialize systems
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                creditsSystem = new CreditsSystem();
+                await creditsSystem.init();
+                
+                // Setup auth listener
+                demoAuth.onAuthStateChanged((user) => {
+                    currentUser = user;
+                    updateStatus();
+                    toggleTestButtons(!!user);
+                });
+
+                console.log('Test systém inicializován');
+            } catch (error) {
+                console.error('Chyba při inicializaci:', error);
+                addResult('❌ Chyba při inicializaci: ' + error.message, 'text-red-600');
+            }
+        });
+
+        // Login as creator
+        document.getElementById('loginCreator').addEventListener('click', async () => {
+            try {
+                await demoAuth.signInAsDemo('demo-creator', 'Testovací Tvůrce', 'tvurce');
+                addResult('✅ Úspěšně přihlášen jako tvůrce', 'text-green-600');
+            } catch (error) {
+                addResult('❌ Chyba přihlášení tvůrce: ' + error.message, 'text-red-600');
+            }
+        });
+
+        // Login as company
+        document.getElementById('loginCompany').addEventListener('click', async () => {
+            try {
+                await demoAuth.signInAsDemo('demo-company', 'Testovací Firma', 'firma');
+                addResult('✅ Úspěšně přihlášen jako firma', 'text-orange-600');
+            } catch (error) {
+                addResult('❌ Chyba přihlášení firmy: ' + error.message, 'text-red-600');
+            }
+        });
+
+        // Test credits
+        document.getElementById('testCredits').addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            try {
+                const result = await creditsSystem.addCredits(currentUser.uid, 'SHARE_POST', { postId: 'test-123' });
+                if (result.success) {
+                    addResult(`✅ ${currentUser.role} získal kredity: +${result.creditsEarned} (${result.message})`, 'text-green-600');
+                } else {
+                    addResult(`🚫 ${currentUser.role} nemůže získat kredity: ${result.message}`, 'text-yellow-600');
+                }
+            } catch (error) {
+                addResult(`❌ Chyba při získávání kreditů: ${error.message}`, 'text-red-600');
+            }
+        });
+
+        // Test daily check-in
+        document.getElementById('testCheckIn').addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            try {
+                const result = await creditsSystem.dailyCheckIn(currentUser.uid);
+                if (result.success) {
+                    addResult(`✅ ${currentUser.role} úspěšný check-in: +${result.creditsEarned} kreditů`, 'text-green-600');
+                } else {
+                    addResult(`🚫 ${currentUser.role} check-in nedostupný: ${result.message}`, 'text-yellow-600');
+                }
+            } catch (error) {
+                addResult(`❌ Chyba při check-in: ${error.message}`, 'text-red-600');
+            }
+        });
+
+        // Test daily tasks
+        document.getElementById('testTasks').addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            try {
+                const tasks = await creditsSystem.getDailyTasks(currentUser.uid);
+                if (tasks.length > 0) {
+                    addResult(`✅ ${currentUser.role} má přístup k ${tasks.length} úkolům`, 'text-green-600');
+                } else {
+                    addResult(`🚫 ${currentUser.role} nemá přístup k úkolům`, 'text-yellow-600');
+                }
+            } catch (error) {
+                addResult(`❌ Chyba při načítání úkolů: ${error.message}`, 'text-red-600');
+            }
+        });
+
+        // Update status display
+        function updateStatus() {
+            const statusContent = document.getElementById('statusContent');
+            if (currentUser) {
+                statusContent.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span><strong>Uživatel:</strong> ${currentUser.displayName} (${currentUser.role})</span>
+                        <button onclick="demoAuth.signOut()" class="text-red-600 hover:text-red-700 text-sm">Odhlásit</button>
+                    </div>
+                `;
+            } else {
+                statusContent.textContent = 'Nepřihlášen';
+            }
+        }
+
+        // Toggle test buttons
+        function toggleTestButtons(enabled) {
+            ['testCredits', 'testCheckIn', 'testTasks'].forEach(id => {
+                document.getElementById(id).disabled = !enabled;
+            });
+        }
+
+        // Add result to display
+        function addResult(message, className = 'text-gray-600') {
+            const resultsContent = document.getElementById('resultsContent');
+            const timestamp = new Date().toLocaleTimeString('cs-CZ');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = className;
+            resultDiv.innerHTML = `<span class="text-gray-400">[${timestamp}]</span> ${message}`;
+            resultsContent.appendChild(resultDiv);
+            resultsContent.scrollTop = resultsContent.scrollHeight;
+        }
+
+        // Clear results
+        function clearResults() {
+            document.getElementById('resultsContent').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
