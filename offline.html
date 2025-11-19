@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #7c3aed 100%);
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-6 text-center">
+        <!-- Animated Icon -->
+        <div class="mb-8 float-animation">
+            <div class="w-24 h-24 mx-auto rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <i data-lucide="wifi-off" class="w-12 h-12 text-white/80"></i>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-md mx-auto">
+            <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Jste offline
+            </h1>
+            
+            <p class="text-xl text-white/80 mb-8">
+                Připojení k internetu není dostupné. Některé funkce mohou být omezené.
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="space-y-4 mb-8">
+                <button onclick="tryReconnect()" 
+                        class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <i data-lucide="refresh-cw" class="w-5 h-5 inline mr-2"></i>
+                    Zkusit znovu
+                </button>
+                
+                <button onclick="goHome()"
+                        class="w-full px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300">
+                    <i data-lucide="home" class="w-5 h-5 inline mr-2"></i>
+                    Zpět na hlavní stránku
+                </button>
+            </div>
+
+            <!-- Offline Features -->
+            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left">
+                <h3 class="font-semibold mb-4 flex items-center gap-2">
+                    <i data-lucide="smartphone" class="w-5 h-5 text-green-400"></i>
+                    Dostupné offline funkce
+                </h3>
+                
+                <ul class="space-y-2 text-sm text-white/70">
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                        Prohlížení uložených stránek
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                        Čtení cachovaného obsahu
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                        Základní navigace v aplikaci
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="x" class="w-4 h-4 text-red-400"></i>
+                        <span class="line-through">Live chat a notifikace</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="x" class="w-4 h-4 text-red-400"></i>
+                        <span class="line-through">Real-time aktualizace</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Connection Status -->
+            <div class="mt-6 text-sm text-white/60">
+                <div class="flex items-center justify-center gap-2">
+                    <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                    <span id="connection-status">Offline režim</span>
+                </div>
+                <p class="mt-2 text-xs">
+                    Zprávy a akce se synchronizují po obnovení připojení
+                </p>
+            </div>
+        </div>
+
+        <!-- Background Pattern -->
+        <div class="fixed inset-0 -z-10 opacity-20">
+            <div class="absolute top-10 left-10 w-32 h-32 border border-white/10 rounded-full"></div>
+            <div class="absolute top-32 right-16 w-24 h-24 border border-white/10 rounded-full"></div>
+            <div class="absolute bottom-20 left-20 w-40 h-40 border border-white/10 rounded-full"></div>
+            <div class="absolute bottom-40 right-10 w-28 h-28 border border-white/10 rounded-full"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+
+        // Connection monitoring
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            const isOnline = navigator.onLine;
+            
+            if (isOnline) {
+                statusElement.textContent = 'Připojení obnoveno';
+                statusElement.previousElementSibling.className = 'w-2 h-2 bg-green-400 rounded-full';
+                
+                // Redirect to home after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
+            } else {
+                statusElement.textContent = 'Offline režim';
+                statusElement.previousElementSibling.className = 'w-2 h-2 bg-red-400 rounded-full';
+            }
+        }
+
+        // Try to reconnect
+        function tryReconnect() {
+            const button = event.target.closest('button');
+            const icon = button.querySelector('i');
+            
+            // Show loading state
+            icon.style.animation = 'spin 1s linear infinite';
+            button.disabled = true;
+            
+            // Test connection
+            fetch('/', { method: 'HEAD', cache: 'no-store' })
+                .then(() => {
+                    // Connection restored
+                    window.location.href = '/';
+                })
+                .catch(() => {
+                    // Still offline
+                    setTimeout(() => {
+                        icon.style.animation = '';
+                        button.disabled = false;
+                    }, 1000);
+                });
+        }
+
+        // Go to home page (cached version)
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Initial status check
+        updateConnectionStatus();
+
+        // Keyframes for spin animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
