@@ -71,7 +71,7 @@
     <!-- Include required scripts -->
     <script src="firebase-init.js"></script>
     <script src="demo-auth.js"></script>
-    <script src="credits-system.js"></script>
+    <script src="credits-system-unified.js"></script>
 
     <script>
         // Initialize icons
@@ -83,7 +83,7 @@
         // Initialize systems
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                creditsSystem = new CreditsSystem();
+                creditsSystem = new UnifiedCreditsSystem();
                 await creditsSystem.init();
                 
                 // Setup auth listener
@@ -93,7 +93,7 @@
                     toggleTestButtons(!!user);
                 });
 
-                console.log('Test systém inicializován');
+                console.log('Sjednocený test systém inicializován');
             } catch (error) {
                 console.error('Chyba při inicializaci:', error);
                 addResult('❌ Chyba při inicializaci: ' + error.message, 'text-red-600');

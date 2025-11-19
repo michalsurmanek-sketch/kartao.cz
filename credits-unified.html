@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreditní Systém - Kartao.cz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .progress-bar { background: linear-gradient(90deg, #f3f4f6, #e5e7eb); border-radius: 10px; }
+        .progress-fill { background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 10px; transition: width 0.5s ease; }
+        .pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .achievement-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <i data-lucide="coins" class="w-8 h-8"></i>
+                <h1 class="text-2xl font-bold">Kreditní Systém</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="userInfo" class="text-sm"></div>
+                <button id="demoLogin" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
+                    Demo Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto py-8 px-4">
+        <!-- User Stats Overview -->
+        <div id="statsSection" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Aktuální kredity -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Aktuální kredity</p>
+                        <p id="currentCredits" class="text-3xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-xl">
+                        <i data-lucide="coins" class="w-8 h-8 text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Level</p>
+                        <p id="currentLevel" class="text-3xl font-bold text-green-600">1</p>
+                        <p id="levelName" class="text-sm text-gray-600">Začátečník</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-xl">
+                        <i data-lucide="trophy" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Denní série</p>
+                        <p id="currentStreak" class="text-3xl font-bold text-orange-600">0</p>
+                        <p class="text-sm text-gray-600">dní v řadě</p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-xl">
+                        <i data-lucide="flame" class="w-8 h-8 text-orange-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Celkem vydělané -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Celkem vydělané</p>
+                        <p id="totalEarned" class="text-3xl font-bold text-purple-600">0</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-xl">
+                        <i data-lucide="trending-up" class="w-8 h-8 text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Left Column: Tasks & Check-in -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Daily Check-in -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold flex items-center">
+                            <i data-lucide="calendar-check" class="w-5 h-5 mr-2 text-blue-600"></i>
+                            Denní Check-in
+                        </h2>
+                        <span id="checkInTime" class="text-sm text-gray-500">Reset za: --:--:--</span>
+                    </div>
+                    <div class="text-center">
+                        <button id="checkInBtn" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="gift" class="w-5 h-5 inline mr-2"></i>
+                            Denní Check-in (+10 kreditů)
+                        </button>
+                        <div id="checkInResult" class="mt-3 text-sm"></div>
+                    </div>
+                </div>
+
+                <!-- Daily Tasks -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold flex items-center">
+                            <i data-lucide="list-checks" class="w-5 h-5 mr-2 text-green-600"></i>
+                            Denní úkoly
+                        </h2>
+                        <span class="text-sm text-gray-500">Obnoví se za: <span id="tasksReset" class="font-mono">--:--:--</span></span>
+                    </div>
+                    <div id="dailyTasksList" class="space-y-4">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Progress & Achievements -->
+            <div class="space-y-6">
+                <!-- Level Progress -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 mr-2 text-blue-600"></i>
+                        Pokrok k dalšímu levelu
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span id="currentLevelText">Level 1</span>
+                            <span id="nextLevelText">Level 2</span>
+                        </div>
+                        <div class="progress-bar h-3">
+                            <div id="levelProgress" class="progress-fill h-full" style="width: 0%"></div>
+                        </div>
+                        <div id="levelBenefits" class="text-sm text-gray-600">
+                            <!-- Level benefits will be shown here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i data-lucide="zap" class="w-5 h-5 mr-2 text-yellow-600"></i>
+                        Rychlé akce
+                    </h3>
+                    <div class="space-y-3">
+                        <button id="sharePostBtn" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i data-lucide="share-2" class="w-4 h-4 mr-2"></i>
+                            Sdílet příspěvek (+15)
+                        </button>
+                        <button id="watchAdBtn" class="w-full bg-green-100 hover:bg-green-200 text-green-800 py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i data-lucide="tv" class="w-4 h-4 mr-2"></i>
+                            Zhlédnout reklamu (+5)
+                        </button>
+                        <button id="updateProfileBtn" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-800 py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i data-lucide="user-cog" class="w-4 h-4 mr-2"></i>
+                            Aktualizovat profil (+20)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i data-lucide="history" class="w-5 h-5 mr-2 text-gray-600"></i>
+                        Nedávná aktivita
+                    </h3>
+                    <div id="recentTransactions" class="space-y-3 max-h-64 overflow-y-auto">
+                        <!-- Recent transactions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span>Načítání...</span>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform z-50">
+        <div class="flex items-center">
+            <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+            <span id="successMessage">Úspěch!</span>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform z-50">
+        <div class="flex items-center">
+            <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+            <span id="errorMessage">Chyba!</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="demo-auth.js"></script>
+    <script src="credits-system-unified.js"></script>
+
+    <script>
+        // Initialize
+        let creditsSystem;
+        let currentUser = null;
+        let countdownInterval = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+
+            try {
+                creditsSystem = new UnifiedCreditsSystem();
+                await creditsSystem.init();
+                
+                // Setup demo auth listener
+                demoAuth.onAuthStateChanged(async (user) => {
+                    currentUser = user;
+                    if (user) {
+                        await loadUserData();
+                        startCountdown();
+                    } else {
+                        showLoginPrompt();
+                    }
+                });
+
+                setupEventListeners();
+                console.log('✅ Sjednocený kreditní dashboard inicializován');
+            } catch (error) {
+                console.error('❌ Chyba při inicializaci:', error);
+                showError('Chyba při inicializaci aplikace');
+            }
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Demo login
+            document.getElementById('demoLogin').addEventListener('click', async () => {
+                try {
+                    await demoAuth.signInAsDemo('demo-creator', 'Demo Tvůrce', 'tvurce');
+                    showSuccess('Úspěšně přihlášen jako demo tvůrce');
+                } catch (error) {
+                    showError('Chyba při přihlášení: ' + error.message);
+                }
+            });
+
+            // Check-in button
+            document.getElementById('checkInBtn').addEventListener('click', async () => {
+                if (!currentUser) return;
+                
+                try {
+                    showLoading(true);
+                    const result = await creditsSystem.dailyCheckIn(currentUser.uid);
+                    
+                    if (result.success) {
+                        showSuccess(`Check-in úspěšný! +${result.creditsEarned} kreditů`);
+                        document.getElementById('checkInResult').innerHTML = `
+                            <div class="text-green-600 font-medium">
+                                ✅ +${result.creditsEarned} kreditů | Série: ${result.streakDays} dní
+                            </div>
+                        `;
+                        await loadUserData();
+                    } else {
+                        showError(result.message);
+                    }
+                } catch (error) {
+                    showError('Chyba při check-in: ' + error.message);
+                } finally {
+                    showLoading(false);
+                }
+            });
+
+            // Quick actions
+            document.getElementById('sharePostBtn').addEventListener('click', () => {
+                performQuickAction('SHARE_POST', 'Příspěvek sdílen');
+            });
+            
+            document.getElementById('watchAdBtn').addEventListener('click', () => {
+                performQuickAction('WATCH_AD', 'Reklama zhlédnuta');
+            });
+            
+            document.getElementById('updateProfileBtn').addEventListener('click', () => {
+                performQuickAction('PROFILE_UPDATE', 'Profil aktualizován');
+            });
+        }
+
+        // Quick action handler
+        async function performQuickAction(taskType, successMsg) {
+            if (!currentUser) return;
+            
+            try {
+                showLoading(true);
+                const result = await creditsSystem.addCredits(currentUser.uid, taskType, { source: 'quick_action' });
+                
+                if (result.success) {
+                    showSuccess(`${successMsg}! +${result.creditsEarned} kreditů`);
+                    await loadUserData();
+                    await loadDailyTasks();
+                } else {
+                    showError(result.message);
+                }
+            } catch (error) {
+                showError('Chyba při akci: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Load user data
+        async function loadUserData() {
+            if (!currentUser || !creditsSystem) return;
+
+            try {
+                const userData = await creditsSystem.getUserCredits(currentUser.uid);
+                
+                // Update user info
+                document.getElementById('userInfo').innerHTML = `
+                    <span class="font-medium">${currentUser.displayName}</span>
+                    <span class="text-white/70">(${currentUser.role})</span>
+                `;
+
+                // Update stats
+                document.getElementById('currentCredits').textContent = userData.balance.toLocaleString();
+                document.getElementById('currentLevel').textContent = userData.level;
+                document.getElementById('levelName').textContent = userData.levelName;
+                document.getElementById('currentStreak').textContent = userData.streakDays;
+                document.getElementById('totalEarned').textContent = userData.totalEarned.toLocaleString();
+
+                // Update level progress
+                document.getElementById('currentLevelText').textContent = `Level ${userData.level}`;
+                document.getElementById('nextLevelText').textContent = userData.nextLevelRequirement ? `Level ${userData.level + 1}` : 'Max Level';
+                document.getElementById('levelProgress').style.width = `${userData.progressToNextLevel}%`;
+                
+                // Show level benefits
+                const benefits = userData.levelBenefits.length > 0 ? userData.levelBenefits.join(', ') : 'Základní funkce';
+                document.getElementById('levelBenefits').innerHTML = `<strong>Výhody:</strong> ${benefits}`;
+
+                // Load other data
+                await loadDailyTasks();
+                await loadRecentTransactions();
+
+            } catch (error) {
+                console.error('Chyba při načítání uživatelských dat:', error);
+                showError('Chyba při načítání dat');
+            }
+        }
+
+        // Load daily tasks
+        async function loadDailyTasks() {
+            if (!currentUser || !creditsSystem) return;
+
+            try {
+                const tasks = await creditsSystem.getDailyTasks(currentUser.uid);
+                const container = document.getElementById('dailyTasksList');
+
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-gray-500">Žádné úkoly pro dnes</div>';
+                    return;
+                }
+
+                container.innerHTML = tasks.map(task => `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg ${task.completed ? 'opacity-60' : ''}">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full ${task.completed ? 'bg-green-100' : 'bg-blue-100'} flex items-center justify-center">
+                                ${task.completed ? '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>' : '<i data-lucide="target" class="w-5 h-5 text-blue-600"></i>'}
+                            </div>
+                            <div>
+                                <div class="font-medium ${task.completed ? 'line-through' : ''}">${task.name}</div>
+                                <div class="text-sm text-gray-500">+${task.credits} kreditů</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium ${task.completed ? 'text-green-600' : 'text-gray-600'}">
+                                ${task.progress}/${task.target}
+                            </div>
+                            <div class="w-16 bg-gray-200 rounded-full h-2 mt-1">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${(task.progress / task.target) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Chyba při načítání úkolů:', error);
+            }
+        }
+
+        // Load recent transactions
+        async function loadRecentTransactions() {
+            if (!currentUser || !creditsSystem) return;
+
+            try {
+                const transactions = await creditsSystem.getTransactionHistory(currentUser.uid, 5);
+                const container = document.getElementById('recentTransactions');
+
+                if (transactions.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-gray-500 text-sm">Žádná nedávná aktivita</div>';
+                    return;
+                }
+
+                container.innerHTML = transactions.map(transaction => `
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                        <div>
+                            <div class="font-medium text-sm">${transaction.reason}</div>
+                            <div class="text-xs text-gray-500">${new Date(transaction.timestamp).toLocaleString('cs-CZ')}</div>
+                        </div>
+                        <div class="font-semibold ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${transaction.amount > 0 ? '+' : ''}${transaction.amount}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Chyba při načítání transakcí:', error);
+            }
+        }
+
+        // Start countdown
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                if (creditsSystem) {
+                    const timeUntilReset = creditsSystem.getTimeUntilReset();
+                    document.getElementById('checkInTime').textContent = `Reset za: ${timeUntilReset.formatted}`;
+                    document.getElementById('tasksReset').textContent = timeUntilReset.formatted;
+                }
+            }, 1000);
+        }
+
+        // Show login prompt
+        function showLoginPrompt() {
+            document.getElementById('userInfo').innerHTML = '<span class="text-white/70">Nepřihlášen</span>';
+            document.getElementById('statsSection').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i data-lucide="user-x" class="w-16 h-16 text-white/50 mx-auto mb-4"></i>
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Přihlas se pro přístup ke kreditům</h2>
+                    <p class="text-gray-500 mb-6">Kredity jsou dostupné pouze pro tvůrce</p>
+                    <button onclick="document.getElementById('demoLogin').click()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                        Demo Přihlášení
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Utility functions
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+        }
+
+        function showSuccess(message) {
+            const toast = document.getElementById('successToast');
+            document.getElementById('successMessage').textContent = message;
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => toast.classList.add('translate-x-full'), 3000);
+        }
+
+        function showError(message) {
+            const toast = document.getElementById('errorToast');
+            document.getElementById('errorMessage').textContent = message;
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => toast.classList.add('translate-x-full'), 3000);
+        }
+    </script>
+</body>
+</html>
