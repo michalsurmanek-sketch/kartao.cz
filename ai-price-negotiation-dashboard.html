@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vyjednávání Cen | Kartáo.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="p-2 bg-purple-100 rounded-lg">
+                    <i data-lucide="brain" class="h-6 w-6 text-purple-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">AI Vyjednávání Cen</h1>
+                    <p class="text-sm text-gray-500">Inteligentní systém pro fair price negotiation</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>AI Online</span>
+                </div>
+                <button onclick="startNewNegotiation()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center space-x-2">
+                    <i data-lucide="plus" class="h-4 w-4"></i>
+                    <span>Nové Vyjednávání</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- AI Insights Panel -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 mb-8 text-white">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Tržní podmínky</h3>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="trending-up" class="h-5 w-5 text-green-300"></i>
+                        <span class="text-sm">Rostoucí trh (+5.2%)</span>
+                    </div>
+                    <div class="text-2xl font-bold mt-2" id="marketAverage">15,250 Kč</div>
+                    <div class="text-sm opacity-90">Průměrná cena za kampaň</div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-2">AI Doporučení</h3>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="brain" class="h-5 w-5 text-blue-300"></i>
+                        <span class="text-sm">Kolaborativní strategie</span>
+                    </div>
+                    <div class="text-2xl font-bold mt-2">87%</div>
+                    <div class="text-sm opacity-90">Úspěšnost predikce</div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Aktivní vyjednávání</h3>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="handshake" class="h-5 w-5 text-yellow-300"></i>
+                        <span class="text-sm">3 probíhající</span>
+                    </div>
+                    <div class="text-2xl font-bold mt-2" id="activeNegotiations">3</div>
+                    <div class="text-sm opacity-90">Z celkem 8 tento měsíc</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex space-x-1 mb-6">
+            <button onclick="switchTab('active')" id="activeTab" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-100 text-purple-700">
+                Aktivní vyjednávání
+            </button>
+            <button onclick="switchTab('history')" id="historyTab" class="px-4 py-2 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-700">
+                Historie
+            </button>
+            <button onclick="switchTab('analytics')" id="analyticsTab" class="px-4 py-2 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-700">
+                Analýzy
+            </button>
+            <button onclick="switchTab('settings')" id="settingsTab" class="px-4 py-2 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-700">
+                AI Nastavení
+            </button>
+        </div>
+
+        <!-- Active Negotiations Tab -->
+        <div id="activeContent" class="tab-content">
+            <div id="activeNegotiationsList" class="space-y-4">
+                <!-- Active negotiations will be loaded here -->
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="historyContent" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Historie vyjednávání</h3>
+                </div>
+                <div id="negotiationHistory" class="divide-y divide-gray-200">
+                    <!-- History will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analyticsContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Úspěšnost vyjednávání</h3>
+                    <canvas id="successRateChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Průměrná délka vyjednávání</h3>
+                    <canvas id="negotiationDurationChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h4 class="font-medium text-gray-900 mb-4">AI Strategie</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Kolaborativní</span>
+                            <span class="text-sm font-medium">65%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 mt-4">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Kompromisní</span>
+                            <span class="text-sm font-medium">25%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 mt-4">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Konkurenční</span>
+                            <span class="text-sm font-medium">10%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h4 class="font-medium text-gray-900 mb-4">Výsledky podle odvětví</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-pink-400 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Beauty</span>
+                            </div>
+                            <span class="text-sm font-medium">22,500 Kč</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Tech</span>
+                            </div>
+                            <span class="text-sm font-medium">28,000 Kč</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Fashion</span>
+                            </div>
+                            <span class="text-sm font-medium">18,750 Kč</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-orange-400 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Food</span>
+                            </div>
+                            <span class="text-sm font-medium">15,200 Kč</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h4 class="font-medium text-gray-900 mb-4">AI Performance</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Přesnost predikce</span>
+                            <span class="text-sm font-medium text-green-600">87.3%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Rychlost uzavření</span>
+                            <span class="text-sm font-medium text-blue-600">-15%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Spokojenost stran</span>
+                            <span class="text-sm font-medium text-purple-600">94.2%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Spravedlnost cen</span>
+                            <span class="text-sm font-medium text-indigo-600">91.8%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Settings Tab -->
+        <div id="settingsContent" class="tab-content hidden">
+            <div class="max-w-4xl">
+                <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-6">Nastavení AI modelu</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">AI Agresivita</label>
+                            <input type="range" id="aiAggressiveness" min="1" max="10" value="5" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Konzervativní</span>
+                                <span>Vyvážené</span>
+                                <span>Agresivní</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Strategické preference</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Kolaborativní přístup</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Rychlé uzavření</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Tržní spravedlnost</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Maximalizace zisku</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Limity vyjednávání</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Maximální počet kol</label>
+                                    <input type="number" value="8" min="3" max="15" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Časový limit (hodiny)</label>
+                                    <input type="number" value="48" min="12" max="168" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Notifikace</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Nové vyjednávání</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">AI doporučení</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Tržní změny</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveAISettings()" class="mt-6 bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                        Uložit nastavení
+                    </button>
+                </div>
+
+                <!-- AI Model Performance -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Performance AI modelu</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Poslední aktualizace</h4>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <div class="flex justify-between">
+                                    <span>Model verze:</span>
+                                    <span class="font-medium">v2.4.1</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Poslední trénink:</span>
+                                    <span class="font-medium">15.12.2024</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Training data:</span>
+                                    <span class="font-medium">8,547 vyjednávání</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Aktuální výkon</h4>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <div class="flex justify-between">
+                                    <span>Úspěšnost predikce:</span>
+                                    <span class="font-medium text-green-600">87.3%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Průměrná chyba:</span>
+                                    <span class="font-medium text-blue-600">±8.2%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Rychlost response:</span>
+                                    <span class="font-medium text-purple-600">0.3s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Negotiation Detail Modal -->
+    <div id="negotiationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900" id="modalTitle">Detail vyjednávání</h2>
+                    <p class="text-sm text-gray-500" id="modalSubtitle">Kampaň #12345</p>
+                </div>
+                <button onclick="closeNegotiationModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Negotiation Progress -->
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-3">Průběh vyjednávání</h3>
+                        <div id="negotiationProgress" class="space-y-3">
+                            <!-- Progress will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-3">AI Doporučení</h3>
+                        <div id="aiRecommendations" class="space-y-2 text-sm text-gray-700">
+                            <!-- AI recommendations will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Response Form -->
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-3">Vaše odpověď</h3>
+                        <form id="negotiationResponseForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Typ odpovědi</label>
+                                <select id="responseType" onchange="toggleResponseOptions()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="counter_offer">Counter-offer</option>
+                                    <option value="accept">Přijmout nabídku</option>
+                                    <option value="reject">Odmítnout</option>
+                                </select>
+                            </div>
+
+                            <div id="counterOfferSection">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Vaše nabídka (Kč)</label>
+                                <input type="number" id="counterOfferAmount" min="0" step="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <div class="mt-2 p-3 bg-yellow-50 rounded-lg">
+                                    <div class="flex items-center space-x-2 text-sm text-yellow-800">
+                                        <i data-lucide="brain" class="h-4 w-4"></i>
+                                        <span class="font-medium">AI doporučuje:</span>
+                                        <span id="aiSuggestedPrice">16,500 Kč</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Zpráva</label>
+                                <textarea id="responseMessage" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Volitelná zpráva..."></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                Odeslat odpověď
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Market Analysis -->
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-3">Tržní analýza</h3>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <div class="flex justify-between">
+                                <span>Průměrná cena v oboru:</span>
+                                <span class="font-medium">15,250 Kč</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Spravedlivý rating:</span>
+                                <span class="font-medium text-green-600">85%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Predikce úspěchu:</span>
+                                <span class="font-medium text-blue-600">78%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="ai-price-negotiation-system.js"></script>
+    
+    <script>
+        let negotiationSystem;
+        let currentNegotiationId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Lucide icons
+            lucide.createIcons();
+            
+            // Initialize negotiation system
+            negotiationSystem = new AIPriceNegotiationSystem();
+            
+            // Load initial data
+            await loadDashboardData();
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('negotiationResponseForm').addEventListener('submit', handleNegotiationResponse);
+        }
+
+        async function loadDashboardData() {
+            try {
+                await Promise.all([
+                    loadActiveNegotiations(),
+                    loadNegotiationHistory(),
+                    loadAnalyticsCharts()
+                ]);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        async function loadActiveNegotiations() {
+            // Mock data pro demo
+            const negotiations = [
+                {
+                    id: '1',
+                    campaignId: 'camp-123',
+                    campaignName: 'Letní kolekce 2024',
+                    company: 'Fashion Brand s.r.o.',
+                    influencer: 'Anna Krásná',
+                    status: 'active',
+                    currentRound: 3,
+                    initialOffer: 15000,
+                    currentOffer: 17500,
+                    aiRecommendation: 'Přijatelná nabídka, mírně pod tržní cenou',
+                    deadline: new Date('2024-12-20'),
+                    fairnessScore: 0.82,
+                    lastActivity: new Date('2024-12-15T10:30:00')
+                },
+                {
+                    id: '2',
+                    campaignId: 'camp-124',
+                    campaignName: 'Tech review produktu',
+                    company: 'TechCorp a.s.',
+                    influencer: 'Pavel Tech',
+                    status: 'waiting_response',
+                    currentRound: 2,
+                    initialOffer: 25000,
+                    currentOffer: 22000,
+                    aiRecommendation: 'Counter-offer v rozumném rozmezí',
+                    deadline: new Date('2024-12-18'),
+                    fairnessScore: 0.91,
+                    lastActivity: new Date('2024-12-14T15:20:00')
+                },
+                {
+                    id: '3',
+                    campaignId: 'camp-125',
+                    campaignName: 'Beauty tutorial série',
+                    company: 'BeautyWorld',
+                    influencer: 'Kateřina Beauty',
+                    status: 'near_deadline',
+                    currentRound: 5,
+                    initialOffer: 20000,
+                    currentOffer: 19000,
+                    aiRecommendation: 'Urgentní - doporučujeme rychlé uzavření',
+                    deadline: new Date('2024-12-16'),
+                    fairnessScore: 0.76,
+                    lastActivity: new Date('2024-12-15T14:45:00')
+                }
+            ];
+
+            renderActiveNegotiations(negotiations);
+        }
+
+        function renderActiveNegotiations(negotiations) {
+            const container = document.getElementById('activeNegotiationsList');
+            
+            if (negotiations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i data-lucide="handshake" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Žádná aktivní vyjednávání</h3>
+                        <p class="text-gray-500 mb-4">Momentálně neprobíhají žádná vyjednávání</p>
+                        <button onclick="startNewNegotiation()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            Zahájit vyjednávání
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = negotiations.map(negotiation => `
+                <div class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow" onclick="openNegotiationDetail('${negotiation.id}')">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-medium text-gray-900">${negotiation.campaignName}</h3>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeClass(negotiation.status)}">
+                                    ${getStatusText(negotiation.status)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">
+                                ${negotiation.company} ↔ ${negotiation.influencer}
+                            </div>
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>Kolo ${negotiation.currentRound}/8</span>
+                                <span>•</span>
+                                <span>Aktuální nabídka: ${formatPrice(negotiation.currentOffer)}</span>
+                                <span>•</span>
+                                <span>Deadline: ${formatDate(negotiation.deadline)}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-gray-900">${formatPrice(negotiation.currentOffer)}</div>
+                            <div class="text-sm text-gray-500">vs ${formatPrice(negotiation.initialOffer)} původně</div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Spravedlivost: ${Math.round(negotiation.fairnessScore * 100)}%</span>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    Poslední aktivita: ${formatRelativeTime(negotiation.lastActivity)}
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="brain" class="h-4 w-4 text-purple-500"></i>
+                                <span class="text-sm text-purple-600">${negotiation.aiRecommendation}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress bar -->
+                        <div class="mt-3">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Začátek</span>
+                                <span>Aktuální pozice</span>
+                                <span>Cíl</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full" style="width: ${(negotiation.currentRound / 8) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        async function loadNegotiationHistory() {
+            // Mock history data
+            const history = [
+                {
+                    id: 'h1',
+                    campaignName: 'Podzimní kampaň 2024',
+                    company: 'Style Brand',
+                    influencer: 'Marie Stylová',
+                    finalPrice: 18500,
+                    initialOffer: 15000,
+                    rounds: 4,
+                    status: 'accepted',
+                    completedAt: new Date('2024-12-10'),
+                    fairnessScore: 0.89,
+                    aiStrategy: 'collaborative'
+                },
+                {
+                    id: 'h2',
+                    campaignName: 'Gaming review',
+                    company: 'GameCorp',
+                    influencer: 'Tomáš Gamer',
+                    finalPrice: null,
+                    initialOffer: 30000,
+                    rounds: 8,
+                    status: 'rejected',
+                    completedAt: new Date('2024-12-08'),
+                    fairnessScore: 0.45,
+                    aiStrategy: 'competitive'
+                }
+            ];
+
+            renderNegotiationHistory(history);
+        }
+
+        function renderNegotiationHistory(history) {
+            const container = document.getElementById('negotiationHistory');
+            
+            container.innerHTML = history.map(item => `
+                <div class="p-6 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h4 class="font-medium text-gray-900">${item.campaignName}</h4>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${getHistoryStatusBadgeClass(item.status)}">
+                                    ${getHistoryStatusText(item.status)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-1">${item.company} ↔ ${item.influencer}</div>
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>${item.rounds} kol</span>
+                                <span>•</span>
+                                <span>AI strategie: ${item.aiStrategy}</span>
+                                <span>•</span>
+                                <span>Dokončeno: ${formatDate(item.completedAt)}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold ${item.status === 'accepted' ? 'text-green-600' : 'text-red-600'}">
+                                ${item.finalPrice ? formatPrice(item.finalPrice) : 'Neuzavřeno'}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                z ${formatPrice(item.initialOffer)} původně
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadAnalyticsCharts() {
+            // Success Rate Chart
+            const ctx1 = document.getElementById('successRateChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen'],
+                    datasets: [{
+                        label: 'Úspěšnost (%)',
+                        data: [75, 82, 78, 85, 89, 87],
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 60,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Duration Chart
+            const ctx2 = document.getElementById('negotiationDurationChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['1-2 kola', '3-4 kola', '5-6 kol', '7-8 kol', '9+ kol'],
+                    datasets: [{
+                        label: 'Počet vyjednávání',
+                        data: [15, 25, 18, 8, 3],
+                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#6B7280']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.classList.remove('bg-purple-100', 'text-purple-700');
+                tab.classList.add('text-gray-500', 'hover:text-gray-700');
+            });
+
+            // Show selected content
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+
+            // Add active class to selected tab
+            const activeTab = document.getElementById(tabName + 'Tab');
+            activeTab.classList.add('bg-purple-100', 'text-purple-700');
+            activeTab.classList.remove('text-gray-500', 'hover:text-gray-700');
+        }
+
+        // Negotiation detail modal
+        function openNegotiationDetail(negotiationId) {
+            currentNegotiationId = negotiationId;
+            
+            // Load negotiation details - mock data
+            document.getElementById('modalTitle').textContent = 'Vyjednávání #' + negotiationId;
+            document.getElementById('modalSubtitle').textContent = 'Letní kolekce 2024';
+            
+            loadNegotiationProgress(negotiationId);
+            loadAIRecommendations(negotiationId);
+            
+            document.getElementById('negotiationModal').classList.remove('hidden');
+            document.getElementById('negotiationModal').classList.add('flex');
+        }
+
+        function closeNegotiationModal() {
+            document.getElementById('negotiationModal').classList.add('hidden');
+            document.getElementById('negotiationModal').classList.remove('flex');
+            currentNegotiationId = null;
+        }
+
+        function loadNegotiationProgress(negotiationId) {
+            // Mock progress data
+            const progress = [
+                { round: 1, actor: 'Fashion Brand s.r.o.', action: 'Počáteční nabídka', amount: 15000, timestamp: '14.12 09:30' },
+                { round: 2, actor: 'Anna Krásná', action: 'Counter-offer', amount: 20000, timestamp: '14.12 14:20' },
+                { round: 3, actor: 'Fashion Brand s.r.o.', action: 'Counter-offer', amount: 17500, timestamp: '15.12 10:30' }
+            ];
+
+            const container = document.getElementById('negotiationProgress');
+            container.innerHTML = progress.map(item => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                    <div>
+                        <div class="font-medium text-gray-900">Kolo ${item.round}: ${item.action}</div>
+                        <div class="text-sm text-gray-500">${item.actor} • ${item.timestamp}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-gray-900">${formatPrice(item.amount)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadAIRecommendations(negotiationId) {
+            // Mock AI recommendations
+            const recommendations = [
+                "Současná nabídka je o 15% nad tržním průměrem",
+                "Doporučujeme counter-offer v rozmezí 16,000-17,000 Kč",
+                "Influencer má silnou vyjednávací pozici (87% engagement rate)",
+                "Časový tlak je minimální, máte prostor pro vyjednávání"
+            ];
+
+            const container = document.getElementById('aiRecommendations');
+            container.innerHTML = recommendations.map(rec => `
+                <div class="flex items-start space-x-2">
+                    <i data-lucide="brain" class="h-4 w-4 text-blue-500 mt-0.5"></i>
+                    <span>${rec}</span>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function toggleResponseOptions() {
+            const responseType = document.getElementById('responseType').value;
+            const counterOfferSection = document.getElementById('counterOfferSection');
+            
+            if (responseType === 'counter_offer') {
+                counterOfferSection.style.display = 'block';
+            } else {
+                counterOfferSection.style.display = 'none';
+            }
+        }
+
+        async function handleNegotiationResponse(event) {
+            event.preventDefault();
+            
+            const responseType = document.getElementById('responseType').value;
+            const amount = document.getElementById('counterOfferAmount').value;
+            const message = document.getElementById('responseMessage').value;
+
+            const response = {
+                type: responseType,
+                offer: responseType === 'counter_offer' ? parseInt(amount) : null,
+                message: message
+            };
+
+            try {
+                console.log('Sending response:', response);
+                // await negotiationSystem.respondToNegotiation(currentNegotiationId, response);
+                
+                showNotification('Odpověď byla odeslána!', 'success');
+                closeNegotiationModal();
+                await loadActiveNegotiations();
+                
+            } catch (error) {
+                console.error('Error sending response:', error);
+                showNotification('Chyba při odesílání odpovědi: ' + error.message, 'error');
+            }
+        }
+
+        function startNewNegotiation() {
+            showNotification('Funkce zahájení nového vyjednávání bude dostupná brzy', 'info');
+        }
+
+        function saveAISettings() {
+            const aggressiveness = document.getElementById('aiAggressiveness').value;
+            console.log('Saving AI settings:', { aggressiveness });
+            showNotification('Nastavení AI bylo uloženo', 'success');
+        }
+
+        // Utility functions
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'active': return 'bg-blue-100 text-blue-700';
+                case 'waiting_response': return 'bg-yellow-100 text-yellow-700';
+                case 'near_deadline': return 'bg-red-100 text-red-700';
+                default: return 'bg-gray-100 text-gray-700';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'active': return 'Aktivní';
+                case 'waiting_response': return 'Čeká odpověď';
+                case 'near_deadline': return 'Blízko deadline';
+                default: return 'Neznámý';
+            }
+        }
+
+        function getHistoryStatusBadgeClass(status) {
+            switch (status) {
+                case 'accepted': return 'bg-green-100 text-green-700';
+                case 'rejected': return 'bg-red-100 text-red-700';
+                case 'expired': return 'bg-gray-100 text-gray-700';
+                default: return 'bg-gray-100 text-gray-700';
+            }
+        }
+
+        function getHistoryStatusText(status) {
+            switch (status) {
+                case 'accepted': return 'Přijato';
+                case 'rejected': return 'Odmítnuto';
+                case 'expired': return 'Vypršelo';
+                default: return 'Neznámý';
+            }
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('cs-CZ', {
+                style: 'currency',
+                currency: 'CZK',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(price);
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('cs-CZ', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function formatRelativeTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffHours < 1) return 'právě teď';
+            if (diffHours < 24) return `před ${diffHours}h`;
+            if (diffDays === 1) return 'včera';
+            return `před ${diffDays} dny`;
+        }
+
+        function showNotification(message, type = 'info') {
+            // Simple notification - in real app would use proper notification system
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-4 py-2 rounded-lg shadow-lg z-50`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
