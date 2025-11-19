@@ -22,19 +22,17 @@
             <!-- Quick login buttons -->
             <div class="grid md:grid-cols-2 gap-4 mb-8">
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-blue-800 mb-3">Test jako Tvůrce</h3>
-                    <button id="loginCreator" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full mb-3">
-                        Přihlásit se jako Tvůrce
-                    </button>
+                    <h3 class="font-semibold text-blue-800 mb-3">Pouze ostrý provoz</h3>
+                    <p class="text-sm text-blue-600 mb-3">Přihlas se přes hlavní login</p>
+                    <a href="login.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block text-center w-full">
+                        Přihlásit se
+                    </a>
                     <div id="creatorResult" class="text-sm text-gray-600"></div>
                 </div>
 
-                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-orange-800 mb-3">Test jako Firma</h3>
-                    <button id="loginCompany" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors w-full mb-3">
-                        Přihlásit se jako Firma
-                    </button>
-                    <div id="companyResult" class="text-sm text-gray-600"></div>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-3">Pouze tvůrci</h3>
+                    <p class="text-sm text-gray-600">Kredity jsou dostupné pouze pro tvůrce</p>
                 </div>
             </div>
 
@@ -70,7 +68,6 @@
 
     <!-- Include required scripts -->
     <script src="firebase-init.js"></script>
-    <script src="demo-auth.js"></script>
     <script src="credits-system-unified.js"></script>
 
     <script>
@@ -86,37 +83,21 @@
                 creditsSystem = new UnifiedCreditsSystem();
                 await creditsSystem.init();
                 
-                // Setup auth listener
-                demoAuth.onAuthStateChanged((user) => {
-                    currentUser = user;
-                    updateStatus();
-                    toggleTestButtons(!!user);
-                });
+                // Setup Firebase auth listener pouze
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        currentUser = user;
+                        updateStatus();
+                        toggleTestButtons(!!user);
+                    });
+                } else {
+                    console.error('Firebase auth není dostupný!');
+                }
 
                 console.log('Sjednocený test systém inicializován');
             } catch (error) {
                 console.error('Chyba při inicializaci:', error);
                 addResult('❌ Chyba při inicializaci: ' + error.message, 'text-red-600');
-            }
-        });
-
-        // Login as creator
-        document.getElementById('loginCreator').addEventListener('click', async () => {
-            try {
-                await demoAuth.signInAsDemo('demo-creator', 'Testovací Tvůrce', 'tvurce');
-                addResult('✅ Úspěšně přihlášen jako tvůrce', 'text-green-600');
-            } catch (error) {
-                addResult('❌ Chyba přihlášení tvůrce: ' + error.message, 'text-red-600');
-            }
-        });
-
-        // Login as company
-        document.getElementById('loginCompany').addEventListener('click', async () => {
-            try {
-                await demoAuth.signInAsDemo('demo-company', 'Testovací Firma', 'firma');
-                addResult('✅ Úspěšně přihlášen jako firma', 'text-orange-600');
-            } catch (error) {
-                addResult('❌ Chyba přihlášení firmy: ' + error.message, 'text-red-600');
             }
         });
 
@@ -204,12 +185,12 @@
             if (currentUser) {
                 statusContent.innerHTML = `
                     <div class="flex items-center justify-between">
-                        <span><strong>Uživatel:</strong> ${currentUser.displayName} (${currentUser.role})</span>
-                        <button onclick="demoAuth.signOut()" class="text-red-600 hover:text-red-700 text-sm">Odhlásit</button>
+                        <span><strong>Uživatel:</strong> ${currentUser.email} (${currentUser.role || 'tvůrce'})</span>
+                        <button onclick="firebase.auth().signOut()" class="text-red-600 hover:text-red-700 text-sm">Odhlásit</button>
                     </div>
                 `;
             } else {
-                statusContent.textContent = 'Nepřihlášen';
+                statusContent.innerHTML = '<div>Nepřihlášen - <a href="login.html" class="text-blue-600 hover:text-blue-700">přihlásit se</a></div>';
             }
         }
 

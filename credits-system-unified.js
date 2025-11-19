@@ -93,25 +93,32 @@ class UnifiedCreditsSystem {
   // === ROLE MANAGEMENT ===
   async getUserRole(userId) {
     try {
-      // Demo auth check
-      if (typeof window !== 'undefined' && window.demoAuth) {
-        const demoUser = window.demoAuth.getCurrentUser();
-        if (demoUser && demoUser.uid === userId) {
-          return demoUser.role;
-        }
+      console.log('Získávám roli pro uživatele:', userId);
+      
+      // Real Firebase check pouze
+      console.log('Kontrolujem Firebase kolekce pro uživatele:', userId);
+      
+      // Check creators collection
+      const creatorDoc = await this.db.collection('creators').doc(userId).get();
+      if (creatorDoc.exists) {
+        console.log('Uživatel nalezen v creators kolekci');
+        return 'tvurce';
       }
       
-      // Firebase check
-      const creatorDoc = await this.db.collection('creators').doc(userId).get();
-      if (creatorDoc.exists) return 'tvurce';
-      
+      // Check companies collection  
       const companyDoc = await this.db.collection('companies').doc(userId).get();
-      if (companyDoc.exists) return 'firma';
+      if (companyDoc.exists) {
+        console.log('Uživatel nalezen v companies kolekci');
+        return 'firma';
+      }
       
-      return null;
+      // If not found in either, assume creator for now (fallback)
+      console.warn('Uživatel nenalezen v žádné kolekci, předpokládám tvůrce');
+      return 'tvurce';
     } catch (error) {
       console.error('Chyba při získávání role:', error);
-      return null;
+      // Fallback to creator role in case of error
+      return 'tvurce';
     }
   }
 
@@ -149,33 +156,64 @@ class UnifiedCreditsSystem {
 
   // === CORE CREDIT OPERATIONS ===
   async addCredits(userId, taskType, additionalData = {}) {
-    if (!await this.isCreator(userId)) {
+    console.log('Přidávám kredity:', { userId, taskType, additionalData });
+    
+    const userRole = await this.getUserRole(userId);
+    console.log('Role uživatele:', userRole);
+    
+    if (userRole !== 'tvurce') {
+      console.log('Uživatel není tvůrce, kredity odmítnuty');
       return { success: false, message: 'Kredity jsou dostupné pouze pro tvůrce' };
     }
 
     if (!this.taskTypes[taskType]) {
+      console.error('Neplatný typ úkolu:', taskType);
       throw new Error('Neplatný typ úkolu');
     }
 
     try {
+      console.log('Začínám transakci pro kredity');
       const userCreditsRef = this.db.collection('userCredits').doc(userId);
       const userCredits = await userCreditsRef.get();
-      const userData = userCredits.data();
+      
+      if (!userCredits.exists) {
+        console.log('Uživatel nemá kreditní účet, vytvářím');
+        await this.setupUserCredits(userId);
+        // Re-fetch after setup
+        const newUserCredits = await userCreditsRef.get();
+        if (!newUserCredits.exists) {
+          throw new Error('Nepodařilo se vytvořit kreditní účet');
+        }
+      }
+      
+      const userData = userCredits.exists ? userCredits.data() : {};
+      console.log('Aktuální uživatelská data:', userData);
 
       let creditsToAdd = this.taskTypes[taskType].credits;
+      console.log('Základní kredity za úkol:', creditsToAdd);
       
       // Streak bonus
       const streakMultiplier = this.getStreakMultiplier(userData.streakDays || 0);
       creditsToAdd = Math.floor(creditsToAdd * streakMultiplier);
+      console.log('Kredity po streak bonusu:', creditsToAdd, 'multiplier:', streakMultiplier);
 
       // Level bonus
       const levelBonus = this.getLevelBonus(userData.level || 1);
       creditsToAdd = Math.floor(creditsToAdd * (1 + levelBonus));
+      console.log('Finální kredity po level bonusu:', creditsToAdd, 'level bonus:', levelBonus);
 
       // Update user credits
       const newBalance = (userData.balance || 0) + creditsToAdd;
       const newTotalEarned = (userData.totalEarned || 0) + creditsToAdd;
       const newLevel = this.calculateLevel(newTotalEarned);
+      
+      console.log('Aktualizuji kreditní účet:', {
+        oldBalance: userData.balance || 0,
+        newBalance,
+        creditsToAdd,
+        newTotalEarned,
+        newLevel
+      });
 
       await userCreditsRef.update({
         balance: newBalance,
@@ -183,6 +221,8 @@ class UnifiedCreditsSystem {
         level: newLevel,
         lastActivity: new Date().toISOString()
       });
+      
+      console.log('✅ Kredity úspěšně přidány');
 
       // Log transaction
       await this.logTransaction(userId, 'EARN', creditsToAdd, this.taskTypes[taskType].name, {
@@ -204,7 +244,7 @@ class UnifiedCreditsSystem {
       };
 
     } catch (error) {
-      console.error('Chyba při přidávání kreditů:', error);
+      console.error('❌ Chyba při přidávání kreditů:', error);
       throw error;
     }
   }

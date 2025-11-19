@@ -29,8 +29,9 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div id="userInfo" class="text-sm"></div>
-                <button id="demoLogin" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
-                    Demo Login
+                <button id="backBtn" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                    Zpět
                 </button>
             </div>
         </div>
@@ -216,7 +217,6 @@
 
     <!-- Scripts -->
     <script src="firebase-init.js"></script>
-    <script src="demo-auth.js"></script>
     <script src="credits-system-unified.js"></script>
 
     <script>
@@ -232,37 +232,44 @@
                 creditsSystem = new UnifiedCreditsSystem();
                 await creditsSystem.init();
                 
-                // Setup demo auth listener
-                demoAuth.onAuthStateChanged(async (user) => {
-                    currentUser = user;
-                    if (user) {
-                        await loadUserData();
-                        startCountdown();
-                    } else {
-                        showLoginPrompt();
-                    }
-                });
+                // Firebase auth pouze pro ostrý provoz
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().onAuthStateChanged(async (user) => {
+                        console.log('Firebase auth state changed:', user);
+                        currentUser = user;
+                        if (user) {
+                            await loadUserData();
+                            startCountdown();
+                        } else {
+                            showLoginPrompt();
+                        }
+                    });
+                } else {
+                    console.error('Firebase auth není dostupný!');
+                    showError('Firebase není správně nakonfigurován');
+                }
 
                 setupEventListeners();
                 console.log('✅ Sjednocený kreditní dashboard inicializován');
             } catch (error) {
                 console.error('❌ Chyba při inicializaci:', error);
-                showError('Chyba při inicializaci aplikace');
+                showError('Chyba při inicializaci aplikace: ' + error.message);
             }
         });
 
         // Event Listeners
         function setupEventListeners() {
-            // Demo login
-            document.getElementById('demoLogin').addEventListener('click', async () => {
-                try {
-                    await demoAuth.signInAsDemo('demo-creator', 'Demo Tvůrce', 'tvurce');
-                    showSuccess('Úspěšně přihlášen jako demo tvůrce');
-                } catch (error) {
-                    showError('Chyba při přihlášení: ' + error.message);
+            // Back button
+            document.getElementById('backBtn').addEventListener('click', () => {
+                // Try to go back in history
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    // Fallback to main page
+                    window.location.href = 'index.html';
                 }
             });
-
+            
             // Check-in button
             document.getElementById('checkInBtn').addEventListener('click', async () => {
                 if (!currentUser) return;
@@ -305,21 +312,39 @@
 
         // Quick action handler
         async function performQuickAction(taskType, successMsg) {
-            if (!currentUser) return;
+            if (!currentUser) {
+                showError('Musíš být přihlášen!');
+                return;
+            }
+            
+            if (!creditsSystem) {
+                showError('Kreditní systém není inicializován');
+                return;
+            }
             
             try {
+                console.log('Provádím akci:', taskType, 'pro uživatele:', currentUser.uid);
                 showLoading(true);
-                const result = await creditsSystem.addCredits(currentUser.uid, taskType, { source: 'quick_action' });
                 
-                if (result.success) {
+                const result = await creditsSystem.addCredits(currentUser.uid, taskType, { 
+                    source: 'quick_action',
+                    timestamp: new Date().toISOString()
+                });
+                
+                console.log('Výsledek akce:', result);
+                
+                if (result && result.success) {
                     showSuccess(`${successMsg}! +${result.creditsEarned} kreditů`);
                     await loadUserData();
                     await loadDailyTasks();
                 } else {
-                    showError(result.message);
+                    const errorMsg = result?.message || 'Neznámá chyba';
+                    showError(`Akce se nezdařila: ${errorMsg}`);
+                    console.error('Detail chyby:', result);
                 }
             } catch (error) {
-                showError('Chyba při akci: ' + error.message);
+                console.error('Chyba při akci:', error);
+                showError(`Chyba při akci: ${error.message}`);
             } finally {
                 showLoading(false);
             }
@@ -327,31 +352,36 @@
 
         // Load user data
         async function loadUserData() {
-            if (!currentUser || !creditsSystem) return;
+            if (!currentUser || !creditsSystem) {
+                console.warn('Nelze načíst data - chybí currentUser nebo creditsSystem');
+                return;
+            }
 
             try {
+                console.log('Načítám data pro uživatele:', currentUser.uid);
                 const userData = await creditsSystem.getUserCredits(currentUser.uid);
+                console.log('Načtená uživatelská data:', userData);
                 
                 // Update user info
                 document.getElementById('userInfo').innerHTML = `
-                    <span class="font-medium">${currentUser.displayName}</span>
-                    <span class="text-white/70">(${currentUser.role})</span>
+                    <span class="font-medium">${currentUser.displayName || currentUser.email || 'Uživatel'}</span>
+                    <span class="text-white/70">(${userData.levelName || 'Tvůrce'})</span>
                 `;
 
                 // Update stats
-                document.getElementById('currentCredits').textContent = userData.balance.toLocaleString();
-                document.getElementById('currentLevel').textContent = userData.level;
-                document.getElementById('levelName').textContent = userData.levelName;
-                document.getElementById('currentStreak').textContent = userData.streakDays;
-                document.getElementById('totalEarned').textContent = userData.totalEarned.toLocaleString();
+                document.getElementById('currentCredits').textContent = (userData.balance || 0).toLocaleString();
+                document.getElementById('currentLevel').textContent = userData.level || 1;
+                document.getElementById('levelName').textContent = userData.levelName || 'Začátečník';
+                document.getElementById('currentStreak').textContent = userData.streakDays || 0;
+                document.getElementById('totalEarned').textContent = (userData.totalEarned || 0).toLocaleString();
 
                 // Update level progress
-                document.getElementById('currentLevelText').textContent = `Level ${userData.level}`;
-                document.getElementById('nextLevelText').textContent = userData.nextLevelRequirement ? `Level ${userData.level + 1}` : 'Max Level';
-                document.getElementById('levelProgress').style.width = `${userData.progressToNextLevel}%`;
+                document.getElementById('currentLevelText').textContent = `Level ${userData.level || 1}`;
+                document.getElementById('nextLevelText').textContent = userData.nextLevelRequirement ? `Level ${(userData.level || 1) + 1}` : 'Max Level';
+                document.getElementById('levelProgress').style.width = `${userData.progressToNextLevel || 0}%`;
                 
                 // Show level benefits
-                const benefits = userData.levelBenefits.length > 0 ? userData.levelBenefits.join(', ') : 'Základní funkce';
+                const benefits = (userData.levelBenefits && userData.levelBenefits.length > 0) ? userData.levelBenefits.join(', ') : 'Základní funkce';
                 document.getElementById('levelBenefits').innerHTML = `<strong>Výhody:</strong> ${benefits}`;
 
                 // Load other data
@@ -360,7 +390,7 @@
 
             } catch (error) {
                 console.error('Chyba při načítání uživatelských dat:', error);
-                showError('Chyba při načítání dat');
+                showError('Chyba při načítání dat: ' + error.message);
             }
         }
 
@@ -455,9 +485,9 @@
                     <i data-lucide="user-x" class="w-16 h-16 text-white/50 mx-auto mb-4"></i>
                     <h2 class="text-2xl font-semibold text-gray-700 mb-2">Přihlas se pro přístup ke kreditům</h2>
                     <p class="text-gray-500 mb-6">Kredity jsou dostupné pouze pro tvůrce</p>
-                    <button onclick="document.getElementById('demoLogin').click()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                        Demo Přihlášení
-                    </button>
+                    <a href="login.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-block">
+                        Přihlásit se
+                    </a>
                 </div>
             `;
             lucide.createIcons();
