@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
     '/kartao-pro-tvurce.html',
     '/kartao-pro-firmy.html',
     '/login.html',
-    '/credits-unified.html',
+    '/kartao-marketplace.html',
     '/rewards-followers-dashboard.html',
     '/ai-pricing-dashboard.html',
     '/ai-analytics-dashboard.html',

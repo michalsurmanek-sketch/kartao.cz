@@ -153,10 +153,6 @@
         <div class="flex items-center gap-2 px-3 py-1 rounded-xl bg-gradient-to-r from-fuchsia-500/20 to-amber-400/20 border border-fuchsia-400/30">
           <span id="userTier" class="tier-badge tier-bronze">🥉 Začátečník</span>
         </div>
-        <a href="credits-unified.html" class="btn btn-outline text-sm">
-          <i data-lucide="coins" class="w-4 h-4"></i>
-          <span id="userCredits">0</span> kreditů
-        </a>
         <a href="creator-dashboard.html" class="btn btn-outline text-sm">
           <i data-lucide="arrow-left" class="w-4 h-4"></i>
           Zpět
@@ -513,12 +509,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-init.js"></script>
-  <script src="credits-system-unified.js"></script>
+
   <script src="rewards-followers-system.js"></script>
 
   <script>
     let rewardsSystem;
-    let creditsSystem;
+
     let currentUser;
     let userTierData;
 
@@ -528,7 +524,7 @@
 
       // Inicializace systémů
       rewardsSystem = new RewardsFollowersSystem();
-      creditsSystem = new UnifiedCreditsSystem();
+
 
       // Auth listener
       firebase.auth().onAuthStateChanged(async (user) => {
