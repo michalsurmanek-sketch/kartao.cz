@@ -263,7 +263,7 @@
             <div class="p-4">
               <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Základní systémy</div>
               <div class="grid grid-cols-2 gap-2 mb-4">
-                <a href="credits-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                <a href="credits-unified.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
                   <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
                     <i data-lucide="coins" class="w-4 h-4 text-blue-400"></i>
                   </div>
@@ -482,7 +482,7 @@
           <!-- Účet a akce -->
           <div class="pb-2 mb-2 border-b border-white/10">
             <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">🎮 Gamifikace</div>
-            <a href="credits-dashboard.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
+            <a href="credits-unified.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
               <i data-lucide="coins" class="w-5 h-5 text-blue-400"></i>
               <span>Kredity & Úkoly</span>
             </a>
@@ -582,10 +582,6 @@
             <a href="kontakt.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
               <i data-lucide="mail" class="w-5 h-5 text-white/70"></i>
               <span>Kontakt</span>
-            </a>
-            <a href="demo-setup.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30">
-              <i data-lucide="play-circle" class="w-5 h-5 text-blue-400"></i>
-              <span class="font-semibold">🎭 Demo Setup</span>
             </a>
           </div>
         </nav>
@@ -766,28 +762,7 @@
   </div>
 
 
-  <!-- DEMO BANNER -->
-  <section id="demo-banner" class="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-blue-500/20">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i data-lucide="play-circle" class="w-6 h-6 text-blue-400"></i>
-          <div>
-            <h3 class="font-semibold text-blue-400">🎭 Demo režim aktivní</h3>
-            <p class="text-sm text-blue-300">Vyzkoušejte všechny funkce s ukázkovými daty</p>
-          </div>
-        </div>
-        <div class="space-x-2">
-          <a href="demo-setup.html" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">
-            Setup
-          </a>
-          <button onclick="dismissDemoBanner()" class="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition">
-            ✕
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- HLAVNÍ OBSAH -->
 
   <!-- HERO + SEARCH -->
   <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
@@ -1882,7 +1857,7 @@
 <script src="firebase-init.js"></script>
 <script src="database-init.js"></script>
 <script src="api-services.js"></script>
-<script src="demo-auth.js"></script>
+
 
   <!-- ŠIPKA NAHORU - KARTAO STYLE -->
 <button id="scrollTopBtn" 
@@ -1907,27 +1882,9 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  // Demo banner functions
-  function dismissDemoBanner() {
-    const banner = document.getElementById('demo-banner');
-    if (banner) {
-      banner.style.display = 'none';
-      localStorage.setItem('demoBannerDismissed', 'true');
-    }
-  }
-
   // Inicializace ikon Lucide
   window.addEventListener('DOMContentLoaded',()=>{ 
     if(window.lucide?.createIcons) window.lucide.createIcons();
-    
-    // Demo banner logic
-    const dismissed = localStorage.getItem('demoBannerDismissed');
-    if (dismissed === 'true') {
-      const banner = document.getElementById('demo-banner');
-      if (banner) {
-        banner.style.display = 'none';
-      }
-    }
     
     // Inicializace hamburger menu
     if (typeof initHamburgerMenu === 'function') {
