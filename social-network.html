@@ -547,12 +547,6 @@
     // Načtení uživatelských dat
     async function loadUserData() {
       try {
-        // Načti kredity
-        const credits = await creditsSystem.getUserCredits(currentUser.uid);
-        if (credits) {
-          document.getElementById('userCredits').textContent = credits.availableCredits || 0;
-        }
-
         // Načti follower data
         const followerData = await rewardsSystem.getUserFollowerData(currentUser.uid);
         if (followerData) {
@@ -795,10 +789,10 @@
     // Simulace interakce
     async function simulateInteraction(type) {
       const interactions = {
-        LIKE_POST: { name: 'lajkování', credits: 1 },
-        COMMENT: { name: 'komentář', credits: 3 },
-        SHARE: { name: 'sdílení', credits: 5 },
-        COLLABORATE: { name: 'spolupráce', credits: 20 }
+        LIKE_POST: { name: 'lajkování', points: 1 },
+        COMMENT: { name: 'komentář', points: 3 },
+        SHARE: { name: 'sdílení', points: 5 },
+        COLLABORATE: { name: 'spolupráce', points: 20 }
       };
 
       const interaction = interactions[type];
@@ -814,9 +808,9 @@
         });
 
         const multiplier = userTierData?.multiplier || 1.0;
-        const finalCredits = Math.floor(interaction.credits * multiplier);
+        const finalPoints = Math.floor(interaction.points * multiplier);
         
-        showNotification(`✅ Simulace ${interaction.name} dokončena! (+${finalCredits} kreditů)`, 'success');
+        showNotification(`✅ Simulace ${interaction.name} dokončena! (+${finalPoints} bodů)`, 'success');
         await loadUserData();
 
       } catch (error) {

@@ -269,8 +269,6 @@ class RewardsFollowersSystem {
 
       if (finalCredits > 0) {
         // Volání credits systému (předpokládáme, že existuje globální instance)
-        if (window.creditsSystem) {
-          await window.creditsSystem.addCredits(userId, 'SOCIAL_INTERACTION', {
             interactionType: interactionType,
             baseCredits: baseCredits,
             multiplier: multiplier,
@@ -317,10 +315,8 @@ class RewardsFollowersSystem {
         });
 
         // Odměna za dosažení nového tier
-        if (window.creditsSystem) {
           const tierBonus = this.getTierBonus(newTier);
           if (tierBonus > 0) {
-            await window.creditsSystem.addCredits(userId, 'TIER_UPGRADE', {
               oldTier: followerData.tier,
               newTier: newTier,
               bonus: tierBonus,
@@ -496,13 +492,10 @@ class RewardsFollowersSystem {
         // Vzájemné sledování - bonus pro oba
         const mutualBonus = 15;
         
-        if (window.creditsSystem) {
-          await window.creditsSystem.addCredits(userId1, 'MUTUAL_FOLLOW', {
             partnerUserId: userId2,
             bonus: mutualBonus
           });
           
-          await window.creditsSystem.addCredits(userId2, 'MUTUAL_FOLLOW', {
             partnerUserId: userId1,
             bonus: mutualBonus
           });
