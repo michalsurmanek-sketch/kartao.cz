@@ -284,7 +284,6 @@
                 // Firebase auth pouze pro ostrý provoz
                 if (typeof firebase !== 'undefined' && firebase.auth) {
                     firebase.auth().onAuthStateChanged(async (user) => {
-                        console.log('Firebase auth state changed:', user);
                         currentUser = user;
                         if (user) {
                             await loadUserData();
@@ -294,14 +293,11 @@
                         }
                     });
                 } else {
-                    console.error('Firebase auth není dostupný!');
                     showError('Firebase není správně nakonfigurován');
                 }
 
                 setupEventListeners();
-                console.log('✅ Sjednocený kreditní dashboard inicializován');
             } catch (error) {
-                console.error('❌ Chyba při inicializaci:', error);
                 showError('Chyba při inicializaci aplikace: ' + error.message);
             }
         });
@@ -402,14 +398,11 @@
         // Load user data
         async function loadUserData() {
             if (!currentUser || !creditsSystem) {
-                console.warn('Nelze načíst data - chybí currentUser nebo creditsSystem');
                 return;
             }
 
             try {
-                console.log('Načítám data pro uživatele:', currentUser.uid);
                 const userData = await creditsSystem.getUserCredits(currentUser.uid);
-                console.log('Načtená uživatelská data:', userData);
                 
                 // Update user info
                 document.getElementById('userInfo').innerHTML = `
@@ -438,7 +431,6 @@
                 await loadRecentTransactions();
 
             } catch (error) {
-                console.error('Chyba při načítání uživatelských dat:', error);
                 showError('Chyba při načítání dat: ' + error.message);
             }
         }
@@ -480,7 +472,7 @@
 
                 lucide.createIcons();
             } catch (error) {
-                console.error('Chyba při načítání úkolů:', error);
+                // Chyba při načítání úkolů
             }
         }
 
@@ -509,7 +501,7 @@
                     </div>
                 `).join('');
             } catch (error) {
-                console.error('Chyba při načítání transakcí:', error);
+                // Chyba při načítání transakcí
             }
         }
 
