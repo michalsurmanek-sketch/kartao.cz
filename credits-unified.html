@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao.cz – Kreditní systém</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,9 +26,12 @@
       }
     };
   </script>
+
+  <!-- Ikony -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900 text-white">
+  <!-- HLAVIČKA -->
   <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <a href="#" class="flex items-center gap-3">
@@ -46,7 +51,7 @@
           <span class="text-white/60">Tvoje současné kredity</span>
           <span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">2350</span> K-Coins</span>
         </div>
-        <button id="topUpTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
+        <button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>Dobít kredity</span>
         </button>
@@ -55,7 +60,7 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-    <!-- HERO + ÚKOLY + ODMĚNY (zkrácená verze pro náhled) -->
+    <!-- HERO -->
     <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft text-center">
       <h1 class="text-3xl font-semibold mb-2">Kreditní systém <span class="text-amber-300">K-Coins</span></h1>
       <p class="text-white/70 max-w-xl mx-auto mb-6">Plň úkoly, dokončuj kampaně a získávej kredity. Za kredity můžeš kupovat VIP, zvýraznění profilu, mystery boxy a další bonusy.</p>
@@ -78,7 +83,7 @@
       </div>
     </section>
 
-    <!-- Sekce: Reklamní odměny -->
+    <!-- REKLAMNÍ ODMĚNY -->
     <section class="rounded-3xl border border-amber-400/30 bg-amber-500/5 p-6 shadow-soft">
       <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
         <i data-lucide="play" class="w-5 h-5 text-amber-300"></i>
@@ -86,8 +91,8 @@
       </h2>
 
       <p class="text-white/70 text-sm mb-4 max-w-2xl">
-        Sleduj krátké reklamy (10–30 sekund) a získej okamžité kredity. Reklamy jsou bezpečné,
-        neobtěžující a vždy relevantní pro tvůrce. Každá reklama dává <span class="text-amber-300 font-semibold">+4 K-Coins</span>.
+        Sleduj krátké reklamy (cca 10 sekund) a získej okamžité kredity. Každá reklama dává
+        <span class="text-amber-300 font-semibold">+4 K-Coins</span>. Limit je 5 reklam denně (max. 20 K-Coins).
       </p>
 
       <div class="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center justify-between gap-4 flex-col sm:flex-row">
@@ -110,20 +115,21 @@
         <span id="adCounter" class="text-amber-300">Dnes: 0 / 5</span>
       </div>
 
-      <!-- RESET LIMITU -->
       <div class="mt-2 flex justify-end">
         <button id="resetAdsButton" class="text-[11px] text-white/40 hover:text-white underline underline-offset-2">
-          Resetovat denní limit
+          Resetovat denní limit (test)
         </button>
       </div>
 
+      <!-- OVERLAY S VIDEEM -->
       <div id="adOverlay" class="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 gap-4 hidden">
         <div class="w-full max-w-5xl">
           <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-soft border border-white/10">
             <video id="adVideo" class="w-full h-auto max-h-[90vh] object-contain" muted playsinline>
               <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
             </video>
-            <!-- Badge s odpočtem v rohu přes video -->
+
+            <!-- Odpočet -->
             <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs">
               <div class="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
               <div class="text-right">
@@ -131,7 +137,8 @@
                 <p class="text-[11px] text-white/70"><span id="adCountdown">10</span></p>
               </div>
             </div>
-            <!-- Tlačítko Další reklama / Zavřít (zobrazí se po připsání kreditů) -->
+
+            <!-- Další / Zavřít -->
             <button id="nextAdButton" class="hidden absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs text-amber-300 font-medium">
               <i data-lucide="skip-forward" class="w-4 h-4 text-amber-300"></i>
               <span>Další reklama</span>
@@ -139,34 +146,105 @@
           </div>
         </div>
 
-        <button id="cancelAdButton" class="text-xs text-white/70 hover:text-white underline underline-offset-2">Přerušit</button>
+        <!-- OVLÁDACÍ PANEL VIDEA -->
+        <div id="adControlPanel" class="flex items-center gap-3 mt-2">
+          <button id="adMuteToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+            Zvuk
+          </button>
+          <button id="adPauseToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
+            <i data-lucide="pause" class="w-4 h-4"></i>
+            Zastavit
+          </button>
+          <button id="adCloseButton" class="px-3 py-1.5 rounded-full bg-red-500/80 text-neutral-900 text-xs flex items-center gap-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            Zavřít
+          </button>
+        </div>
       </div>
     </section>
 
-    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
+    <!-- DENNÍ ÚKOLY -->
+    <section id="dailyTasksSection" class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
       <h2 class="text-xl font-semibold mb-4 flex items-center gap-2"><i data-lucide="list-checks" class="w-5 h-5 text-amber-300"></i> Denní úkoly</h2>
       <ul class="space-y-3 text-sm">
-        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Přihlas se dnes</span><span class="text-emerald-300 text-xs flex items-center gap-1">+2 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
-        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Aktualizuj statistiky</span><span class="text-emerald-300 text-xs flex items-center gap-1">+5 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
-        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"><span>Odpověz na kampaň</span><span class="text-emerald-300 text-xs flex items-center gap-1">+6 <i data-lucide="coins" class="w-3 h-3"></i></span></li>
+        <!-- Přihlášení – vždy splněno, protože bez loginu se sem nedostane -->
         <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <span>Přihlas se dnes</span>
+          <span class="text-emerald-300 text-xs flex items-center gap-1">
+            +2 <i data-lucide="coins" class="w-3 h-3"></i>
+            <span class="text-emerald-300 text-[11px] font-medium ml-2">Splněno ✓</span>
+          </span>
+        </li>
+
+        <!-- Aktualizuj statistiky -->
+        <li id="taskStats" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+          <span>Aktualizuj statistiky</span>
+          <span id="taskStatsBadge" class="text-red-400 text-xs flex items-center gap-1">
+            +5 <i data-lucide="coins" class="w-3 h-3"></i>
+          </span>
+        </li>
+
+        <!-- Odpověz na kampaň -->
+        <li id="taskCampaign" class="p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span>Odpověz na kampaň</span>
+            <span id="taskCampaignBadge" class="text-red-400 text-xs flex items-center gap-1">
+              +6 <i data-lucide="coins" class="w-3 h-3"></i>
+            </span>
+          </div>
+          <!-- Rozbalená nabídka dvou kampaní -->
+          <div id="campaignList" class="mt-3 hidden w-full text-xs text-white/80 space-y-2">
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3 flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-sm">Kampaň #1 – Produktová spolupráce</p>
+                <p class="text-[11px] text-white/60">Story + 1 feed post · rozpočet 3 000 Kč</p>
+              </div>
+              <button class="campaign-respond px-3 py-1.5 rounded-full bg-emerald-500/90 text-neutral-900 text-[11px] font-semibold">
+                Odpovědět
+              </button>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3 flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-sm">Kampaň #2 – Uvedení nového e‑shopu</p>
+                <p class="text-[11px] text-white/60">Reels + swipe up · barter + odměna</p>
+              </div>
+              <button class="campaign-respond px-3 py-1.5 rounded-full bg-emerald-500/90 text-neutral-900 text-[11px] font-semibold">
+                Odpovědět
+              </button>
+            </div>
+          </div>
+        </li>
+
+        <!-- Sleduj krátkou reklamu -->
+        <li id="taskWatchAd" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
           <span class="flex items-center gap-2">
             <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
-            <span>Sleduj krátkou reklamu (10–30 s)</span>
+            <span>Sleduj krátkou reklamu (10 s)</span>
           </span>
-          <span class="text-emerald-300 text-xs flex flex-col items-end gap-0.5">
+          <span id="taskWatchAdBadge" class="text-red-400 text-xs flex flex-col items-end gap-0.5">
             <span class="inline-flex items-center gap-1">+4 <i data-lucide="coins" class="w-3 h-3"></i></span>
             <span class="text-[10px] text-white/60">Max. 5× denně</span>
+            <span id="taskWatchAdDone" class="hidden text-[11px] font-medium mt-0.5">Splněno ✓</span>
           </span>
         </li>
       </ul>
     </section>
 
+    <!-- ODMĚNY ZA KREDITY -->
     <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
-      <h2 class="text-xl font-semibold mb-4 flex items:center gap-2"><i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i> Odměny za kredity</h2>
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i> Odměny za kredity</h2>
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm"><p class="font-semibold mb-1">Zvýraznění karty</p><p class="text-xs text-white/70 mb-2">24 hodin top pozice v Marketplace.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-amber-300 text-xs">40 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
-        <div class="rounded-xl border border-fuchsia-400/40 bg-fuchsia-500/10 p-4 text-sm"><p class="font-semibold mb-1">VIP profil 7 dní</p><p class="text-xs text-white/70 mb-2">Lepší pozice & VIP styl.</p><span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-fuchsia-300 text-xs">300 <i data-lucide="coins" class="w-3 h-3"></i></span></div>
+        <div class="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm">
+          <p class="font-semibold mb-1">Zvýraznění karty</p>
+          <p class="text-xs text-white/70 mb-2">24 hodin top pozice v Marketplace.</p>
+          <span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-amber-300 text-xs">40 <i data-lucide="coins" class="w-3 h-3"></i></span>
+        </div>
+        <div class="rounded-xl border border-fuchsia-400/40 bg-fuchsia-500/10 p-4 text-sm">
+          <p class="font-semibold mb-1">VIP profil 7 dní</p>
+          <p class="text-xs text-white/70 mb-2">Lepší pozice & VIP styl.</p>
+          <span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-fuchsia-300 text-xs">300 <i data-lucide="coins" class="w-3 h-3"></i></span>
+        </div>
       </div>
     </section>
   </main>
@@ -181,13 +259,15 @@
         window.lucide.createIcons();
       }
 
+      // Klíče pro localStorage
       var maxAdsPerDay = 5;
       var rewardPerAd = 4;
       var adStateKey = "kartao_ad_state";
       var creditsKey = "kartao_credits_total";
+      var tasksStateKey = "kartao_tasks_state";
 
+      // DOM prvky
       var watchAdButton = document.getElementById("watchAdButton");
-      var cancelAdButton = document.getElementById("cancelAdButton");
       var adOverlay = document.getElementById("adOverlay");
       var adCountdownSpan = document.getElementById("adCountdown");
       var adMessage = document.getElementById("adMessage");
@@ -195,13 +275,29 @@
       var creditsValueEl = document.getElementById("creditsValue");
       var creditsValueHeroEl = document.getElementById("creditsValueHero");
       var adVideo = document.getElementById("adVideo");
+      var adSrc = document.getElementById("adSrc");
       var nextAdButton = document.getElementById("nextAdButton");
       var resetButton = document.getElementById("resetAdsButton");
-      var topUpTestButton = document.getElementById("topUpTestButton");
 
+      var adCloseButton = document.getElementById("adCloseButton");
+      var adPauseToggle = document.getElementById("adPauseToggle");
+      var adMuteToggle = document.getElementById("adMuteToggle");
+
+      var taskStatsItem = document.getElementById("taskStats");
+      var taskStatsBadge = document.getElementById("taskStatsBadge");
+      var taskCampaignItem = document.getElementById("taskCampaign");
+      var taskCampaignBadge = document.getElementById("taskCampaignBadge");
+      var campaignList = document.getElementById("campaignList");
+      var taskWatchAdBadge = document.getElementById("taskWatchAdBadge");
+      var taskWatchAdDone = document.getElementById("taskWatchAdDone");
+      var campaignRespondButtons = document.querySelectorAll(".campaign-respond");
+      var dailyTasksSection = document.getElementById("dailyTasksSection");
+
+      // Stavové proměnné
       var adTimer = null;
       var adInProgress = false;
 
+      // Pomocná funkce na formátování čísel (mezery po tisících)
       function formatNumber(num) {
         var s = String(num);
         var out = "";
@@ -217,7 +313,7 @@
         return out;
       }
 
-      // ===== KREDITY – držíme je v proměnné =====
+      // KREDITY – načtení + uložení
       var credits = 0;
       try {
         var storedCredits = localStorage.getItem(creditsKey);
@@ -233,12 +329,8 @@
 
       function syncCreditsDisplay() {
         var formatted = formatNumber(credits);
-        if (creditsValueEl) {
-          creditsValueEl.textContent = formatted;
-        }
-        if (creditsValueHeroEl) {
-          creditsValueHeroEl.textContent = formatted;
-        }
+        if (creditsValueEl) creditsValueEl.textContent = formatted;
+        if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
       }
 
       function saveCredits() {
@@ -249,6 +341,7 @@
 
       syncCreditsDisplay();
 
+      // Datum jako YYYY-MM-DD
       function todayStr() {
         var d = new Date();
         var m = String(d.getMonth() + 1);
@@ -258,57 +351,121 @@
         return d.getFullYear() + "-" + m + "-" + day;
       }
 
+      // Reklamy – stav (s verzováním)
       function loadAdState() {
         try {
           var raw = localStorage.getItem(adStateKey);
-          if (!raw) return { date: todayStr(), adsWatchedToday: 0 };
+          if (!raw) return { date: todayStr(), adsWatchedToday: 0, v: 1 };
           var parsed = JSON.parse(raw);
-          if (!parsed.date || parsed.date !== todayStr()) {
-            return { date: todayStr(), adsWatchedToday: 0 };
+          if (!parsed.date || parsed.date !== todayStr() || parsed.v !== 1) {
+            return { date: todayStr(), adsWatchedToday: 0, v: 1 };
           }
           if (typeof parsed.adsWatchedToday !== "number") {
             parsed.adsWatchedToday = 0;
           }
           return parsed;
         } catch (e) {
-          return { date: todayStr(), adsWatchedToday: 0 };
+          return { date: todayStr(), adsWatchedToday: 0, v: 1 };
         }
       }
 
       function saveAdState(state) {
         try {
+          state.v = 1;
           localStorage.setItem(adStateKey, JSON.stringify(state));
         } catch (e) {}
       }
 
-      var state = loadAdState();
+      var adState = loadAdState();
 
+      // Úkoly – stav (s verzováním)
+      function loadTasksState() {
+        try {
+          var raw = localStorage.getItem(tasksStateKey);
+          if (!raw) return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
+          var parsed = JSON.parse(raw);
+          if (!parsed.date || parsed.date !== todayStr() || parsed.v !== 1) {
+            return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
+          }
+          return {
+            date: parsed.date,
+            statsDone: !!parsed.statsDone,
+            campaignDone: !!parsed.campaignDone,
+            v: 1
+          };
+        } catch (e) {
+          return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
+        }
+      }
+
+      var tasksState = loadTasksState();
+
+      function saveTasksState() {
+        try {
+          if (!tasksState.date) tasksState.date = todayStr();
+          tasksState.v = 1;
+          localStorage.setItem(tasksStateKey, JSON.stringify(tasksState));
+        } catch (e) {}
+      }
+
+      // Barvy a "Splněno" pro badge
+      function setTaskBadgeState(badgeEl, done) {
+        if (!badgeEl) return;
+        badgeEl.classList.remove("text-red-400", "text-emerald-300");
+        var doneLabel = badgeEl.querySelector(".task-done-label");
+        if (done) {
+          badgeEl.classList.add("text-emerald-300");
+          if (!doneLabel) {
+            var label = document.createElement("span");
+            label.className = "task-done-label text-emerald-300 text-[11px] font-medium ml-2";
+            label.textContent = "Splněno ✓";
+            badgeEl.appendChild(label);
+          }
+        } else {
+          badgeEl.classList.add("text-red-400");
+          if (doneLabel) doneLabel.remove();
+        }
+      }
+
+      function applyTasksState() {
+        setTaskBadgeState(taskStatsBadge, tasksState.statsDone);
+        setTaskBadgeState(taskCampaignBadge, tasksState.campaignDone);
+      }
+
+      // Update UI podle stavu reklam
       function updateUIFromState() {
         if (adCounter) {
-          adCounter.textContent = "Dnes: " + state.adsWatchedToday + " / " + maxAdsPerDay;
+          adCounter.textContent = "Dnes: " + adState.adsWatchedToday + " / " + maxAdsPerDay;
         }
         if (watchAdButton) {
-          var reachedLimit = state.adsWatchedToday >= maxAdsPerDay;
+          var reachedLimit = adState.adsWatchedToday >= maxAdsPerDay;
           watchAdButton.disabled = reachedLimit || adInProgress;
           watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
           watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
         }
+        // Denní úkol "Sleduj reklamu" – červená / zelená + Splněno
+        if (taskWatchAdBadge && taskWatchAdDone) {
+          taskWatchAdBadge.classList.remove("text-red-400", "text-emerald-300");
+          if (adState.adsWatchedToday >= maxAdsPerDay) {
+            taskWatchAdBadge.classList.add("text-emerald-300");
+            taskWatchAdDone.classList.remove("hidden");
+          } else {
+            taskWatchAdBadge.classList.add("text-red-400");
+            taskWatchAdDone.classList.add("hidden");
+          }
+        }
       }
 
+      function scrollToDailyTasks() {
+        if (dailyTasksSection) {
+          dailyTasksSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      applyTasksState();
       updateUIFromState();
 
-      // TESTOVACÍ DOBITÍ KREDITŮ – varianta 1 (+100 K-Coins na klik)
-      if (topUpTestButton) {
-        topUpTestButton.addEventListener("click", function () {
-          credits += 100;
-          syncCreditsDisplay();
-          saveCredits();
-          if (adMessage) {
-            adMessage.textContent = "Test: Dobito +100 K-Coins.";
-          }
-        });
-      }
-
+      // Seznam videí pro reklamy
       var videos = [
         "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
@@ -328,38 +485,32 @@
       if (resetButton) {
         resetButton.addEventListener("click", function () {
           localStorage.removeItem(adStateKey);
-          state = { date: todayStr(), adsWatchedToday: 0 };
-          if (adMessage) adMessage.textContent = "Denní limit byl resetován.";
+          adState = { date: todayStr(), adsWatchedToday: 0, v: 1 };
+          if (adMessage) adMessage.textContent = "Denní limit byl resetován (test).";
           updateUIFromState();
         });
       }
 
+      // Spuštění reklamy
       function startAd() {
         if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
-        if (state.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
+        if (adState.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
 
         adInProgress = true;
         var remaining = 10;
         adCountdownSpan.textContent = String(remaining);
         adOverlay.classList.remove("hidden");
-        if (nextAdButton) {
-          nextAdButton.classList.add("hidden");
-        }
+        if (nextAdButton) nextAdButton.classList.add("hidden");
         if (adMessage) adMessage.textContent = "Reklama běží…";
 
-        if (adVideo) {
+        if (adVideo && adSrc) {
           try {
-            var srcEl = document.getElementById("adSrc");
-            var index = state.adsWatchedToday % videos.length;
-            if (srcEl) {
-              srcEl.src = videos[index];
-              adVideo.load();
-            }
+            var index = adState.adsWatchedToday % videos.length;
+            adSrc.src = videos[index];
+            adVideo.load();
             adVideo.currentTime = 0;
             var playPromise = adVideo.play();
-            if (playPromise && playPromise.catch) {
-              playPromise.catch(function () {});
-            }
+            if (playPromise && playPromise.catch) playPromise.catch(function () {});
           } catch (e) {}
         }
 
@@ -377,48 +528,37 @@
             adTimer = null;
             adInProgress = false;
 
-            // navýšíme počítadlo reklam pro dnešek
-            state.adsWatchedToday = Math.min(maxAdsPerDay, state.adsWatchedToday + 1);
-            saveAdState(state);
+            adState.adsWatchedToday = Math.min(maxAdsPerDay, adState.adsWatchedToday + 1);
+            saveAdState(adState);
 
-            // zobrazíme zelený text o připsání
             if (adCountdownSpan) {
               adCountdownSpan.innerHTML = "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
             }
 
-            // a hned fyzicky připíšeme kredity
             credits += rewardPerAd;
             syncCreditsDisplay();
             saveCredits();
 
-            // po připsání odměny – buď nabídneme další reklamu, nebo zavření po 5. videu
             if (nextAdButton) {
-              if (state.adsWatchedToday < maxAdsPerDay) {
-                // další reklama
+              if (adState.adsWatchedToday < maxAdsPerDay) {
                 nextAdButton.innerHTML = "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
               } else {
-                // už 5. reklama – jen zavřít
                 nextAdButton.innerHTML = "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
               }
               nextAdButton.classList.remove("hidden");
-              if (window.lucide) {
-                window.lucide.createIcons();
-              }
+              if (window.lucide) window.lucide.createIcons();
             }
 
-            if (adMessage) {
-              adMessage.textContent = "Reklama dokončena. Kredity připsány.";
-            }
+            if (adMessage) adMessage.textContent = "Reklama dokončena. Kredity připsány.";
 
             updateUIFromState();
           } else {
-            if (adCountdownSpan) {
-              adCountdownSpan.textContent = String(remaining);
-            }
+            if (adCountdownSpan) adCountdownSpan.textContent = String(remaining);
           }
         }, 1000);
       }
 
+      // Zrušení reklamy
       function cancelAd() {
         if (adTimer) {
           window.clearInterval(adTimer);
@@ -436,33 +576,55 @@
         updateUIFromState();
       }
 
+      // Klik na "Spustit reklamu"
       if (watchAdButton) {
         watchAdButton.addEventListener("click", function () {
-          state = loadAdState();
-          if (state.adsWatchedToday >= maxAdsPerDay) {
-            if (adMessage) {
-              adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
-            }
+          adState = loadAdState();
+          if (adState.adsWatchedToday >= maxAdsPerDay) {
+            if (adMessage) adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
             updateUIFromState();
+            scrollToDailyTasks();
             return;
           }
           startAd();
         });
       }
 
-      if (cancelAdButton) {
-        cancelAdButton.addEventListener("click", function () {
+      // Ovládací panel videa
+      if (adCloseButton) {
+        adCloseButton.addEventListener("click", function () {
           cancelAd();
         });
       }
 
-      // Klikání na tlačítko Další reklama / Zavřít
+      if (adPauseToggle && adVideo) {
+        adPauseToggle.addEventListener("click", function () {
+          if (adVideo.paused) {
+            adVideo.play();
+            adPauseToggle.innerHTML = "<i data-lucide='pause' class='w-4 h-4'></i> Zastavit";
+          } else {
+            adVideo.pause();
+            adPauseToggle.innerHTML = "<i data-lucide='play' class='w-4 h-4'></i> Pokračovat";
+          }
+          if (window.lucide) window.lucide.createIcons();
+        });
+      }
+
+      if (adMuteToggle && adVideo) {
+        adMuteToggle.addEventListener("click", function () {
+          adVideo.muted = !adVideo.muted;
+          adMuteToggle.innerHTML = adVideo.muted
+            ? "<i data-lucide='volume-x' class='w-4 h-4'></i> Zvuk"
+            : "<i data-lucide='volume-2' class='w-4 h-4'></i> Zvuk";
+          if (window.lucide) window.lucide.createIcons();
+        });
+      }
+
       if (nextAdButton) {
         nextAdButton.addEventListener("click", function () {
-          state = loadAdState();
+          adState = loadAdState();
 
-          // pokud už je po 5. videu → tlačítko funguje jako korektní Zavřít
-          if (state.adsWatchedToday >= maxAdsPerDay) {
+          if (adState.adsWatchedToday >= maxAdsPerDay) {
             if (adOverlay) adOverlay.classList.add("hidden");
             if (adVideo) {
               try {
@@ -471,15 +633,53 @@
               } catch (e) {}
             }
             adInProgress = false;
-            if (adMessage) {
-              adMessage.textContent = "Dnešní limit reklam je splněn. Kredity máš připsané.";
-            }
+            if (adMessage) adMessage.textContent = "Dnešní limit reklam je splněn. Kredity máš připsané.";
             updateUIFromState();
+            scrollToDailyTasks();
             return;
           }
 
-          // jinak spustíme další reklamu
           startAd();
+        });
+      }
+
+      // ÚKOL: Aktualizuj statistiky
+      if (taskStatsItem && taskStatsBadge) {
+        taskStatsItem.addEventListener("click", function () {
+          if (!tasksState.statsDone) {
+            tasksState.statsDone = true;
+            applyTasksState();
+            saveTasksState();
+            credits += 5;
+            syncCreditsDisplay();
+            saveCredits();
+          }
+        });
+      }
+
+      // ÚKOL: Odpověz na kampaň – jen rozbalení seznamu
+      if (taskCampaignItem && taskCampaignBadge) {
+        taskCampaignItem.addEventListener("click", function () {
+          if (tasksState.campaignDone) return;
+          if (campaignList) campaignList.classList.toggle("hidden");
+        });
+      }
+
+      // Odpovědi na konkrétní kampaně
+      if (campaignRespondButtons && campaignRespondButtons.length) {
+        campaignRespondButtons.forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (!tasksState.campaignDone) {
+              tasksState.campaignDone = true;
+              applyTasksState();
+              saveTasksState();
+              credits += 6;
+              syncCreditsDisplay();
+              saveCredits();
+            }
+            if (campaignList) campaignList.classList.add("hidden");
+          });
         });
       }
     });
