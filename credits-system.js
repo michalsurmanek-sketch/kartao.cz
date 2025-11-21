@@ -18,13 +18,38 @@
 */
 
 class CreditsSystem {
-  constructor(userId = "localuser") {
-    this.userId = userId;
+  constructor(userId) {
+    let finalUserId = userId;
 
-    // Klíče localStorage
+    // 1) Pokud není předaný userId, zkusíme globální proměnnou z loginu
+    if (!finalUserId && typeof window !== "undefined" && window.currentUserId) {
+      finalUserId = window.currentUserId;
+    }
+
+    // 2) Pokud máme Firebase, zkusíme aktuálního uživatele
+    if (
+      !finalUserId &&
+      typeof window !== "undefined" &&
+      window.firebase &&
+      window.firebase.auth
+    ) {
+      const currentUser = window.firebase.auth().currentUser;
+      if (currentUser && currentUser.uid) {
+        finalUserId = currentUser.uid;
+      }
+    }
+
+    // 3) Fallback pro testování – když nic nemáme, použijeme localuser
+    if (!finalUserId) {
+      finalUserId = "localuser";
+    }
+
+    this.userId = finalUserId;
+
+    // Klíče localStorage – POZOR, teď jsou navázané na userId
     this.keys = {
-      credits: `kartao_credits_${userId}`,
-      daily: `kartao_daily_${userId}`,
+      credits: `kartao_credits_${this.userId}`,
+      daily: `kartao_daily_${this.userId}`,
     };
 
     // Výchozí denní hodnoty
@@ -69,7 +94,7 @@ class CreditsSystem {
 
     // Nový den = reset
     if (daily.date !== this.todayString()) {
-      const reset = { ...this.dailyDefault };
+      const reset = { ...this.dailyDefault, date: this.todayString() };
       localStorage.setItem(this.keys.daily, JSON.stringify(reset));
     }
   }
@@ -133,39 +158,10 @@ class CreditsSystem {
 
   // Reset celého dne (pro testování)
   resetDaily() {
-    const reset = { ...this.dailyDefault };
+    const reset = { ...this.dailyDefault, date: this.todayString() };
     localStorage.setItem(this.keys.daily, JSON.stringify(reset));
   }
 }
 
 // Export pro ostatní stránky
 window.CreditsSystem = CreditsSystem;
-// ==========================================
-// OCHRANA STRÁNKY + VYTVOŘENÍ INSTANCI S UŽIVATELEM
-// ==========================================
-(function () {
-  // Když Firebase není načtený → jen lokální test
-  if (typeof firebase === "undefined" || !firebase.auth) {
-    console.warn("Firebase není načtený – používám lokální kredity.");
-    // Pro jistotu vytvoříme globální instanci s localuser
-    if (!window.creditsSystem) {
-      window.creditsSystem = new CreditsSystem("localuser");
-    }
-    return;
-  }
-
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) {
-      // Nepřihlášený → přesměrovat na login
-      const target = window.location.pathname + window.location.search;
-      const redirectUrl = "login.html?redirect=" + encodeURIComponent(target);
-      window.location.href = redirectUrl;
-      return;
-    }
-
-    // Přihlášený → vytvoříme instanci vázanou na jeho UID
-    window.creditsSystem = new CreditsSystem(user.uid);
-  });
-})();
-
-
