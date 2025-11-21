@@ -606,8 +606,33 @@
       }
 
       // Zpřístupnění systému i globálně (pro budoucí použití)
-      window.creditSys = creditSys;
-    });
-  </script>
+        <!-- Firebase – kvůli přihlášení a kontrole přístupu -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- Inicializační skripty -->
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+
+  <!-- Centrální kreditní systém -->
+  <script src="credits-system.js"></script>
+<!-- KONTROLA PŘIHLÁŠENÍ – jen přihlášený uživatel uvidí kreditní systém -->
+<script>
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      // Není přihlášen → pošli ho na login stránku
+      window.location.href = "login.html";
+      return;
+    }
+
+    // Uložíme si jeho UID pro kreditní systém
+    window.currentUserId = user.uid;
+  });
+</script>
+
+  <!-- Tvůj dashboard JS -->
+  <script>
+
 </body>
 </html><!-- Sem vložím tvůj kreditní systém s připraveným místem pro úpravu pozadí. Vlož mi sem prosím celý kód ještě jednou a já ti ho přesně upravím na modro‑černý přechod. -->
