@@ -378,6 +378,10 @@
         const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
         const dailyTasksSection = document.getElementById("dailyTasksSection");
         const adCooldown = document.getElementById("adCooldown");
+                // Mini historie Mystery Boxu
+        const mysteryBoxMiniHistory = document.getElementById("mysteryBoxMiniHistory");
+        const mysteryBoxMiniHistoryList = document.getElementById("mysteryBoxMiniHistoryList");
+        const MYSTERY_HISTORY_KEY = "kartao_mysteryBox_history";
 
         let adTimer = null;
         let adInProgress = false;
@@ -534,9 +538,78 @@
             dailyTasksSection.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         }
+                // ===== MINI HISTORIE MYSTERY BOXU (pouze náhled) =====
+        function loadMysteryHistory() {
+          try {
+            const raw = localStorage.getItem(MYSTERY_HISTORY_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            console.warn("Dashboard: chyba při načítání mystery history:", e);
+            return [];
+          }
+        }
+
+        function formatMysteryHistoryTime(isoString) {
+          const d = new Date(isoString);
+          if (isNaN(d.getTime())) return "";
+
+          const now = new Date();
+          const isToday =
+            d.getFullYear() === now.getFullYear() &&
+            d.getMonth() === now.getMonth() &&
+            d.getDate() === now.getDate();
+
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+
+          if (isToday) {
+            return `${hh}:${mm} dnes`;
+          }
+
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mo = String(d.getMonth() + 1).padStart(2, "0");
+          return `${dd}.${mo}. ${hh}:${mm}`;
+        }
+
+        function renderMiniMysteryHistory() {
+          if (!mysteryBoxMiniHistory || !mysteryBoxMiniHistoryList) return;
+
+          const history = loadMysteryHistory();
+          if (!history.length) {
+            mysteryBoxMiniHistory.classList.add("hidden");
+            mysteryBoxMiniHistoryList.innerHTML = "";
+            return;
+          }
+
+          // vezmeme jen 3 poslední záznamy
+          const latest = history.slice(0, 3);
+
+          mysteryBoxMiniHistory.classList.remove("hidden");
+          mysteryBoxMiniHistoryList.innerHTML = "";
+
+          latest.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = "flex items-center justify-between gap-2 text-[11px]";
+
+            const labelSpan = document.createElement("span");
+            labelSpan.className = "font-medium";
+            labelSpan.textContent = item.label;
+
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "text-[10px] text-amber-100/70";
+            timeSpan.textContent = formatMysteryHistoryTime(item.ts);
+
+            li.appendChild(labelSpan);
+            li.appendChild(timeSpan);
+            mysteryBoxMiniHistoryList.appendChild(li);
+          });
+        }
 
         updateUIFromDaily();
-
+        renderMiniMysteryHistory();
+        
         // Pokud po načtení už běží cooldown → rovnou odpočet
         if (creditSys.hasAdsCooldown()) {
           startCooldownTimer();
