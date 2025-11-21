@@ -313,6 +313,38 @@
   <!-- 🔗 ZDE PŘIPOJ TVŮJ KREDITNÍ SYSTÉM, POKUD JE V EXTRA SOUBORU -->
   <!-- Pokud máš např. credit-system.js, odkomentuj: -->
   <!-- <script src="credit-system.js"></script> -->
+    <!-- 🔗 Kreditní systém Kartao.cz -->
+  <script src="credits-system.js"></script>
+
+  <!-- 🔁 Inicializace globálního wrapperu creditSys pro Mystery Box -->
+  <script>
+    // Vytvoříme instanci kreditního systému
+    const creditsSystem = new CreditsSystem(); // userId si vyřeší sám (localuser / Firebase)
+
+    // Jednotný interface pro všechny komponenty (Mystery Box, reklamy, úkoly…)
+    window.creditSys = {
+      getCredits: () => creditsSystem.getCredits(),
+      addCredits: (amount) => creditsSystem.addCredits(amount),
+      subtractCredits: (amount) => creditsSystem.subtractCredits(amount),
+
+      // Zatím jen placeholder – až bude VIP systém, napojíme reálně
+      addVipDays: (days) => {
+        console.log("VIP +", days, "dnů (zatím jen log, napojíme na profil později)", days);
+      },
+    };
+  </script>
+
+  <!-- 🔥 Mystery Box logika pro K-Coins -->
+  <script>
+    (function () {
+      const COST = 30;
+      const COOLDOWN_MS = 2 * 60 * 60 * 1000;
+      const STORAGE_KEY = "kartao_mysteryBox_lastOpen";
+      ...
+    })();
+  </script>
+</body>
+</html>
 
   <!-- 🔥 Mystery Box logika pro K-Coins -->
   <script>
