@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kartao.cz – Kreditní hry & Gamifikace</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sky: tailwind.colors.sky,
+                        blue: tailwind.colors.blue,
+                        cyan: tailwind.colors.cyan,
+                        emerald: tailwind.colors.emerald,
+                        neutral: tailwind.colors.neutral,
+                    },
+                },
+            },
+        };
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top,
+            rgba(56, 189, 248, 0.35),
+            rgba(15, 23, 42, 1) 45%,
+            #020617 85%);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-black to-blue-900 text-white min-h-screen">
+
+    <div id="app" class="container mx-auto p-6">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="index.html" class="inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 mb-4">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Zpět na hlavní stránku
+            </a>
+
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                Kreditní hry & Gamifikace
+            </h1>
+            <p class="text-gray-400 mt-2">Mini-hry · Mise · AI systém</p>
+        </div>
+
+        <!-- Loader sekce -->
+        <div id="recommendation-content">
+            <div class="text-center py-20">
+                <i data-lucide="coins" class="w-16 h-16 text-sky-400 mx-auto mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-2">Načítání gamifikačního systému...</h2>
+                <p class="text-gray-400">Připojování k databázi</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase init -->
+    <script src="firebase-init.js"></script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>
