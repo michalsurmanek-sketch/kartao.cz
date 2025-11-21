@@ -327,21 +327,58 @@
     </main>
   </div>
 
+  <!-- 🔥 Firebase + init – stejné jako na dashboardu -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+
   <!-- 🔗 Kreditní systém Kartao.cz -->
   <script src="credits-system.js"></script>
 
-  <!-- 🔁 creditSys wrapper -->
+  <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele -->
   <script>
-    const creditsSystem = new CreditsSystem(); // userId si řeší sám (Firebase / localuser)
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.firebase || !firebase.auth) {
+        console.warn("Firebase není dostupný na mystery-box.html");
+        return;
+      }
 
-    window.creditSys = {
-      getCredits: () => creditsSystem.getCredits(),
-      addCredits: (amount) => creditsSystem.addCredits(amount),
-      subtractCredits: (amount) => creditsSystem.subtractCredits(amount),
-      addVipDays: (days) => {
-        console.log("VIP +", days, "dnů (zatím jen log, napojíme na profil později)");
-      },
-    };
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (!user) {
+          // pokud není přihlášený, pošleme ho na login
+          window.location.href = "login.html";
+          return;
+        }
+
+        // stejné userId jako na dashboardu
+        window.currentUserId = user.uid;
+
+        const creditsSystem = new CreditsSystem(user.uid);
+
+        // Globální interface pro Mystery Box (stejné API jako předtím)
+        window.creditSys = {
+          getCredits: () => creditsSystem.getCredits(),
+          addCredits: (amount) => creditsSystem.addCredits(amount),
+          subtractCredits: (amount) => creditsSystem.subtractCredits(amount),
+          addVipDays: (days) => {
+            console.log("VIP +", days, "dnů (zatím jen log, napojíme na profil později)");
+          },
+        };
+
+        // Aktualizace kreditů v headeru po přihlášení
+        const headerCredits = document.getElementById("currentCredits");
+        if (headerCredits) {
+          try {
+            headerCredits.textContent = creditsSystem.getCredits();
+          } catch (e) {
+            console.warn("MysteryBox: chyba při čtení kreditů v onAuthStateChanged:", e);
+          }
+        }
+      });
+    });
   </script>
 
   <!-- 🔥 Mystery Box logika pro K-Coins -->
@@ -462,7 +499,7 @@
       function hasEnoughCredits() {
         if (!window.creditSys || typeof creditSys.getCredits !== "function") {
           console.warn("MysteryBox: creditSys.getCredits není dostupné.");
-          return true; // neblokuj UI, když není napojeno
+          return true; // neblokuj UI, když není napojené
         }
         try {
           const current = creditSys.getCredits();
@@ -574,7 +611,7 @@
       function trySubtractCredits() {
         if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
           alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
-          return true; // neblokovat test, jen neodečítat
+          return true; // neblokovat testování UI
         }
 
         if (!hasEnoughCredits()) {
