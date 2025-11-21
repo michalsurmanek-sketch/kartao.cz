@@ -264,16 +264,17 @@
       <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Základní systémy</div>
       <div class="grid grid-cols-2 gap-2 mb-4">
         <!-- 1) KREDITY – GAMIFIKACE (nově) -->
-        <a href="credits-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-            <i data-lucide="zap" class="w-4 h-4 text-blue-400"></i>
-          </div>
-          <div>
-            <div class="font-medium text-white">Kredity</div>
-            <div class="text-xs text-white/60">Gamifikace</div>
-          </div>
-        </a>
-
+        <a href="credits-dashboard.html"
+         class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3"
+         data-requires-auth="true">
+          <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+          <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+        </div>
+       <div>
+    <div class="font-medium text-white">Kredity</div>
+    <div class="text-xs text-white/60">Gamifikace</div>
+  </div>
+</a>
         <!-- 2) Odznaky – beze změny -->
         <a href="badge-system-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
           <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
