@@ -295,8 +295,7 @@
 
   <!-- Centrální kreditní systém -->
   <script src="credits-system.js"></script>
-
-  <!-- Dashboard JS + kontrola přihlášení -->
+    <!-- Dashboard JS + kontrola přihlášení -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.lucide) {
@@ -343,6 +342,11 @@
         const taskWatchAdDone = document.getElementById("taskWatchAdDone");
         const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
         const dailyTasksSection = document.getElementById("dailyTasksSection");
+        const adCooldown = document.getElementById("adCooldown");
+
+        let adTimer = null;
+        let adInProgress = false;
+        let cooldownTimer = null;
 
         // Pomocná funkce na formátování čísel (mezery po tisících)
         function formatNumber(num) {
@@ -360,6 +364,48 @@
           return out;
         }
 
+        // Převod ms -> HH:MM:SS
+        function formatMs(ms) {
+          const h = Math.floor(ms / 3600000);
+          const m = Math.floor((ms % 3600000) / 60000);
+          const s = Math.floor((ms % 60000) / 1000);
+          return (
+            String(h).padStart(2, "0") +
+            ":" +
+            String(m).padStart(2, "0") +
+            ":" +
+            String(s).padStart(2, "0")
+          );
+        }
+
+        function stopCooldownTimer() {
+          if (cooldownTimer) {
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
+          }
+        }
+
+        function startCooldownTimer() {
+          if (!adCooldown) return;
+
+          stopCooldownTimer();
+
+          function tick() {
+            const ms = creditSys.getAdsCooldownRemainingMs();
+            if (ms <= 0) {
+              adCooldown.classList.add("hidden");
+              stopCooldownTimer();
+              updateUIFromDaily();
+              return;
+            }
+            adCooldown.classList.remove("hidden");
+            adCooldown.textContent = "Další reklamy za " + formatMs(ms);
+          }
+
+          tick();
+          cooldownTimer = setInterval(tick, 1000);
+        }
+
         // Synchronizace zobrazení kreditů z centrálního systému
         function syncCreditsDisplay() {
           const credits = creditSys.getCredits();
@@ -375,9 +421,6 @@
           return creditSys.getDailyState();
         }
 
-        let adTimer = null;
-        let adInProgress = false;
-
         const videos = [
           "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
           "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
@@ -390,14 +433,29 @@
           const daily = getDaily();
           const maxAds = daily.maxAds || 5;
 
+          const cooldownMs = creditSys.getAdsCooldownRemainingMs();
+          const inCooldown = cooldownMs > 0;
+
           if (adCounter) {
             adCounter.textContent = `Dnes: ${daily.adsWatched} / ${maxAds}`;
           }
+
           if (watchAdButton) {
             const reachedLimit = daily.adsWatched >= maxAds;
-            watchAdButton.disabled = reachedLimit || adInProgress;
+            watchAdButton.disabled = reachedLimit || adInProgress || inCooldown;
             watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
             watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
+          }
+
+          // Odpočet
+          if (adCooldown) {
+            if (inCooldown) {
+              adCooldown.classList.remove("hidden");
+              adCooldown.textContent = "Další reklamy za " + formatMs(cooldownMs);
+              startCooldownTimer();
+            } else {
+              adCooldown.classList.add("hidden");
+            }
           }
 
           // Denní úkol "Sleduj reklamu"
@@ -443,6 +501,11 @@
         }
 
         updateUIFromDaily();
+
+        // Pokud po načtení už běží cooldown → rovnou odpočet
+        if (creditSys.hasAdsCooldown()) {
+          startCooldownTimer();
+        }
 
         function startAd() {
           const daily = getDaily();
@@ -541,6 +604,17 @@
           watchAdButton.addEventListener("click", function () {
             const daily = getDaily();
             const maxAds = daily.maxAds || 5;
+
+            // Pokud běží cooldown → blokace
+            if (creditSys.hasAdsCooldown()) {
+              if (adMessage) {
+                adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán. Počkej na obnovení limitu.";
+              }
+              updateUIFromDaily();
+              scrollToDailyTasks();
+              return;
+            }
+
             if (daily.adsWatched >= maxAds) {
               if (adMessage) adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
               updateUIFromDaily();
@@ -609,6 +683,8 @@
         if (resetButton) {
           resetButton.addEventListener("click", function () {
             creditSys.resetDaily();
+            stopCooldownTimer();
+            if (adCooldown) adCooldown.classList.add("hidden");
             updateUIFromDaily();
             if (adMessage) adMessage.textContent = "Denní limit byl resetován (test).";
           });
