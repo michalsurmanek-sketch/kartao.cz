@@ -79,7 +79,7 @@
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-950 to-sky-950 text-white">
   <div class="min-h-screen flex flex-col">
 
-    <!-- Horní bar + zpět -->
+    <!-- Horní bar -->
     <header class="border-b border-white/10 bg-neutral-950/80 backdrop-blur">
       <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <div class="flex items-center gap-2">
@@ -96,12 +96,21 @@
           </div>
         </div>
 
-        <a
-          href="credits-dashboard.html"
-          class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20"
-        >
-          ← Zpět na kredity
-        </a>
+        <div class="flex items-center gap-3">
+          <!-- Aktuální kredity -->
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/50 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="currentCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <!-- Zpět -->
+          <a
+            href="credits-dashboard.html"
+            class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20"
+          >
+            ← Zpět na kredity
+          </a>
+        </div>
       </div>
     </header>
 
@@ -321,9 +330,9 @@
   <!-- 🔗 Kreditní systém Kartao.cz -->
   <script src="credits-system.js"></script>
 
-  <!-- 🔁 Inicializace globálního wrapperu creditSys pro Mystery Box -->
+  <!-- 🔁 creditSys wrapper -->
   <script>
-    const creditsSystem = new CreditsSystem(); // userId si vyřeší sám
+    const creditsSystem = new CreditsSystem(); // userId si řeší sám (Firebase / localuser)
 
     window.creditSys = {
       getCredits: () => creditsSystem.getCredits(),
@@ -365,11 +374,22 @@
       const modalOkBtn = document.getElementById("mysteryBoxOkBtn");
 
       const resetBtn = document.getElementById("resetMysteryBoxBtn");
+      const creditsLabel = document.getElementById("currentCredits");
 
       if (!btn || !boxVisual) return;
 
       let isOpening = false;
       let cooldownTimer = null;
+
+      // 🔢 zobrazení kreditů v headeru
+      function updateCreditsDisplay() {
+        if (!creditsLabel || !window.creditSys || typeof creditSys.getCredits !== "function") return;
+        try {
+          creditsLabel.textContent = creditSys.getCredits();
+        } catch (e) {
+          console.warn("MysteryBox: chyba při čtení kreditů pro UI:", e);
+        }
+      }
 
       function getLastOpenTime() {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -442,7 +462,7 @@
       function hasEnoughCredits() {
         if (!window.creditSys || typeof creditSys.getCredits !== "function") {
           console.warn("MysteryBox: creditSys.getCredits není dostupné.");
-          return true;
+          return true; // neblokuj UI, když není napojeno
         }
         try {
           const current = creditSys.getCredits();
@@ -484,6 +504,7 @@
           if (window.creditSys && typeof creditSys.addCredits === "function") {
             try {
               creditSys.addCredits(reward.amount);
+              updateCreditsDisplay();
             } catch (e) {
               console.warn("MysteryBox: chyba při přidávání kreditů:", e);
             }
@@ -552,8 +573,8 @@
 
       function trySubtractCredits() {
         if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
-          alert("Kreditní systém není napojený (creditSys.subtractCredits chybí). Mystery Box jede zatím jen vizuálně.");
-          return true;
+          alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
+          return true; // neblokovat test, jen neodečítat
         }
 
         if (!hasEnoughCredits()) {
@@ -563,6 +584,7 @@
 
         try {
           creditSys.subtractCredits(COST);
+          updateCreditsDisplay();
           return true;
         } catch (e) {
           console.warn("MysteryBox: chyba při odečítání kreditů:", e);
@@ -649,6 +671,7 @@
 
       // Inicializace
       (function init() {
+        updateCreditsDisplay();
         if (isOnCooldown()) {
           startCooldownTimer();
         } else {
