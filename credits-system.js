@@ -140,4 +140,32 @@ class CreditsSystem {
 
 // Export pro ostatní stránky
 window.CreditsSystem = CreditsSystem;
+// ==========================================
+// OCHRANA STRÁNKY + VYTVOŘENÍ INSTANCI S UŽIVATELEM
+// ==========================================
+(function () {
+  // Když Firebase není načtený → jen lokální test
+  if (typeof firebase === "undefined" || !firebase.auth) {
+    console.warn("Firebase není načtený – používám lokální kredity.");
+    // Pro jistotu vytvoříme globální instanci s localuser
+    if (!window.creditsSystem) {
+      window.creditsSystem = new CreditsSystem("localuser");
+    }
+    return;
+  }
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // Nepřihlášený → přesměrovat na login
+      const target = window.location.pathname + window.location.search;
+      const redirectUrl = "login.html?redirect=" + encodeURIComponent(target);
+      window.location.href = redirectUrl;
+      return;
+    }
+
+    // Přihlášený → vytvoříme instanci vázanou na jeho UID
+    window.creditsSystem = new CreditsSystem(user.uid);
+  });
+})();
+
 
