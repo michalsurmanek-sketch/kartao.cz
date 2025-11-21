@@ -29,8 +29,16 @@
 
   <!-- Ikony -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 60% 140%, rgba(14,165,233,0.55) 0%, rgba(2,6,23,0.90) 40%, #020617 90%),
+        linear-gradient(to bottom right, #020617 65%, #0ea5e9 120%);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900 text-white">
+<body class="min-h-screen text-white">
   <!-- HLAVIČKA -->
   <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
@@ -253,56 +261,51 @@
     © 2025 Kartao.cz – Kreditní systém K-Coins
   </footer>
 
+  
+  <!-- Připojení centrálního kreditního systému -->
+  <script src="credits-system.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.lucide) {
         window.lucide.createIcons();
       }
 
-      // Klíče pro localStorage
-      var maxAdsPerDay = 5;
-      var rewardPerAd = 4;
-      var adStateKey = "kartao_ad_state";
-      var creditsKey = "kartao_credits_total";
-      var tasksStateKey = "kartao_tasks_state";
+      // Inicializace centrálního systému kreditů
+      const creditSys = new CreditsSystem("localuser");
 
       // DOM prvky
-      var watchAdButton = document.getElementById("watchAdButton");
-      var adOverlay = document.getElementById("adOverlay");
-      var adCountdownSpan = document.getElementById("adCountdown");
-      var adMessage = document.getElementById("adMessage");
-      var adCounter = document.getElementById("adCounter");
-      var creditsValueEl = document.getElementById("creditsValue");
-      var creditsValueHeroEl = document.getElementById("creditsValueHero");
-      var adVideo = document.getElementById("adVideo");
-      var adSrc = document.getElementById("adSrc");
-      var nextAdButton = document.getElementById("nextAdButton");
-      var resetButton = document.getElementById("resetAdsButton");
+      const creditsValueEl = document.getElementById("creditsValue");
+      const creditsValueHeroEl = document.getElementById("creditsValueHero");
+      const watchAdButton = document.getElementById("watchAdButton");
+      const adOverlay = document.getElementById("adOverlay");
+      const adCountdownSpan = document.getElementById("adCountdown");
+      const adMessage = document.getElementById("adMessage");
+      const adCounter = document.getElementById("adCounter");
+      const adVideo = document.getElementById("adVideo");
+      const adSrc = document.getElementById("adSrc");
+      const nextAdButton = document.getElementById("nextAdButton");
+      const resetButton = document.getElementById("resetAdsButton");
 
-      var adCloseButton = document.getElementById("adCloseButton");
-      var adPauseToggle = document.getElementById("adPauseToggle");
-      var adMuteToggle = document.getElementById("adMuteToggle");
+      const adCloseButton = document.getElementById("adCloseButton");
+      const adPauseToggle = document.getElementById("adPauseToggle");
+      const adMuteToggle = document.getElementById("adMuteToggle");
 
-      var taskStatsItem = document.getElementById("taskStats");
-      var taskStatsBadge = document.getElementById("taskStatsBadge");
-      var taskCampaignItem = document.getElementById("taskCampaign");
-      var taskCampaignBadge = document.getElementById("taskCampaignBadge");
-      var campaignList = document.getElementById("campaignList");
-      var taskWatchAdBadge = document.getElementById("taskWatchAdBadge");
-      var taskWatchAdDone = document.getElementById("taskWatchAdDone");
-      var campaignRespondButtons = document.querySelectorAll(".campaign-respond");
-      var dailyTasksSection = document.getElementById("dailyTasksSection");
-
-      // Stavové proměnné
-      var adTimer = null;
-      var adInProgress = false;
+      const taskStatsItem = document.getElementById("taskStats");
+      const taskStatsBadge = document.getElementById("taskStatsBadge");
+      const taskCampaignItem = document.getElementById("taskCampaign");
+      const taskCampaignBadge = document.getElementById("taskCampaignBadge");
+      const campaignList = document.getElementById("campaignList");
+      const taskWatchAdBadge = document.getElementById("taskWatchAdBadge");
+      const taskWatchAdDone = document.getElementById("taskWatchAdDone");
+      const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
+      const dailyTasksSection = document.getElementById("dailyTasksSection");
 
       // Pomocná funkce na formátování čísel (mezery po tisících)
       function formatNumber(num) {
-        var s = String(num);
-        var out = "";
-        var count = 0;
-        for (var i = s.length - 1; i >= 0; i--) {
+        const s = String(num);
+        let out = "";
+        let count = 0;
+        for (let i = s.length - 1; i >= 0; i--) {
           out = s[i] + out;
           count++;
           if (count === 3 && i > 0) {
@@ -313,140 +316,50 @@
         return out;
       }
 
-      // KREDITY – načtení + uložení
-      var credits = 0;
-      try {
-        var storedCredits = localStorage.getItem(creditsKey);
-        if (storedCredits !== null) {
-          credits = parseInt(storedCredits, 10) || 0;
-        }
-      } catch (e) {}
-
-      if (!credits && creditsValueEl) {
-        var base = creditsValueEl.textContent.replace(/[^0-9]/g, "");
-        credits = parseInt(base, 10) || 0;
-      }
-
+      // Synchronizace zobrazení kreditů z centrálního systému
       function syncCreditsDisplay() {
-        var formatted = formatNumber(credits);
+        const credits = creditSys.getCredits();
+        const formatted = formatNumber(credits);
         if (creditsValueEl) creditsValueEl.textContent = formatted;
         if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
       }
 
-      function saveCredits() {
-        try {
-          localStorage.setItem(creditsKey, String(credits));
-        } catch (e) {}
-      }
-
       syncCreditsDisplay();
 
-      // Datum jako YYYY-MM-DD
-      function todayStr() {
-        var d = new Date();
-        var m = String(d.getMonth() + 1);
-        var day = String(d.getDate());
-        if (m.length < 2) m = "0" + m;
-        if (day.length < 2) day = "0" + day;
-        return d.getFullYear() + "-" + m + "-" + day;
+      // Denní stav z centrálního systému
+      function getDaily() {
+        return creditSys.getDailyState();
       }
 
-      // Reklamy – stav (s verzováním)
-      function loadAdState() {
-        try {
-          var raw = localStorage.getItem(adStateKey);
-          if (!raw) return { date: todayStr(), adsWatchedToday: 0, v: 1 };
-          var parsed = JSON.parse(raw);
-          if (!parsed.date || parsed.date !== todayStr() || parsed.v !== 1) {
-            return { date: todayStr(), adsWatchedToday: 0, v: 1 };
-          }
-          if (typeof parsed.adsWatchedToday !== "number") {
-            parsed.adsWatchedToday = 0;
-          }
-          return parsed;
-        } catch (e) {
-          return { date: todayStr(), adsWatchedToday: 0, v: 1 };
-        }
-      }
+      let adTimer = null;
+      let adInProgress = false;
 
-      function saveAdState(state) {
-        try {
-          state.v = 1;
-          localStorage.setItem(adStateKey, JSON.stringify(state));
-        } catch (e) {}
-      }
+      const videos = [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+      ];
 
-      var adState = loadAdState();
+      function updateUIFromDaily() {
+        const daily = getDaily();
+        const maxAds = daily.maxAds || 5;
 
-      // Úkoly – stav (s verzováním)
-      function loadTasksState() {
-        try {
-          var raw = localStorage.getItem(tasksStateKey);
-          if (!raw) return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
-          var parsed = JSON.parse(raw);
-          if (!parsed.date || parsed.date !== todayStr() || parsed.v !== 1) {
-            return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
-          }
-          return {
-            date: parsed.date,
-            statsDone: !!parsed.statsDone,
-            campaignDone: !!parsed.campaignDone,
-            v: 1
-          };
-        } catch (e) {
-          return { date: todayStr(), statsDone: false, campaignDone: false, v: 1 };
-        }
-      }
-
-      var tasksState = loadTasksState();
-
-      function saveTasksState() {
-        try {
-          if (!tasksState.date) tasksState.date = todayStr();
-          tasksState.v = 1;
-          localStorage.setItem(tasksStateKey, JSON.stringify(tasksState));
-        } catch (e) {}
-      }
-
-      // Barvy a "Splněno" pro badge
-      function setTaskBadgeState(badgeEl, done) {
-        if (!badgeEl) return;
-        badgeEl.classList.remove("text-red-400", "text-emerald-300");
-        var doneLabel = badgeEl.querySelector(".task-done-label");
-        if (done) {
-          badgeEl.classList.add("text-emerald-300");
-          if (!doneLabel) {
-            var label = document.createElement("span");
-            label.className = "task-done-label text-emerald-300 text-[11px] font-medium ml-2";
-            label.textContent = "Splněno ✓";
-            badgeEl.appendChild(label);
-          }
-        } else {
-          badgeEl.classList.add("text-red-400");
-          if (doneLabel) doneLabel.remove();
-        }
-      }
-
-      function applyTasksState() {
-        setTaskBadgeState(taskStatsBadge, tasksState.statsDone);
-        setTaskBadgeState(taskCampaignBadge, tasksState.campaignDone);
-      }
-
-      // Update UI podle stavu reklam
-      function updateUIFromState() {
         if (adCounter) {
-          adCounter.textContent = "Dnes: " + adState.adsWatchedToday + " / " + maxAdsPerDay;
+          adCounter.textContent = `Dnes: ${daily.adsWatched} / ${maxAds}`;
         }
         if (watchAdButton) {
-          var reachedLimit = adState.adsWatchedToday >= maxAdsPerDay;
+          const reachedLimit = daily.adsWatched >= maxAds;
           watchAdButton.disabled = reachedLimit || adInProgress;
           watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
           watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
         }
-        // Denní úkol "Sleduj reklamu" – červená / zelená + Splněno
+
+        // Denní úkol "Sleduj reklamu"
         if (taskWatchAdBadge && taskWatchAdDone) {
           taskWatchAdBadge.classList.remove("text-red-400", "text-emerald-300");
-          if (adState.adsWatchedToday >= maxAdsPerDay) {
+          if (daily.adsWatched >= maxAds) {
             taskWatchAdBadge.classList.add("text-emerald-300");
             taskWatchAdDone.classList.remove("hidden");
           } else {
@@ -454,6 +367,29 @@
             taskWatchAdDone.classList.add("hidden");
           }
         }
+
+        // Badge pro úkoly (stats, campaign)
+        function setTaskBadgeState(badgeEl, done) {
+          if (!badgeEl) return;
+          badgeEl.classList.remove("text-red-400", "text-emerald-300");
+          const doneLabel = badgeEl.querySelector(".task-done-label");
+          if (done) {
+            badgeEl.classList.add("text-emerald-300");
+            if (!doneLabel) {
+              const label = document.createElement("span");
+              label.className = "task-done-label text-emerald-300 text-[11px] font-medium ml-2";
+              label.textContent = "Splněno ✓";
+              badgeEl.appendChild(label);
+            }
+          } else {
+            badgeEl.classList.add("text-red-400");
+            if (doneLabel) doneLabel.remove();
+          }
+        }
+
+        const tasks = daily.tasks || {};
+        setTaskBadgeState(taskStatsBadge, !!tasks.stats);
+        setTaskBadgeState(taskCampaignBadge, !!tasks.campaign);
       }
 
       function scrollToDailyTasks() {
@@ -462,42 +398,16 @@
         }
       }
 
-      applyTasksState();
-      updateUIFromState();
+      updateUIFromDaily();
 
-      // Seznam videí pro reklamy
-      var videos = [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
-      ];
-
-      if (adVideo) {
-        adVideo.addEventListener("ended", function () {
-          try {
-            adVideo.pause();
-          } catch (e) {}
-        });
-      }
-
-      if (resetButton) {
-        resetButton.addEventListener("click", function () {
-          localStorage.removeItem(adStateKey);
-          adState = { date: todayStr(), adsWatchedToday: 0, v: 1 };
-          if (adMessage) adMessage.textContent = "Denní limit byl resetován (test).";
-          updateUIFromState();
-        });
-      }
-
-      // Spuštění reklamy
       function startAd() {
+        const daily = getDaily();
+        const maxAds = daily.maxAds || 5;
         if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
-        if (adState.adsWatchedToday >= maxAdsPerDay || adInProgress) return;
+        if (daily.adsWatched >= maxAds || adInProgress) return;
 
         adInProgress = true;
-        var remaining = 10;
+        let remaining = 10;
         adCountdownSpan.textContent = String(remaining);
         adOverlay.classList.remove("hidden");
         if (nextAdButton) nextAdButton.classList.add("hidden");
@@ -505,16 +415,16 @@
 
         if (adVideo && adSrc) {
           try {
-            var index = adState.adsWatchedToday % videos.length;
+            const index = daily.adsWatched % videos.length;
             adSrc.src = videos[index];
             adVideo.load();
             adVideo.currentTime = 0;
-            var playPromise = adVideo.play();
+            const playPromise = adVideo.play();
             if (playPromise && playPromise.catch) playPromise.catch(function () {});
           } catch (e) {}
         }
 
-        updateUIFromState();
+        updateUIFromDaily();
 
         if (adTimer) {
           window.clearInterval(adTimer);
@@ -528,19 +438,23 @@
             adTimer = null;
             adInProgress = false;
 
-            adState.adsWatchedToday = Math.min(maxAdsPerDay, adState.adsWatchedToday + 1);
-            saveAdState(adState);
+            // Navýšit počet reklam v centrálním systému
+            const ok = creditSys.addAdWatch();
+            if (ok) {
+              // Připsat kredity přes centrální systém
+              creditSys.addCredits(4);
+            }
+
+            syncCreditsDisplay();
 
             if (adCountdownSpan) {
               adCountdownSpan.innerHTML = "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
             }
 
-            credits += rewardPerAd;
-            syncCreditsDisplay();
-            saveCredits();
-
             if (nextAdButton) {
-              if (adState.adsWatchedToday < maxAdsPerDay) {
+              const dailyAfter = getDaily();
+              const maxAdsAfter = dailyAfter.maxAds || 5;
+              if (dailyAfter.adsWatched < maxAdsAfter) {
                 nextAdButton.innerHTML = "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
               } else {
                 nextAdButton.innerHTML = "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
@@ -551,14 +465,13 @@
 
             if (adMessage) adMessage.textContent = "Reklama dokončena. Kredity připsány.";
 
-            updateUIFromState();
+            updateUIFromDaily();
           } else {
             if (adCountdownSpan) adCountdownSpan.textContent = String(remaining);
           }
         }, 1000);
       }
 
-      // Zrušení reklamy
       function cancelAd() {
         if (adTimer) {
           window.clearInterval(adTimer);
@@ -573,16 +486,17 @@
           } catch (e) {}
         }
         if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
-        updateUIFromState();
+        updateUIFromDaily();
       }
 
       // Klik na "Spustit reklamu"
       if (watchAdButton) {
         watchAdButton.addEventListener("click", function () {
-          adState = loadAdState();
-          if (adState.adsWatchedToday >= maxAdsPerDay) {
+          const daily = getDaily();
+          const maxAds = daily.maxAds || 5;
+          if (daily.adsWatched >= maxAds) {
             if (adMessage) adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
-            updateUIFromState();
+            updateUIFromDaily();
             scrollToDailyTasks();
             return;
           }
@@ -622,9 +536,10 @@
 
       if (nextAdButton) {
         nextAdButton.addEventListener("click", function () {
-          adState = loadAdState();
+          const daily = getDaily();
+          const maxAds = daily.maxAds || 5;
 
-          if (adState.adsWatchedToday >= maxAdsPerDay) {
+          if (daily.adsWatched >= maxAds) {
             if (adOverlay) adOverlay.classList.add("hidden");
             if (adVideo) {
               try {
@@ -634,7 +549,7 @@
             }
             adInProgress = false;
             if (adMessage) adMessage.textContent = "Dnešní limit reklam je splněn. Kredity máš připsané.";
-            updateUIFromState();
+            updateUIFromDaily();
             scrollToDailyTasks();
             return;
           }
@@ -643,16 +558,23 @@
         });
       }
 
+      // Reset denního limitu (test)
+      if (resetButton) {
+        resetButton.addEventListener("click", function () {
+          creditSys.resetDaily();
+          updateUIFromDaily();
+          if (adMessage) adMessage.textContent = "Denní limit byl resetován (test).";
+        });
+      }
+
       // ÚKOL: Aktualizuj statistiky
       if (taskStatsItem && taskStatsBadge) {
         taskStatsItem.addEventListener("click", function () {
-          if (!tasksState.statsDone) {
-            tasksState.statsDone = true;
-            applyTasksState();
-            saveTasksState();
-            credits += 5;
+          const newlyDone = creditSys.updateDailyTask("stats");
+          if (newlyDone) {
+            creditSys.addCredits(5);
             syncCreditsDisplay();
-            saveCredits();
+            updateUIFromDaily();
           }
         });
       }
@@ -660,7 +582,9 @@
       // ÚKOL: Odpověz na kampaň – jen rozbalení seznamu
       if (taskCampaignItem && taskCampaignBadge) {
         taskCampaignItem.addEventListener("click", function () {
-          if (tasksState.campaignDone) return;
+          const daily = getDaily();
+          const tasks = daily.tasks || {};
+          if (tasks.campaign) return;
           if (campaignList) campaignList.classList.toggle("hidden");
         });
       }
@@ -670,19 +594,20 @@
         campaignRespondButtons.forEach(function (btn) {
           btn.addEventListener("click", function (e) {
             e.preventDefault();
-            if (!tasksState.campaignDone) {
-              tasksState.campaignDone = true;
-              applyTasksState();
-              saveTasksState();
-              credits += 6;
+            const newlyDone = creditSys.updateDailyTask("campaign");
+            if (newlyDone) {
+              creditSys.addCredits(6);
               syncCreditsDisplay();
-              saveCredits();
+              updateUIFromDaily();
             }
             if (campaignList) campaignList.classList.add("hidden");
           });
         });
       }
+
+      // Zpřístupnění systému i globálně (pro budoucí použití)
+      window.creditSys = creditSys;
     });
   </script>
 </body>
-</html>
+</html><!-- Sem vložím tvůj kreditní systém s připraveným místem pro úpravu pozadí. Vlož mi sem prosím celý kód ještě jednou a já ti ho přesně upravím na modro‑černý přechod. -->
