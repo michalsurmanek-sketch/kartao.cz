@@ -13,6 +13,11 @@
   - addAdWatch()
   - resetDaily()
 
+  + nově:
+  - hasAdsCooldown()
+  - getAdsCooldownRemainingMs()
+  - clearAdsCooldown()
+
   Aktuálně funguje přes localStorage.
   Později jej napojíme na Firebase.
 */
@@ -46,7 +51,7 @@ class CreditsSystem {
 
     this.userId = finalUserId;
 
-    // Klíče localStorage – POZOR, teď jsou navázané na userId
+    // Klíče localStorage – navázané na userId
     this.keys = {
       credits: `kartao_credits_${this.userId}`,
       daily: `kartao_daily_${this.userId}`,
@@ -57,6 +62,8 @@ class CreditsSystem {
       date: this.todayString(),
       adsWatched: 0,
       maxAds: 5,
+      // kdy se vyčerpal denní limit reklamy (timestamp v ms)
+      adsCooldownAt: null,
       tasks: {
         login: true,
         stats: false,
@@ -71,9 +78,10 @@ class CreditsSystem {
   // Formát dne YYYY-MM-DD
   todayString() {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-      d.getDate()
-    ).padStart(2, "0")}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")}`;
   }
 
   // Inicializace kreditů a denního stavu
@@ -145,15 +153,62 @@ class CreditsSystem {
     return false; // už bylo splněné
   }
 
-  // Zvýšit počet zhlédnutých reklam
+  /*
+    Zvýšit počet zhlédnutých reklam.
+
+    - pokud ještě není vyčerpán limit → přičte 1
+    - pokud tímto dosažen maxAds → nastaví adsCooldownAt = teď
+    - vrací true = reklama započítaná, false = limit už byl plný
+  */
   addAdWatch() {
     const daily = this.getDailyState();
-    if (daily.adsWatched < daily.maxAds) {
-      daily.adsWatched++;
-      this.saveDailyState(daily);
-      return true;
+    if (daily.adsWatched >= daily.maxAds) {
+      return false;
     }
-    return false;
+
+    daily.adsWatched++;
+
+    // po dosažení limitu startneme 24h cooldown
+    if (daily.adsWatched >= daily.maxAds && !daily.adsCooldownAt) {
+      daily.adsCooldownAt = Date.now();
+    }
+
+    this.saveDailyState(daily);
+    return true;
+  }
+
+  // Vrátí, kolik ms zbývá do konce cooldownu (0 = žádný)
+  getAdsCooldownRemainingMs() {
+    const daily = this.getDailyState();
+    if (!daily.adsCooldownAt) return 0;
+
+    const now = Date.now();
+    const diff = 24 * 60 * 60 * 1000 - (now - daily.adsCooldownAt);
+
+    if (diff <= 0) {
+      // cooldown vypršel → reset denního limitu pro reklamu
+      daily.adsCooldownAt = null;
+      daily.adsWatched = 0;
+      if (daily.tasks && daily.tasks.watchAd) {
+        daily.tasks.watchAd = false;
+      }
+      this.saveDailyState(daily);
+      return 0;
+    }
+
+    return diff;
+  }
+
+  // Má uživatel aktivní 24h cooldown na reklamy?
+  hasAdsCooldown() {
+    return this.getAdsCooldownRemainingMs() > 0;
+  }
+
+  // Ruční zrušení cooldownu (např. admin, test)
+  clearAdsCooldown() {
+    const daily = this.getDailyState();
+    daily.adsCooldownAt = null;
+    this.saveDailyState(daily);
   }
 
   // Reset celého dne (pro testování)
