@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Slevový kupon</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white py-10">
+
+  <div class="max-w-3xl mx-auto px-4">
+    <!-- Hlavička stránky -->
+    <header class="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/40 text-[11px] text-amber-200">
+          <i data-lucide="ticket-percent" class="w-4 h-4"></i>
+          <span>Slevový kupon z Mystery Boxu</span>
+        </div>
+        <h1 class="mt-3 text-3xl font-bold flex items-center gap-2">
+          <span id="couponTitle">Slevový kupon</span>
+        </h1>
+        <p class="text-sm text-white/60 mt-1">
+          Tento tiket pochází z tvé výhry v <span class="font-semibold text-amber-300">K-Coins Mystery Boxu</span>.
+        </p>
+      </div>
+
+      <a href="moje-vyhry.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-sky-500/60 bg-sky-500/10 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Zpět na moje výhry
+      </a>
+    </header>
+
+    <!-- Stav: žádný kupon -->
+    <section id="noCouponSection" class="mt-4 rounded-2xl border border-dashed border-white/20 bg-neutral-900/70 px-6 py-8 hidden">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-neutral-800 border border-white/10 flex items-center justify-center">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-amber-300"></i>
+        </div>
+        <div>
+          <h2 class="font-semibold text-lg mb-1">Nemáš aktivní slevový kupon</h2>
+          <p class="text-sm text-white/65 mb-4">
+            Zatím u tebe neevidujeme žádný tiket typu <span class="text-amber-300 font-semibold">sleva / kupon</span>.
+            Zkus si otevřít Mystery Box a získej svůj první slevový kód.
+          </p>
+          <a href="mystery-box.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium text-neutral-950 shadow-soft hover:brightness-110 active:scale-[0.98] transition">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Jít otevřít Mystery Box</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detail kuponu -->
+    <section id="couponSection" class="space-y-6 hidden">
+      <!-- Hlavní kupon karta -->
+      <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/60 shadow-soft">
+        <!-- Dekor -->
+        <div class="pointer-events-none absolute -inset-32 opacity-60 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.2),_transparent_60%),radial-gradient(circle_at_bottom,_rgba(56,189,248,0.18),_transparent_60%)]"></div>
+
+        <div class="relative z-10 px-6 py-6 md:px-8 md:py-7 flex flex-col gap-5">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-3xl bg-gradient-to-tr from-amber-300 via-amber-400 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/60">
+                <i data-lucide="ticket-percent" class="w-6 h-6 text-neutral-950"></i>
+              </div>
+              <div>
+                <p class="text-[11px] uppercase tracking-wide text-amber-200/80 mb-0.5">
+                  Slevový kupon Kartao
+                </p>
+                <h2 class="text-xl md:text-2xl font-semibold text-amber-100" id="couponMainTitle">
+                  Sleva 10 % na nákup u partnerů
+                </h2>
+                <p class="text-xs text-white/60 mt-1">
+                  Vytočeno v Mystery Boxu: <span id="couponDate" class="text-amber-200">—</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <p class="text-[11px] text-white/60 mb-1">Hodnota slevy</p>
+              <p class="text-3xl font-extrabold text-amber-300 leading-none">
+                -10<span class="text-base align-top">%</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Kupon kód -->
+          <div class="mt-2 rounded-2xl border border-dashed border-amber-400/60 bg-neutral-900/80 px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <p class="text-[11px] text-white/50 uppercase tracking-wide mb-1">Slevový kód</p>
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 border border-amber-400/60">
+                <span id="couponCode" class="text-sm font-semibold tracking-[0.15em] text-amber-200">
+                  SLEVA10
+                </span>
+              </div>
+              <p class="mt-1 text-[11px] text-white/50">
+                Kód opiš nebo zkopíruj do objednávky u partnerského e-shopu.
+              </p>
+            </div>
+
+            <div class="flex flex-col items-end gap-2">
+              <button id="copyCouponBtn" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-xs font-semibold text-neutral-950 shadow-md shadow-amber-500/40 hover:brightness-110 active:scale-[0.97] transition">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span>Zkopírovat kód</span>
+              </button>
+              <p id="copyCouponInfo" class="text-[11px] text-emerald-300/0 transition-colors">
+                Kód zkopírován ✔
+              </p>
+            </div>
+          </div>
+
+          <!-- Info box -->
+          <div class="grid md:grid-cols-2 gap-4 mt-2">
+            <div class="rounded-2xl bg-neutral-900/80 border border-white/10 px-4 py-3">
+              <p class="text-[11px] uppercase tracking-wide text-white/50 mb-1">Jak kupon použít</p>
+              <ul class="text-sm text-white/70 space-y-1.5 list-disc list-inside">
+                <li>Vyber si nabídku v sekci <span class="text-amber-200 font-semibold">Slevy & Kupóny</span>.</li>
+                <li>Při objednávce zadej kód do pole pro slevový kupon.</li>
+                <li>Sleva se odečte z celkové částky nákupu.</li>
+              </ul>
+            </div>
+
+            <div class="rounded-2xl bg-neutral-900/80 border border-white/10 px-4 py-3">
+              <p class="text-[11px] uppercase tracking-wide text-white/50 mb-1">Napojení na ekosystém Kartao</p>
+              <p class="text-sm text-white/70">
+                V další fázi se kupon propojí s tvým účtem v Kartao – uvidíš historii využití,
+                napojíme to na partnery a potvrdíme ti využití také e-mailem.
+              </p>
+            </div>
+          </div>
+
+          <!-- Akce s kuponem -->
+          <div class="mt-2 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <a href="vyber-vyhru.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-xs font-semibold text-neutral-950 shadow-soft hover:brightness-110 active:scale-[0.98] transition">
+              <i data-lucide="store" class="w-4 h-4"></i>
+              <span>Otevřít mini Slevomat – nabídky</span>
+            </a>
+
+            <button id="markUsedBtn" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/60 bg-emerald-500/10 text-[11px] font-semibold text-emerald-200 hover:bg-emerald-500/20 active:scale-[0.98] transition">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <span>Označit kupon jako využitý (lokálně)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Přečti ID tiketu z URL (?rewardId=xxx)
+    function getRewardIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("rewardId");
+    }
+
+    // Načti výhry z localStorage
+    function loadRewards() {
+      try {
+        return JSON.parse(localStorage.getItem("kartao_rewards") || "[]");
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // Ulož zpět (např. po označení jako využitý)
+    function saveRewards(rewards) {
+      try {
+        localStorage.setItem("kartao_rewards", JSON.stringify(rewards));
+      } catch (e) {
+        console.warn("Nelze uložit kartao_rewards:", e);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+
+      const noCouponSection = document.getElementById("noCouponSection");
+      const couponSection = document.getElementById("couponSection");
+
+      const couponTitleEl = document.getElementById("couponTitle");
+      const couponMainTitleEl = document.getElementById("couponMainTitle");
+      const couponDateEl = document.getElementById("couponDate");
+      const couponCodeEl = document.getElementById("couponCode");
+      const copyCouponBtn = document.getElementById("copyCouponBtn");
+      const copyCouponInfo = document.getElementById("copyCouponInfo");
+      const markUsedBtn = document.getElementById("markUsedBtn");
+
+      const rewards = loadRewards();
+      const rewardIdFromUrl = getRewardIdFromUrl();
+
+      const ticketRewards = rewards.filter(r => r.type === "ticket");
+
+      if (!ticketRewards || ticketRewards.length === 0) {
+        // Nemáme žádný ticket → zobraz info
+        noCouponSection.classList.remove("hidden");
+        return;
+      }
+
+      // Najdeme konkrétní ticket podle ID, nebo vezmeme první
+      let selected = null;
+      if (rewardIdFromUrl) {
+        selected = ticketRewards.find(r => r.id === rewardIdFromUrl) || ticketRewards[0];
+      } else {
+        selected = ticketRewards[0];
+      }
+
+      // Zobrazíme sekci s kuponem
+      couponSection.classList.remove("hidden");
+
+      // Naplnění dat z tiketu (co máme v localStorage)
+      if (selected.title && couponTitleEl) {
+        couponTitleEl.textContent = selected.title;
+        couponMainTitleEl.textContent = selected.title;
+      }
+      if (selected.date && couponDateEl) {
+        const d = new Date(selected.date);
+        const den = String(d.getDate()).padStart(2, "0");
+        const mesic = String(d.getMonth() + 1).padStart(2, "0");
+        const rok = d.getFullYear();
+        couponDateEl.textContent = `${den}. ${mesic}. ${rok}`;
+      }
+
+      // Zatím statický kód – z Mystery Boxu máme jen typ „ticket“, ne konkrétní kód
+      // Později napojíme konkrétní kód/ID z backendu
+      const couponCode = "SLEVA10";
+      if (couponCodeEl) couponCodeEl.textContent = couponCode;
+
+      // Kopírování kódu do schránky
+      if (copyCouponBtn) {
+        copyCouponBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(couponCode);
+            if (copyCouponInfo) {
+              copyCouponInfo.textContent = "Kód zkopírován ✔";
+              copyCouponInfo.classList.remove("text-emerald-300/0");
+              copyCouponInfo.classList.add("text-emerald-300");
+              setTimeout(() => {
+                copyCouponInfo.classList.remove("text-emerald-300");
+                copyCouponInfo.classList.add("text-emerald-300/0");
+              }, 2000);
+            }
+          } catch (e) {
+            alert("Nepodařilo se zkopírovat kód. Zkopíruj si ho prosím ručně.");
+          }
+        });
+      }
+
+      // Označit kupon jako využitý – čistě lokální logika do budoucna
+      if (markUsedBtn) {
+        markUsedBtn.addEventListener("click", () => {
+          const idx = rewards.findIndex(r => r.id === selected.id);
+          if (idx !== -1) {
+            rewards[idx].used = true;
+            saveRewards(rewards);
+            alert("Kupon byl lokálně označen jako využitý. Později to napojíme na backend a účet.");
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
