@@ -60,7 +60,7 @@
           <span class="text-white/60">Tvoje současné kredity</span>
           <span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">0</span> K-Coins</span>
         </div>
-        <button class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
+        <button id="topupTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>Dobít kredity</span>
         </button>
@@ -378,6 +378,7 @@
         const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
         const dailyTasksSection = document.getElementById("dailyTasksSection");
         const adCooldown = document.getElementById("adCooldown");
+        const topupTestButton = document.getElementById("topupTestButton");
                 // Mini historie Mystery Boxu
         const mysteryBoxMiniHistory = document.getElementById("mysteryBoxMiniHistory");
         const mysteryBoxMiniHistoryList = document.getElementById("mysteryBoxMiniHistoryList");
@@ -707,6 +708,15 @@
           updateUIFromDaily();
         }
 
+        // Testovací dobíjení kreditů (jen pro vývoj / test)
+        if (topupTestButton) {
+          topupTestButton.addEventListener("click", function () {
+            creditSys.addCredits(50); // TEST: připíše +50 K-Coins
+            syncCreditsDisplay();
+            alert("Test: připsáno +50 K-Coins");
+          });
+        }
+
         // Klik na "Spustit reklamu"
         if (watchAdButton) {
           watchAdButton.addEventListener("click", function () {
@@ -842,4 +852,5 @@
     });
   </script>
 </body>
-</html>
+</html><!-- Sem vlož kód, který chceš upravit -->
+
