@@ -390,393 +390,157 @@
   </script>
 
   <!-- 🔥 Mystery Box logika pro K-Coins -->
-  <script>
-    (function () {
-      const COST = 30; // cena za otevření
-      const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 hodiny
-      const STORAGE_KEY = "kartao_mysteryBox_lastOpen";
+<script>
+  (function () {
+    const COST = 30; // cena za otevření
+    const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 hodiny
+    const STORAGE_KEY = "kartao_mysteryBox_lastOpen";
 
-      const rewards = [
-        { label: "+5 K-Coins", type: "coins", amount: 5, chance: 40 },
-        { label: "+15 K-Coins", type: "coins", amount: 15, chance: 25 },
-        { label: "+50 K-Coins", type: "coins", amount: 50, chance: 10 },
-        { label: "+1 VIP den", type: "vip", days: 1, chance: 5 },
-        { label: "Sleva 10 %", type: "coupon", code: "SLEVA10", chance: 20 },
-      ];
+    const rewards = [
+      { label: "+5 K-Coins", type: "coins", amount: 5, chance: 40 },
+      { label: "+15 K-Coins", type: "coins", amount: 15, chance: 25 },
+      { label: "+50 K-Coins", type: "coins", amount: 50, chance: 10 },
+      { label: "+1 VIP den", type: "vip", days: 1, chance: 5 },
+      { label: "Sleva 10 %", type: "coupon", code: "SLEVA10", chance: 20 },
+    ];
 
-      /* 🔗 Ukládání výher do „Moje výhry“ (localStorage: kartao_rewards) */
-      function saveRewardForHistory(rewardForHistory) {
-        // očekává: { id, title, type, date }
-        let current = [];
-        try {
-          current = JSON.parse(localStorage.getItem("kartao_rewards") || "[]");
-        } catch (e) {
-          current = [];
-        }
-
-        // poslední výhra dopředu
-        current.unshift(rewardForHistory);
-
-        // limit – třeba posledních 50 výher
-        current = current.slice(0, 50);
-
-        localStorage.setItem("kartao_rewards", JSON.stringify(current));
+    /* 🔗 Ukládání výher do „Moje výhry“ (localStorage: kartao_rewards) */
+    function saveRewardForHistory(rewardForHistory) {
+      // očekává: { id, title, type, date }
+      let current = [];
+      try {
+        current = JSON.parse(localStorage.getItem("kartao_rewards") || "[]");
+      } catch (e) {
+        current = [];
       }
 
-      function mapRewardTypeForHistory(reward) {
-        if (!reward || !reward.type) return "mystery";
+      // poslední výhra dopředu
+      current.unshift(rewardForHistory);
 
-        if (reward.type === "coins") {
-          return "mystery";      // barevná krabička
-        } else if (reward.type === "vip") {
-          return "gold-card";    // zlatá karta
-        } else if (reward.type === "coupon") {
-          return "ticket";       // tiket
-        }
-        return "mystery";
+      // limit – třeba posledních 50 výher
+      current = current.slice(0, 50);
+
+      localStorage.setItem("kartao_rewards", JSON.stringify(current));
+    }
+
+    function mapRewardTypeForHistory(reward) {
+      if (!reward || !reward.type) return "mystery";
+
+      if (reward.type === "coins") {
+        return "mystery";      // barevná krabička
+      } else if (reward.type === "vip") {
+        return "gold-card";    // zlatá karta
+      } else if (reward.type === "coupon") {
+        return "ticket";       // tiket
       }
+      return "mystery";
+    }
 
-      const btn = document.getElementById("openMysteryBoxBtn");
-      const statusEl = document.getElementById("mysteryBoxStatus");
-      const cooldownInfoEl = document.getElementById("mysteryBoxCooldownInfo");
-      const countdownEl = document.getElementById("mysteryBoxCountdown");
-      const errorEl = document.getElementById("mysteryBoxError");
-      const boxVisual = document.getElementById("mysteryBoxVisual");
+    const btn = document.getElementById("openMysteryBoxBtn");
+    const statusEl = document.getElementById("mysteryBoxStatus");
+    const cooldownInfoEl = document.getElementById("mysteryBoxCooldownInfo");
+    const countdownEl = document.getElementById("mysteryBoxCountdown");
+    const errorEl = document.getElementById("mysteryBoxError");
+    const boxVisual = document.getElementById("mysteryBoxVisual");
 
-      const modal = document.getElementById("mysteryBoxModal");
-      const rewardTextEl = document.getElementById("mysteryBoxRewardText");
-      const rewardDescEl = document.getElementById("mysteryBoxRewardDesc");
-      const confettiContainer = document.getElementById("mysteryBoxConfetti");
-      const modalCloseBtn = document.getElementById("closeMysteryBoxModalBtn");
-      const modalOkBtn = document.getElementById("mysteryBoxOkBtn");
+    const modal = document.getElementById("mysteryBoxModal");
+    const rewardTextEl = document.getElementById("mysteryBoxRewardText");
+    const rewardDescEl = document.getElementById("mysteryBoxRewardDesc");
+    const confettiContainer = document.getElementById("mysteryBoxConfetti");
+    const modalCloseBtn = document.getElementById("closeMysteryBoxModalBtn");
+    const modalOkBtn = document.getElementById("mysteryBoxOkBtn");
 
-      const resetBtn = document.getElementById("resetMysteryBoxBtn");
-      const creditsLabel = document.getElementById("currentCredits");
+    const resetBtn = document.getElementById("resetMysteryBoxBtn");
+    const creditsLabel = document.getElementById("currentCredits");
 
-      if (!btn || !boxVisual) return;
+    if (!btn || !boxVisual) return;
 
-      let isOpening = false;
-      let cooldownTimer = null;
+    let isOpening = false;
+    let cooldownTimer = null;
 
-      // 🔢 zobrazení kreditů v headeru
-      function updateCreditsDisplay() {
-        if (!creditsLabel || !window.creditSys || typeof creditSys.getCredits !== "function") return;
-        try {
-          creditsLabel.textContent = creditSys.getCredits();
-        } catch (e) {
-          console.warn("MysteryBox: chyba při čtení kreditů pro UI:", e);
-        }
+    // 🔢 zobrazení kreditů v headeru
+    function updateCreditsDisplay() {
+      if (!creditsLabel || !window.creditSys || typeof creditSys.getCredits !== "function") return;
+      try {
+        creditsLabel.textContent = creditSys.getCredits();
+      } catch (e) {
+        console.warn("MysteryBox: chyba při čtení kreditů pro UI:", e);
       }
+    }
 
-      function getLastOpenTime() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        const ts = parseInt(raw, 10);
-        return isNaN(ts) ? null : ts;
+    function getLastOpenTime() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const ts = parseInt(raw, 10);
+      return isNaN(ts) ? null : ts;
+    }
+
+    function setLastOpenTime() {
+      localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    }
+
+    function getRemainingCooldownMs() {
+      const last = getLastOpenTime();
+      if (!last) return 0;
+      const diff = Date.now() - last;
+      const remaining = COOLDOWN_MS - diff;
+      return remaining > 0 ? remaining : 0;
+    }
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      const pad = (x) => x.toString().padStart(2, "0");
+      if (h > 0) {
+        return `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
+      return `${pad(m)}:${pad(s)}`;
+    }
 
-      function setLastOpenTime() {
-        localStorage.setItem(STORAGE_KEY, Date.now().toString());
-      }
+    function startCooldownTimer() {
+      if (cooldownTimer) clearInterval(cooldownTimer);
 
-      function getRemainingCooldownMs() {
-        const last = getLastOpenTime();
-        if (!last) return 0;
-        const diff = Date.now() - last;
-        const remaining = COOLDOWN_MS - diff;
-        return remaining > 0 ? remaining : 0;
-      }
-
-      function formatTime(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const h = Math.floor(totalSeconds / 3600);
-        const m = Math.floor((totalSeconds % 3600) / 60);
-        const s = totalSeconds % 60;
-        const pad = (x) => x.toString().padStart(2, "0");
-        if (h > 0) {
-          return `${pad(h)}:${pad(m)}:${pad(s)}`;
-        }
-        return `${pad(m)}:${pad(s)}`;
-      }
-
-      function startCooldownTimer() {
-        if (cooldownTimer) clearInterval(cooldownTimer);
-
-        function tick() {
-          const remaining = getRemainingCooldownMs();
-          if (remaining <= 0) {
-            clearInterval(cooldownTimer);
-            cooldownTimer = null;
-            cooldownInfoEl.classList.add("hidden");
-            statusEl.innerHTML = `
-              <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
-                ●
-              </span>
-              <span>Právě teď můžeš otevřít 1× za <span class="font-semibold text-amber-200">2 hodiny</span>.</span>
-            `;
-            updateButtonState();
-            return;
-          }
-          cooldownInfoEl.classList.remove("hidden");
-          countdownEl.textContent = formatTime(remaining);
+      function tick() {
+        const remaining = getRemainingCooldownMs();
+        if (remaining <= 0) {
+          clearInterval(cooldownTimer);
+          cooldownTimer = null;
+          cooldownInfoEl.classList.add("hidden");
           statusEl.innerHTML = `
-            <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-500/20 text-sky-300">
+            <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
               ●
             </span>
-            <span>Mystery Box je v cooldownu.</span>
+            <span>Právě teď můžeš otevřít 1× za <span class="font-semibold text-amber-200">2 hodiny</span>.</span>
           `;
           updateButtonState();
+          return;
         }
-
-        tick();
-        cooldownTimer = setInterval(tick, 1000);
-      }
-
-      function isOnCooldown() {
-        return getRemainingCooldownMs() > 0;
-      }
-
-      function hasEnoughCredits() {
-        if (!window.creditSys || typeof creditSys.getCredits !== "function") {
-          console.warn("MysteryBox: creditSys.getCredits není dostupné.");
-          return true; // neblokuj UI, když není napojené
-        }
-        try {
-          const current = creditSys.getCredits();
-          return typeof current === "number" ? current >= COST : true;
-        } catch (e) {
-          console.warn("MysteryBox: chyba při čtení kreditů:", e);
-          return true;
-        }
-      }
-
-      function updateButtonState() {
-        const onCd = isOnCooldown();
-        const enough = hasEnoughCredits();
-        btn.disabled = onCd || isOpening || !enough;
-
-        if (!enough) {
-          errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
-        } else if (onCd) {
-          errorEl.textContent = "Mystery Box půjde otevřít až po skončení cooldownu.";
-        } else {
-          errorEl.textContent = "";
-        }
-      }
-
-      function pickReward() {
-        const roll = Math.random() * 100;
-        let acc = 0;
-        for (const r of rewards) {
-          acc += r.chance;
-          if (roll <= acc) return r;
-        }
-        return rewards[0];
-      }
-
-      /* 🔥 TADY se vyhodnocuje výhra + ukládá do Moje výhry */
-      function applyReward(reward) {
-        if (!reward) return;
-
-        const historyRecord = {
-          id: "mbox_" + Date.now(),
-          title: reward.label || "Výhra z Mystery Boxu",
-          type: mapRewardTypeForHistory(reward),
-          date: new Date().toISOString(),
-        };
-
-        if (reward.type === "coins") {
-          if (window.creditSys && typeof creditSys.addCredits === "function") {
-            try {
-              creditSys.addCredits(reward.amount);
-              updateCreditsDisplay();
-            } catch (e) {
-              console.warn("MysteryBox: chyba při přidávání kreditů:", e);
-            }
-          }
-
-          rewardTextEl.textContent = reward.label;
-          rewardDescEl.textContent = `Na tvoje konto jsme přidali ${reward.amount} K-Coins.`;
-
-          // uložit mezi výhry
-          saveRewardForHistory(historyRecord);
-
-        } else if (reward.type === "vip") {
-          if (window.creditSys && typeof creditSys.addVipDays === "function") {
-            try {
-              creditSys.addVipDays(reward.days);
-            } catch (e) {
-              console.warn("MysteryBox: chyba při přidávání VIP dne:", e);
-            }
-          }
-
-          rewardTextEl.textContent = reward.label;
-          rewardDescEl.textContent = `Získáváš VIP přístup na ${reward.days} den. Výhody se projeví ve VIP sekci.`;
-
-          // uložit mezi výhry
-          saveRewardForHistory(historyRecord);
-
-        } else if (reward.type === "coupon") {
-          rewardTextEl.textContent = reward.label;
-          rewardDescEl.textContent =
-            "Získal jsi slevu 10 %. Kupon najdeš v sekci „Moje výhry“ a použiješ ho při nákupu.";
-
-          // uložit mezi výhry
-          saveRewardForHistory(historyRecord);
-        }
-      }
-
-      function createConfetti() {
-        if (!confettiContainer) return;
-        confettiContainer.innerHTML = "";
-
-        const colors = [
-          "rgb(251,191,36)",
-          "rgb(56,189,248)",
-          "rgb(244,114,182)",
-          "rgb(52,211,153)",
-        ];
-
-        const pieces = 40;
-        for (let i = 0; i < pieces; i++) {
-          const el = document.createElement("div");
-          el.className = "confetti-piece";
-          const left = Math.random() * 100;
-          const delay = Math.random() * 0.4;
-          const xOffset = (Math.random() - 0.5) * 120;
-
-          el.style.left = `${left}%`;
-          el.style.top = "-20px`;
-          el.style.backgroundColor = colors[i % colors.length];
-          el.style.animationDelay = `${delay}s`;
-          el.style.setProperty("--confetti-x", `${xOffset}px`);
-
-          confettiContainer.appendChild(el);
-        }
-      }
-
-      function openModal() {
-        if (!modal) return;
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
-        createConfetti();
-      }
-
-      function closeModal() {
-        if (!modal) return;
-        modal.classList.add("hidden");
-        modal.classList.remove("flex");
-        if (confettiContainer) confettiContainer.innerHTML = "";
-      }
-
-      function trySubtractCredits() {
-        if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
-          alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
-          return true; // neblokovat testování UI
-        }
-
-        if (!hasEnoughCredits()) {
-          errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
-          return false;
-        }
-
-        try {
-          creditSys.subtractCredits(COST);
-          updateCreditsDisplay();
-          return true;
-        } catch (e) {
-          console.warn("MysteryBox: chyba při odečítání kreditů:", e);
-          errorEl.textContent = "Nepodařilo se odečíst kredity. Zkus to prosím znovu.";
-          return false;
-        }
-      }
-
-      // 🧨 RESET COOLDOWNU
-      function resetMysteryBoxCooldown() {
-        localStorage.removeItem(STORAGE_KEY);
-
-        if (cooldownTimer) clearInterval(cooldownTimer);
-        cooldownTimer = null;
-
-        cooldownInfoEl.classList.add("hidden");
+        cooldownInfoEl.classList.remove("hidden");
+        countdownEl.textContent = formatTime(remaining);
         statusEl.innerHTML = `
-          <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+          <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-500/20 text-sky-300">
             ●
           </span>
-          <span>Mystery Box můžeš otevřít okamžitě.</span>
+          <span>Mystery Box je v cooldownu.</span>
         `;
-
-        errorEl.textContent = "";
         updateButtonState();
       }
 
-      function handleOpenClick() {
-        if (isOpening) return;
-        errorEl.textContent = "";
+      tick();
+      cooldownTimer = setInterval(tick, 1000);
+    }
 
-        if (isOnCooldown()) {
-          errorEl.textContent = "Mystery Box je v cooldownu. Počkej, než odpočet doběhne.";
-          return;
-        }
+    function isOnCooldown() {
+      return getRemainingCooldownMs() > 0;
+    }
 
-        if (!hasEnoughCredits()) {
-          errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
-          return;
-        }
-
-        const ok = trySubtractCredits();
-        if (!ok) return;
-
-        isOpening = true;
-        updateButtonState();
-
-        boxVisual.classList.add("mystery-box-opening");
-
-        setTimeout(() => {
-          boxVisual.classList.remove("mystery-box-opening");
-
-          const reward = pickReward();
-          applyReward(reward);
-          setLastOpenTime();
-          startCooldownTimer();
-          openModal();
-
-          isOpening = false;
-          updateButtonState();
-        }, 1000);
+    function hasEnoughCredits() {
+      if (!window.creditSys || typeof creditSys.getCredits !== "function") {
+        console.warn("MysteryBox: creditSys.getCredits není dostupné.");
+        return true; // neblokuj UI, když není napojené
       }
-
-      // Listeners
-      btn.addEventListener("click", handleOpenClick);
-      boxVisual.addEventListener("click", handleOpenClick);
-
-      if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
-      if (modalOkBtn) modalOkBtn.addEventListener("click", closeModal);
-      if (modal) {
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            closeModal();
-          }
-        });
-      }
-
-      if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
-          resetMysteryBoxCooldown();
-          alert("Mystery Box cooldown byl resetován (ADMIN test).");
-        });
-      }
-
-      // Inicializace
-      (function init() {
-        updateCreditsDisplay();
-        if (isOnCooldown()) {
-          startCooldownTimer();
-        } else {
-          updateButtonState();
-        }
-      })();
-    })();
-  </script>
-</body>
-</html>
+      try {
+        const current = creditSys.getCredits();
+        re
