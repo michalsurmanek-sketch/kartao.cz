@@ -97,19 +97,6 @@
       }
     }
 
-    function getButtonLabel(type) {
-      switch (type) {
-        case "mystery":
-          return "Otevřít výhru";
-        case "gold-card":
-          return "Zobrazit kartu";
-        case "ticket":
-          return "Zobrazit tiket";
-        default:
-          return "Detail";
-      }
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
         lucide.createIcons();
@@ -138,9 +125,7 @@
         const card = document.createElement("div");
         card.className = "rounded-2xl shadow-soft hover:shadow-xl transition-all";
 
-        const gradient = getGradientClasses(reward.type);
         const icon = getIcon(reward.type);
-        const btnLabel = getButtonLabel(reward.type);
 
         card.innerHTML = `
           <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/50 p-[1px]">
@@ -166,18 +151,40 @@
                     ${reward.type === "gold-card" ? "VIP karta" : reward.type === "ticket" ? "Kupon / tiket" : "K-Coins"}
                   </span>
                 </div>
-                $`<!-- tlačítko nahrazeno odkazem u gold-card -->${reward.type === "gold-card" ? `<a href="vyber-vyhru.html" class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap">Vybrat výhru</a>` : `<button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap" data-reward-id="${reward.id || ''}">${btnLabel}</button>`}">
+                <div class="js-reward-action"></div>
               </div>
             </div>
           </div>
         `;
 
-              if (reward.type === "mystery") {
-        const btnEl = card.querySelector('button[data-reward-id]');
-        if (btnEl) btnEl.remove();
-      }
+        const actionContainer = card.querySelector(".js-reward-action");
 
-      grid.appendChild(card);
+        if (reward.type === "mystery") {
+          // K-Coins – bez tlačítka
+        } else if (reward.type === "gold-card") {
+          actionContainer.innerHTML = `
+            <a href="vyber-vyhru.html"
+               class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap">
+              Vybrat výhru
+            </a>
+          `;
+        } else if (reward.type === "ticket") {
+          actionContainer.innerHTML = `
+            <button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap"
+                    data-reward-id="${reward.id || ""}">
+              Zobrazit tiket
+            </button>
+          `;
+        } else {
+          actionContainer.innerHTML = `
+            <button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap"
+                    data-reward-id="${reward.id || ""}">
+              Detail
+            </button>
+          `;
+        }
+
+        grid.appendChild(card);
       });
 
       // Po dynamickém vložení ikon je znovu vygenerujeme
