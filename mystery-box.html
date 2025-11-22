@@ -323,7 +323,13 @@
       </div>
     </main>
   </div>
-
+ <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
   <!-- 🔥 Firebase + init – stejné jako na dashboardu -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
