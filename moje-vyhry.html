@@ -136,24 +136,50 @@
 
       rewards.forEach((reward) => {
         const card = document.createElement("div");
-        card.className = "p-5 rounded-2xl bg-neutral-900 border border-white/10 shadow-soft hover:shadow-xl transition-all";
+        card.className = "rounded-2xl shadow-soft hover:shadow-xl transition-all";
 
         const gradient = getGradientClasses(reward.type);
         const icon = getIcon(reward.type);
         const btnLabel = getButtonLabel(reward.type);
 
         card.innerHTML = `
-          <div class="w-full h-32 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4">
-            <i data-lucide="${icon}" class="w-10 h-10 text-white"></i>
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/50 p-[1px]">
+            <div class="rounded-2xl bg-neutral-950/95 px-4 py-4 flex flex-col gap-3">
+              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/40 text-[11px] text-emerald-200">
+                <span>Výhra z Mystery Boxu</span>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-300 to-yellow-200 flex items-center justify-center shadow-lg shadow-amber-400/70">
+                  <i data-lucide="${icon}" class="w-5 h-5 text-neutral-950"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[11px] text-amber-200/80 mb-0.5">Vyhráno: ${formatDate(reward.date)}</p>
+                  <h3 class="font-semibold text-base text-amber-100 truncate">${reward.title || "Výhra"}</h3>
+                </div>
+              </div>
+
+              <div class="mt-1 flex items-center justify-between gap-3">
+                <div class="text-[11px] text-white/60">
+                  Typ odměny:
+                  <span class="font-medium text-amber-200">
+                    ${reward.type === "gold-card" ? "VIP karta" : reward.type === "ticket" ? "Kupon / tiket" : "K-Coins"}
+                  </span>
+                </div>
+                <button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap" data-reward-id="${reward.id || ""}">
+                  ${btnLabel}
+                </button>
+              </div>
+            </div>
           </div>
-          <h3 class="font-semibold text-lg mb-1">${reward.title || "Výhra"}</h3>
-          <p class="text-sm text-white/60 mb-3">Vyhráno: ${formatDate(reward.date)}</p>
-          <button class="w-full py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 font-semibold text-sm text-black" data-reward-id="${reward.id || ""}">
-            ${btnLabel}
-          </button>
         `;
 
-        grid.appendChild(card);
+              if (reward.type === "mystery") {
+        const btnEl = card.querySelector('button[data-reward-id]');
+        if (btnEl) btnEl.remove();
+      }
+
+      grid.appendChild(card);
       });
 
       // Po dynamickém vložení ikon je znovu vygenerujeme
