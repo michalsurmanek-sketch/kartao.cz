@@ -166,9 +166,7 @@
                     ${reward.type === "gold-card" ? "VIP karta" : reward.type === "ticket" ? "Kupon / tiket" : "K-Coins"}
                   </span>
                 </div>
-                <button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap" data-reward-id="${reward.id || ""}">
-                  ${btnLabel}
-                </button>
+                $`<!-- tlačítko nahrazeno odkazem u gold-card -->${reward.type === "gold-card" ? `<a href="vyber-vyhru.html" class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap">Vybrat výhru</a>` : `<button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap" data-reward-id="${reward.id || ''}">${btnLabel}</button>`}">
               </div>
             </div>
           </div>
