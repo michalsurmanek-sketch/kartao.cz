@@ -543,4 +543,238 @@
       }
       try {
         const current = creditSys.getCredits();
-        re
+        return typeof current === "number" ? current >= COST : true;
+      } catch (e) {
+        console.warn("MysteryBox: chyba při čtení kreditů:", e);
+        return true;
+      }
+    }
+
+    function updateButtonState() {
+      const onCd = isOnCooldown();
+      const enough = hasEnoughCredits();
+      btn.disabled = onCd || isOpening || !enough;
+
+      if (!enough) {
+        errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
+      } else if (onCd) {
+        errorEl.textContent = "Mystery Box půjde otevřít až po skončení cooldownu.";
+      } else {
+        errorEl.textContent = "";
+      }
+    }
+
+    function pickReward() {
+      const roll = Math.random() * 100;
+      let acc = 0;
+      for (const r of rewards) {
+        acc += r.chance;
+        if (roll <= acc) return r;
+      }
+      return rewards[0];
+    }
+
+    /* 🔥 TADY se vyhodnocuje výhra + ukládá do Moje výhry */
+    function applyReward(reward) {
+      if (!reward) return;
+
+      const historyRecord = {
+        id: "mbox_" + Date.now(),
+        title: reward.label || "Výhra z Mystery Boxu",
+        type: mapRewardTypeForHistory(reward),
+        date: new Date().toISOString(),
+      };
+
+      if (reward.type === "coins") {
+        if (window.creditSys && typeof creditSys.addCredits === "function") {
+          try {
+            creditSys.addCredits(reward.amount);
+            updateCreditsDisplay();
+          } catch (e) {
+            console.warn("MysteryBox: chyba při přidávání kreditů:", e);
+          }
+        }
+
+        rewardTextEl.textContent = reward.label;
+        rewardDescEl.textContent = `Na tvoje konto jsme přidali ${reward.amount} K-Coins.`;
+
+        // uložit mezi výhry
+        saveRewardForHistory(historyRecord);
+
+      } else if (reward.type === "vip") {
+        if (window.creditSys && typeof creditSys.addVipDays === "function") {
+          try {
+            creditSys.addVipDays(reward.days);
+          } catch (e) {
+            console.warn("MysteryBox: chyba při přidávání VIP dne:", e);
+          }
+        }
+
+        rewardTextEl.textContent = reward.label;
+        rewardDescEl.textContent = `Získáváš VIP přístup na ${reward.days} den. Výhody se projeví ve VIP sekci.`;
+
+        // uložit mezi výhry
+        saveRewardForHistory(historyRecord);
+
+      } else if (reward.type === "coupon") {
+        rewardTextEl.textContent = reward.label;
+        rewardDescEl.textContent =
+          "Získal jsi slevu 10 %. Kupon najdeš v sekci „Moje výhry“ a použiješ ho při nákupu.";
+
+        // uložit mezi výhry
+        saveRewardForHistory(historyRecord);
+      }
+    }
+
+    function createConfetti() {
+      if (!confettiContainer) return;
+      confettiContainer.innerHTML = "";
+
+      const colors = [
+        "rgb(251,191,36)",
+        "rgb(56,189,248)",
+        "rgb(244,114,182)",
+        "rgb(52,211,153)",
+      ];
+
+      const pieces = 40;
+      for (let i = 0; i < pieces; i++) {
+        const el = document.createElement("div");
+        el.className = "confetti-piece";
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.4;
+        const xOffset = (Math.random() - 0.5) * 120;
+
+        el.style.left = `${left}%`;
+        el.style.top = "-20px";
+        el.style.backgroundColor = colors[i % colors.length];
+        el.style.animationDelay = `${delay}s`;
+        el.style.setProperty("--confetti-x", `${xOffset}px`);
+
+        confettiContainer.appendChild(el);
+      }
+    }
+
+    function openModal() {
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      createConfetti();
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      if (confettiContainer) confettiContainer.innerHTML = "";
+    }
+
+    function trySubtractCredits() {
+      if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
+        alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
+        return true; // neblokovat testování UI
+      }
+
+      if (!hasEnoughCredits()) {
+        errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
+        return false;
+      }
+
+      try {
+        creditSys.subtractCredits(COST);
+        updateCreditsDisplay();
+        return true;
+      } catch (e) {
+        console.warn("MysteryBox: chyba při odečítání kreditů:", e);
+        errorEl.textContent = "Nepodařilo se odečíst kredity. Zkus to prosím znovu.";
+        return false;
+      }
+    }
+
+    // 🧨 RESET COOLDOWNU
+    function resetMysteryBoxCooldown() {
+      localStorage.removeItem(STORAGE_KEY);
+
+      if (cooldownTimer) clearInterval(cooldownTimer);
+      cooldownTimer = null;
+
+      cooldownInfoEl.classList.add("hidden");
+      statusEl.innerHTML = `
+        <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+          ●
+        </span>
+        <span>Mystery Box můžeš otevřít okamžitě.</span>
+      `;
+
+      errorEl.textContent = "";
+      updateButtonState();
+    }
+
+    function handleOpenClick() {
+      if (isOpening) return;
+      errorEl.textContent = "";
+
+      if (isOnCooldown()) {
+        errorEl.textContent = "Mystery Box je v cooldownu. Počkej, než odpočet doběhne.";
+        return;
+      }
+
+      if (!hasEnoughCredits()) {
+        errorEl.textContent = "Nemáš dostatek K-Coins na otevření Mystery Boxu.";
+        return;
+      }
+
+      const ok = trySubtractCredits();
+      if (!ok) return;
+
+      isOpening = true;
+      updateButtonState();
+
+      boxVisual.classList.add("mystery-box-opening");
+
+      setTimeout(() => {
+        boxVisual.classList.remove("mystery-box-opening");
+
+        const reward = pickReward();
+        applyReward(reward);
+        setLastOpenTime();
+        startCooldownTimer();
+        openModal();
+
+        isOpening = false;
+        updateButtonState();
+      }, 1000);
+    }
+
+    // Listeners
+    btn.addEventListener("click", handleOpenClick);
+    boxVisual.addEventListener("click", handleOpenClick);
+
+    if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
+    if (modalOkBtn) modalOkBtn.addEventListener("click", closeModal);
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        resetMysteryBoxCooldown();
+        alert("Mystery Box cooldown byl resetován (ADMIN test).");
+      });
+    }
+
+    // Inicializace
+    (function init() {
+      updateCreditsDisplay();
+      if (isOnCooldown()) {
+        startCooldownTimer();
+      } else {
+        updateButtonState();
+      }
+    })();
+  })();
+</script>
