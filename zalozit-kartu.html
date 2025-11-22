@@ -35,6 +35,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <!-- tvoje inicializace projektu -->
   <script src="firebase-init.js"></script>
 
   <style>
@@ -51,7 +52,7 @@
 </head>
 <body class="min-h-screen text-white bg-neutral-950/95">
   <div class="min-h-screen flex flex-col">
-    <!-- HEADER (stejný styl jako jinde) -->
+    <!-- HEADER -->
     <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <a href="index.html" class="flex items-center gap-3">
@@ -65,13 +66,19 @@
         </a>
 
         <div class="flex items-center gap-2 text-sm">
-          <button data-show-when="loggedout" onclick="openLogin && openLogin()" class="hidden md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
+          <button
+            data-show-when="loggedout"
+            onclick="window.location.href='login.html'"
+            class="md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
             Přihlásit se
           </button>
-          <a data-show-when="loggedin" href="#" onclick="logoutUser && logoutUser()" class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
+          <button
+            data-show-when="loggedin"
+            onclick="firebase.auth().signOut()"
+            class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
             <i data-lucide="log-out" class="w-4 h-4"></i>
             <span>Odhlásit se</span>
-          </a>
+          </button>
         </div>
       </div>
     </header>
@@ -88,18 +95,20 @@
 
         <!-- Nadpis -->
         <section class="mb-10">
-      <div class="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 px-3 py-1 text-xs text-fuchsia-100 mb-4">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Pro přihlášené tvůrce</span>
-      </div>
-      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 flex flex-wrap items-center gap-3">
-        Založit kartu tvůrce
-        <span class="text-sm font-semibold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Zdarma</span>
-      </h1>
-      <p class="text-white/70 max-w-2xl text-sm md:text-base">
-        Vyplň základní informace o sobě a svých sítích. Kartu můžeš kdykoliv upravit a později přidat detailnější statistiky, ceník i speciální nabídky pro značky.
-      </p>
-    </section>
+          <div class="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 px-3 py-1 text-xs text-fuchsia-100 mb-4">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Pro přihlášené tvůrce</span>
+          </div>
+          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 flex flex-wrap items-center gap-3">
+            Založit kartu tvůrce
+            <span class="text-sm font-semibold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Zdarma</span>
+          </h1>
+          <p class="text-white/70 max-w-2xl text-sm md:text-base">
+            Vyplň základní informace o sobě a svých sítích. Kartu můžeš kdykoliv upravit a později přidat
+            detailnější statistiky, ceník i speciální nabídky pro značky.
+          </p>
+        </section>
+
         <!-- FORMULÁŘ -->
         <form id="cardForm" class="glass-panel rounded-2xl border border-white/10 p-4 md:p-6 space-y-5">
           <!-- ZÁKLADNÍ ÚDAJE -->
@@ -118,7 +127,7 @@
                 <input id="handle" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="@janincontent" />
               </div>
               <div>
-                <label class="block text-xs text-white/60 mb-1">E‑mail (nezveřejňuje se) *</label>
+                <label class="block text-xs text-white/60 mb-1">E-mail (nezveřejňuje se) *</label>
                 <input id="email" type="email" required class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm" placeholder="např. ty@domena.cz" />
               </div>
               <div>
@@ -313,7 +322,10 @@
               <input id="agree" type="checkbox" class="mt-1 rounded border-white/30 bg-neutral-900" required />
               <span>
                 Souhlasím se zpracováním uvedených údajů pro účely zprostředkování spoluprací přes Kartao.cz.
-                Podrobnosti najdete v dokumentech <a href="ochrana-osobnich-udaju.html" class="underline hover:text-white">Ochrana osobních údajů</a> a <a href="obchodni-podminky.html" class="underline hover:text-white">Obchodní podmínky</a>.
+                Podrobnosti najdete v dokumentech
+                <a href="ochrana-osobnich-udaju.html" class="underline hover:text-white">Ochrana osobních údajů</a>
+                a
+                <a href="obchodni-podminky.html" class="underline hover:text-white">Obchodní podmínky</a>.
               </span>
             </label>
 
@@ -349,149 +361,143 @@
     </footer>
   </div>
 
-  <!-- Firebase již inicializováno v firebase-init.js -->
   <script>
-    console.log('✅ Firebase načteno z firebase-init.js');
+    console.log("✅ Firebase načteno z firebase-init.js");
   </script>
 
   <script>
     // Lucide ikony
     lucide.createIcons();
 
-    // === AUTO-SAVE DO LOCALSTORAGE ===
-    const AUTOSAVE_KEY = 'kartao_card_draft';
-    const AUTOSAVE_DEBOUNCE = 500; // ms
-    let autosaveTimeout = null;
-
-    // Funkce pro uložení dat z formuláře
-    function saveFormData() {
-      const formData = {
-        name: document.getElementById('name')?.value || '',
-        handle: document.getElementById('handle')?.value || '',
-        email: document.getElementById('email')?.value || '',
-        city: document.getElementById('city')?.value || '',
-        age: document.getElementById('age')?.value || '',
-        category: document.getElementById('category')?.value || '',
-        bio: document.getElementById('bio')?.value || '',
-        avatar: document.getElementById('avatar')?.value || '',
-        cover: document.getElementById('cover')?.value || '',
-        instagramUrl: document.getElementById('instagramUrl')?.value || '',
-        instagramFollowers: document.getElementById('instagramFollowers')?.value || '',
-        instagramEngagement: document.getElementById('instagramEngagement')?.value || '',
-        tiktokUrl: document.getElementById('tiktokUrl')?.value || '',
-        tiktokFollowers: document.getElementById('tiktokFollowers')?.value || '',
-        tiktokReach: document.getElementById('tiktokReach')?.value || '',
-        youtubeUrl: document.getElementById('youtubeUrl')?.value || '',
-        youtubeFollowers: document.getElementById('youtubeFollowers')?.value || '',
-        facebookUrl: document.getElementById('facebookUrl')?.value || '',
-        facebookFollowers: document.getElementById('facebookFollowers')?.value || '',
-        pinterestUrl: document.getElementById('pinterestUrl')?.value || '',
-        pinterestFollowers: document.getElementById('pinterestFollowers')?.value || '',
-        priceReels: document.getElementById('priceReels')?.value || '',
-        priceStories: document.getElementById('priceStories')?.value || '',
-        priceCustom: document.getElementById('priceCustom')?.value || '',
-        brandInfo: document.getElementById('brandInfo')?.value || '',
-        savedAt: new Date().toISOString()
-      };
-      
-      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
-      console.log('💾 Formulář automaticky uložen do localStorage');
+    // Bezpečnostní kontrola Firebase
+    if (!window.firebase || !firebase.apps.length) {
+      console.error("❌ Firebase není inicializováno.");
     }
 
-    // Funkce pro načtení dat do formuláře
+    // Firebase helpers pro tuto stránku
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // === AUTO-SAVE DO LOCALSTORAGE ===
+    const AUTOSAVE_KEY = "kartao_card_draft";
+    const AUTOSAVE_DEBOUNCE = 500;
+    let autosaveTimeout = null;
+
+    function saveFormData() {
+      const formData = {
+        name: document.getElementById("name")?.value || "",
+        handle: document.getElementById("handle")?.value || "",
+        email: document.getElementById("email")?.value || "",
+        city: document.getElementById("city")?.value || "",
+        age: document.getElementById("age")?.value || "",
+        category: document.getElementById("category")?.value || "",
+        bio: document.getElementById("bio")?.value || "",
+        avatar: document.getElementById("avatar")?.value || "",
+        cover: document.getElementById("cover")?.value || "",
+        instagramUrl: document.getElementById("instagramUrl")?.value || "",
+        instagramFollowers: document.getElementById("instagramFollowers")?.value || "",
+        instagramEngagement: document.getElementById("instagramEngagement")?.value || "",
+        tiktokUrl: document.getElementById("tiktokUrl")?.value || "",
+        tiktokFollowers: document.getElementById("tiktokFollowers")?.value || "",
+        tiktokReach: document.getElementById("tiktokReach")?.value || "",
+        youtubeUrl: document.getElementById("youtubeUrl")?.value || "",
+        youtubeFollowers: document.getElementById("youtubeFollowers")?.value || "",
+        facebookUrl: document.getElementById("facebookUrl")?.value || "",
+        facebookFollowers: document.getElementById("facebookFollowers")?.value || "",
+        pinterestUrl: document.getElementById("pinterestUrl")?.value || "",
+        pinterestFollowers: document.getElementById("pinterestFollowers")?.value || "",
+        priceReels: document.getElementById("priceReels")?.value || "",
+        priceStories: document.getElementById("priceStories")?.value || "",
+        priceCustom: document.getElementById("priceCustom")?.value || "",
+        brandInfo: document.getElementById("brandInfo")?.value || "",
+        savedAt: new Date().toISOString(),
+      };
+
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
+      console.log("💾 Formulář automaticky uložen do localStorage");
+    }
+
     function loadFormData() {
       const saved = localStorage.getItem(AUTOSAVE_KEY);
-      if (!saved) {
-        console.log('ℹ️ Žádná uložená data nenalezena');
-        return false;
-      }
+      if (!saved) return false;
 
       try {
         const formData = JSON.parse(saved);
-        console.log('📂 Načítám uložená data z:', new Date(formData.savedAt).toLocaleString('cs-CZ'));
 
-        // Načtení textových polí
-        if (formData.name) document.getElementById('name').value = formData.name;
-        if (formData.handle) document.getElementById('handle').value = formData.handle;
-        if (formData.email) document.getElementById('email').value = formData.email;
-        if (formData.city) document.getElementById('city').value = formData.city;
-        if (formData.age) document.getElementById('age').value = formData.age;
-        if (formData.category) document.getElementById('category').value = formData.category;
-        if (formData.bio) document.getElementById('bio').value = formData.bio;
-        
-        // Načtení URL obrázků
+        if (formData.name) document.getElementById("name").value = formData.name;
+        if (formData.handle) document.getElementById("handle").value = formData.handle;
+        if (formData.email) document.getElementById("email").value = formData.email;
+        if (formData.city) document.getElementById("city").value = formData.city;
+        if (formData.age) document.getElementById("age").value = formData.age;
+        if (formData.category) document.getElementById("category").value = formData.category;
+        if (formData.bio) document.getElementById("bio").value = formData.bio;
+
         if (formData.avatar) {
-          document.getElementById('avatar').value = formData.avatar;
-          // Trigger preview
-          document.getElementById('avatar').dispatchEvent(new Event('input'));
+          document.getElementById("avatar").value = formData.avatar;
+          document.getElementById("avatar").dispatchEvent(new Event("input"));
         }
         if (formData.cover) {
-          document.getElementById('cover').value = formData.cover;
-          // Trigger preview
-          document.getElementById('cover').dispatchEvent(new Event('input'));
+          document.getElementById("cover").value = formData.cover;
+          document.getElementById("cover").dispatchEvent(new Event("input"));
         }
 
-        // Načtení sociálních sítí
-        if (formData.instagramUrl) document.getElementById('instagramUrl').value = formData.instagramUrl;
-        if (formData.instagramFollowers) document.getElementById('instagramFollowers').value = formData.instagramFollowers;
-        if (formData.instagramEngagement) document.getElementById('instagramEngagement').value = formData.instagramEngagement;
-        
-        if (formData.tiktokUrl) document.getElementById('tiktokUrl').value = formData.tiktokUrl;
-        if (formData.tiktokFollowers) document.getElementById('tiktokFollowers').value = formData.tiktokFollowers;
-        if (formData.tiktokReach) document.getElementById('tiktokReach').value = formData.tiktokReach;
-        
-        if (formData.youtubeUrl) document.getElementById('youtubeUrl').value = formData.youtubeUrl;
-        if (formData.youtubeFollowers) document.getElementById('youtubeFollowers').value = formData.youtubeFollowers;
-        
-        if (formData.facebookUrl) document.getElementById('facebookUrl').value = formData.facebookUrl;
-        if (formData.facebookFollowers) document.getElementById('facebookFollowers').value = formData.facebookFollowers;
-        
-        if (formData.pinterestUrl) document.getElementById('pinterestUrl').value = formData.pinterestUrl;
-        if (formData.pinterestFollowers) document.getElementById('pinterestFollowers').value = formData.pinterestFollowers;
+        if (formData.instagramUrl) document.getElementById("instagramUrl").value = formData.instagramUrl;
+        if (formData.instagramFollowers) document.getElementById("instagramFollowers").value = formData.instagramFollowers;
+        if (formData.instagramEngagement) document.getElementById("instagramEngagement").value = formData.instagramEngagement;
 
-        // Načtení ceníku
-        if (formData.priceReels) document.getElementById('priceReels').value = formData.priceReels;
-        if (formData.priceStories) document.getElementById('priceStories').value = formData.priceStories;
-        if (formData.priceCustom) document.getElementById('priceCustom').value = formData.priceCustom;
-        if (formData.brandInfo) document.getElementById('brandInfo').value = formData.brandInfo;
+        if (formData.tiktokUrl) document.getElementById("tiktokUrl").value = formData.tiktokUrl;
+        if (formData.tiktokFollowers) document.getElementById("tiktokFollowers").value = formData.tiktokFollowers;
+        if (formData.tiktokReach) document.getElementById("tiktokReach").value = formData.tiktokReach;
 
-        // Zobrazit notifikaci
+        if (formData.youtubeUrl) document.getElementById("youtubeUrl").value = formData.youtubeUrl;
+        if (formData.youtubeFollowers) document.getElementById("youtubeFollowers").value = formData.youtubeFollowers;
+
+        if (formData.facebookUrl) document.getElementById("facebookUrl").value = formData.facebookUrl;
+        if (formData.facebookFollowers) document.getElementById("facebookFollowers").value = formData.facebookFollowers;
+
+        if (formData.pinterestUrl) document.getElementById("pinterestUrl").value = formData.pinterestUrl;
+        if (formData.pinterestFollowers) document.getElementById("pinterestFollowers").value = formData.pinterestFollowers;
+
+        if (formData.priceReels) document.getElementById("priceReels").value = formData.priceReels;
+        if (formData.priceStories) document.getElementById("priceStories").value = formData.priceStories;
+        if (formData.priceCustom) document.getElementById("priceCustom").value = formData.priceCustom;
+        if (formData.brandInfo) document.getElementById("brandInfo").value = formData.brandInfo;
+
         const savedDate = new Date(formData.savedAt);
         const now = new Date();
-        const diffMinutes = Math.round((now - savedDate) / 1000 / 60);
-        let timeText = diffMinutes < 1 ? 'před chvílí' : 
-                       diffMinutes === 1 ? 'před minutou' : 
-                       diffMinutes < 60 ? `před ${diffMinutes} minutami` : 
-                       `před ${Math.round(diffMinutes / 60)} hodinami`;
-        
-        showMessage(`✅ Načtena uložená data z ${timeText}`, 'success');
+        const diffMinutes = Math.round((now - savedDate) / 60000);
+        let timeText =
+          diffMinutes < 1 ? "před chvílí" :
+          diffMinutes === 1 ? "před minutou" :
+          diffMinutes < 60 ? `před ${diffMinutes} minutami` :
+          `před ${Math.round(diffMinutes / 60)} hodinami`;
+
+        showMessage(`✅ Načtena uložená data z ${timeText}`, "success");
         return true;
       } catch (error) {
-        console.error('❌ Chyba při načítání dat:', error);
+        console.error("❌ Chyba při načítání dat:", error);
         return false;
       }
     }
 
-    // Debounced auto-save při změně formuláře
     function scheduleAutosave() {
       if (autosaveTimeout) clearTimeout(autosaveTimeout);
       autosaveTimeout = setTimeout(saveFormData, AUTOSAVE_DEBOUNCE);
     }
 
-    // === NÁHLED OBRÁZKŮ ===
-    const avatarFileInput = document.getElementById('avatarFile');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarUrlInput = document.getElementById('avatar');
-    
-    const coverFileInput = document.getElementById('coverFile');
-    const coverPreview = document.getElementById('coverPreview');
-    const coverUrlInput = document.getElementById('cover');
+    // NÁHLED OBRÁZKŮ
+    const avatarFileInput = document.getElementById("avatarFile");
+    const avatarPreview = document.getElementById("avatarPreview");
+    const avatarUrlInput = document.getElementById("avatar");
+
+    const coverFileInput = document.getElementById("coverFile");
+    const coverPreview = document.getElementById("coverPreview");
+    const coverUrlInput = document.getElementById("cover");
 
     let avatarUploadedFile = null;
     let coverUploadedFile = null;
 
-    // Avatar file upload handler
-    avatarFileInput.addEventListener('change', (e) => {
+    avatarFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (file) {
         avatarUploadedFile = file;
@@ -501,19 +507,19 @@
           lucide.createIcons();
         };
         reader.readAsDataURL(file);
-        avatarUrlInput.value = ''; // Clear URL input when file is selected
+        avatarUrlInput.value = "";
       }
     });
 
-    // Avatar URL input handler
-    avatarUrlInput.addEventListener('input', (e) => {
+    avatarUrlInput.addEventListener("input", (e) => {
       const url = e.target.value.trim();
       if (url) {
-        avatarUploadedFile = null; // Clear file when URL is entered
-        avatarPreview.innerHTML = `<img src="${url}" alt="Avatar preview" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
+        avatarUploadedFile = null;
+        avatarPreview.innerHTML =
+          `<img src="${url}" alt="Avatar preview" class="w-full h-full object-cover" ` +
+          `onerror="this.parentElement.innerHTML='<i data-lucide:\\'alert-circle\\' class:\\'w-8 h-8 text-red-400\\'></i><span class:\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
         lucide.createIcons();
       } else if (!avatarUploadedFile) {
-        // Reset preview if no URL and no file
         avatarPreview.innerHTML = `
           <i data-lucide="upload" class="w-8 h-8 text-white/40 mb-2"></i>
           <span class="text-xs text-white/60">Klikněte pro nahrání</span>
@@ -521,11 +527,10 @@
         `;
         lucide.createIcons();
       }
-      scheduleAutosave(); // Auto-save on change
+      scheduleAutosave();
     });
 
-    // Cover file upload handler
-    coverFileInput.addEventListener('change', (e) => {
+    coverFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (file) {
         coverUploadedFile = file;
@@ -535,19 +540,19 @@
           lucide.createIcons();
         };
         reader.readAsDataURL(file);
-        coverUrlInput.value = ''; // Clear URL input when file is selected
+        coverUrlInput.value = "";
       }
     });
 
-    // Cover URL input handler
-    coverUrlInput.addEventListener('input', (e) => {
+    coverUrlInput.addEventListener("input", (e) => {
       const url = e.target.value.trim();
       if (url) {
-        coverUploadedFile = null; // Clear file when URL is entered
-        coverPreview.innerHTML = `<img src="${url}" alt="Cover preview" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
+        coverUploadedFile = null;
+        coverPreview.innerHTML =
+          `<img src="${url}" alt="Cover preview" class="w-full h-full object-cover" ` +
+          `onerror="this.parentElement.innerHTML='<i data-lucide:\\'alert-circle\\' class:\\'w-8 h-8 text-red-400\\'></i><span class:\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
         lucide.createIcons();
       } else if (!coverUploadedFile) {
-        // Reset preview if no URL and no file
         coverPreview.innerHTML = `
           <i data-lucide="image" class="w-8 h-8 text-white/40 mb-2"></i>
           <span class="text-xs text-white/60">Klikněte pro nahrání</span>
@@ -555,97 +560,101 @@
         `;
         lucide.createIcons();
       }
-      scheduleAutosave(); // Auto-save on change
+      scheduleAutosave();
     });
 
-    // === AUTO-SAVE LISTENERS ===
-    // Přidání auto-save na všechna formulářová pole
-    document.addEventListener('DOMContentLoaded', () => {
-      // Načtení uložených dat při načtení stránky
+    document.addEventListener("DOMContentLoaded", () => {
       loadFormData();
 
-      // Přidání event listenerů na všechna pole formuláře
-      const form = document.getElementById('cardForm');
+      const form = document.getElementById("cardForm");
       if (form) {
-        form.querySelectorAll('input, textarea, select').forEach(field => {
-          field.addEventListener('input', scheduleAutosave);
-          field.addEventListener('change', scheduleAutosave);
+        form.querySelectorAll("input, textarea, select").forEach((field) => {
+          field.addEventListener("input", scheduleAutosave);
+          field.addEventListener("change", scheduleAutosave);
         });
       }
 
-      // Handler pro smazání draftu
-      const clearDraftBtn = document.getElementById('clearDraft');
+      const clearDraftBtn = document.getElementById("clearDraft");
       if (clearDraftBtn) {
-        clearDraftBtn.addEventListener('click', () => {
-          if (confirm('Opravdu chcete smazat všechna uložená data a začít znovu?')) {
+        clearDraftBtn.addEventListener("click", () => {
+          if (confirm("Opravdu chcete smazat všechna uložená data a začít znovu?")) {
             localStorage.removeItem(AUTOSAVE_KEY);
-            console.log('🗑️ Draft smazán uživatelem');
-            // Reload stránky pro reset formuláře
             window.location.reload();
           }
         });
       }
 
-      // Reinitializovat ikony po načtení
       setTimeout(() => lucide.createIcons(), 100);
     });
 
     // === FIREBASE ULOŽENÍ KARTY ===
-    const form = document.getElementById('cardForm');
-    const formMessage = document.getElementById('formMessage');
-
+    const form = document.getElementById("cardForm");
+    const formMessage = document.getElementById("formMessage");
     let currentUser = null;
 
-    // Sledování přihlášení uživatele
-    auth.onAuthStateChanged((user) => {
-      currentUser = user || null;
-      console.log('Auth state changed:', currentUser ? currentUser.email : 'Not logged in');
-    });
-
-    function showMessage(text, type = 'info') {
+    function showMessage(text, type = "info") {
       if (!formMessage) return;
       formMessage.textContent = text;
-      formMessage.classList.remove('hidden');
-      formMessage.classList.remove('text-emerald-300', 'text-red-300', 'text-sky-300');
-      if (type === 'success') formMessage.classList.add('text-emerald-300');
-      if (type === 'error') formMessage.classList.add('text-red-300');
-      if (type === 'info') formMessage.classList.add('text-sky-300');
+      formMessage.classList.remove("hidden", "text-emerald-300", "text-red-300", "text-sky-300");
+      if (type === "success") formMessage.classList.add("text-emerald-300");
+      if (type === "error") formMessage.classList.add("text-red-300");
+      if (type === "info") formMessage.classList.add("text-sky-300");
     }
 
-    form.addEventListener('submit', async (e) => {
+    // Jeden centrální listener na přihlášení
+    auth.onAuthStateChanged((user) => {
+      currentUser = user || null;
+      console.log("Auth state:", currentUser ? currentUser.email : "Nepřihlášen");
+
+      const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
+      const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
+      const emailInput   = document.getElementById("email");
+
+      if (user) {
+        loggedInEls.forEach((el) => el.classList.remove("hidden"));
+        loggedOutEls.forEach((el) => el.classList.add("hidden"));
+
+        // předvyplnit e-mail
+        if (emailInput && !emailInput.value) {
+          emailInput.value = user.email || "";
+        }
+      } else {
+        loggedInEls.forEach((el) => el.classList.add("hidden"));
+        loggedOutEls.forEach((el) => el.classList.remove("hidden"));
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // VYŽADUJ PŘIHLÁŠENÍ
       if (!currentUser) {
-        showMessage('❌ Musíte být přihlášeni pro vytvoření karty. Přesměrovávám...', 'error');
+        showMessage("❌ Musíte být přihlášeni pro vytvoření karty. Přesměrovávám...", "error");
         setTimeout(() => {
-          window.location.href = 'login.html';
+          window.location.href = "login.html";
         }, 2000);
         return;
       }
 
-      // Check if avatar and cover are provided (either file or URL)
       const hasAvatar = avatarUploadedFile || avatarUrlInput.value.trim();
       const hasCover = coverUploadedFile || coverUrlInput.value.trim();
-      
+
       if (!hasAvatar) {
-        showMessage('Prosím nahrajte profilovou fotku nebo vložte URL.', 'error');
+        showMessage("Prosím nahrajte profilovou fotku nebo vložte URL.", "error");
         return;
       }
-      
+
       if (!hasCover) {
-        showMessage('Prosím nahrajte úvodní foto nebo vložte URL.', 'error');
+        showMessage("Prosím nahrajte úvodní foto nebo vložte URL.", "error");
         return;
       }
-      
-      showMessage('Ukládám kartu...', 'info');
+
+      showMessage("Ukládám kartu...", "info");
 
       const now = Date.now();
       let avatarUrl = avatarUrlInput.value.trim();
       let coverUrl = coverUrlInput.value.trim();
 
       try {
-        // Pokud jsou soubory, převést na data URL
         if (avatarUploadedFile && !avatarUrl) {
           const reader = new FileReader();
           await new Promise((resolve) => {
@@ -670,90 +679,83 @@
 
         const data = {
           uid: currentUser.uid,
-          name: document.getElementById('name').value.trim(),
-          handle: document.getElementById('handle').value.trim(),
-          email: document.getElementById('email').value.trim(),
-          city: document.getElementById('city').value.trim(),
-          age: document.getElementById('age').value.trim(),
-          category: document.getElementById('category').value || null,
+          name: document.getElementById("name").value.trim(),
+          handle: document.getElementById("handle").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          city: document.getElementById("city").value.trim(),
+          age: document.getElementById("age").value.trim(),
+          category: document.getElementById("category").value || null,
           avatar: avatarUrl,
           cover: coverUrl,
-          bio: document.getElementById('bio').value.trim(),
+          bio: document.getElementById("bio").value.trim(),
           metrics: {
             instagram: {
-              url: document.getElementById('instagramUrl').value.trim() || null,
-              followers: Number(document.getElementById('instagramFollowers').value) || null,
-              engagement: Number(document.getElementById('instagramEngagement').value) || null,
+              url: document.getElementById("instagramUrl").value.trim() || null,
+              followers: Number(document.getElementById("instagramFollowers").value) || null,
+              engagement: Number(document.getElementById("instagramEngagement").value) || null,
             },
             tiktok: {
-              url: document.getElementById('tiktokUrl').value.trim() || null,
-              followers: Number(document.getElementById('tiktokFollowers').value) || null,
-              reach: Number(document.getElementById('tiktokReach').value) || null,
+              url: document.getElementById("tiktokUrl").value.trim() || null,
+              followers: Number(document.getElementById("tiktokFollowers").value) || null,
+              reach: Number(document.getElementById("tiktokReach").value) || null,
             },
             youtube: {
-              url: document.getElementById('youtubeUrl').value.trim() || null,
-              followers: Number(document.getElementById('youtubeFollowers').value) || null,
+              url: document.getElementById("youtubeUrl").value.trim() || null,
+              followers: Number(document.getElementById("youtubeFollowers").value) || null,
             },
             facebook: {
-              url: document.getElementById('facebookUrl').value.trim() || null,
-              followers: Number(document.getElementById('facebookFollowers').value) || null,
+              url: document.getElementById("facebookUrl").value.trim() || null,
+              followers: Number(document.getElementById("facebookFollowers").value) || null,
             },
             pinterest: {
-              url: document.getElementById('pinterestUrl').value.trim() || null,
-              followers: Number(document.getElementById('pinterestFollowers').value) || null,
+              url: document.getElementById("pinterestUrl").value.trim() || null,
+              followers: Number(document.getElementById("pinterestFollowers").value) || null,
             },
           },
           prices: {
-            reels: Number(document.getElementById('priceReels').value) || null,
-            stories: Number(document.getElementById('priceStories').value) || null,
-            custom: document.getElementById('priceCustom').value.trim() || null,
+            reels: Number(document.getElementById("priceReels").value) || null,
+            stories: Number(document.getElementById("priceStories").value) || null,
+            custom: document.getElementById("priceCustom").value.trim() || null,
           },
-          brandInfo: document.getElementById('brandInfo').value.trim() || null,
-          visibility: 'public',
-          status: 'active',
+          brandInfo: document.getElementById("brandInfo").value.trim() || null,
+          visibility: "public",
+          status: "active",
           updatedAt: now,
           createdAt: now,
         };
 
-        // ✅ ULOŽIT DO FIRESTORE
-        console.log('💾 Ukládám kartu do Firestore pro uživatele:', currentUser.uid);
-        await db.collection('creators').doc(currentUser.uid).set(data);
-        console.log('✅ Karta úspěšně uložena do Firestore!');
-        
-        // Smazat draft po úspěšném uložení
+        console.log("💾 Ukládám kartu do Firestore pro uživatele:", currentUser.uid);
+        await db.collection("creators").doc(currentUser.uid).set(data);
+        console.log("✅ Karta úspěšně uložena do Firestore!");
+
         localStorage.removeItem(AUTOSAVE_KEY);
-        console.log('🗑️ Draft automaticky smazán po úspěšném uložení');
-        
-        // Show success screen
+
         showSuccessScreen(data);
-        
       } catch (err) {
-        console.error('❌ Chyba při ukládání:', err);
-        showMessage('Nastala chyba při ukládání karty: ' + err.message, 'error');
+        console.error("❌ Chyba při ukládání:", err);
+        showMessage("Nastala chyba při ukládání karty: " + err.message, "error");
       }
     });
 
-    // Success screen
     function showSuccessScreen(cardData) {
-      const formSection = document.querySelector('section.max-w-3xl');
-      
-      // Výpočet celkového počtu sledujících
+      const formSection = document.querySelector("section.max-w-3xl");
+
       let totalFollowers = 0;
       if (cardData.metrics.instagram?.followers) totalFollowers += cardData.metrics.instagram.followers;
       if (cardData.metrics.tiktok?.followers) totalFollowers += cardData.metrics.tiktok.followers;
       if (cardData.metrics.youtube?.followers) totalFollowers += cardData.metrics.youtube.followers;
       if (cardData.metrics.facebook?.followers) totalFollowers += cardData.metrics.facebook.followers;
       if (cardData.metrics.pinterest?.followers) totalFollowers += cardData.metrics.pinterest.followers;
-      
+
       const formatFollowers = (num) => {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+        if (!num) return "0";
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+        if (num >= 1000) return (num / 1000).toFixed(0) + "k";
         return num.toString();
       };
-      
+
       formSection.innerHTML = `
         <div class="py-8">
-          <!-- Success Animation -->
           <div class="mb-6 text-center">
             <div class="inline-block relative mb-4">
               <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-500/30 grid place-items-center animate-bounce">
@@ -765,32 +767,28 @@
               Karta úspěšně vytvořena! 🎉
             </h1>
             <p class="text-white/60 text-sm">
-              Vaše karta je nyní veřejně dostupná
+              Vaše karta je nyní veřejně dostupná.
             </p>
           </div>
 
-          <!-- INFLUENCER CARD PREVIEW (jako na marketplace) -->
           <div class="max-w-sm mx-auto mb-8">
             <article class="glass-panel rounded-2xl border border-white/10 overflow-hidden hover:border-fuchsia-400/30 transition-all duration-300 group">
-              <!-- Cover Photo -->
               <div class="relative h-32 bg-gradient-to-br from-fuchsia-600/30 to-amber-400/30 overflow-hidden">
-                ${cardData.cover ? 
-                  `<img src="${cardData.cover}" alt="Cover" class="w-full h-full object-cover" />` : 
-                  '<div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20"></div>'
+                ${cardData.cover
+                  ? `<img src="${cardData.cover}" alt="Cover" class="w-full h-full object-cover" />`
+                  : '<div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20"></div>'
                 }
                 <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/80 to-transparent"></div>
               </div>
 
-              <!-- Card Content -->
               <div class="p-5 -mt-12 relative">
-                <!-- Avatar -->
                 <div class="flex items-start gap-4 mb-4">
                   <div class="relative flex-shrink-0">
-                    ${cardData.avatar ? 
-                      `<img src="${cardData.avatar}" alt="${cardData.name}" class="w-20 h-20 rounded-xl object-cover ring-4 ring-neutral-950 shadow-xl group-hover:ring-fuchsia-500/50 transition-all" />` :
-                      `<div class="w-20 h-20 rounded-xl bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center ring-4 ring-neutral-950 shadow-xl">
-                        <i data-lucide="user" class="w-10 h-10 text-white"></i>
-                      </div>`
+                    ${cardData.avatar
+                      ? `<img src="${cardData.avatar}" alt="${cardData.name}" class="w-20 h-20 rounded-xl object-cover ring-4 ring-neutral-950 shadow-xl group-hover:ring-fuchsia-500/50 transition-all" />`
+                      : `<div class="w-20 h-20 rounded-xl bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center ring-4 ring-neutral-950 shadow-xl">
+                          <i data-lucide="user" class="w-10 h-10 text-white"></i>
+                        </div>`
                     }
                     <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 grid place-items-center ring-2 ring-neutral-950">
                       <i data-lucide="check" class="w-3 h-3 text-white"></i>
@@ -799,94 +797,108 @@
                   
                   <div class="flex-1 min-w-0 pt-8">
                     <h3 class="font-bold text-xl truncate mb-1">${cardData.name}</h3>
-                    <p class="text-sm text-white/60 truncate mb-2">${cardData.handle || '@' + cardData.name.toLowerCase().replace(/\s+/g, '')}</p>
-                    ${cardData.category ? 
-                      `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-medium">
-                        <i data-lucide="tag" class="w-3 h-3"></i>
-                        ${cardData.category}
-                      </span>` : ''
+                    <p class="text-sm text-white/60 truncate mb-2">
+                      ${cardData.handle || "@" + cardData.name.toLowerCase().replace(/\s+/g, "")}
+                    </p>
+                    ${cardData.category
+                      ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/30 text-fuchsia-300 text-xs font-medium">
+                          <i data-lucide="tag" class="w-3 h-3"></i>
+                          ${cardData.category}
+                        </span>`
+                      : ""
                     }
                   </div>
                 </div>
 
-                <!-- Bio -->
-                ${cardData.bio ? `
-                  <div class="mb-4">
-                    <p class="text-sm text-white/70 line-clamp-2">${cardData.bio}</p>
-                  </div>
-                ` : ''}
+                ${cardData.bio
+                  ? `<div class="mb-4">
+                      <p class="text-sm text-white/70 line-clamp-2">${cardData.bio}</p>
+                    </div>`
+                  : ""
+                }
 
-                <!-- Stats Grid -->
                 <div class="grid grid-cols-3 gap-2 mb-4">
-                  ${totalFollowers > 0 ? `
-                    <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
-                      <div class="text-xs text-sky-300 mb-1">Sledující</div>
-                      <div class="font-bold text-sm">${formatFollowers(totalFollowers)}</div>
-                    </div>
-                  ` : ''}
-                  ${cardData.city ? `
-                    <div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
-                      <div class="text-xs text-amber-300 mb-1">Město</div>
-                      <div class="font-bold text-sm truncate">${cardData.city}</div>
-                    </div>
-                  ` : ''}
-                  ${cardData.age ? `
-                    <div class="rounded-xl bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-600/5 border border-fuchsia-500/20 p-3 text-center">
-                      <div class="text-xs text-fuchsia-300 mb-1">Věk</div>
-                      <div class="font-bold text-sm">${cardData.age}</div>
-                    </div>
-                  ` : ''}
-                </div>
-
-                <!-- Social Platforms -->
-                <div class="flex items-center gap-2 flex-wrap mb-4">
-                  ${cardData.metrics.instagram?.url ? 
-                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-pink-500/5 border border-fuchsia-500/20">
-                      <i data-lucide="instagram" class="w-3 h-3 text-fuchsia-400"></i>
-                      <span class="text-xs text-fuchsia-300">${formatFollowers(cardData.metrics.instagram.followers || 0)}</span>
-                    </div>` : ''
-                  }
-                  ${cardData.metrics.tiktok?.url ? 
-                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-sky-500/10 to-cyan-500/5 border border-sky-500/20">
-                      <i data-lucide="music" class="w-3 h-3 text-sky-400"></i>
-                      <span class="text-xs text-sky-300">${formatFollowers(cardData.metrics.tiktok.followers || 0)}</span>
-                    </div>` : ''
-                  }
-                  ${cardData.metrics.youtube?.url ? 
-                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-red-500/10 to-rose-500/5 border border-red-500/20">
-                      <i data-lucide="youtube" class="w-3 h-3 text-red-400"></i>
-                      <span class="text-xs text-red-300">${formatFollowers(cardData.metrics.youtube.followers || 0)}</span>
-                    </div>` : ''
-                  }
-                  ${cardData.metrics.facebook?.url ? 
-                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20">
-                      <i data-lucide="facebook" class="w-3 h-3 text-blue-400"></i>
-                      <span class="text-xs text-blue-300">${formatFollowers(cardData.metrics.facebook.followers || 0)}</span>
-                    </div>` : ''
-                  }
-                  ${cardData.metrics.pinterest?.url ? 
-                    `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-rose-500/10 to-pink-500/5 border border-rose-500/20">
-                      <i data-lucide="image" class="w-3 h-3 text-rose-400"></i>
-                      <span class="text-xs text-rose-300">${formatFollowers(cardData.metrics.pinterest.followers || 0)}</span>
-                    </div>` : ''
-                  }
-                </div>
-
-                <!-- Prices Preview -->
-                ${cardData.prices?.reels || cardData.prices?.stories ? `
-                  <div class="pt-3 border-t border-white/10">
-                    <div class="text-xs text-white/50 mb-2">Orientační ceny:</div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                      ${cardData.prices.reels ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-emerald-400">Reels: ${cardData.prices.reels} Kč</span>` : ''}
-                      ${cardData.prices.stories ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-sky-400">Stories: ${cardData.prices.stories} Kč</span>` : ''}
-                    </div>
+                  <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
+                    <div class="text-xs text-sky-300 mb-1">Sledující</div>
+                    <div class="font-bold text-sm">${formatFollowers(totalFollowers)}</div>
                   </div>
-                ` : ''}
+                  ${cardData.city
+                    ? `<div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
+                        <div class="text-xs text-amber-300 mb-1">Město</div>
+                        <div class="font-bold text-sm truncate">${cardData.city}</div>
+                      </div>`
+                    : ""
+                  }
+                  ${cardData.age
+                    ? `<div class="rounded-xl bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-600/5 border border-fuchsia-500/20 p-3 text-center">
+                        <div class="text-xs text-fuchsia-300 mb-1">Věk</div>
+                        <div class="font-bold text-sm">${cardData.age}</div>
+                      </div>`
+                    : ""
+                  }
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap mb-4">
+                  ${cardData.metrics.instagram?.url
+                    ? `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-pink-500/5 border border-fuchsia-500/20">
+                        <i data-lucide="instagram" class="w-3 h-3 text-fuchsia-400"></i>
+                        <span class="text-xs text-fuchsia-300">${formatFollowers(cardData.metrics.instagram.followers || 0)}</span>
+                      </div>`
+                    : ""
+                  }
+                  ${cardData.metrics.tiktok?.url
+                    ? `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-sky-500/10 to-cyan-500/5 border border-sky-500/20">
+                        <i data-lucide="music" class="w-3 h-3 text-sky-400"></i>
+                        <span class="text-xs text-sky-300">${formatFollowers(cardData.metrics.tiktok.followers || 0)}</span>
+                      </div>`
+                    : ""
+                  }
+                  ${cardData.metrics.youtube?.url
+                    ? `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-red-500/10 to-rose-500/5 border border-red-500/20">
+                        <i data-lucide="youtube" class="w-3 h-3 text-red-400"></i>
+                        <span class="text-xs text-red-300">${formatFollowers(cardData.metrics.youtube.followers || 0)}</span>
+                      </div>`
+                    : ""
+                  }
+                  ${cardData.metrics.facebook?.url
+                    ? `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20">
+                        <i data-lucide="facebook" class="w-3 h-3 text-blue-400"></i>
+                        <span class="text-xs text-blue-300">${formatFollowers(cardData.metrics.facebook.followers || 0)}</span>
+                      </div>`
+                    : ""
+                  }
+                  ${cardData.metrics.pinterest?.url
+                    ? `<div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-br from-rose-500/10 to-pink-500/5 border border-rose-500/20">
+                        <i data-lucide="image" class="w-3 h-3 text-rose-400"></i>
+                        <span class="text-xs text-rose-300">${formatFollowers(cardData.metrics.pinterest.followers || 0)}</span>
+                      </div>`
+                    : ""
+                  }
+                </div>
+
+                ${
+                  cardData.prices?.reels || cardData.prices?.stories
+                    ? `<div class="pt-3 border-t border-white/10">
+                        <div class="text-xs text-white/50 mb-2">Orientační ceny:</div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                          ${
+                            cardData.prices.reels
+                              ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-emerald-400">Reels: ${cardData.prices.reels} Kč</span>`
+                              : ""
+                          }
+                          ${
+                            cardData.prices.stories
+                              ? `<span class="text-xs px-2 py-1 rounded-lg bg-white/5 text-sky-400">Stories: ${cardData.prices.stories} Kč</span>`
+                              : ""
+                          }
+                        </div>
+                      </div>`
+                    : ""
+                }
               </div>
             </article>
           </div>
 
-          <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
             <a href="index.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-bold shadow-soft hover:opacity-90 transition">
               <i data-lucide="eye" class="w-5 h-5"></i>
@@ -898,7 +910,6 @@
             </a>
           </div>
 
-          <!-- Additional Options -->
           <div class="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm">
             <button onclick="window.location.reload()" class="text-white/60 hover:text-white transition inline-flex items-center gap-2">
               <i data-lucide="edit" class="w-4 h-4"></i>
@@ -915,79 +926,12 @@
               Získat VIP status
             </a>
           </div>
-
-          <!-- Pro Tips -->
-          <div class="mt-12 max-w-2xl mx-auto">
-            <div class="glass-panel rounded-2xl border border-sky-500/20 p-6">
-              <div class="flex items-start gap-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-500/30 grid place-items-center flex-shrink-0">
-                  <i data-lucide="lightbulb" class="w-5 h-5 text-sky-400"></i>
-                </div>
-                <div class="text-left">
-                  <h3 class="font-bold text-lg mb-2 text-sky-300">Co dál?</h3>
-                  <ul class="space-y-2 text-sm text-white/70">
-                    <li class="flex items-start gap-2">
-                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
-                      <span>Sdílejte odkaz na vaši kartu na sociálních sítích</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
-                      <span>Aktualizujte pravidelně své statistiky a ceny</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
-                      <span>Odpovídejte rychle na dotazy od značek</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <i data-lucide="check" class="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0"></i>
-                      <span>Zvažte upgrade na VIP pro 3× vyšší viditelnost</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       `;
-      
-      // Scroll to top smoothly
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Reinitialize Lucide icons
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => lucide.createIcons(), 100);
     }
   </script>
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!window.firebase || !firebase.auth) {
-      console.warn("Firebase není dostupný na zalozit-kartu.html");
-      return;
-    }
-
-    const auth = firebase.auth();
-
-    const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
-    const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
-    const emailInput   = document.getElementById("email"); // pole ve formuláři
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        // ✅ uživatel je přihlášen
-        loggedInEls.forEach(el  => el.classList.remove("hidden"));
-        loggedOutEls.forEach(el => el.classList.add("hidden"));
-
-        // předvyplnit e-mail do formuláře, pokud tam ještě nic není
-        if (emailInput && !emailInput.value) {
-          emailInput.value = user.email || "";
-        }
-      } else {
-        // ❌ nepřihlášený
-        loggedInEls.forEach(el  => el.classList.add("hidden"));
-        loggedOutEls.forEach(el => el.classList.remove("hidden"));
-      }
-    });
-  });
-</script>
-
 </body>
 </html>
