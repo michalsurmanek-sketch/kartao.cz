@@ -588,25 +588,26 @@
       setTimeout(() => lucide.createIcons(), 100);
     });
 
-    // === FIREBASE ČÁST – přihlášení + uložení karty ===
+       // === FIREBASE ČÁST – přihlášení + uložení karty ===
     let currentUser = null;
-    let auth, db;
 
-    if (!window.firebase || !firebase.apps.length) {
-      console.error("❌ Firebase není inicializováno.");
+    if (!window.auth || !window.db) {
+      console.error("❌ Firebase není inicializováno (auth/db chybí).");
     } else {
-      auth = firebase.auth();
-      db   = firebase.firestore();
+      const auth = window.auth;
+      const db   = window.db;
 
       const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
       const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
-      const headerLogout = document.querySelector('[data-show-when="loggedin"]');
+      const logoutBtn    = document.querySelector('[data-show-when="loggedin"]');
 
+      // 🔐 Stav přihlášení
       auth.onAuthStateChanged((user) => {
         currentUser = user || null;
-        console.log("Auth state:", currentUser ? currentUser.email : "Nepřihlášen");
+        console.log("Auth state (zalozit-kartu.html):", currentUser ? currentUser.email : "Nepřihlášen");
 
         if (user) {
+          // přihlášen
           loggedInEls.forEach((el)  => el.classList.remove("hidden"));
           loggedOutEls.forEach((el) => el.classList.add("hidden"));
 
@@ -615,17 +616,141 @@
             emailInput.value = user.email || "";
           }
         } else {
+          // odhlášen
           loggedInEls.forEach((el)  => el.classList.add("hidden"));
           loggedOutEls.forEach((el) => el.classList.remove("hidden"));
         }
       });
 
-      // odhlášení z hlavičky
-      if (headerLogout) {
-        headerLogout.addEventListener("click", () => {
-          auth.signOut();
+      // 🔓 Odhlášení z hlavičky
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          auth.signOut()
+            .then(() => {
+              console.log("✅ Uživatel odhlášen");
+            })
+            .catch(err => {
+              console.error("❌ Chyba při odhlášení:", err);
+            });
         });
       }
+
+      // 💾 Odeslání formuláře + uložení karty
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+          showMessage("❌ Musíte být přihlášeni pro vytvoření karty. Přesměrovávám...", "error");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
+          return;
+        }
+
+        const hasAvatar = avatarUploadedFile || avatarUrlInput.value.trim();
+        const hasCover  = coverUploadedFile  || coverUrlInput.value.trim();
+
+        if (!hasAvatar) {
+          showMessage("Prosím nahrajte profilovou fotku nebo vložte URL.", "error");
+          return;
+        }
+
+        if (!hasCover) {
+          showMessage("Prosím nahrajte úvodní foto nebo vložte URL.", "error");
+          return;
+        }
+
+        showMessage("Ukládám kartu...", "info");
+
+        const now = Date.now();
+        let avatarUrl = avatarUrlInput.value.trim();
+        let coverUrl  = coverUrlInput.value.trim();
+
+        try {
+          if (avatarUploadedFile && !avatarUrl) {
+            const reader = new FileReader();
+            await new Promise((resolve) => {
+              reader.onload = (ev) => {
+                avatarUrl = ev.target.result;
+                resolve();
+              };
+              reader.readAsDataURL(avatarUploadedFile);
+            });
+          }
+
+          if (coverUploadedFile && !coverUrl) {
+            const reader = new FileReader();
+            await new Promise((resolve) => {
+              reader.onload = (ev) => {
+                coverUrl = ev.target.result;
+                resolve();
+              };
+              reader.readAsDataURL(coverUploadedFile);
+            });
+          }
+
+          const data = {
+            uid: currentUser.uid,
+            name: document.getElementById("name").value.trim(),
+            handle: document.getElementById("handle").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            city: document.getElementById("city").value.trim(),
+            age: document.getElementById("age").value.trim(),
+            category: document.getElementById("category").value || null,
+            avatar: avatarUrl,
+            cover: coverUrl,
+            bio: document.getElementById("bio").value.trim(),
+            metrics: {
+              instagram: {
+                url: document.getElementById("instagramUrl").value.trim() || null,
+                followers: Number(document.getElementById("instagramFollowers").value) || null,
+                engagement: Number(document.getElementById("instagramEngagement").value) || null,
+              },
+              tiktok: {
+                url: document.getElementById("tiktokUrl").value.trim() || null,
+                followers: Number(document.getElementById("tiktokFollowers").value) || null,
+                reach: Number(document.getElementById("tiktokReach").value) || null,
+              },
+              youtube: {
+                url: document.getElementById("youtubeUrl").value.trim() || null,
+                followers: Number(document.getElementById("youtubeFollowers").value) || null,
+              },
+              facebook: {
+                url: document.getElementById("facebookUrl").value.trim() || null,
+                followers: Number(document.getElementById("facebookFollowers").value) || null,
+              },
+              pinterest: {
+                url: document.getElementById("pinterestUrl").value.trim() || null,
+                followers: Number(document.getElementById("pinterestFollowers").value) || null,
+              },
+            },
+            prices: {
+              reels:   Number(document.getElementById("priceReels").value)   || null,
+              stories: Number(document.getElementById("priceStories").value) || null,
+              custom:  document.getElementById("priceCustom").value.trim()   || null,
+            },
+            brandInfo:  document.getElementById("brandInfo").value.trim() || null,
+            visibility: "public",
+            status:     "active",
+            updatedAt:  now,
+            createdAt:  now,
+          };
+
+          console.log("💾 Ukládám kartu do Firestore pro uživatele:", currentUser.uid);
+          await db.collection("creators").doc(currentUser.uid).set(data);
+          console.log("✅ Karta úspěšně uložena do Firestore!");
+
+          localStorage.removeItem(AUTOSAVE_KEY);
+          showSuccessScreen(data);
+        } catch (err) {
+          console.error("❌ Chyba při ukládání:", err);
+          showMessage("Nastala chyba při ukládání karty: " + err.message, "error");
+        }
+      });
+    }
+
+  
 
       // odeslání formuláře
       form.addEventListener("submit", async (e) => {
