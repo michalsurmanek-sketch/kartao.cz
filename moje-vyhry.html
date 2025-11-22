@@ -1,0 +1,166 @@
+<!-- Sekce Moje výhry – Kartao.cz -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Moje výhry</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            rose: tailwind.colors.rose,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white py-10">
+
+  <div class="max-w-5xl mx-auto px-4">
+    <h1 class="text-3xl font-bold mb-2 flex items-center gap-3">
+      <i data-lucide="trophy" class="w-8 h-8 text-amber-400"></i>
+      Moje výhry
+    </h1>
+    <p class="text-sm text-white/60 mb-6">
+      Tady se ti ukládají všechny výhry z <span class="text-amber-300 font-semibold">Mystery Boxu</span> a dalších odměn Kartao.cz.
+    </p>
+
+    <!-- Stav, když ještě nic nevyhrál -->
+    <div id="emptyState" class="mt-10 rounded-2xl border border-dashed border-white/15 bg-neutral-900/60 px-6 py-10 text-center">
+      <div class="mx-auto mb-4 w-12 h-12 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+        <i data-lucide="package-open" class="w-6 h-6"></i>
+      </div>
+      <h2 class="font-semibold text-lg mb-2">Zatím žádné výhry</h2>
+      <p class="text-sm text-white/60 mb-4">Otevři svůj první Mystery Box a výhra se ti uloží právě sem.</p>
+      <a href="mystery-box.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium text-black">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>Jít otevřít Mystery Box</span>
+      </a>
+    </div>
+
+    <!-- GRID VÝHER (doplní se z JS) -->
+    <div id="rewardsGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+  </div>
+
+  <script>
+    // Jen čte a zobrazuje výhry, které ukládá Mystery Box (localStorage)
+    // Klíč: "kartao_rewards"
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      if (isNaN(d)) return "";
+      const den = String(d.getDate()).padStart(2, "0");
+      const mesic = String(d.getMonth() + 1).padStart(2, "0");
+      const rok = d.getFullYear();
+      return `${den}. ${mesic}. ${rok}`;
+    }
+
+    function getGradientClasses(type) {
+      switch (type) {
+        case "mystery":
+          return "from-amber-400 to-fuchsia-500";
+        case "gold-card":
+          return "from-emerald-400 to-emerald-600";
+        case "ticket":
+          return "from-rose-400 to-rose-600";
+        default:
+          return "from-neutral-700 to-neutral-900";
+      }
+    }
+
+    function getIcon(type) {
+      switch (type) {
+        case "mystery":
+          return "gift";
+        case "gold-card":
+          return "badge-check";
+        case "ticket":
+          return "ticket";
+        default:
+          return "star";
+      }
+    }
+
+    function getButtonLabel(type) {
+      switch (type) {
+        case "mystery":
+          return "Otevřít výhru";
+        case "gold-card":
+          return "Zobrazit kartu";
+        case "ticket":
+          return "Zobrazit tiket";
+        default:
+          return "Detail";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      const grid = document.getElementById("rewardsGrid");
+      const emptyState = document.getElementById("emptyState");
+
+      // 1) Načti výhry z localStorage (uloží je Mystery Box)
+      let rewards = [];
+      try {
+        rewards = JSON.parse(localStorage.getItem("kartao_rewards") || "[]");
+      } catch (e) {
+        rewards = [];
+      }
+
+      if (!rewards || rewards.length === 0) {
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      grid.classList.remove("hidden");
+
+      rewards.forEach((reward) => {
+        const card = document.createElement("div");
+        card.className = "p-5 rounded-2xl bg-neutral-900 border border-white/10 shadow-soft hover:shadow-xl transition-all";
+
+        const gradient = getGradientClasses(reward.type);
+        const icon = getIcon(reward.type);
+        const btnLabel = getButtonLabel(reward.type);
+
+        card.innerHTML = `
+          <div class="w-full h-32 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4">
+            <i data-lucide="${icon}" class="w-10 h-10 text-white"></i>
+          </div>
+          <h3 class="font-semibold text-lg mb-1">${reward.title || "Výhra"}</h3>
+          <p class="text-sm text-white/60 mb-3">Vyhráno: ${formatDate(reward.date)}</p>
+          <button class="w-full py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 font-semibold text-sm text-black" data-reward-id="${reward.id || ""}">
+            ${btnLabel}
+          </button>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      // Po dynamickém vložení ikon je znovu vygenerujeme
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
