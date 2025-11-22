@@ -957,5 +957,37 @@
       setTimeout(() => lucide.createIcons(), 100);
     }
   </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.firebase || !firebase.auth) {
+      console.warn("Firebase není dostupný na zalozit-kartu.html");
+      return;
+    }
+
+    const auth = firebase.auth();
+
+    const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
+    const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
+    const emailInput   = document.getElementById("email"); // pole ve formuláři
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // ✅ uživatel je přihlášen
+        loggedInEls.forEach(el  => el.classList.remove("hidden"));
+        loggedOutEls.forEach(el => el.classList.add("hidden"));
+
+        // předvyplnit e-mail do formuláře, pokud tam ještě nic není
+        if (emailInput && !emailInput.value) {
+          emailInput.value = user.email || "";
+        }
+      } else {
+        // ❌ nepřihlášený
+        loggedInEls.forEach(el  => el.classList.add("hidden"));
+        loggedOutEls.forEach(el => el.classList.remove("hidden"));
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
