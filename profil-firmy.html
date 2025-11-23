@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Profil firmy</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald,
+            neutral: tailwind.colors.neutral,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-emerald-950 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
+        <!-- Logo -->
+        <a href="firmy-dashboard.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-400 to-sky-400 grid place-items-center shadow-soft">
+            <i data-lucide="building" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">Profil firmy</span>
+            </div>
+            <p class="text-[11px] text-white/60">Firemní účet a nastavení</p>
+          </div>
+        </a>
+
+        <!-- Kredity & Odhlášení -->
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- FIREMNÍ PROFIL -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-6">
+          <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+
+            <!-- Logo firmy -->
+            <div class="relative">
+              <div class="w-28 h-28 rounded-3xl bg-gradient-to-tr from-emerald-400 to-sky-400 p-[3px] shadow-[0_0_25px_rgba(16,185,129,0.6)]">
+                <div class="w-full h-full rounded-3xl bg-neutral-950 grid place-items-center text-4xl font-bold text-emerald-300">
+                  <span id="companyInitial">F</span>
+                </div>
+              </div>
+              <label class="absolute -bottom-2 left-1/2 -translate-x-1/2 cursor-pointer text-[11px] px-2 py-1 rounded-full bg-white/10 border border-white/20 hover:bg-white/20">
+                Nahrát logo
+                <input type="file" class="hidden" />
+              </label>
+            </div>
+
+            <!-- Název + info -->
+            <div class="flex-1 space-y-2">
+              <h1 class="text-xl md:text-2xl font-semibold" id="companyName">Moje firma s.r.o.</h1>
+              <p class="text-xs text-white/60">Firemní účet na Kartao.cz · Přehled kampaní · Kredity · Nastavení</p>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs mt-4">
+                <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                  <p class="text-white/60">Aktivní kampaně</p>
+                  <p class="text-sm font-semibold">3</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                  <p class="text-white/60">Utraceno</p>
+                  <p class="text-sm font-semibold">8 200 K‑Coins</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                  <p class="text-white/60">VIP stav</p>
+                  <p class="text-sm font-semibold text-amber-300">zatím OFF</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                  <p class="text-white/60">Typ účtu</p>
+                  <p class="text-sm font-semibold">Firma</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FIREMNÍ ÚDAJE -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4">
+          <h2 class="text-sm font-semibold text-white/70">Firemní údaje</h2>
+
+          <div class="grid md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <p class="text-white/50 mb-1">Název firmy</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="Moje firma s.r.o." />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">IČO</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="12345678" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">DIČ</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="CZ12345678" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">Email</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="info@mojefirma.cz" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">Telefon</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="+420 777 123 456" />
+            </div>
+          </div>
+        </section>
+
+        <!-- FAKTURAČNÍ ÚDAJE -->
+        <section class="rounded-3
+        <!-- FAKTURAČNÍ ÚDAJE -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4 mt-4">
+          <h2 class="text-sm font-semibold text-white/70">Fakturační údaje</h2>
+          <div class="grid md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <p class="text-white/50 mb-1">Fakturační adresa</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="Ulice 123, Praha" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">PSČ</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="11000" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">Město</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="Praha" />
+            </div>
+            <div>
+              <p class="text-white/50 mb-1">Země</p>
+              <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" value="Česká republika" />
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
+        <span>© 2025 Kartao.cz – Profil firmy</span>
+        <span>K-Coins · firemní účet · nastavení</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Firebase + Credits System -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!window.firebase || !firebase.auth) return;
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+        const cs = new CreditsSystem(user.uid);
+        const credits = cs.getCredits();
+
+        const headerEl = document.getElementById("headerCredits");
+        if (headerEl) headerEl.textContent = credits;
+
+        if (window.lucide) lucide.createIcons();
+      });
+    });
+  </script>
+
+</body>
+</html>
