@@ -2027,33 +2027,61 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 <!-- Hamburger Menu -->
 <script src="hamburger-menu.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // --- SEM nastavit roli uživatele ---
-  // Později se to napojí na Firebase
-  const role = window.currentUserRole || "influencer";
+  // ZATÍM ručně – ať vidíš, že to reaguje
+  // Pak se to napojí na Firebase / backend
+  const role = window.currentUserRole || "influencer"; 
   // "influencer" nebo "firma"
 
   const titleEl = document.getElementById("userCardTitle");
   const subtitleEl = document.getElementById("userCardSubtitle");
   const iconEl = document.getElementById("userCardIcon");
+  const linkEl = document.getElementById("userCardLink");
 
+  // Když nenajdeme text, nemá smysl pokračovat
   if (!titleEl) return;
 
   if (role === "firma") {
+    // texty
     titleEl.textContent = "Moje firma";
-    subtitleEl.textContent = "Firemní profil & správa";
-    iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
+    if (subtitleEl) {
+      subtitleEl.textContent = "Firemní profil & správa";
+    }
+
+    // ikona
+    if (iconEl) {
+      iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
+    }
+
+    // odkaz – jen pokud existuje
+    if (linkEl) {
+      linkEl.href = "moje-firma.html";
+    }
+
   } else {
+    // influencer / default
     titleEl.textContent = "Moje karta";
-    subtitleEl.textContent = "Profil & ovládání účtu";
-    iconEl.innerHTML = `<i data-lucide="id-card" class="w-4 h-4"></i>`;
+    if (subtitleEl) {
+      subtitleEl.textContent = "Profil & ovládání účtu";
+    }
+
+    if (iconEl) {
+      iconEl.innerHTML = `<i data-lucide="id-card" class="w-4 h-4"></i>`;
+    }
+
+    if (linkEl) {
+      linkEl.href = "moje-karta.html";
+    }
   }
 
-  if (window.lucide) lucide.createIcons();
+  // znovu překreslit lucide ikony
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 });
 </script>
-
 
 </body>
 </html>
