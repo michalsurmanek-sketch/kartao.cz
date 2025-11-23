@@ -2027,27 +2027,24 @@ window.addEventListener('beforeinstallprompt', (e) => {
 <script src="hamburger-menu.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const role = window.currentUserRole || "influencer"; 
-    // hodnoty: "influencer" / "firma"
+  const titleEl = document.getElementById("userCardTitle");
+  const subtitleEl = document.getElementById("userCardSubtitle");
+  const iconEl = document.getElementById("userCardIcon");
 
-    const titleEl = document.getElementById("userCardTitle");
-    const subtitleEl = document.getElementById("userCardSubtitle");
-    const iconEl = document.getElementById("userCardIcon");
+  if (!titleEl) return;
 
-    if (!titleEl) return;
+  // TEST: vždy přepiš na "Moje firma"
+  titleEl.textContent = "Moje firma";
+  subtitleEl.textContent = "Firemní profil & správa";
+  if (iconEl) {
+    iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
+  }
 
-    if (role === "firma") {
-        titleEl.textContent = "Moje firma";
-        subtitleEl.textContent = "Firemní profil & správa";
-        iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
-    } else {
-        titleEl.textContent = "Moje karta";
-        subtitleEl.textContent = "Profil & ovládání účtu";
-        iconEl.innerHTML = `<i data-lucide="id-card" class="w-4 h-4"></i>`;
-    }
-
-    if (window.lucide) lucide.createIcons();
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 });
 </script>
+
 </body>
 </html>
