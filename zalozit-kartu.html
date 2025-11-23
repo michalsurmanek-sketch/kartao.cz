@@ -603,28 +603,28 @@
       const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
       const headerLogout = document.querySelector('[data-show-when="loggedin"]');
 
-      // sledování stavu přihlášení
+      // sledování stavu přihlášení – STRÁNKA JEN PRO PŘIHLÁŠENÉ
       auth.onAuthStateChanged((user) => {
-        currentUser = user || null;
-        console.log(
-          "Auth state na zalozit-kartu.html:",
-          currentUser ? currentUser.email : "Nepřihlášen"
-        );
-
-        if (user) {
-          // ukázat tlačítko Odhlásit se, schovat Přihlásit se
-          loggedInEls.forEach((el)  => el.classList.remove("hidden"));
-          loggedOutEls.forEach((el) => el.classList.add("hidden"));
-
-          // předvyplnit e-mail
-          const emailInput = document.getElementById("email");
-          if (emailInput && !emailInput.value) {
-            emailInput.value = user.email || "";
-          }
-        } else {
-          // opačně
+        if (!user) {
+          console.log("❌ Nepřihlášený uživatel – přesměrovávám na login.");
+          // pro jistotu přepnout UI tlačítek
           loggedInEls.forEach((el)  => el.classList.add("hidden"));
           loggedOutEls.forEach((el) => el.classList.remove("hidden"));
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUser = user;
+        console.log("Auth state na zalozit-kartu.html:", currentUser.email);
+
+        // ukázat tlačítko Odhlásit se, schovat Přihlásit se
+        loggedInEls.forEach((el)  => el.classList.remove("hidden"));
+        loggedOutEls.forEach((el) => el.classList.add("hidden"));
+
+        // předvyplnit e-mail
+        const emailInput = document.getElementById("email");
+        if (emailInput && !emailInput.value) {
+          emailInput.value = user.email || "";
         }
       });
 
