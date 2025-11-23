@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Vytvořit kampaň</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-emerald-950 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-400 to-sky-400 grid place-items-center shadow-soft">
+            <i data-lucide="megaphone" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">
+                Nová kampaň
+              </span>
+            </div>
+            <p class="text-[11px] text-white/60">Založit novou marketingovou kampaň</p>
+          </div>
+        </a>
+
+        <!-- Pravá strana -->
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="kampane-dashboard.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+            <i data-lucide="list" class="w-3.5 h-3.5"></i>
+            Přehled kampaní
+          </a>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-8">
+
+        <!-- NADPIS -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft">
+          <h1 class="text-xl md:text-2xl font-semibold">Vytvořit novou kampaň</h1>
+          <p class="text-xs text-white/60 mt-1">Nastav rozpočet, platformu, cíle a vyber influencery.</p>
+        </section>
+
+        <!-- FORMULÁŘ -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-6">
+
+          <!-- Název kampaně -->
+          <div class="space-y-2">
+            <label class="text-sm text-white/70">Název kampaně</label>
+            <input type="text" placeholder="Např. Jarní launch kolekce" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70">
+          </div>
+
+          <!-- Platforma -->
+          <div class="space-y-2">
+            <label class="text-sm text-white/70">Platforma</label>
+            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+              <option>Instagram</option>
+              <option>TikTok</option>
+              <option>YouTube</option>
+              <option>Mix platforem</option>
+            </select>
+          </div>
+
+          <!-- Rozpočet -->
+          <div class="space-y-2">
+            <label class="text-sm text-white/70">Rozpočet (K-Coins)</label>
+            <input type="number" placeholder="Např. 5000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70">
+          </div>
+
+          <!-- Cíl kampaně -->
+          <div class="space-y-2">
+            <label class="text-sm text-white/70">Cíl kampaně</label>
+            <textarea rows="4" placeholder="Popiš hlavní cíl kampaně…" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70"></textarea>
+          </div>
+
+          <!-- Výběr influencerů -->
+          <div class="space-y-2">
+            <label class="text-sm text-white/70">Vyber influencery</label>
+            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+              <option>Automaticky doporučit (AI)</option>
+              <option>Vybrat ručně</option>
+            </select>
+          </div>
+
+          <!-- Období -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-sm text-white/70">Začátek</label>
+              <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm text-white/70">Konec</label>
+              <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+            </div>
+          </div>
+
+          <!-- Tlačítko odeslat -->
+          <button class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 text-neutral-900 font-semibold shadow-[0_0_20px_rgba(56,255,186,0.6)] hover:shadow-[0_0_28px_rgba(56,255,186,0.9)] transition">
+            Vytvořit kampaň
+          </button>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex flex-wrap items-center justify-between gap-2">
+        <span>© 2025 Kartao.cz – Vytvořit kampaň</span>
+        <span>Kampaně · kredity · ekosystém značek & influencerů</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) luka
