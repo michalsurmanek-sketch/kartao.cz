@@ -592,13 +592,24 @@
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
     let currentUser = null;
 
-    // auth a db bereme z firebase-init.js (globální)
-    const auth = window.auth || (window.firebase ? firebase.auth() : null);
-    const db   = window.db   || (window.firebase ? firebase.firestore() : null);
+    // Všechno kolem Firebase spustíme až po načtení okna
+    window.addEventListener("load", () => {
+      const auth = window.auth || (window.firebase ? firebase.auth() : null);
+      const db   = window.db   || (window.firebase ? firebase.firestore() : null);
 
-    if (!auth || !db) {
-      console.error("❌ Firebase auth/db nejsou k dispozici na zalozit-kartu.html");
-    } else {
+      console.log("ZK: Firebase na zalozit-kartu.html", {
+        hasFirebase: typeof firebase !== "undefined",
+        hasAuthGlobal: !!window.auth,
+        hasDbGlobal: !!window.db,
+        authObj: !!auth,
+        dbObj: !!db,
+      });
+
+      if (!auth || !db) {
+        console.error("❌ Firebase auth/db nejsou k dispozici na zalozit-kartu.html");
+        return;
+      }
+
       const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
       const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
       const headerLogout = document.querySelector('[data-show-when="loggedin"]');
@@ -607,7 +618,6 @@
       auth.onAuthStateChanged((user) => {
         if (!user) {
           console.log("❌ Nepřihlášený uživatel – přesměrovávám na login.");
-          // pro jistotu přepnout UI tlačítek
           loggedInEls.forEach((el)  => el.classList.add("hidden"));
           loggedOutEls.forEach((el) => el.classList.remove("hidden"));
           window.location.href = "login.html";
@@ -615,7 +625,7 @@
         }
 
         currentUser = user;
-        console.log("Auth state na zalozit-kartu.html:", currentUser.email);
+        console.log("✅ Přihlášený uživatel na zalozit-kartu.html:", currentUser.email);
 
         // ukázat tlačítko Odhlásit se, schovat Přihlásit se
         loggedInEls.forEach((el)  => el.classList.remove("hidden"));
@@ -752,7 +762,7 @@
           showMessage("Nastala chyba při ukládání karty: " + err.message, "error");
         }
       });
-    }
+    });
 
     function showSuccessScreen(cardData) {
       const formSection = document.querySelector("section.max-w-3xl");
