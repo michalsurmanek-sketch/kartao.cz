@@ -28,6 +28,24 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-init.js"></script>
   <script src="api-services.js"></script>
+  <script>
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) return;
+
+  const uid = user.uid;
+  const doc = await db.collection("users").doc(uid).get();
+  const data = doc.data();
+
+  // Pokud už má roli → přesměruj
+  if (data && data.role) {
+    if (data.role === "firma") {
+      window.location.href = "dashboard-firma.html";
+    } else {
+      window.location.href = "dashboard-influencer.html";
+    }
+  }
+});
+</script>
 
   <style>
     body {
