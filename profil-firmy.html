@@ -140,8 +140,17 @@
           </div>
         </section>
 
-        <!-- FAKTURAČNÍ ÚDAJE -->
-        <section class="rounded-3
+        <!-- TLAČÍTKO ULOŽIT -->
+        <div class="pt-4">
+          <button id="saveCompanyBtn" class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-500/20 border border-emerald-400/60 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/30 transition whitespace-nowrap">
+  <span class="flex items-center gap-1">
+    <i data-lucide="save" class="w-4 h-4"></i>
+    <span>Uložit změny</span>
+  </span>
+</button>
+          <span id="saveStatus" class="ml-3 text-[11px] text-white/60"></span>
+        </div>
+
         <!-- FAKTURAČNÍ ÚDAJE -->
         <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4 mt-4">
           <h2 class="text-sm font-semibold text-white/70">Fakturační údaje</h2>
@@ -188,26 +197,58 @@
   <script src="credits-system.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      if (!window.firebase || !firebase.auth) return;
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.firebase || !firebase.auth) return;
 
-      firebase.auth().onAuthStateChanged(user => {
-        if (!user) {
-          window.location.href = "login.html";
-          return;
-        }
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-        window.currentUserId = user.uid;
-        const cs = new CreditsSystem(user.uid);
-        const credits = cs.getCredits();
+      window.currentUserId = user.uid;
+      const cs = new CreditsSystem(user.uid);
+      const credits = cs.getCredits();
 
-        const headerEl = document.getElementById("headerCredits");
-        if (headerEl) headerEl.textContent = credits;
+      const headerEl = document.getElementById("headerCredits");
+      if (headerEl) headerEl.textContent = credits;
 
-        if (window.lucide) lucide.createIcons();
-      });
+      // Vylepšené tlačítko Uložit změny – loading + potvrzení
+      const saveBtn = document.getElementById("saveCompanyBtn");
+      const saveStatus = document.getElementById("saveStatus");
+
+      if (saveBtn) {
+        const originalLabel = saveBtn.innerHTML;
+
+        saveBtn.addEventListener("click", () => {
+          // vizuální stav ukládání
+          saveBtn.disabled = true;
+          saveBtn.classList.add("opacity-70", "cursor-not-allowed");
+          if (saveStatus) saveStatus.textContent = "Ukládám…";
+
+          saveBtn.innerHTML = `
+            <span class="flex items-center gap-2">
+              <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+              <span>Ukládám…</span>
+            </span>
+          `;
+          if (window.lucide) lucide.createIcons();
+
+          // simulace uložení (později sem dáme Firestore)
+          setTimeout(() => {
+            if (saveStatus) saveStatus.textContent = "Uloženo ✔";
+            saveBtn.disabled = false;
+            saveBtn.classList.remove("opacity-70", "cursor-not-allowed");
+            saveBtn.innerHTML = originalLabel;
+            if (window.lucide) lucide.createIcons();
+          }, 1000);
+        });
+      }
+
+      if (window.lucide) lucide.createIcons();
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
