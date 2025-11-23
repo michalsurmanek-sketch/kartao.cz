@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Dobít kredity</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <!-- Logo / název -->
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">
+                Firemní účet
+              </span>
+            </div>
+            <p class="text-[11px] text-white/60">Dobití kreditů pro kampaně</p>
+          </div>
+        </a>
+
+        <!-- Pravá strana -->
+        <div class="flex items-center gap-3">
+          <!-- Kredity -->
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="kampane-dashboard.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+            Kampaně
+          </a>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-8">
+        <!-- HLAVNÍ PANEL -->
+        <section class="grid lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1.3fr)] gap-6 items-start">
+          <!-- Výběr balíčku -->
+          <div class="space-y-4">
+            <div class="rounded-3xl bg-neutral-950/80 border border-white/10 px-5 py-5 shadow-soft">
+              <div class="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <p class="text-xs uppercase tracking-wide text-amber-200/80">Dobít kredity</p>
+                  <h1 class="text-lg md:text-xl font-semibold">Vyber si balíček K-Coins</h1>
+                  <p class="text-xs text-white/60 mt-1">Kredity používáš na kampaně, spolupráce a zvýraznění v Marketplace.</p>
+                </div>
+                <div class="text-right text-xs">
+                  <p class="text-white/50">Aktuální zůstatek</p>
+                  <p class="text-lg font-semibold text-amber-200"><span id="currentCredits">0</span> K-Coins</p>
+                </div>
+              </div>
+
+              <!-- Balíčky -->
+              <div class="grid md:grid-cols-3 gap-4 mt-2">
+                <!-- Malý balíček -->
+                <button type="button" class="topup-card group rounded-2xl bg-white/5 border border-white/10 px-4 py-4 text-left flex flex-col justify-between hover:border-emerald-400/70 hover:bg-emerald-500/5 transition" data-amount="1000">
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 grid place-items-center">
+                      <i data-lucide="zap" class="w-4 h-4 text-emerald-300"></i>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-200">začínám testovat</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold">1&nbsp;000 K-Coins</p>
+                    <p class="text-xs text-white/60 mt-1">Ideální na první menší kampaň nebo testovací spolupráci.</p>
+                  </div>
+                  <div class="mt-3 text-xs text-white/50">Demo cena: ~1&nbsp;000 Kč (nastavíme přesně později)</div>
+                </button>
+
+                <!-- Střední balíček -->
+                <button type="button" class="topup-card group rounded-2xl bg-white/5 border border-amber-400/60 px-4 py-4 text-left flex flex-col justify-between shadow-soft hover:bg-amber-500/10 transition" data-amount="5000">
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/25 grid place-items-center">
+                      <i data-lucide="star" class="w-4 h-4 text-amber-200"></i>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/15 border border-amber-300/70 text-amber-100">doporučeno</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold">5&nbsp;000 K-Coins</p>
+                    <p class="text-xs text-white/60 mt-1">Standardní měsíční rozpočet pro značky s více kampaněmi.</p>
+                  </div>
+                  <div class="mt-3 text-xs text-white/50">Demo cena: ~5&nbsp;000 Kč (nastavíme přesně později)</div>
+                </button>
+
+                <!-- Velký balíček -->
+                <button type="button" class="topup-card group rounded-2xl bg-white/5 border border-fuchsia-400/60 px-4 py-4 text-left flex flex-col justify-between hover:bg-fuchsia-500/10 transition" data-amount="10000">
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-fuchsia-500/25 grid place-items-center">
+                      <i data-lucide="crown" class="w-4 h-4 text-fuchsia-100"></i>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] bg-fuchsia-500/15 border border-fuchsia-300/70 text-fuchsia-100">větší brand</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold">10&nbsp;000 K-Coins</p>
+                    <p class="text-xs text-white/60 mt-1">Pro větší kampaně, více influencerů a dlouhodobé spolupráce.</p>
+                  </div>
+                  <div class="mt-3 text-xs text-white/50">Demo cena: ~10&nbsp;000 Kč (nastavíme přesně později)</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Info blok -->
+            <div class="rounded-3xl bg-neutral-950/80 border border-white/10 px-5 py-4 text-xs text-white/70 space-y-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-300"></i>
+                <p class="font-semibold text-white/80">Jak to bude fungovat v ostrém provozu</p>
+              </div>
+              <ul class="list-disc list-inside space-y-1">
+                <li>Vybereš balíček a způsob platby (karta, převod, QR, faktura).</li>
+                <li>Po uhrazení se kredity automaticky připíší na tvůj firemní účet.</li>
+                <li>Kredity můžeš kdykoliv použít na kampaně, zvýraznění a VIP služby.</li>
+              </ul>
+              <p class="text-[11px] text-white/50">Aktuálně je stránka v demo režimu – kliknutím na balíček si jen nasimulujeme připsání kreditů přes CreditsSystem.</p>
+            </div>
+          </div>
+
+          <!-- Pravý panel – souhrn a platba -->
+          <aside class="space-y-4">
+            <div class="rounded-3xl bg-neutral-950/90 border border-amber-400/50 px-5 py-5 shadow-soft">
+              <p class="text-xs uppercase tracking-wide text-amber-200/90 mb-2">Souhrn dobíjení</p>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-white/70">Vybraný balíček</span>
+                  <span id="summaryPackage" class="font-semibold text-white">Zatím nevybrán</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-white/60">
+                  <span>Odhadovaná hodnota</span>
+                  <span id="summaryPrice">–</span>
+                </div>
+              </div>
+
+              <div class="mt-4 border-t border-white/10 pt-4 space-y-3 text-xs">
+                <p class="text-white/60">Způsob platby (zatím mockup):</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" class="w-full rounded-2xl border border-white/15 bg-white/5 px-3 py-2 flex items-center justify-center gap-2 text-[11px] text-white/80">
+                    <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+                    Platební karta
+                  </button>
+                  <button type="button" class="w-full rounded-2xl border border-white/15 bg-white/5 px-3 py-2 flex items-center justify-center gap-2 text-[11px] text-white/80">
+                    <i data-lucide="qrcode" class="w-3.5 h-3.5"></i>
+                    Bankovní převod / QR
+                  </button>
+                </div>
+
+                <button id="confirmTopup" type="button" class="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-neutral-900 text-xs font-semibold px-4 py-2 shadow-soft disabled:opacity-40 disabled:cursor-not-allowed">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  Potvrdit dobíjení (demo – rovnou připíše kredity)
+                </button>
+
+                <p id="topupMessage" class="text-[11px] text-emerald-300/0 mt-1 transition-opacity duration-300"></p>
+              </div>
+            </div>
+
+            <div class="rounded-3xl bg-neutral-950/85 border border-white/10 px-5 py-4 text-[11px] text-white/60 space-y-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="info" class="w-3.5 h-3.5 text-sky-300"></i>
+                <p class="font-semibold text-white/80 text-xs">Fakturace a doklady</p>
+              </div>
+              <p>Po nasazení platebního systému budeš mít všechny faktury a podklady dostupné v sekci <span class="text-sky-200">Fakturace & doklady</span>.</p>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex flex-wrap items-center justify-between gap-2">
+        <span>© 2025 Kartao.cz – Dobití kreditů</span>
+        <span>K-Coins · kampaně · ekosystém značek & influencerů</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
+  <!-- Firebase + CreditsSystem -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.firebase || !firebase.auth) {
+        console.warn("Firebase není dostupný na dobiti-kreditu.html");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+      const currentCreditsEl = document.getElementById("currentCredits");
+      const summaryCreditsEl = document.getElementById("summaryCredits"); // pokud bys chtěl doplnit
+      const packageEl = document.getElementById("summaryPackage");
+      const priceEl = document.getElementById("summaryPrice");
+      const messageEl = document.getElementById("topupMessage");
+      const confirmBtn = document.getElementById("confirmTopup");
+
+      let selectedAmount = null;
+      let selectedLabel = null;
+
+      function updateCreditsDisplay(val) {
+        if (typeof val !== "number") return;
+        if (headerCreditsEl) headerCreditsEl.textContent = val;
+        if (currentCreditsEl) currentCreditsEl.textContent = val;
+        if (summaryCreditsEl) summaryCreditsEl.textContent = val;
+      }
+
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        try {
+          const creditsSystem = new CreditsSystem(user.uid);
+          window.creditSys = {
+            getCredits: () => creditsSystem.getCredits(),
+            addCredits: (a) => creditsSystem.addCredits(a),
+            subtractCredits: (a) => creditsSystem.subtractCredits(a),
+          };
+
+          const val = creditsSystem.getCredits();
+          updateCreditsDisplay(val);
+
+          // Výběr balíčku
+          const cards = document.querySelectorAll(".topup-card");
+          cards.forEach((card) => {
+            card.addEventListener("click", () => {
+              selectedAmount = parseInt(card.getAttribute("data-amount"), 10) || null;
+              selectedLabel = card.querySelector("p.text-sm.font-semibold")?.textContent || null;
+
+              cards.forEach((c) => c.classList.remove("ring-2", "ring-amber-400"));
+              card.classList.add("ring-2", "ring-amber-400");
+
+              if (packageEl && selectedLabel) packageEl.textContent = selectedLabel;
+              if (priceEl && selectedAmount) priceEl.textContent = `~${selectedAmount.toLocaleString("cs-CZ")} Kč (demo)`;
+
+              if (confirmBtn) confirmBtn.disabled = false;
+            });
+          });
+
+          if (confirmBtn) {
+            confirmBtn.addEventListener("click", () => {
+              if (!selectedAmount) return;
+
+              const newVal = creditsSystem.addCredits(selectedAmount);
+              updateCreditsDisplay(newVal);
+
+              if (messageEl) {
+                messageEl.textContent = `Připsáno ${selectedAmount.toLocaleString("cs-CZ")} K-Coins (demo). V ostré verzi se kredity připíší po zaplacení.`;
+                messageEl.style.color = "#6ee7b7"; // emerald-300
+                messageEl.classList.remove("text-emerald-300/0");
+                messageEl.style.opacity = "1";
+
+                setTimeout(() => {
+                  messageEl.style.opacity = "0";
+                }, 3500);
+              }
+            });
+          }
+        } catch (e) {
+          console.warn("Dobití kreditů: chyba při práci s CreditsSystem:", e);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
