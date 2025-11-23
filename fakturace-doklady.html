@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Fakturace & doklady</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-amber-900 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <!-- Logo / název -->
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 grid place-items-center shadow-soft">
+            <i data-lucide="receipt" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-sky-500/15 text-sky-200 border border-sky-400/40">
+                Fakturace
+              </span>
+            </div>
+            <p class="text-[11px] text-white/60">Doklady · faktury · přehled plateb</p>
+          </div>
+        </a>
+
+        <!-- Pravá strana -->
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="dobit-kredity.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+            Dobít kredity
+          </a>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-10">
+
+        <!-- HLAVNÍ PANEL -->
+        <section class="rounded-3xl bg-neutral-950/70 border border-white/10 shadow-soft p-6 space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-xl font-semibold">Fakturace & Doklady</h1>
+              <p class="text-xs text-white/60 mt-1">Zde najdeš faktury za dobíjení kreditů a doklady pro účetnictví.</p>
+            </div>
+
+            <div class="text-right text-xs">
+              <p class="text-white/60">Aktuální kredity</p>
+              <p class="text-xl font-semibold text-amber-200"><span id="currentCredits">0</span> K-Coins</p>
+            </div>
+          </div>
+
+          <!-- FILTRY -->
+          <div class="grid sm:grid-cols-3 gap-3 text-xs">
+            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option>Období: Vše</option>
+              <option>Leden</option>
+              <option>Únor</option>
+              <option>Březen</option>
+            </select>
+
+            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option>Typ dokladu: Vše</option>
+              <option>Faktura</option>
+              <option>Zálohová faktura</option>
+              <option>Daňový doklad</option>
+            </select>
+
+            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option>Status: Vše</option>
+              <option>Zaplaceno</option>
+              <option>Nezaplaceno</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- TABULKA DOKLADŮ -->
+        <section class="rounded-3xl bg-neutral-950/70 border border-white/10 shadow-soft p-6">
+          <h2 class="text-sm font-semibold mb-4">Přehled faktur</h2>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-[13px]">
+              <thead class="text-white/60 text-xs border-b border-white/10">
+                <tr>
+                  <th class="py-2">Číslo</th>
+                  <th class="py-2">Datum</th>
+                  <th class="py-2">Popis</th>
+                  <th class="py-2">Částka</th>
+                  <th class="py-2">Status</th>
+                  <th class="py-2 text-right">Akce</th>
+                </tr>
+              </thead>
+
+              <tbody id="invoiceList" class="divide-y divide-white/5">
+                <!-- DEMO ZÁZNAM -->
+                <tr class="hover:bg-white/5">
+                  <td class="py-3">2025-0001</td>
+                  <td>15. 2. 2025</td>
+                  <td>Dobití 5 000 K-Coins</td>
+                  <td>5 000 Kč</td>
+                  <td><span class="px-2 py-1 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Zaplaceno</span></td>
+                  <td class="text-right">
+                    <button class="px-3 py-1 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-xs">Stáhnout PDF</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/5">
+                  <td class="py-3">2025-0002</td>
+                  <td>20. 2. 2025</td>
+                  <td>Dobití 1 000 K-Coins</td>
+                  <td>1 000 Kč</td>
+                  <td><span class="px-2 py-1 rounded-full text-[10px] bg-rose-500/20 text-rose-300 border border-rose-400/40">Nezaplaceno</span></td>
+                  <td class="text-right">
+                    <button class="px-3 py-1 rounded-xl bg-amber-500/15 border border-amber-300/50 hover:bg-amber-500/25 text-xs">Uhradit</button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- BLOK S INFORMACÍ -->
+        <section class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6 text-xs text-white/70 space-y-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4 text-sky
