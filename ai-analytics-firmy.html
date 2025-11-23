@@ -175,4 +175,63 @@
             </div>
             <div class="flex items-start gap-3">
               <div class="w-2 h-2 mt-1 rounded-full bg-rose-400"></div>
-              <p>18. 3. 2025 – AI doporučila zvýšit rozpočet (nepovinné)</p
+              <p>18. 3. 2025 – AI doporučila zvýšit rozpočet (nepovinné)</p            </div>
+          </div>
+        </section>
+
+        <!-- AKČNÍ TLAČÍTKA -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft text-xs space-y-3">
+          <h2 class="text-sm font-semibold text-white/70 mb-2">Akce s kampaní</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="#" class="px-4 py-2 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-100 hover:bg-amber-500/30 transition">Upravit kampaň</a>
+            <a href="#" class="px-4 py-2 rounded-2xl bg-sky-500/20 border border-sky-400/50 text-sky-100 hover:bg-sky-500/30 transition">Pozastavit</a>
+            <a href="#" class="px-4 py-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-100 hover:bg-emerald-500/30 transition">Navýšit rozpočet</a>
+            <a href="#" class="px-4 py-2 rounded-2xl bg-fuchsia-500/20 border border-fuchsia-400/50 text-fuchsia-100 hover:bg-fuchsia-500/30 transition">Duplikovat</a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
+        <span>© 2025 Kartao.cz – Detail kampaně</span>
+        <span>K-Coins · statistiky · výkon</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Firebase + CreditsSystem -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.firebase || !firebase.auth) return;
+
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+        const creditsSystem = new CreditsSystem(user.uid);
+        const credits = creditsSystem.getCredits();
+
+        const headerEl = document.getElementById("headerCredits");
+        if (headerEl) headerEl.textContent = credits;
+
+        if (window.lucide) lucide.createIcons();
+      });
+    });
+  </script>
+
+</body>
+</html>
