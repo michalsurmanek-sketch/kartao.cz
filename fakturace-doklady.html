@@ -163,4 +163,76 @@
         <!-- BLOK S INFORMACÍ -->
         <section class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6 text-xs text-white/70 space-y-2">
           <div class="flex items-center gap-2">
-            <i data-lucide="info" class="w-4 h-4 text-sky
+            <i data-lucide="info" class="w-4 h-4 text-sky-300"></i>
+            <span>Důležité: Doklady zatím fungují v demo režimu. Po propojení platební brány se budou generovat automaticky.</span>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex flex-wrap items-center justify-between gap-2">
+        <span>© 2025 Kartao.cz – Fakturace & doklady</span>
+        <span>Doklady · faktury · účetnictví</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+  <!-- Firebase + CreditsSystem -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.firebase || !firebase.auth) {
+        console.warn("Firebase není dostupný na fakturace-doklady.html");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+      const currentCreditsEl = document.getElementById("currentCredits");
+
+      function updateCreditsDisplay(val) {
+        if (typeof val !== "number") return;
+        if (headerCreditsEl) headerCreditsEl.textContent = val;
+        if (currentCreditsEl) currentCreditsEl.textContent = val;
+      }
+
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        try {
+          const creditsSystem = new CreditsSystem(user.uid);
+          window.creditSys = {
+            getCredits: () => creditsSystem.getCredits(),
+            addCredits: (a) => creditsSystem.addCredits(a),
+            subtractCredits: (a) => creditsSystem.subtractCredits(a),
+          };
+
+          const val = creditsSystem.getCredits();
+          updateCreditsDisplay(val);
+        } catch (e) {
+          console.warn("Fakturace: chyba při práci s CreditsSystem:", e);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
