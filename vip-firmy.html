@@ -245,25 +245,55 @@
   <script src="credits-system.js"></script>
 
   <script>
+    // Přihlášení + načtení kreditů pro VIP firmy
     document.addEventListener("DOMContentLoaded", () => {
       if (!window.firebase || !firebase.auth) return;
 
-      firebase.auth().onAuthStateChanged(async (user) => {
+      firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
           window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        try {
+          const cs = new CreditsSystem(user.uid);
+          const credits = cs.getCredits();
+          const headerEl = document.getElementById("headerCredits");
+          if (headerEl) headerEl.textContent = credits;
+        } catch (e) {
+          console.warn("VIP firmy – chyba CreditsSystem:", e);
+        }
+
+        // Po přihlášení se jednou vytvoří ikony
+        if (window.lucide) {
+          setTimeout(() => {
+            try {
+              lucide.createIcons();
+            } catch (e) {
+              console.warn("Lucide ikony – chyba inicializace po přihlášení:", e);
+            }
+          }, 0);
+        }
+      });
+    });
+  </script>
 
   <script>
-    // Pojistka pro načtení všech Lucide ikon
+    // Globální pojistka pro načtení všech Lucide ikon
     document.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
         setTimeout(() => {
           try {
             lucide.createIcons();
           } catch (e) {
-            console.warn("Lucide ikony – chyba inicializace:", e);
+            console.warn("Lucide ikony – chyba inicializace (pojistka):", e);
           }
         }, 0);
       }
     });
   </script>
 
+</body>
+</html>
