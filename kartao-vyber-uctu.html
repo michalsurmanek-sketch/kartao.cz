@@ -217,5 +217,29 @@
       }
     })();
   </script>
+  <script>
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!firebase.auth().currentUser) {
+    // uživatel není přihlášen → nic nedělej
+    return;
+  }
+
+  const uid = firebase.auth().currentUser.uid;
+  const doc = await firebase.firestore().collection("users").doc(uid).get();
+
+  if (doc.exists) {
+    const role = doc.data().role;
+
+    // ROLE EXISTUJE → automatický redirect
+    if (role === "firma") {
+      window.location.href = "moje-firma.html";
+    }
+    if (role === "influencer") {
+      window.location.href = "moje-karta.html";
+    }
+  }
+});
+</script>
+
 </body>
 </html>
