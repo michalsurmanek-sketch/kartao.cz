@@ -2030,58 +2030,30 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // ZATÍM ručně – ať vidíš, že to reaguje
-  // Pak se to napojí na Firebase / backend
-  const role = window.currentUserRole || "firma"; 
-  // "influencer" nebo "firma"
+  // role z Firebase nebo localStorage (fallback)
+  const role =
+    window.currentUserRole ||
+    localStorage.getItem("userRole") ||
+    "influencer";
 
+  const linkEl = document.getElementById("userCardLink");
   const titleEl = document.getElementById("userCardTitle");
   const subtitleEl = document.getElementById("userCardSubtitle");
   const iconEl = document.getElementById("userCardIcon");
-  const linkEl = document.getElementById("userCardLink");
 
-  // Když nenajdeme text, nemá smysl pokračovat
-  if (!titleEl) return;
+  // Pokud prvek neexistuje, nic nedělej
+  if (!linkEl || !titleEl || !subtitleEl || !iconEl) return;
 
   if (role === "firma") {
-    // texty
+    // ZMĚNA TEXTŮ
     titleEl.textContent = "Moje firma";
-    if (subtitleEl) {
-      subtitleEl.textContent = "Firemní profil & správa";
-    }
+    subtitleEl.textContent = "Firemní profil & správa";
 
-    // ikona
-    if (iconEl) {
-      iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
-    }
+    // ZMĚNA ODKAZU
+    linkEl.href = "moje-firma.html";
 
-    // odkaz – jen pokud existuje
-    if (linkEl) {
-      linkEl.href = "moje-firma.html";
-    }
-
-  } else {
-    // influencer / default
-    titleEl.textContent = "Moje karta";
-    if (subtitleEl) {
-      subtitleEl.textContent = "Profil & ovládání účtu";
-    }
-
-    if (iconEl) {
-      iconEl.innerHTML = `<i data-lucide="id-card" class="w-4 h-4"></i>`;
-    }
-
-    if (linkEl) {
-      linkEl.href = "moje-karta.html";
-    }
-  }
-
-  // znovu překreslit lucide ikony
-  if (window.lucide) {
-    lucide.createIcons();
-  }
-});
-</script>
-
+    // ZMĚNA IKONY – budova
+    iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
+  </script>
 </body>
 </html>
