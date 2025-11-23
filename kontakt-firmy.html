@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Podpora & account manager</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald,
+            neutral: tailwind.colors.neutral,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <a href="moje-firma.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-400 to-amber-400 grid place-items-center shadow-soft">
+            <i data-lucide="headset" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">Podpora & account manager</span>
+            </div>
+            <p class="text-[11px] text-white/60">Pomoc pro firmy, kampaně a Gold partnery</p>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- HERO BLOK -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft grid md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-6 items-center">
+          <div class="space-y-3">
+            <h1 class="text-2xl font-semibold">Podpora & account manager pro firmy</h1>
+            <p class="text-sm text-white/70 max-w-xl">
+              Máš dotaz k kampani, rozpočtům, K‑Coins nebo spolupráci s influencery? Napiš nám přes formulář nebo si domluv call s naším account manažerem.
+            </p>
+            <ul class="text-xs text-white/65 space-y-1">
+              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Individuální pomoc s kampaněmi a strategiemi.</li>
+              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Nastavení firemního účtu, fakturace a VIP služeb.</li>
+              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Podpora pro Gold Brand Partnery a velké rozpočty.</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl bg-gradient-to-br from-fuchsia-500/25 via-amber-400/15 to-emerald-400/25 border border-fuchsia-300/60 p-4 shadow-[0_0_30px_rgba(236,72,153,0.5)] text-xs space-y-2">
+            <p class="text-[11px] uppercase tracking-wide text-fuchsia-100 flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              VIP podpora pro značky
+            </p>
+            <p>Pro Gold Brand Partnery zajišťujeme prioritní podporu, návrhy kampaní na míru a osobního account manažera.</p>
+            <p class="text-white/70">Chceš se stát Gold Brand Partnerem? Napiš do zprávy „Gold partner“.</p>
+          </div>
+        </section>
+
+        <!-- KONTAKTNÍ FORMULÁŘ + KONTAKTY -->
+        <section class="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1.1fr)] gap-6 items-start">
+
+          <!-- Formulář -->
+          <div class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4 text-xs">
+            <h2 class="text-sm font-semibold text-white/80 flex items-center gap-2">
+              <i data-lucide="inbox" class="w-4 h-4"></i>
+              Kontaktní formulář pro firmy
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-white/50 mb-1">Jméno a příjmení</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Jan Novák" />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Název firmy</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Moje firma s.r.o." />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Email</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="you@firma.cz" />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Telefon</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="+420 777 000 000" />
+              </div>
+            </div>
+
+            <div>
+              <p class="text-white/50 mb-1">Téma dotazu</p>
+              <select class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2">
+                <option>Kampaně a strategie</option>
+                <option>K‑Coins, rozpočty a fakturace</option>
+                <option>Influencer Marketplace</option>
+                <option>Gold Brand Partner / VIP služby</option>
+                <option>Jiné</option>
+              </select>
+            </div>
+
+            <div>
+              <p class="text-white/50 mb-1">Zpráva</p>
+              <textarea rows="5" class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Popiš nám, s čím potřebuješ pomoct…"></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <button class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-fuchsia-500/25 border border-fuchsia-400/70 text-[11px] font-semibold text-fuchsia-50 hover:bg-fuchsia-500/35">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                Odeslat zprávu podpoře
+              </button>
+              <p class="text-[11px] text-white/50 max-w-xs">
+                Odpovíme ti co nejdřív. U účtů s Gold Brand Partner statusem řešíme zprávy přednostně.
+              </p>
+            </div>
+          </div>
+
+          <!-- Kontakty / account manager -->
+          <div class="space-y-4 text-xs">
+            <div class="rounded-3xl bg-neutral-950/80 border border-emerald-400/60 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-emerald-200 flex items-center gap-2">
+                <i data-lucide="user-round" class="w-4 h-4"></i>
+                Tvůj account manager
+              </p>
+              <p class="text-sm font-semibold">(placeholder) Jméno account manažera</p>
+              <p class="text-white/65">Pomůžeme ti sestavit kampaně, nastavit rozpočty a vybrat správné influencery.</p>
+              <div class="space-y-1 text-white/70">
+                <p class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i> support@kartao.cz</p>
+                <p class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i> +420 777 555 333</p>
+              </div>
+            </div>
+
+            <div class="rounded-3xl bg-neutral-950/80 border border-white/10 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-white/60 flex items-center gap-2">
+                <i data-lucide="clock-3" class="w-4 h-4"></i>
+                Kdy jsme k dispozici
+              </p>
+              <ul class="space-y-1 text-white/70">
+                <li>Pondělí – Pátek: 9:00 – 17:00</li>
+                <li>Víkendy: podpora pro běžící kampaně (email)</li>
+              </ul>
+            </div>
+
+            <div class="rounded-3xl bg-neutral-950/80 border border-amber-400/60 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-amber-200 flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4"></i>
+                Rychlé odkazy
+              </p>
+              <ul class="space-y-1 text-white/75">
+                <li><a href="moje-firma.html" class="underline underline-offset-2">Firemní dashboard</a></li>
+                <li><a href="profil-firmy.html" class="underline underline-offset-2">Profil firmy & fakturace</a></li>
+                <li><a href="kampane-prehled.html" class="underline underline-offset-2">Přehled kampaní</a></li>
+                <li><a href="influencer-marketplace.html" class="underline underline-offset-2">Influencer Marketplace</a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
+        <span>© 2025 Kartao.cz – Podpora pro firmy</span>
+        <span>K-Coins · kampaně · account manažeři</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Firebase + Credits System -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!window.firebase || !firebase.auth) return;
+
+      const db = firebase.firestore();
+
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        // Kredity z CreditsSystem
+        try {
+          const cs = new CreditsSystem(user.uid);
+          const credits = cs.getCredits();
+          const headerEl = document.getElementById("headerCredits");
+          if (headerEl) headerEl.textContent = credits;
+        } catch (e) {
+          console.warn("Podpora – chyba CreditsSystem:", e);
+        }
+
+        if (window.lucide) lucide.createIcons();
+      });
+    });
+  </script>
+
+  <script>
+    // Globální inicializace Lucide ikon po načtení celé stránky
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        setTimeout(() => {
+          lucide.createIcons();
+        }, 0);
+      }
+    });
+  </script>
+
+</body>
+</html>
