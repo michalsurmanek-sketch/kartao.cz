@@ -27,8 +27,8 @@
     };
   </script>
 
-  <!-- Lucide ikony -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide ikony – UMD verze (správná) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Firebase SDK + tvoje inicializace -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -366,8 +366,10 @@
   <script>
     console.log("✅ Firebase načteno z firebase-init.js");
 
-    // Lucide ikony
-    lucide.createIcons();
+    // Lucide ikony – bezpečné volání
+    if (window.lucide && typeof lucide.createIcons === "function") {
+      lucide.createIcons();
+    }
 
     // === AUTO-SAVE DO LOCALSTORAGE ===
     const AUTOSAVE_KEY = "kartao_card_draft";
@@ -507,7 +509,9 @@
         const reader = new FileReader();
         reader.onload = (ev) => {
           avatarPreview.innerHTML = `<img src="${ev.target.result}" alt="Avatar preview" class="w-full h-full object-cover" />`;
-          lucide.createIcons();
+          if (window.lucide && typeof lucide.createIcons === "function") {
+            lucide.createIcons();
+          }
         };
         reader.readAsDataURL(file);
         avatarUrlInput.value = "";
@@ -520,15 +524,19 @@
         avatarUploadedFile = null;
         avatarPreview.innerHTML =
           `<img src="${url}" alt="Avatar preview" class="w-full h-full object-cover" ` +
-          `onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\'></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
-        lucide.createIcons();
+          `onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\'></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; if(window.lucide && typeof lucide.createIcons==='function'){lucide.createIcons();}" />`;
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
       } else if (!avatarUploadedFile) {
         avatarPreview.innerHTML = `
           <i data-lucide="upload" class="w-8 h-8 text-white/40 mb-2"></i>
           <span class="text-xs text-white/60">Klikněte pro nahrání</span>
           <span class="text-[11px] text-white/40 mt-1">Doporučeno 800×800 px</span>
         `;
-        lucide.createIcons();
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
       }
       scheduleAutosave();
     });
@@ -540,7 +548,9 @@
         const reader = new FileReader();
         reader.onload = (ev) => {
           coverPreview.innerHTML = `<img src="${ev.target.result}" alt="Cover preview" class="w-full h-full object-cover" />`;
-          lucide.createIcons();
+          if (window.lucide && typeof lucide.createIcons === "function") {
+            lucide.createIcons();
+          }
         };
         reader.readAsDataURL(file);
         coverUrlInput.value = "";
@@ -553,15 +563,19 @@
         coverUploadedFile = null;
         coverPreview.innerHTML =
           `<img src="${url}" alt="Cover preview" class="w-full h-full object-cover" ` +
-          `onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\'></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; lucide.createIcons();" />`;
-        lucide.createIcons();
+          `onerror="this.parentElement.innerHTML='<i data-lucide=\\'alert-circle\\' class=\\'w-8 h-8 text-red-400\\'></i><span class=\\'text-xs text-red-300 mt-2\\'>Nepodařilo se načíst obrázek</span>'; if(window.lucide && typeof lucide.createIcons==='function'){lucide.createIcons();}" />`;
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
       } else if (!coverUploadedFile) {
         coverPreview.innerHTML = `
           <i data-lucide="image" class="w-8 h-8 text-white/40 mb-2"></i>
           <span class="text-xs text-white/60">Klikněte pro nahrání</span>
           <span class="text-[11px] text-white/40 mt-1">Doporučeno 1600×600 px</span>
         `;
-        lucide.createIcons();
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
       }
       scheduleAutosave();
     });
@@ -586,7 +600,11 @@
         });
       }
 
-      setTimeout(() => lucide.createIcons(), 100);
+      setTimeout(() => {
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
+      }, 100);
     });
 
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
@@ -968,7 +986,11 @@
       `;
 
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setTimeout(() => lucide.createIcons(), 100);
+      setTimeout(() => {
+        if (window.lucide && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
+      }, 100);
     }
   </script>
 </body>
