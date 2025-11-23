@@ -28,6 +28,33 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-init.js"></script>
   <script src="api-services.js"></script>
+
+  <script>
+  // Počkej, až Firebase naběhne
+  document.addEventListener("DOMContentLoaded", async () => {
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) return; // není přihlášený → nech výběr role
+
+      const uid = user.uid;
+      const doc = await firebase.firestore().collection("users").doc(uid).get();
+
+      // Pokud už role existuje → ODJEBEM tu stránku pryč
+      if (doc.exists && doc.data().role) {
+
+        const role = doc.data().role;
+
+        if (role === "firma") {
+          window.location.href = "dashboard-firma.html";
+        } else {
+          window.location.href = "dashboard-influencer.html";
+        }
+      }
+      // Pokud role neexistuje → stránka zůstává → vybereš si
+    });
+  });
+</script>
+
+  
   <script>
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) return;
