@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Gold Brand Partner</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald,
+            neutral: tailwind.colors.neutral,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-amber-950 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-yellow-400/40 bg-neutral-950/90 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <a href="moje-firma.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-500 grid place-items-center shadow-[0_0_30px_rgba(250,204,21,0.7)]">
+            <i data-lucide="crown" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-yellow-400/20 text-yellow-100 border border-yellow-300/70">Gold Brand Partner</span>
+            </div>
+            <p class="text-[11px] text-white/60">Exkluzivní partnerství pro značky</p>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/70 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-50">0</span>
+          </div>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- HERO GOLD CARD -->
+        <section class="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1.2fr)] gap-6 items-center">
+          <!-- Text -->
+          <div class="space-y-3">
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight flex items-center gap-2">
+              <i data-lucide="crown" class="w-6 h-6 text-yellow-300"></i>
+              Gold Brand Partner na Kartao.cz
+            </h1>
+            <p class="text-sm text-white/70 max-w-xl">
+              Získej prémiové postavení mezi značkami na Kartao.cz, prioritu ve výběru influencerů a speciální podporu pro velké kampaně. Gold Brand Partner je ideální pro značky, které chtějí dlouhodobě budovat výkon a image.
+            </p>
+
+            <div class="grid sm:grid-cols-3 gap-3 text-xs">
+              <div class="rounded-2xl bg-yellow-400/10 border border-yellow-300/60 px-4 py-3">
+                <p class="text-white/60">Cena</p>
+                <p class="text-sm font-semibold text-yellow-100">10 000 K‑Coins / měsíc</p>
+              </div>
+              <div class="rounded-2xl bg-emerald-400/10 border border-emerald-300/60 px-4 py-3">
+                <p class="text-white/60">Priorita v kampaních</p>
+                <p class="text-sm font-semibold text-emerald-100">VIP výběr influencerů</p>
+              </div>
+              <div class="rounded-2xl bg-sky-400/10 border border-sky-300/60 px-4 py-3">
+                <p class="text-white/60">Account manager</p>
+                <p class="text-sm font-semibold text-sky-100">Osobní péče</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 pt-2 text-xs">
+              <button id="activateGoldBtn" data-state="idle" class="inline-flex items-center gap-2 px-5 py-2 rounded-2xl bg-yellow-300 text-neutral-950 font-semibold shadow-[0_0_22px_rgba(250,204,21,0.9)] hover:shadow-[0_0_30px_rgba(250,224,21,1)]">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Aktivovat Gold Brand Partner</span>
+              </button>
+              <button class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-yellow-300/70 bg-yellow-400/10 text-yellow-100 hover:bg-yellow-400/20">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>Stáhnout PDF přehled</span>
+              </button>
+              <p id="goldStatusMessage" class="text-[11px] text-white/60">Aktivaci Gold statusu může potvrdit i náš account manager.</p>
+            </div>
+          </div>
+
+          <!-- Zlatá karta vizuál -->
+          <div class="relative">
+            <div class="absolute -inset-10 bg-[radial-gradient(circle_at_0_0,rgba(250,204,21,0.45),transparent_55%),radial-gradient(circle_at_100%_100%,rgba(252,211,77,0.45),transparent_55%)] opacity-60"></div>
+            <div class="relative rounded-[28px] bg-gradient-to-br from-yellow-200 via-amber-300 to-yellow-500 p-[2px] shadow-[0_22px_60px_rgba(0,0,0,0.9)]">
+              <div class="rounded-[26px] bg-neutral-950/95 px-6 py-5 flex flex-col gap-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-yellow-200/80">Kartao.cz</p>
+                    <p class="mt-1 text-lg font-semibold text-yellow-50">Gold Brand Partner</p>
+                  </div>
+                  <i data-lucide="crown" class="w-7 h-7 text-yellow-300"></i>
+                </div>
+                <div class="flex items-center justify-between gap-4 text-xs text-yellow-100/90">
+                  <div>
+                    <p class="text-[10px] uppercase tracking-wide text-yellow-200/80">Status</p>
+                    <p class="text-sm font-semibold">Aktivní po dobu 30 dní</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[10px] uppercase tracking-wide text-yellow-200/80">Cena</p>
+                    <p class="text-sm font-semibold">10 000 K‑Coins</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-yellow-100/85">
+                  <p>Priorita v kampaních · VIP podpora · Speciální nabídky</p>
+                  <p>ID: GOLD‑XXXX</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BENEFITY -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-yellow-400/40 p-6 shadow-soft space-y-4 text-xs">
+          <h2 class="text-sm font-semibold text-yellow-100 flex items-center gap-2">
+            <i data-lucide="star" class="w-4 h-4"></i>
+            Co získáš jako Gold Brand Partner
+          </h2>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <h3 class="text-[13px] font-semibold text-white/90">1. Priorita v influencer kampaních</h3>
+              <ul class="space-y-1 text-white/70">
+                <li>– tvoje kampaně jsou zvýrazněné v Marketplace pro influencery</li>
+                <li>– přednostní výběr top influencerů v dané kategorii</li>
+                <li>– možnost uzavřít deal dřív než konkurence</li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-[13px] font-semibold text-white/90">2. Osobní account manager</h3>
+              <ul class="space-y-1 text-white/70">
+                <li>– návrhy kampaní na míru tvému budgetu</li>
+                <li>– kontrola výstupů a výsledků kampaní</li>
+                <li>– doporučení optimálního využití K‑Coins</li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-[13px] font-semibold text-white/90">3. VIP podpora & reporting</h3>
+              <ul class="space-y-1 text-white/70">
+                <li>– rychlejší reakční doba podpory</li>
+                <li>– měsíční souhrnný report výkonu</li>
+                <li>– návrhy optimalizací pro další měsíc</li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-[13px] font-semibold text-white/90">4. Speciální nabídky & bonusy</h3>
+              <ul class="space-y-1 text-white/70">
+                <li>– přístup k uzavřeným kampaním a spolupracím</li>
+                <li>– možnost přednostního testování nových funkcí Kartao.cz</li>
+                <li>– bonusové kredity při větších objemech kampaní</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- POROVNÁNÍ ÚČTŮ -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft text-xs space-y-4">
+          <h2 class="text-sm font-semibold text-white/80 flex items-center gap-2">
+            <i data-lucide="scale" class="w-4 h-4"></i>
+            Běžný firemní účet vs. Gold Brand Partner
+          </h2>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <p class="text-[11px] uppercase tracking-wide text-white/60">Běžný firemní účet</p>
+              <ul class="space-y-1 text-white/70">
+                <li>– přístup do Marketplace</li>
+                <li>– základní správa kampaní</li>
+                <li>– standardní podpora</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-yellow-300/70 bg-yellow-400/10 p-4 space-y-2">
+              <p class="text-[11px] uppercase tracking-wide text-yellow-100 flex items-center gap-2">
+                <i data-lucide="crown" class="w-4 h-4"></i>
+                Gold Brand Partner
+              </p>
+              <ul class="space-y-1 text-yellow-50">
+                <li>– vše z běžného účtu + VIP zvýraznění</li>
+                <li>– priorita v kampaních a výběru influencerů</li>
+                <li>– osobní account manager</li>
+                <li>– rychlejší podpora + měsíční reporting</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+                <!-- CTA DO PODPORY -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-yellow-400/40 p-6 shadow-soft text-xs flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 max-w-xl">
+            <h2 class="text-sm font-semibold text-yellow-100 flex items-center gap-2">
+              <i data-lucide="messages-square" class="w-4 h-4"></i>
+              Chceš se stát Gold Brand Partnerem?
+            </h2>
+            <p class="text-white/70">
+              Pokud si nejsi jistý, jak Gold status využít naplno, napiš našemu account managerovi. Připravíme ti návrh kampaní a rozpočtu na míru.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <a href="kontakt-firmy.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-yellow-300 text-neutral-950 font-semibold shadow-[0_0_22px_rgba(250,204,21,0.9)] hover:shadow-[0_0_30px_rgba(250,224,21,1)]">
+              <i data-lucide="headset" class="w-4 h-4"></i>
+              Spojit se s account managerem
+            </a>
+            <p class="text-[11px] text-white/60">Gold partnerství můžeš řešit i přímo s podporou.</p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
+        <span>© 2025 Kartao.cz – Gold Brand Partner</span>
+        <span>K-Coins · VIP kampaně · Gold partneři</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Firebase + Credits System -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.firebase || !firebase.auth) return;
+
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      window.currentUserId = user.uid;
+
+      let cs;
+      try {
+        cs = new CreditsSystem(user.uid);
+        const credits = cs.getCredits();
+        const headerEl = document.getElementById("headerCredits");
+        if (headerEl) headerEl.textContent = credits;
+      } catch (e) {
+        console.warn("Gold Brand Partner – chyba CreditsSystem:", e);
+      }
+
+      const activateBtn = document.getElementById("activateGoldBtn");
+      const statusMsg = document.getElementById("goldStatusMessage");
+
+      if (activateBtn && cs) {
+        activateBtn.addEventListener("click", async () => {
+          if (activateBtn.dataset.state === "processing") return;
+
+          const currentCredits = cs.getCredits();
+          if (currentCredits < 10000) {
+            if (statusMsg) {
+              statusMsg.textContent = `Nedostatek K-Coins: máš ${currentCredits}, potřebuješ 10 000.`;
+              statusMsg.classList.remove("text-white/60");
+              statusMsg.classList.add("text-rose-300");
+            }
+            return;
+          }
+
+          activateBtn.dataset.state = "processing";
+          activateBtn.disabled = true;
+          activateBtn.classList.add("opacity-70", "cursor-not-allowed");
+          const originalInner = activateBtn.innerHTML;
+          activateBtn.innerHTML = `
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+              <span>Aktivuji Gold status…</span>
+            </span>
+          `;
+          if (window.lucide) lucide.createIcons();
+
+          try {
+            // Odečtení 10 000 K-Coins
+            cs.subtractCredits(10000);
+            const newCredits = cs.getCredits();
+            const headerEl = document.getElementById("headerCredits");
+            if (headerEl) headerEl.textContent = newCredits;
+
+            // Zápis Gold statusu do Firestore
+            const companyDocRef = db.collection("companies").doc(user.uid);
+            await companyDocRef.set({
+              isGoldPartner: true,
+              goldActivatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              goldLastPlan: "monthly_10000_kcoins",
+            }, { merge: true });
+
+            if (statusMsg) {
+              statusMsg.textContent = "Gold Brand Partner je aktivní. Děkujeme za důvěru.";
+              statusMsg.classList.remove("text-white/60", "text-rose-300");
+              statusMsg.classList.add("text-emerald-300");
+            }
+
+            activateBtn.innerHTML = `
+              <span class="inline-flex items-center gap-2">
+                <i data-lucide="crown" class="w-4 h-4"></i>
+                <span>Gold Brand Partner aktivní</span>
+              </span>
+            `;
+          } catch (e) {
+            console.error("Gold Brand Partner – chyba při aktivaci:", e);
+            if (statusMsg) {
+              statusMsg.textContent = "Došlo k chybě při aktivaci Gold statusu. Zkus to prosím znovu nebo kontaktuj podporu.";
+              statusMsg.classList.remove("text-white/60");
+              statusMsg.classList.add("text-rose-300");
+            }
+            activateBtn.innerHTML = originalInner;
+          } finally {
+            activateBtn.disabled = false;
+            activateBtn.classList.remove("opacity-70", "cursor-not-allowed");
+            activateBtn.dataset.state = "idle";
+            if (window.lucide) lucide.createIcons();
+          }
+        });
+      }
+    });
+  });
+</script>
+
+  <script>
+    // Globální inicializace Lucide ikon po načtení celé stránky
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        setTimeout(() => {
+          lucide.createIcons();
+        }, 0);
+      }
+    });
+  </script>
+
+</body>
+</html>
