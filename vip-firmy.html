@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – VIP firmy</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald,
+            neutral: tailwind.colors.neutral,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-amber-900 text-white">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- HLAVIČKA -->
+    <header class="sticky top-0 z-30 border-b border-amber-400/40 bg-neutral-950/90 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <a href="moje-firma.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-300 via-amber-400 to-yellow-500 grid place-items-center shadow-[0_0_30px_rgba(250,204,21,0.7)]">
+            <i data-lucide="shield" class="w-5 h-5 text-neutral-900"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-lg">Kartao.cz</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-amber-400/20 text-amber-100 border border-amber-300/70">VIP firmy</span>
+            </div>
+            <p class="text-[11px] text-white/60">Výběr top firem v ekosystému Kartao.cz</p>
+          </div>
+        </a>
+
+        <!-- Kredity & Odhlášení -->
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
+            <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
+            <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
+          </div>
+
+          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- OBSAH -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- HERO SEKCE -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-amber-400/40 p-6 shadow-soft text-center space-y-3">
+          <h1 class="text-2xl md:text-3xl font-semibold tracking-tight flex items-center justify-center gap-2 text-amber-200">
+            <i data-lucide="star" class="w-6 h-6 text-amber-300"></i>
+            VIP firmy na Kartao.cz
+          </h1>
+          <p class="text-sm text-white/70 max-w-2xl mx-auto">
+            Nejaktivnější a nejúspěšnější značky z našeho ekosystému. Tyto firmy investují do influencerů,
+            využívají K‑Coins a mají prémiový status.
+          </p>
+        </section>
+
+        <!-- SEZNAM VIP FIREM -->
+        <section class="space-y-4">
+          <h2 class="text-sm font-semibold text-white/80 uppercase tracking-wide flex items-center gap-2">
+            <span class="w-6 h-[2px] bg-amber-400 rounded-full"></span>
+            Aktuální VIP firmy
+          </h2>
+
+          <div id="vipCompanyList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Dynamické karty firem se doplní později -->
+
+            <!-- TESTOVACÍ FIRMA 1 -->
+            <div class="rounded-3xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-amber-900 border border-amber-400/50 p-5 shadow-soft flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-300 via-yellow-400 to-amber-500 p-[2px] shadow-[0_0_20px_rgba(251,191,36,0.6)]">
+                  <div class="w-full h-full rounded-2xl bg-neutral-950 grid place-items-center text-xl font-bold text-amber-200">F</div>
+                </div>
+                <div class="flex-1">
+                  <p class="font-semibold text-sm">Firemní demo s.r.o.</p>
+                  <p class="text-[11px] text-amber-200 flex items-center gap-1">
+                    <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                    VIP & Gold Brand Partner
+                  </p>
+                </div>
+              </div>
+              <p class="text-xs text-white/70">
+                Krátký popis firmy. Vizitka vhodná pro sociální sítě.
+              </p>
+              <div class="flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#eshop</span>
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#fashion</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 pt-1 text-xs">
+                <a href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-amber-400/20 border border-amber-300/60 hover:bg-amber-400/30">
+                  <i data-lucide="eye" class="w-4 h-4 text-amber-200"></i>
+                  Zobrazit profil
+                </a>
+                <button onclick="navigator.clipboard.writeText(window.location.href)" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10">
+                  <i data-lucide="share-2" class="w-4 h-4"></i> Sdílet vizitku
+                </button>
+              </div>
+            </div>
+
+            <!-- TESTOVACÍ FIRMA 2 -->
+            <div class="rounded-3xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-amber-900 border border-amber-400/50 p-5 shadow-soft flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-300 via-yellow-400 to-amber-500 p-[2px] shadow-[0_0_20px_rgba(251,191,36,0.6)]">
+                  <div class="w-full h-full rounded-2xl bg-neutral-950 grid place-items-center text-xl font-bold text-amber-200">M</div>
+                </div>
+                <div class="flex-1">
+                  <p class="font-semibold text-sm">Marketing Pro s.r.o.</p>
+                  <p class="text-[11px] text-amber-200 flex items-center gap-1">
+                    <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                    VIP firma
+                  </p>
+                </div>
+              </div>
+              <p class="text-xs text-white/70">
+                Firma zaměřená na propagaci a obsah. Prémiový status v Kartao.cz
+              </p>
+              <div class="flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#marketing</span>
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#ads</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 pt-1 text-xs">
+                <a href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-amber-400/20 border border-amber-300/60 hover:bg-amber-400/30">
+                  <i data-lucide="eye" class="w-4 h-4 text-amber-200"></i>
+                  Zobrazit profil
+                </a>
+                <button onclick="navigator.clipboard.writeText(window.location.href)" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10">
+                  <i data-lucide="share-2" class="w-4 h-4"></i> Sdílet vizitku
+                </button>
+              </div>
+            </div>
+
+            <!-- TESTOVACÍ FIRMA 3 -->
+            <div class="rounded-3xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-amber-900 border border-amber-400/50 p-5 shadow-soft flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-300 via-yellow-400 to-amber-500 p-[2px] shadow-[0_0_20px_rgba(251,191,36,0.6)]">
+                  <div class="w-full h-full rounded-2xl bg-neutral-950 grid place-items-center text-xl font-bold text-amber-200">S</div>
+                </div>
+                <div class="flex-1">
+                  <p class="font-semibold text-sm">SuperBrand a.s.</p>
+                  <p class="text-[11px] text-amber-200 flex items-center gap-1">
+                    <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                    Gold Brand Partner
+                  </p>
+                </div>
+              </div>
+              <p class="text-xs text-white/70">
+                Prémiová značka se silnou účastí v influencer komunitě.
+              </p>
+              <div class="flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#luxury</span>
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#premium</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 pt-1 text-xs">
+                <a href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-amber-400/20 border border-amber-300/60 hover:bg-amber-400/30">
+                  <i data-lucide="eye" class="w-4 h-4 text-amber-200"></i>
+                  Zobrazit profil
+                </a>
+                <button onclick="navigator.clipboard.writeText(window.location.href)" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10">
+                  <i data-lucide="share-2" class="w-4 h-4"></i> Sdílet vizitku
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-3xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-amber-900 border border-amber-400/50 p-5 shadow-soft flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-300 via-yellow-400 to-amber-500 p-[2px] shadow-[0_0_20px_rgba(251,191,36,0.6)]">
+                  <div class="w-full h-full rounded-2xl bg-neutral-950 grid place-items-center text-xl font-bold text-amber-200">F</div>
+                </div>
+                <div class="flex-1">
+                  <p class="font-semibold text-sm">Firemní demo s.r.o.</p>
+                  <p class="text-[11px] text-amber-200 flex items-center gap-1">
+                    <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                    VIP & Gold Brand Partner
+                  </p>
+                </div>
+              </div>
+
+              <p class="text-xs text-white/70">
+                Krátký popis firmy a spolupráce s influencery. Tahle karta funguje jako rychlá vizitka, kterou můžeš sdílet na sociálních sítích.
+              </p>
+
+              <div class="flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#e‑shop</span>
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#fashion</span>
+                <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">#influencermarketing</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3 pt-1 text-xs">
+                <a href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-amber-400/20 border border-amber-300/60 hover:bg-amber-400/30">
+                  <i data-lucide="eye" class="w-4 h-4 text-amber-200"></i>
+                  Zobrazit profil na Kartao.cz
+                </a>
+                <button type="button" onclick="navigator.clipboard.writeText(window.location.href)" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10">
+                  <i data-lucide="share-2" class="w-4 h-4"></i>
+                  Sdílet vizitku
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 mt-8">
+      <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
+        <span>© 2025 Kartao.cz – VIP firmy</span>
+        <span>K-Coins · firemní úspěch · Gold partneři</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Firebase + Credits -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!window.firebase || !firebase.auth) return;
+
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+
+  <script>
+    // Pojistka pro načtení všech Lucide ikon
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        setTimeout(() => {
+          try {
+            lucide.createIcons();
+          } catch (e) {
+            console.warn("Lucide ikony – chyba inicializace:", e);
+          }
+        }, 0);
+      }
+    });
+  </script>
+
