@@ -19,3 +19,37 @@ window.db = firebase.firestore();
 window.auth = firebase.auth();
 const db = window.db;
 const auth = window.auth;
+// AUTOMATICKÉ NAČÍTÁNÍ ROLE PŘI PŘIHLÁŠENÍ
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    try {
+      const uid = user.uid;
+
+      // Načtení dokumentu uživatele z Firestore
+      const doc = await db.collection("users").doc(uid).get();
+      const data = doc.data() || {};
+
+      // Čteme roli z DB – influencer / firma
+      const role = data.role || "influencer";
+
+      // Uložíme pro celou stránku
+      window.currentUserRole = role;
+
+      // Uložíme i do localStorage pro ostatní stránky
+      localStorage.setItem("userRole", role);
+
+      console.log("Role načtena:", role);
+
+    } catch (error) {
+      console.error("Chyba při načítání role:", error);
+      window.currentUserRole = "influencer";
+      localStorage.setItem("userRole", "influencer");
+    }
+  } else {
+    // Uživatel není přihlášený
+    console.log("Nepřihlášen");
+
+    window.currentUserRole = "influencer";
+    localStorage.removeItem("userRole");
+  }
+});
