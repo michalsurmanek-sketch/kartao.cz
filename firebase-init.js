@@ -1,13 +1,13 @@
-// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyAmUuqkye67hhyoauRJiUVi_UVEdzU7hTI",
-  authDomain: "kartao-cz.firebaseapp.com",
-  projectId: "kartao-cz",
-  storageBucket: "kartao-cz.appspot.com",
-  messagingSenderId: "712778602439",
-  appId: "1:712778602439:web:14e2b4c07ea35f70a16be2",
-  measurementId: "G-QC38M7X2KT"
+  apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
+  authDomain: "kartao-97df7.firebaseapp.com",
+  projectId: "kartao-97df7",
+  storageBucket: "kartao-97df7.firebasestorage.app",
+  messagingSenderId: "1041236043484",
+  appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
+  measurementId: "G-77NDPH3TXM"
 };
+
 
 // Inicializace Firebase
 if (!firebase.apps || !firebase.apps.length) {
