@@ -2027,6 +2027,30 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 <!-- Hamburger Menu -->
 <script src="hamburger-menu.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = window.currentUserRole || "influencer"; 
+    // hodnoty: "influencer" / "firma"
+
+    const titleEl = document.getElementById("userCardTitle");
+    const subtitleEl = document.getElementById("userCardSubtitle");
+    const iconEl = document.getElementById("userCardIcon");
+
+    if (!titleEl) return;
+
+    if (role === "firma") {
+        titleEl.textContent = "Moje firma";
+        subtitleEl.textContent = "Firemní profil & správa";
+        iconEl.innerHTML = `<i data-lucide="building-2" class="w-4 h-4"></i>`;
+    } else {
+        titleEl.textContent = "Moje karta";
+        subtitleEl.textContent = "Profil & ovládání účtu";
+        iconEl.innerHTML = `<i data-lucide="id-card" class="w-4 h-4"></i>`;
+    }
+
+    if (window.lucide) lucide.createIcons();
+});
+</script>
 
 </body>
 </html>
