@@ -345,5 +345,16 @@
   });
 </script>
 
+  <script>
+    // Globální inicializace Lucide ikon po načtení celé stránky
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        setTimeout(() => {
+          lucide.createIcons();
+        }, 0);
+      }
+    });
+  </script>
+
 </body>
 </html>
