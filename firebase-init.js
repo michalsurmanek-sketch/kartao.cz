@@ -32,7 +32,7 @@ auth.onAuthStateChanged(async (user) => {
       const uid = user.uid;
 
       // Načtení dokumentu uživatele z Firestore
-      const doc = await db.collection("user").doc(uid).get();
+      const doc = await db.collection("users").doc(uid).get();
       const data = doc.data() || {};
 
       // Čteme roli z DB – influencer / firma
