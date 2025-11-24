@@ -33,9 +33,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- Tvůj společný Firebase init (ten z GitHubu) -->
-  <script src="firebase-init.js"></script>
-
   <style>
     body {
       min-height: 100vh;
@@ -123,7 +120,7 @@
             <li class="flex items-start gap-2">
               <span class="mt-0.5 text-sky-400">●</span>
               <div>
-                <span class="font-semibold text-slate-50">Jednotný účet</span> – stejný e-mail používáš pro všechny dashboardy a funkce.
+                <span class="font-semibold text-slate-50">Jednotný účet</span> – stejný e‑mail používáš pro všechny dashboardy a funkce.
               </div>
             </li>
             <li class="flex items-start gap-2">
@@ -171,7 +168,7 @@
             <div class="flex items-center justify-between gap-3">
               <div class="flex flex-col">
                 <span class="text-xs font-semibold uppercase tracking-[0.20em] text-slate-400">Přihlášení</span>
-                <span id="loginSubheading" class="text-sm text-slate-200">Zadej e-mail a heslo k existujícímu účtu.</span>
+                <span id="loginSubheading" class="text-sm text-slate-200">Zadej e‑mail a heslo k existujícímu účtu.</span>
               </div>
               <div id="roleBadge" class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-3 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/80">
                 <span class="text-xs">💳</span>
@@ -181,7 +178,7 @@
 
             <div class="space-y-3 text-sm">
               <div>
-                <label for="loginEmail" class="mb-1 block text-xs font-medium text-slate-300">E-mail</label>
+                <label for="loginEmail" class="mb-1 block text-xs font-medium text-slate-300">E‑mail</label>
                 <input id="loginEmail" type="email" required autocomplete="email" class="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 outline-none ring-0 placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/40" placeholder="tvoje@email.cz" />
               </div>
               <div>
@@ -228,7 +225,7 @@
 
             <div class="space-y-3 text-sm">
               <div>
-                <label for="registerEmail" class="mb-1 block text-xs font-medium text-slate-300">E-mail</label>
+                <label for="registerEmail" class="mb-1 block text-xs font-medium text-slate-300">E‑mail</label>
                 <input id="registerEmail" type="email" required autocomplete="email" class="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-slate-100 outline-none ring-0 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/40" placeholder="tvoje@email.cz" />
               </div>
               <div>
@@ -304,12 +301,12 @@
         registerSubheading.textContent = "Založ si firemní Kartao účet pro kampaně a spolupráce.";
       } else {
         roleHeading.textContent = "influencer účtu";
-        roleDescription.textContent = "Přihlášení pro tvůrce obsahu, sportovce, streamery a osobnosti, které sbírají K-Coins a spolupráce.";
+        roleDescription.textContent = "Přihlášení pro tvůrce obsahu, sportovce, streamery a osobnosti, které sbírají K‑Coins a spolupráce.";
         rolePill.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Influencer účet';
         roleBadge.innerHTML = '<span class="text-xs">⭐</span><span>Influencer účet</span>';
         roleBadgeReg.innerHTML = '<span class="text-xs">⭐</span><span>Nový influencer účet</span>';
         loginSubheading.textContent = "Přihlášení pro influencery a tvůrce obsahu.";
-        registerSubheading.textContent = "Založ si influencer účet a začni sbírat K-Coins.";
+        registerSubheading.textContent = "Založ si influencer účet a začni sbírat K‑Coins.";
       }
     }
 
@@ -342,9 +339,17 @@
     tabLogin.addEventListener("click", () => setTab("login"));
     tabRegister.addEventListener("click", () => setTab("register"));
 
-    // --- Firebase objekty z firebase-init.js ---
-    const auth = window.auth;
-    const db = window.db;
+    // --- Firebase config (DOPLŇ SVÉ ÚDAJE) ---
+    const firebaseConfig = {
+      apiKey: "TVUJ_API_KEY",
+      authDomain: "TVUJ-PROJEKT.firebaseapp.com",
+      projectId: "TVUJ-PROJEKT",
+      // případně další údaje podle tvého Firebase projektu
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
     const messageBox = document.getElementById("messageBox");
     const loader = document.getElementById("loader");
@@ -388,9 +393,9 @@
         }
 
         if (finalRole === "firma") {
-          window.location.href = "dashboard-firma.html";
+          window.location.href = "moje-firma.html";
         } else {
-          window.location.href = "dashboard-influencer.html";
+          window.location.href = "moje-karta.html";
         }
       } catch (err) {
         console.error(err);
@@ -420,7 +425,7 @@
         await routeUser(cred.user);
       } catch (err) {
         console.error(err);
-        showMessage("Přihlášení se nezdařilo. Zkontroluj e-mail a heslo.");
+        showMessage("Přihlášení se nezdařilo. Zkontroluj e‑mail a heslo.");
       } finally {
         setLoading(false);
       }
@@ -448,13 +453,13 @@
         await routeUser(user);
       } catch (err) {
         console.error(err);
-        showMessage("Registrace se nezdařila. Zkontroluj e-mail a heslo (min. 6 znaků).");
+        showMessage("Registrace se nezdařila. Zkontroluj e‑mail a heslo (min. 6 znaků)." );
       } finally {
         setLoading(false);
       }
     });
 
-    // --- Google login ---
+    // --- Google login (pokud chceš používat, musí být povolen ve Firebase) ---
     const googleBtn = document.getElementById("googleLogin");
     googleBtn.addEventListener("click", async () => {
       hideMessage();
