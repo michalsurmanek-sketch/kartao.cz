@@ -324,8 +324,15 @@
       }
 
       try {
-        const docRef = db.collection("users").doc(user.uid);
-        const doc = await docRef.get();
+        const primaryRef = db.collection("users").doc(user.uid);
+        const fallbackRef = db.collection("user").doc(user.uid);
+
+        let doc = await primaryRef.get();
+        if (!doc.exists) {
+          // fallback na starou kolekci "user"
+          doc = await fallbackRef.get();
+        }
+
         const data = doc.exists ? doc.data() : {};
         applyUserUI(user, data || {});
       } catch (err) {
@@ -357,7 +364,12 @@
       };
 
       try {
-        await db.collection("users").doc(user.uid).set(payload, { merge: true });
+        const primaryRef = db.collection("users").doc(user.uid);
+        const fallbackRef = db.collection("user").doc(user.uid);
+
+        // zapisujeme do obou kolekcí, aby byl profil sjednocený
+        await primaryRef.set(payload, { merge: true });
+        await fallbackRef.set(payload, { merge: true });
         showMessage("Údaje byly úspěšně uloženy.");
       } catch (err) {
         console.error("Chyba při ukládání účtu:", err);
