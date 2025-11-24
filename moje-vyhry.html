@@ -166,8 +166,16 @@
 
         if (reward.type === "mystery") {
           // K-Coins – bez tlačítka
-        } else if (reward.type === "gold-card") {
-  
+      
+  } else if (reward.type === "gold-card") {
+  actionContainer.innerHTML = `
+    <a href="vip.html"
+       class="px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-400 via-emerald-300 to-emerald-200 text-[11px] font-semibold text-neutral-950 shadow-md shadow-emerald-500/40 whitespace-nowrap">
+      Aktivovat VIP den
+    </a>
+  `;
+}
+
  
         } else if (reward.type === "ticket") {
           actionContainer.innerHTML = `
