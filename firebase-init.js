@@ -1,3 +1,7 @@
+// ------------------------------------------------------
+// Firebase Inicializace + Role + Logout – FINÁLNÍ VERZE
+// ------------------------------------------------------
+
 const firebaseConfig = {
   apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
   authDomain: "kartao-97df7.firebaseapp.com",
@@ -8,8 +12,7 @@ const firebaseConfig = {
   measurementId: "G-77NDPH3TXM"
 };
 
-
-// Inicializace Firebase
+// Inicializace Firebase – jen pokud ještě neběží
 if (!firebase.apps || !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -19,7 +22,10 @@ window.db = firebase.firestore();
 window.auth = firebase.auth();
 const db = window.db;
 const auth = window.auth;
+
+// ------------------------------------------------------
 // AUTOMATICKÉ NAČÍTÁNÍ ROLE PŘI PŘIHLÁŠENÍ
+// ------------------------------------------------------
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     try {
@@ -46,10 +52,35 @@ auth.onAuthStateChanged(async (user) => {
       localStorage.setItem("userRole", "influencer");
     }
   } else {
-    // Uživatel není přihlášený
     console.log("Nepřihlášen");
-
-    window.currentUserRole = "influencer";
+    window.currentUserRole = null;
     localStorage.removeItem("userRole");
   }
+});
+
+// ------------------------------------------------------
+// FUNKCE PRO ODHLÁŠENÍ UŽIVATELE
+// ------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    try {
+      // Odhlášení z Firebase
+      await auth.signOut();
+
+      // Vymazání lokálních dat
+      localStorage.removeItem("userRole");
+      window.currentUserRole = null;
+
+      // Přesměrování po odhlášení
+      window.location.href = "index.html";
+    } catch (error) {
+      console.error("Chyba při odhlášení:", error);
+      alert("Nepodařilo se odhlásit. Zkus to znovu.");
+    }
+  });
 });
