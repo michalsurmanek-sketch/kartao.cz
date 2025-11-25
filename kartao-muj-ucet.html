@@ -102,7 +102,7 @@
               <span id="emailLabel">–</span>
             </div>
             <p class="text-xs text-slate-400">
-              Tyto údaje jsou propojené s Firebase účtem. E‑mail je používán pro přihlášení a obnovu hesla.
+              Tyto údaje jsou propojené s Firebase účtem. E-mail je používán pro přihlášení a obnovu hesla.
             </p>
           </div>
 
@@ -139,7 +139,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div class="sm:col-span-2">
-                <label for="email" class="mb-1 block text-xs font-medium text-slate-300">E‑mail (přihlašovací)</label>
+                <label for="email" class="mb-1 block text-xs font-medium text-slate-300">E-mail (přihlašovací)</label>
                 <input id="email" type="email" disabled class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-400 outline-none ring-0" />
               </div>
 
@@ -301,10 +301,15 @@
       const name = data.name || user.displayName || "Uživatel Kartao";
       const nickname = data.nickname || "";
       const phone = data.phone || "";
-      const role = data.role || "influencer";
+
+      // role – nejdřív z Firestore, pak z localStorage, nakonec influencer
+      const role =
+        data.role ||
+        localStorage.getItem("userRole") ||
+        "influencer";
 
       emailInput.value = email;
-      emailLabelEl.textContent = email || "Bez e‑mailu";
+      emailLabelEl.textContent = email || "Bez e-mailu";
       nameInput.value = name;
       nicknameInput.value = nickname;
       phoneInput.value = phone;
@@ -330,7 +335,20 @@
         applyUserUI(user, data || {});
       } catch (err) {
         console.error("Chyba při načítání účtu:", err);
-        showMessage("Nepodařilo se načíst údaje účtu.", "error");
+
+        // Fallback – když nejde Firestore, použijeme aspoň údaje z Firebase Auth a localStorage
+        applyUserUI(user, {
+          email: user.email || "",
+          name: user.displayName || "Uživatel Kartao",
+          nickname: "",
+          phone: "",
+          role: localStorage.getItem("userRole") || "influencer",
+        });
+
+        showMessage(
+          "Nepodařilo se načíst údaje z databáze, ale základní informace z účtu jsme načetli.",
+          "error"
+        );
       } finally {
         setLoading(false);
       }
@@ -372,16 +390,16 @@
       hideMessage();
       const user = auth.currentUser;
       if (!user || !user.email) {
-        showMessage("Nepodařilo se zjistit e‑mail účtu.", "error");
+        showMessage("Nepodařilo se zjistit e-mail účtu.", "error");
         return;
       }
 
       try {
         await auth.sendPasswordResetEmail(user.email);
-        showMessage("Odeslali jsme ti e‑mail s odkazem na změnu hesla.");
+        showMessage("Odeslali jsme ti e-mail s odkazem na změnu hesla.");
       } catch (err) {
         console.error("Chyba při resetu hesla:", err);
-        showMessage("Nepodařilo se odeslat e‑mail pro změnu hesla.", "error");
+        showMessage("Nepodařilo se odeslat e-mail pro změnu hesla.", "error");
       }
     });
 
