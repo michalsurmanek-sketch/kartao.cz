@@ -45,7 +45,7 @@
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
               <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">
-                Kampaně (firemní účet)
+                Kampaně
               </span>
             </div>
             <p class="text-[11px] text-white/60">Přehled kampaní · stav · výsledky</p>
@@ -54,28 +54,26 @@
 
         <!-- Pravá strana -->
         <div class="flex items-center gap-3">
-          <!-- Kredity firmy -->
           <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
             <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <!-- Dobití kreditů firemního účtu -->
-          <a href="firma-credits.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
+          <a href="dobit-kredity.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
             Dobít kredity
           </a>
 
-          <!-- Nová kampaň -->
           <a href="vytvorit-kampan.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-emerald-400/60 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-100 hover:bg-emerald-500/25">
             <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
             Nová kampaň
           </a>
 
-          <!-- Odhlášení (Firebase signOut) -->
-          <a href="index.html"
-             id="logoutBtn"
-             class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+          <a
+            href="index.html"
+            id="logoutBtn"
+            class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10"
+          >
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
           </a>
@@ -93,7 +91,7 @@
             <div>
               <h1 class="text-xl md:text-2xl font-semibold">Přehled kampaní</h1>
               <p class="text-xs text-white/60 mt-1 max-w-xl">
-                Tady vidíš všechny své kampaně na Kartao.cz – od návrhu až po dokončení. Sleduj stav, rozpočet a výkon.
+                Zde vidíš všechny své kampaně na Kartao.cz – od návrhu až po dokončení. Sleduj stav, rozpočet a výkon.
               </p>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs w-full md:w-auto">
@@ -179,7 +177,7 @@
                 </thead>
 
                 <tbody id="campaignList" class="divide-y divide-white/5">
-                  <!-- DEMO DATA – později nahradíme daty z Firestore -->
+                  <!-- DEMO DATA -->
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
                       data-name="Jarní launch kolekce" data-status="Aktivní" data-platform="Instagram + TikTok"
                       data-budget="5 000 K-Coins" data-spent="2 000 K-Coins" data-objective="Brand awareness · představení nové kolekce"
@@ -343,13 +341,31 @@
         if (currentCreditsEl) currentCreditsEl.textContent = val;
       }
 
-      // Firebase odhlášení
+      // Umí zpracovat sync i async getCredits()
+      function resolveCredits(maybePromise) {
+        if (maybePromise && typeof maybePromise.then === "function") {
+          maybePromise
+            .then(function (val) {
+              updateCreditsDisplay(val);
+            })
+            .catch(function (err) {
+              console.warn("Kampaně: chyba při načítání kreditů (async):", err);
+            });
+        } else {
+          updateCreditsDisplay(maybePromise);
+        }
+      }
+
+      // Odhlášení – skutečné signOut z Firebase
       if (logoutBtn) {
         logoutBtn.addEventListener("click", function (e) {
           e.preventDefault();
-          firebase.auth().signOut().finally(function () {
-            window.location.href = "index.html";
-          });
+          firebase
+            .auth()
+            .signOut()
+            .finally(function () {
+              window.location.href = "index.html";
+            });
         });
       }
 
@@ -359,25 +375,31 @@
           return;
         }
 
-        // Uložíme UID firemního účtu
+        // Firemní UID
         window.currentUserId = user.uid;
 
-        // Kredity přes centrální CreditsSystem (stejně jako na moje-firma.html)
         try {
           const creditsSystem = new CreditsSystem(user.uid);
+
           window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
+            getCredits: function () {
+              return creditsSystem.getCredits();
+            },
+            addCredits: function (a) {
+              return creditsSystem.addCredits(a);
+            },
+            subtractCredits: function (a) {
+              return creditsSystem.subtractCredits(a);
+            },
           };
 
-          const val = creditsSystem.getCredits();
-          updateCreditsDisplay(val);
+          const res = creditsSystem.getCredits();
+          resolveCredits(res);
         } catch (e) {
           console.warn("Přehled kampaní: chyba při práci s CreditsSystem:", e);
         }
 
-        // Logika pro detail kampaně (klik na řádek)
+        // Logika pro detail kampaně
         const rows = document.querySelectorAll("[data-campaign-row]");
         const detailName = document.getElementById("detailName");
         const detailBudget = document.getElementById("detailBudget");
@@ -388,10 +410,11 @@
         const detailInfluencers = document.getElementById("detailInfluencers");
         const detailStatusBadge = document.getElementById("detailStatusBadge");
 
-        rows.forEach((row) => {
-          row.addEventListener("click", () => {
-            // vizuální označení vybrané kampaně
-            rows.forEach((r) => r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10"));
+        rows.forEach(function (row) {
+          row.addEventListener("click", function () {
+            rows.forEach(function (r) {
+              r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10");
+            });
             row.classList.add("ring-2", "ring-emerald-400", "bg-white/10");
 
             const name = row.getAttribute("data-name") || "Kampaň";
