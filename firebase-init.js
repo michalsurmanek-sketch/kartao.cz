@@ -1,86 +1,31 @@
-// ------------------------------------------------------
-// Firebase Inicializace + Role + Logout – FINÁLNÍ VERZE
-// ------------------------------------------------------
+// ==========================================
+// Firebase INIT – Kartao.cz (sjednocená verze)
+// ==========================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
-  authDomain: "kartao-97df7.firebaseapp.com",
-  projectId: "kartao-97df7",
-  storageBucket: "kartao-97df7.firebasestorage.app",
-  messagingSenderId: "1041236043484",
-  appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
-  measurementId: "G-77NDPH3TXM"
-};
-
-// Inicializace Firebase – jen pokud ještě neběží
-if (!firebase.apps || !firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-// Globální proměnné
-window.db = firebase.firestore();
-window.auth = firebase.auth();
-const db = window.db;
-const auth = window.auth;
-
-// ------------------------------------------------------
-// AUTOMATICKÉ NAČÍTÁNÍ ROLE PŘI PŘIHLÁŠENÍ
-// ------------------------------------------------------
-auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    try {
-      const uid = user.uid;
-
-      // Načtení dokumentu uživatele z Firestore
-      const doc = await db.collection("users").doc(uid).get();
-      const data = doc.data() || {};
-
-      // Čteme roli z DB – influencer / firma
-      const role = data.role || "influencer";
-
-      // Uložíme pro celou stránku
-      window.currentUserRole = role;
-
-      // Uložíme i do localStorage pro ostatní stránky
-      localStorage.setItem("userRole", role);
-
-      console.log("Role načtena:", role);
-
-    } catch (error) {
-      console.error("Chyba při načítání role:", error);
-      window.currentUserRole = "influencer";
-      localStorage.setItem("userRole", "influencer");
+// Ochrana proti vícenásobné inicializaci
+if (typeof firebase !== "undefined") {
+  
+  // Pokud Firebase ještě není inicializované → použij konfiguraci z firebase-config.js
+  if (!firebase.apps || !firebase.apps.length) {
+    if (typeof firebaseConfig === "undefined") {
+      console.error("❌ firebase-config.js nebyl načten. Ujisti se, že je nad firebase-init.js.");
+    } else {
+      firebase.initializeApp(firebaseConfig);
+      console.log("🔥 Firebase inicializováno přes firebase-init.js");
     }
-  } else {
-    console.log("Nepřihlášen");
-    window.currentUserRole = null;
-    localStorage.removeItem("userRole");
   }
-});
 
-// ------------------------------------------------------
-// FUNKCE PRO ODHLÁŠENÍ UŽIVATELE
-// ------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (!logoutBtn) return;
+  // Zajisti globální proměnné (aby byly na každé stránce)
+  window.auth    = firebase.auth();
+  window.db      = firebase.firestore();
+  window.storage = firebase.storage ? firebase.storage() : null;
 
-  logoutBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    try {
-      // Odhlášení z Firebase
-      await auth.signOut();
-
-      // Vymazání lokálních dat
-      localStorage.removeItem("userRole");
-      window.currentUserRole = null;
-
-      // Přesměrování po odhlášení
-      window.location.href = "index.html";
-    } catch (error) {
-      console.error("Chyba při odhlášení:", error);
-      alert("Nepodařilo se odhlásit. Zkus to znovu.");
-    }
+  console.log("✔ Firebase služby dostupné:", {
+    auth: !!window.auth,
+    db: !!window.db,
+    storage: !!window.storage
   });
-});
+
+} else {
+  console.error("❌ Firebase SDK není načteno. Chybí <script src='firebase-app-compat.js'> atd.");
+}
