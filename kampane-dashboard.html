@@ -59,7 +59,7 @@
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <a href="dobit-kredity.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
+          <a href="firma-credits.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
             Dobít kredity
           </a>
@@ -69,7 +69,11 @@
             Nová kampaň
           </a>
 
-          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+          <a
+            href="index.html"
+            id="logoutBtn"
+            class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10"
+          >
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
           </a>
@@ -304,7 +308,7 @@
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
-        lucide.createIcons();
+        window.lucide.createIcons();
       }
     });
   </script>
@@ -326,12 +330,32 @@
       }
 
       const headerCreditsEl = document.getElementById("headerCredits");
-      const currentCreditsEl = document.getElementById("currentCredits"); // kdybys chtěl doplnit do budoucna
+      const currentCreditsEl = document.getElementById("currentCredits"); // rezerva do budoucna
+
+      const statActiveEl = document.getElementById("statActive");
+      const statPendingEl = document.getElementById("statPending");
+      const statFinishedEl = document.getElementById("statFinished");
+      const statSpentEl = document.getElementById("statSpent");
 
       function updateCreditsDisplay(val) {
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
+      }
+
+      function formatNumber(num) {
+        const s = String(num);
+        let out = "";
+        let count = 0;
+        for (let i = s.length - 1; i >= 0; i--) {
+          out = s[i] + out;
+          count++;
+          if (count === 3 && i > 0) {
+            out = " " + out;
+            count = 0;
+          }
+        }
+        return out;
       }
 
       firebase.auth().onAuthStateChanged(function (user) {
@@ -366,6 +390,29 @@
         const detailObjective = document.getElementById("detailObjective");
         const detailInfluencers = document.getElementById("detailInfluencers");
         const detailStatusBadge = document.getElementById("detailStatusBadge");
+
+        // Auto-statistika podle tabulky
+        let activeCount = 0;
+        let pendingCount = 0;
+        let finishedCount = 0;
+        let totalSpent = 0;
+
+        rows.forEach((row) => {
+          const status = row.getAttribute("data-status") || "";
+          const spentStr = row.getAttribute("data-spent") || "0";
+
+          const numericSpent = parseInt(spentStr.replace(/\D/g, ""), 10) || 0;
+          totalSpent += numericSpent;
+
+          if (status === "Aktivní") activeCount++;
+          else if (status === "Čeká na schválení") pendingCount++;
+          else if (status === "Dokončené") finishedCount++;
+        });
+
+        if (statActiveEl) statActiveEl.textContent = activeCount;
+        if (statPendingEl) statPendingEl.textContent = pendingCount;
+        if (statFinishedEl) statFinishedEl.textContent = finishedCount;
+        if (statSpentEl) statSpentEl.textContent = formatNumber(totalSpent) + " K-Coins";
 
         rows.forEach((row) => {
           row.addEventListener("click", () => {
