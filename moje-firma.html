@@ -59,17 +59,18 @@
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <a href="credits-dashboard.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+          <!-- Link na firemní dobíjení kreditů -->
+          <a href="firma-credits.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
             <i data-lucide="coins" class="w-3.5 h-3.5"></i>
             Kredity & fakturace
           </a>
 
-          <a href="index.html"
-   id="logoutBtn"
-   class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
-  <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-  Odhlásit
-</a>
+          <!-- Odhlášení – přes logout.html -->
+          <a href="logout.html"
+             class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
         </div>
       </div>
     </header>
@@ -306,24 +307,29 @@
     });
   </script>
 
-  <!-- Firebase + CreditsSystem (stejné jako na ostatních stránkách) -->
+  <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
     // Napojení na uživatele + kredity (firemní účet)
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) {
-        console.warn("Firebase není dostupný na moje-firma.html");
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      if (!auth) {
+        console.warn("Firebase Auth není dostupný na moje-firma.html");
         return;
       }
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -339,7 +345,7 @@
         if (nameEl) nameEl.textContent = displayName;
         if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
 
-        // Kredity přes CreditsSystem
+        // Kredity přes CreditsSystem – stejný systém jako všude
         try {
           const creditsSystem = new CreditsSystem(user.uid);
           window.creditSys = {
