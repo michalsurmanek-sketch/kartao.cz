@@ -2,7 +2,7 @@
 // Firebase Config – Kartao.cz
 // ==========================
 
-// Tvůj Firebase projekt
+// Jen konfigurace projektu – žádná inicializace
 const firebaseConfig = {
   apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
   authDomain: "kartao-97df7.firebaseapp.com",
@@ -13,14 +13,5 @@ const firebaseConfig = {
   measurementId: "G-77NDPH3TXM"
 };
 
-// Inicializace Firebase (bez chyb, i pokud už běží)
-if (!firebase.apps || !firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-// Globální proměnné – jednotně pro celý web
-window.auth = firebase.auth();
-window.db   = firebase.firestore();
-window.storage = firebase.storage ? firebase.storage() : null;
-
-console.log("🔥 Firebase inicializováno přes firebase-config.js");
+// TADY NIC NEINICIALIZUJEME
+// Žádný firebase.initializeApp, žádné window.auth, window.db
