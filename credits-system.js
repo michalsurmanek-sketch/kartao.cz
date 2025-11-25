@@ -89,16 +89,25 @@ class CreditsSystem {
       localStorage.setItem(this.keys.credits, "0");
     }
 
-    let daily = localStorage.getItem(this.keys.daily);
-    if (!daily) {
+    let dailyRaw = localStorage.getItem(this.keys.daily);
+
+    if (!dailyRaw) {
       localStorage.setItem(this.keys.daily, JSON.stringify(this.dailyDefault));
       return;
     }
 
-    daily = JSON.parse(daily);
+    let daily;
+    try {
+      daily = JSON.parse(dailyRaw);
+    } catch (e) {
+      // kdyby se náhodou něco rozbilo v JSONu → reset
+      daily = { ...this.dailyDefault, date: this.todayString() };
+      localStorage.setItem(this.keys.daily, JSON.stringify(daily));
+      return;
+    }
 
     // nový den = reset
-    if (daily.date !== this.todayString()) {
+    if (!daily || daily.date !== this.todayString()) {
       const reset = { ...this.dailyDefault, date: this.todayString() };
       localStorage.setItem(this.keys.daily, JSON.stringify(reset));
     }
@@ -128,7 +137,20 @@ class CreditsSystem {
 
   // --- Denní stav ---
   getDailyState() {
-    return JSON.parse(localStorage.getItem(this.keys.daily));
+    const raw = localStorage.getItem(this.keys.daily);
+    if (!raw) {
+      const reset = { ...this.dailyDefault, date: this.todayString() };
+      localStorage.setItem(this.keys.daily, JSON.stringify(reset));
+      return reset;
+    }
+
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      const reset = { ...this.dailyDefault, date: this.todayString() };
+      localStorage.setItem(this.keys.daily, JSON.stringify(reset));
+      return reset;
+    }
   }
 
   saveDailyState(state) {
@@ -185,14 +207,14 @@ class CreditsSystem {
     return diff;
   }
 
-  // 🔥 OPRAVENÁ FUNKCE!
+  // Cooldown aktivní nebo ne
   hasAdsCooldown() {
     const daily = this.getDailyState();
     if (!daily) return false;
 
     const maxAds = daily.maxAds || 5;
 
-    // Pokud ještě nemá odsledovaných 5 reklam → NESMÍ být v cooldownu
+    // Pokud ještě nemá odsledovaných maxAds reklam → žádný cooldown
     if (daily.adsWatched < maxAds) {
       return false;
     }
@@ -213,5 +235,7 @@ class CreditsSystem {
   }
 }
 
-// Export
-window.CreditsSystem = CreditsSystem;
+// Export – bezpečně
+if (typeof window !== "undefined") {
+  window.CreditsSystem = CreditsSystem;
+}
