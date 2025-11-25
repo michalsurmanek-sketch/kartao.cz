@@ -9,210 +9,423 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Rok v patičce
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Firebase config – stejný jako v login.html
-    const firebaseConfig = {
-      apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
-      authDomain: "kartao-97df7.firebaseapp.com",
-      projectId: "kartao-97df7",
-      storageBucket: "kartao-97df7.firebasestorage.app",
-      messagingSenderId: "1041236043484",
-      appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
-      measurementId: "G-77NDPH3TXM"
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+          },
+        },
+      },
     };
+  </script>
 
-    if (!firebase.apps || !firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+  <!-- Firebase + společná inicializace -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- tady máš svůj projektový init se stejným configem jako jinde -->
+  <script src="firebase-init.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #db58f6 0, transparent 55%),
+        radial-gradient(circle at bottom right, #fbbf24 0, #020617 55%);
     }
-
-    const auth = firebase.auth();
-
-    // DOM prvky
-    const loader = document.getElementById("loader");
-    const messageBox = document.getElementById("messageBox");
-    const accountForm = document.getElementById("accountForm");
-    const backLink = document.getElementById("backLink");
-
-    const emailInput = document.getElementById("email");
-    const nameInput = document.getElementById("name");
-    const nicknameInput = document.getElementById("nickname");
-    const phoneInput = document.getElementById("phone");
-
-    const displayNameEl = document.getElementById("displayName");
-    const avatarInitialEl = document.getElementById("avatarInitial");
-    const emailLabelEl = document.getElementById("emailLabel");
-    const roleLabelEl = document.getElementById("roleLabel");
-    const roleBadgeEl = document.getElementById("roleBadge");
-    const roleDescriptionEl = document.getElementById("roleDescription");
-    const roleChipEl = document.getElementById("roleChip");
-
-    const resetPasswordBtn = document.getElementById("resetPasswordBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    function setLoading(isLoading) {
-      loader.classList.toggle("hidden", !isLoading);
-      accountForm.classList.toggle("opacity-50", isLoading);
+    .shadow-soft {
+      box-shadow: 0 18px 45px rgba(15,23,42,0.85);
     }
+  </style>
+</head>
+<body class="text-white">
+  <!-- HLAVIČKA -->
+  <header class="border-b border-white/10 bg-neutral-950/80 backdrop-blur sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <span class="font-bold text-lg">K</span>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight">Kartao.cz</div>
+          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+        </div>
+      </a>
 
-    function showMessage(text, type = "success") {
-      messageBox.textContent = text;
-      messageBox.classList.remove("hidden");
-      if (type === "success") {
-        messageBox.classList.remove("border-rose-500/50", "bg-rose-500/10");
-        messageBox.classList.add("border-emerald-500/50", "bg-emerald-500/10");
-      } else {
-        messageBox.classList.remove("border-emerald-500/50", "bg-emerald-500/10");
-        messageBox.classList.add("border-rose-500/50", "bg-rose-500/10");
+      <button id="logoutBtn" class="px-3 py-1.5 rounded-xl text-sm border border-white/20 hover:bg-white/10">
+        Odhlásit se
+      </button>
+    </div>
+  </header>
+
+  <!-- OBSAH -->
+  <main class="max-w-6xl mx-auto px-4 py-8 md:py-12">
+    <!-- Zpět na dashboard -->
+    <div class="mb-4">
+      <a id="backLink" href="moje-karta.html" class="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white">
+        <span class="text-lg">←</span>
+        <span>Zpět na dashboard</span>
+      </a>
+    </div>
+
+    <div class="grid md:grid-cols-[minmax(0,220px)_minmax(0,1fr)] gap-6 items-start">
+      <!-- LEVÝ PROFIL BOX -->
+      <section class="rounded-2xl bg-neutral-900/80 border border-white/10 p-6 shadow-soft">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center text-2xl font-bold text-neutral-950" id="avatarInitial">
+            U
+          </div>
+          <div>
+            <div id="displayName" class="font-semibold text-lg leading-tight">
+              Uživatel Kartao
+            </div>
+            <div id="emailLabel" class="text-xs text-white/60 break-all">
+              —
+            </div>
+          </div>
+        </div>
+
+        <div id="roleBadge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs text-white/80 mb-3">
+          <span>⭐</span>
+          <span>Influencer účet</span>
+        </div>
+
+        <div class="space-y-1">
+          <div id="roleLabel" class="text-sm font-semibold">
+            Influencer účet
+          </div>
+          <p id="roleDescription" class="text-xs text-white/60">
+            Tento účet je vedený jako influencer / tvůrce obsahu.
+          </p>
+        </div>
+
+        <div class="mt-5 space-y-2 text-xs text-white/60">
+          <div class="inline-flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Bezpečné přihlášení přes Firebase.</span>
+          </div>
+          <div class="inline-flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span>Jeden účet pro všechny dashboardy.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRAVÝ FORMULÁŘ -->
+      <section class="rounded-2xl bg-neutral-900/80 border border-white/10 p-6 md:p-8 shadow-soft">
+        <header class="mb-4">
+          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-1">
+            Můj účet
+          </h1>
+          <p class="text-sm text-white/60">
+            Upravit základní údaje a kontakty. Zatím se ukládá jen do tohoto zařízení (localStorage).
+          </p>
+        </header>
+
+        <!-- Stav / zpráva -->
+        <div id="messageBox" class="hidden mb-4 rounded-xl border px-3 py-2 text-sm"></div>
+
+        <!-- Loader text -->
+        <div id="loader" class="mb-4 text-sm text-white/60">
+          Načítám údaje o účtu…
+        </div>
+
+        <!-- Role chip (druhá instance) -->
+        <div id="roleChip" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-xs text-white/70 mb-4">
+          <span>⭐</span>
+          <span>Influencer účet</span>
+        </div>
+
+        <!-- FORMULÁŘ ÚČTU -->
+        <form id="accountForm" class="space-y-5">
+          <!-- E-mail -->
+          <div class="space-y-1.5">
+            <label for="email" class="text-xs uppercase tracking-wide text-white/40">E-mail (přihlašovací)</label>
+            <input
+              id="email"
+              type="email"
+              class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm outline-none focus:border-amber-400"
+              readonly
+            />
+          </div>
+
+          <!-- Jméno + přezdívka -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="name" class="text-xs uppercase tracking-wide text-white/40">Jméno / název</label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Tvoje jméno nebo název firmy"
+                class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm outline-none focus:border-amber-400"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label for="nickname" class="text-xs uppercase tracking-wide text-white/40">Přezdívka / značka</label>
+              <input
+                id="nickname"
+                type="text"
+                placeholder="Např. @kartao_influencer"
+                class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm outline-none focus:border-amber-400"
+              />
+            </div>
+          </div>
+
+          <!-- Telefon -->
+          <div class="space-y-1.5">
+            <label for="phone" class="text-xs uppercase tracking-wide text-white/40">Telefon (nepovinné)</label>
+            <input
+              id="phone"
+              type="tel"
+              placeholder="+420 ..."
+              class="w-full rounded-xl bg-neutral-900 border border-white/15 px-3 py-2 text-sm outline-none focus:border-amber-400"
+            />
+          </div>
+
+          <!-- Zabezpečení -->
+          <div class="border-t border-white/10 pt-4 mt-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="text-xs uppercase tracking-wide text-white/40 mb-1">Zabezpečení</div>
+                <p class="text-xs text-white/60">
+                  Heslo neumíme zobrazit, ale můžeme ti poslat odkaz na změnu.
+                </p>
+              </div>
+              <button
+                type="button"
+                id="resetPasswordBtn"
+                class="px-3 py-1.5 rounded-xl border border-white/20 text-xs hover:bg-white/10"
+              >
+                Poslat odkaz na reset hesla
+              </button>
+            </div>
+          </div>
+
+          <!-- Tlačítko uložit -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-sm font-semibold text-neutral-950 shadow-soft hover:brightness-110"
+            >
+              Uložit změny
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <!-- Patička -->
+  <footer class="border-t border-white/10 bg-neutral-950/80 mt-8">
+    <div class="max-w-6xl mx-auto px-4 py-3 text-xs text-white/50 flex items-center justify-between">
+      <span>© <span id="year"></span> Kartao.cz</span>
+      <span>Beta verze – údaje účtu se zatím ukládají jen lokálně.</span>
+    </div>
+  </footer>
+
+  <!-- LOGIKA ÚČTU (Auth + localStorage, bez Firestore) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const auth = window.auth || firebase.auth();
+
+      // DOM prvky
+      const loader = document.getElementById("loader");
+      const messageBox = document.getElementById("messageBox");
+      const accountForm = document.getElementById("accountForm");
+      const backLink = document.getElementById("backLink");
+
+      const emailInput = document.getElementById("email");
+      const nameInput = document.getElementById("name");
+      const nicknameInput = document.getElementById("nickname");
+      const phoneInput = document.getElementById("phone");
+
+      const displayNameEl = document.getElementById("displayName");
+      const avatarInitialEl = document.getElementById("avatarInitial");
+      const emailLabelEl = document.getElementById("emailLabel");
+      const roleLabelEl = document.getElementById("roleLabel");
+      const roleBadgeEl = document.getElementById("roleBadge");
+      const roleDescriptionEl = document.getElementById("roleDescription");
+      const roleChipEl = document.getElementById("roleChip");
+
+      const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      const yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      function setLoading(isLoading) {
+        if (!loader || !accountForm) return;
+        loader.classList.toggle("hidden", !isLoading);
+        accountForm.classList.toggle("opacity-50", isLoading);
       }
-    }
 
-    function hideMessage() {
-      messageBox.classList.add("hidden");
-      messageBox.textContent = "";
-    }
-
-    function applyRoleUI(role) {
-      let label = "Influencer účet";
-      let desc = "Tento účet je vedený jako influencer / tvůrce obsahu.";
-      let chipIcon = "⭐";
-      let backHref = "moje-karta.html";
-
-      if (role === "firma") {
-        label = "Firemní účet";
-        desc = "Tento účet je vedený jako firma / značka / agentura.";
-        chipIcon = "🏢";
-        backHref = "moje-firma.html";
+      function showMessage(text, type = "success") {
+        if (!messageBox) return;
+        messageBox.textContent = text;
+        messageBox.classList.remove("hidden", "border-rose-500/50", "bg-rose-500/10", "border-emerald-500/50", "bg-emerald-500/10");
+        if (type === "success") {
+          messageBox.classList.add("border-emerald-500/50", "bg-emerald-500/10");
+        } else {
+          messageBox.classList.add("border-rose-500/50", "bg-rose-500/10");
+        }
       }
 
-      roleLabelEl.textContent = label;
-      roleDescriptionEl.textContent = desc;
-      roleBadgeEl.innerHTML = `<span>${chipIcon}</span><span>${label}</span>`;
-      roleChipEl.innerHTML = `<span>${chipIcon}</span><span>${label}</span>`;
-      backLink.href = backHref;
-    }
-
-    function applyUserUI(user, data) {
-      const email = user.email || data.email || "";
-      const name = data.name || user.displayName || "Uživatel Kartao";
-      const nickname = data.nickname || "";
-      const phone = data.phone || "";
-      const role =
-        data.role ||
-        localStorage.getItem("userRole") ||
-        "influencer";
-
-      emailInput.value = email;
-      emailLabelEl.textContent = email || "Bez e‑mailu";
-      nameInput.value = name;
-      nicknameInput.value = nickname;
-      phoneInput.value = phone;
-
-      displayNameEl.textContent = name;
-      avatarInitialEl.textContent = name.trim().charAt(0).toUpperCase() || "U";
-
-      applyRoleUI(role);
-    }
-
-    function loadLocalProfile(uid) {
-      try {
-        const raw = localStorage.getItem("kartaoProfile_" + uid);
-        if (!raw) return {};
-        return JSON.parse(raw) || {};
-      } catch (e) {
-        console.error("Chyba při čtení local profile:", e);
-        return {};
-      }
-    }
-
-    function saveLocalProfile(uid, payload) {
-      try {
-        localStorage.setItem("kartaoProfile_" + uid, JSON.stringify(payload));
-      } catch (e) {
-        console.error("Chyba při ukládání local profile:", e);
-      }
-    }
-
-    // Načtení uživatele – BEZ Firestore, jen Auth + localStorage
-    setLoading(true);
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
+      function hideMessage() {
+        if (!messageBox) return;
+        messageBox.classList.add("hidden");
+        messageBox.textContent = "";
       }
 
-      try {
-        const uid = user.uid;
-        const localData = loadLocalProfile(uid);
-        applyUserUI(user, localData);
-      } catch (err) {
-        console.error("Chyba při načítání účtu (local):", err);
-        showMessage("Nepodařilo se načíst údaje účtu z tohoto zařízení.", "error");
-      } finally {
-        setLoading(false);
-      }
-    });
+      function applyRoleUI(role) {
+        let label = "Influencer účet";
+        let desc = "Tento účet je vedený jako influencer / tvůrce obsahu.";
+        let chipIcon = "⭐";
+        let backHref = "moje-karta.html";
 
-    // Uložení změn – jen do localStorage (na tomto zařízení)
-    accountForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideMessage();
+        if (role === "firma") {
+          label = "Firemní účet";
+          desc = "Tento účet je vedený jako firma / značka / agentura.";
+          chipIcon = "🏢";
+          backHref = "moje-firma.html";
+        }
+
+        if (roleLabelEl) roleLabelEl.textContent = label;
+        if (roleDescriptionEl) roleDescriptionEl.textContent = desc;
+        if (roleBadgeEl) roleBadgeEl.innerHTML = `<span>${chipIcon}</span><span>${label}</span>`;
+        if (roleChipEl) roleChipEl.innerHTML = `<span>${chipIcon}</span><span>${label}</span>`;
+        if (backLink) backLink.href = backHref;
+      }
+
+      function applyUserUI(user, data) {
+        const email = user.email || data.email || "";
+        const name = data.name || user.displayName || "Uživatel Kartao";
+        const nickname = data.nickname || "";
+        const phone = data.phone || "";
+        const role =
+          data.role ||
+          localStorage.getItem("userRole") ||
+          "influencer";
+
+        if (emailInput) emailInput.value = email;
+        if (emailLabelEl) emailLabelEl.textContent = email || "Bez e-mailu";
+        if (nameInput) nameInput.value = name;
+        if (nicknameInput) nicknameInput.value = nickname;
+        if (phoneInput) phoneInput.value = phone;
+
+        if (displayNameEl) displayNameEl.textContent = name;
+        if (avatarInitialEl) avatarInitialEl.textContent = name.trim().charAt(0).toUpperCase() || "U";
+
+        applyRoleUI(role);
+      }
+
+      function loadLocalProfile(uid) {
+        try {
+          const raw = localStorage.getItem("kartaoProfile_" + uid);
+          if (!raw) return {};
+          return JSON.parse(raw) || {};
+        } catch (e) {
+          console.error("Chyba při čtení local profile:", e);
+          return {};
+        }
+      }
+
+      function saveLocalProfile(uid, payload) {
+        try {
+          localStorage.setItem("kartaoProfile_" + uid, JSON.stringify(payload));
+        } catch (e) {
+          console.error("Chyba při ukládání local profile:", e);
+        }
+      }
+
+      // Načtení uživatele – BEZ Firestore, jen Auth + localStorage
       setLoading(true);
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
 
-      const user = auth.currentUser;
-      if (!user) {
-        window.location.href = "login.html";
-        return;
+        try {
+          const uid = user.uid;
+          const localData = loadLocalProfile(uid);
+          applyUserUI(user, localData);
+        } catch (err) {
+          console.error("Chyba při načítání účtu (local):", err);
+          showMessage("Nepodařilo se načíst údaje účtu z tohoto zařízení.", "error");
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      // Uložení změn – jen do localStorage (na tomto zařízení)
+      if (accountForm) {
+        accountForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          hideMessage();
+          setLoading(true);
+
+          const user = auth.currentUser;
+          if (!user) {
+            window.location.href = "login.html";
+            return;
+          }
+
+          const uid = user.uid;
+
+          const payload = {
+            email: user.email || (emailInput ? emailInput.value.trim() : ""),
+            name: nameInput ? nameInput.value.trim() || null : null,
+            nickname: nicknameInput ? nicknameInput.value.trim() || null : null,
+            phone: phoneInput ? phoneInput.value.trim() || null : null,
+            updatedAt: new Date().toISOString(),
+          };
+
+          try {
+            saveLocalProfile(uid, payload);
+            showMessage("Údaje byly uloženy do tohoto zařízení.");
+          } catch (err) {
+            console.error("Chyba při ukládání účtu (local):", err);
+            showMessage("Nepodařilo se uložit změny na tomto zařízení.", "error");
+          } finally {
+            setLoading(false);
+          }
+        });
       }
 
-      const uid = user.uid;
+      // Reset hesla
+      if (resetPasswordBtn) {
+        resetPasswordBtn.addEventListener("click", async () => {
+          hideMessage();
+          const user = auth.currentUser;
+          if (!user || !user.email) {
+            showMessage("Nepodařilo se zjistit e-mail účtu.", "error");
+            return;
+          }
 
-      const payload = {
-        email: user.email || emailInput.value.trim(),
-        name: nameInput.value.trim() || null,
-        nickname: nicknameInput.value.trim() || null,
-        phone: phoneInput.value.trim() || null,
-        updatedAt: new Date().toISOString(),
-      };
-
-      try {
-        saveLocalProfile(uid, payload);
-        showMessage("Údaje byly uloženy do tohoto zařízení.");
-      } catch (err) {
-        console.error("Chyba při ukládání účtu (local):", err);
-        showMessage("Nepodařilo se uložit změny na tomto zařízení.", "error");
-      } finally {
-        setLoading(false);
-      }
-    });
-
-    // Reset hesla
-    resetPasswordBtn.addEventListener("click", async () => {
-      hideMessage();
-      const user = auth.currentUser;
-      if (!user || !user.email) {
-        showMessage("Nepodařilo se zjistit e‑mail účtu.", "error");
-        return;
+          try {
+            await auth.sendPasswordResetEmail(user.email);
+            showMessage("Odeslali jsme ti e-mail s odkazem na změnu hesla.");
+          } catch (err) {
+            console.error("Chyba při resetu hesla:", err);
+            showMessage("Nepodařilo se odeslat e-mail pro změnu hesla.", "error");
+          }
+        });
       }
 
-      try {
-        await auth.sendPasswordResetEmail(user.email);
-        showMessage("Odeslali jsme ti e‑mail s odkazem na změnu hesla.");
-      } catch (err) {
-        console.error("Chyba při resetu hesla:", err);
-        showMessage("Nepodařilo se odeslat e‑mail pro změnu hesla.", "error");
-      }
-    });
-
-    // Odhlášení
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await auth.signOut();
-        window.location.href = "login.html";
-      } catch (err) {
-        console.error("Chyba při odhlášení:", err);
-        showMessage("Nepodařilo se odhlásit.", "error");
+      // Odhlášení
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+          try {
+            await auth.signOut();
+            window.location.href = "login.html";
+          } catch (err) {
+            console.error("Chyba při odhlášení:", err);
+            showMessage("Nepodařilo se odhlásit.", "error");
+          }
+        });
       }
     });
   </script>
