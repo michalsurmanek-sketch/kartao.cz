@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Odhlášení</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white flex items-center justify-center">
+  <div class="max-w-md w-full mx-4 rounded-3xl border border-white/10 bg-neutral-950/85 px-6 py-8 shadow-soft text-center">
+    <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 flex items-center justify-center">
+      <span class="text-2xl">🔒</span>
+    </div>
+    <h1 class="text-lg font-semibold mb-2">Odhlašuji tě z Kartao.cz</h1>
+    <p id="logoutMessage" class="text-sm text-white/70 mb-4">
+      Probíhá bezpečné odhlášení z Firebase účtu…
+    </p>
+    <p class="text-[11px] text-white/40">
+      Pokud se nic nestane do pár vteřin, <br />
+      <a href="login.html" class="text-amber-300 hover:text-amber-200 underline underline-offset-2">klikni sem pro návrat na přihlášení</a>.
+    </p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- Konfigurace + inicializace -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const msgEl = document.getElementById("logoutMessage");
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+
+      if (!auth) {
+        if (msgEl) msgEl.textContent = "Chyba při připojení k Firebase. Zkus to prosím znovu.";
+        return;
+      }
+
+      auth.signOut()
+        .then(() => {
+          if (msgEl) msgEl.textContent = "Úspěšně odhlášeno. Přesměrovávám na přihlášení…";
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1200);
+        })
+        .catch((err) => {
+          console.error("Chyba při odhlášení:", err);
+          if (msgEl) msgEl.textContent = "Odhlášení se nepovedlo. Zkus to prosím znovu nebo zavři okno.";
+        });
+    });
+  </script>
+</body>
+</html>
