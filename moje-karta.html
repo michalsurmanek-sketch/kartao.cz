@@ -64,13 +64,12 @@
             Kredity & Mystery Box
           </a>
 
-          <a href="index.html"
-   id="logoutBtn"
-   class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
-  <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-  Odhlásit
-</a>
-
+          <!-- Odhlášení – vede na logout.html -->
+          <a href="logout.html"
+             class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            Odhlásit
+          </a>
         </div>
       </div>
     </header>
@@ -307,24 +306,29 @@
     });
   </script>
 
-  <!-- Firebase + CreditsSystem (stejné jako na ostatních stránkách) -->
+  <!-- Firebase + CreditsSystem (sjednocená verze) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
     // Napojení na uživatele + kredity
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) {
-        console.warn("Firebase není dostupný na moje-karta.html");
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      if (!auth) {
+        console.warn("Firebase Auth není dostupný na moje-karta.html");
         return;
       }
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -362,16 +366,5 @@
       });
     });
   </script>
-  <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<!-- Konfigurace Firebase -->
-<script src="firebase-config.js"></script>
-
-<!-- API služby – musí být tady -->
-<script src="api-services.js"></script>
-
 </body>
 </html>
