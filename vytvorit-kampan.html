@@ -86,14 +86,22 @@
 
           <!-- Název kampaně -->
           <div class="space-y-2">
-            <label class="text-sm text-white/70">Název kampaně</label>
-            <input type="text" placeholder="Např. Jarní launch kolekce" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70">
+            <label for="campaignName" class="text-sm text-white/70">Název kampaně</label>
+            <input
+              id="campaignName"
+              type="text"
+              placeholder="Např. Jarní launch kolekce"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70"
+            >
           </div>
 
           <!-- Platforma -->
           <div class="space-y-2">
-            <label class="text-sm text-white/70">Platforma</label>
-            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+            <label for="campaignPlatform" class="text-sm text-white/70">Platforma</label>
+            <select
+              id="campaignPlatform"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm"
+            >
               <option>Instagram</option>
               <option>TikTok</option>
               <option>YouTube</option>
@@ -103,39 +111,70 @@
 
           <!-- Rozpočet -->
           <div class="space-y-2">
-            <label class="text-sm text-white/70">Rozpočet (K-Coins)</label>
-            <input type="number" placeholder="Např. 5000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70">
+            <label for="campaignBudget" class="text-sm text-white/70">Rozpočet (K-Coins)</label>
+            <input
+              id="campaignBudget"
+              type="number"
+              min="0"
+              placeholder="Např. 5000"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70"
+            >
           </div>
 
           <!-- Cíl kampaně -->
           <div class="space-y-2">
-            <label class="text-sm text-white/70">Cíl kampaně</label>
-            <textarea rows="4" placeholder="Popiš hlavní cíl kampaně…" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70"></textarea>
+            <label for="campaignGoal" class="text-sm text-white/70">Cíl kampaně</label>
+            <textarea
+              id="campaignGoal"
+              rows="4"
+              placeholder="Popiš hlavní cíl kampaně…"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400/70"
+            ></textarea>
           </div>
 
           <!-- Výběr influencerů -->
           <div class="space-y-2">
-            <label class="text-sm text-white/70">Vyber influencery</label>
-            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+            <label for="influencerMode" class="text-sm text-white/70">Vyber influencery</label>
+            <select
+              id="influencerMode"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm"
+            >
               <option>Automaticky doporučit (AI)</option>
               <option>Vybrat ručně</option>
             </select>
           </div>
 
           <!-- Období -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <label class="text-sm text-white/70">Začátek</label>
-              <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+              <label for="dateFrom" class="text-sm text-white/70">Začátek</label>
+              <input
+                id="dateFrom"
+                type="date"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              >
             </div>
             <div class="space-y-2">
-              <label class="text-sm text-white/70">Konec</label>
-              <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm">
+              <label for="dateTo" class="text-sm text-white/70">Konec</label>
+              <input
+                id="dateTo"
+                type="date"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              >
             </div>
           </div>
 
+          <!-- Info / placeholder -->
+          <p class="text-[11px] text-white/50">
+            Tohle je zatím vizuální verze formuláře. Ukládání do databáze napojíme,
+            jakmile bude připravený backend kampaní.
+          </p>
+
           <!-- Tlačítko odeslat -->
-          <button class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 text-neutral-900 font-semibold shadow-[0_0_20px_rgba(56,255,186,0.6)] hover:shadow-[0_0_28px_rgba(56,255,186,0.9)] transition">
+          <button
+            id="createCampaignBtn"
+            class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 text-neutral-900 font-semibold shadow-[0_0_20px_rgba(56,255,186,0.6)] hover:shadow-[0_0_28px_rgba(56,255,186,0.9)] transition"
+          >
             Vytvořit kampaň
           </button>
         </section>
@@ -152,6 +191,112 @@
     </footer>
   </div>
 
+  <!-- Lucide ikony -->
   <script>
     window.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) luka
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const auth =
+        window.auth ||
+        (window.firebase && firebase.auth && firebase.auth());
+
+      if (!auth) {
+        console.warn("Firebase Auth není dostupný na vytvorit-kampan.html");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+
+      function updateCreditsDisplay(val) {
+        if (typeof val !== "number") return;
+        if (headerCreditsEl) headerCreditsEl.textContent = val;
+      }
+
+      auth.onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        // Kredity přes centrální CreditsSystem
+        try {
+          const creditsSystem = new CreditsSystem(user.uid);
+          window.creditSys = {
+            getCredits: () => creditsSystem.getCredits(),
+            addCredits: (a) => creditsSystem.addCredits(a),
+            subtractCredits: (a) => creditsSystem.subtractCredits(a),
+          };
+
+          const val = creditsSystem.getCredits();
+          updateCreditsDisplay(val);
+        } catch (e) {
+          console.warn("Vytvořit kampaň: chyba při práci s CreditsSystem:", e);
+        }
+
+        // Demo logika odeslání formuláře (zatím bez reálného ukládání)
+        const btn = document.getElementById("createCampaignBtn");
+        const nameInput = document.getElementById("campaignName");
+        const platformSelect = document.getElementById("campaignPlatform");
+        const budgetInput = document.getElementById("campaignBudget");
+        const goalTextarea = document.getElementById("campaignGoal");
+        const influencerMode = document.getElementById("influencerMode");
+        const dateFrom = document.getElementById("dateFrom");
+        const dateTo = document.getElementById("dateTo");
+
+        if (btn) {
+          btn.addEventListener("click", function () {
+            const name = (nameInput && nameInput.value.trim()) || "Bez názvu";
+            const platform = platformSelect ? platformSelect.value : "";
+            const budget = budgetInput ? budgetInput.value : "";
+            const goal = goalTextarea ? goalTextarea.value : "";
+            const mode = influencerMode ? influencerMode.value : "";
+            const from = dateFrom ? dateFrom.value : "";
+            const to = dateTo ? dateTo.value : "";
+
+            // Základní validace názvu a rozpočtu
+            if (!name || !budget) {
+              alert("Vyplň alespoň název kampaně a rozpočet (K-Coins).");
+              return;
+            }
+
+            alert(
+              "DEMO – kampaň nebude zatím uložena do databáze.\n\n" +
+              "Shrnutí:\n" +
+              "Název: " + name + "\n" +
+              "Platforma: " + platform + "\n" +
+              "Rozpočet: " + budget + " K-Coins\n" +
+              "Cíl: " + (goal || "neuvedeno") + "\n" +
+              "Influenceři: " + mode + "\n" +
+              "Období: " + (from || "?") + " – " + (to || "?")
+            );
+
+            // Prozatím přesměrujeme na přehled kampaní
+            window.location.href = "kampane-dashboard.html";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
