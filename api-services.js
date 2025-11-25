@@ -11,7 +11,8 @@ class CreatorService {
   // Vyhledání tvůrců s filtry
   async searchCreators(filters = {}) {
     try {
-      let query = db.collection(COLLECTIONS.CREATORS);
+      let query = this.db.collection('creators');
+
       
       // Základní textové vyhledávání
       if (filters.q) {
