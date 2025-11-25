@@ -54,6 +54,7 @@
 
         <!-- Pravá strana -->
         <div class="flex items-center gap-3">
+          <!-- Kredity -->
           <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
             <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
@@ -69,10 +70,24 @@
             Nová kampaň
           </a>
 
+          <!-- Odhlášení – přímo v onclick, ať to prostě maká -->
           <a
-            href="index.html"
-            id="logoutBtn"
+            href="#"
             class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10"
+            onclick="(function(){
+              try {
+                if (window.firebase && firebase.auth) {
+                  firebase.auth().signOut().finally(function(){
+                    window.location.href='index.html';
+                  });
+                } else {
+                  window.location.href='index.html';
+                }
+              } catch(e) {
+                window.location.href='index.html';
+              }
+              return false;
+            })();"
           >
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
@@ -333,40 +348,13 @@
 
       const headerCreditsEl = document.getElementById("headerCredits");
       const currentCreditsEl = document.getElementById("currentCredits"); // připraveno do budoucna
-      const logoutBtn = document.getElementById("logoutBtn");
 
       function updateCreditsDisplay(val) {
-        if (typeof val !== "number") return;
-        if (headerCreditsEl) headerCreditsEl.textContent = val;
-        if (currentCreditsEl) currentCreditsEl.textContent = val;
-      }
-
-      // Umí zpracovat sync i async getCredits()
-      function resolveCredits(maybePromise) {
-        if (maybePromise && typeof maybePromise.then === "function") {
-          maybePromise
-            .then(function (val) {
-              updateCreditsDisplay(val);
-            })
-            .catch(function (err) {
-              console.warn("Kampaně: chyba při načítání kreditů (async):", err);
-            });
-        } else {
-          updateCreditsDisplay(maybePromise);
-        }
-      }
-
-      // Odhlášení – skutečné signOut z Firebase
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          firebase
-            .auth()
-            .signOut()
-            .finally(function () {
-              window.location.href = "index.html";
-            });
-        });
+        if (val == null) return;
+        const num = typeof val === "number" ? val : parseInt(val, 10);
+        if (isNaN(num)) return;
+        if (headerCreditsEl) headerCreditsEl.textContent = num;
+        if (currentCreditsEl) currentCreditsEl.textContent = num;
       }
 
       firebase.auth().onAuthStateChanged(function (user) {
@@ -375,12 +363,13 @@
           return;
         }
 
-        // Firemní UID
+        // firemní UID
         window.currentUserId = user.uid;
 
         try {
           const creditsSystem = new CreditsSystem(user.uid);
 
+          // Globálně, kdybys to chtěl použít jinde
           window.creditSys = {
             getCredits: function () {
               return creditsSystem.getCredits();
@@ -393,13 +382,13 @@
             },
           };
 
-          const res = creditsSystem.getCredits();
-          resolveCredits(res);
+          const val = creditsSystem.getCredits();
+          updateCreditsDisplay(val);
         } catch (e) {
           console.warn("Přehled kampaní: chyba při práci s CreditsSystem:", e);
         }
 
-        // Logika pro detail kampaně
+        // DETAIL KAMPANĚ
         const rows = document.querySelectorAll("[data-campaign-row]");
         const detailName = document.getElementById("detailName");
         const detailBudget = document.getElementById("detailBudget");
