@@ -58,7 +58,7 @@
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <a href="kampane-dashboard.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+          <a href="kampane-firma.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-sky-400/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
             <i data-lucide="list" class="w-3.5 h-3.5"></i>
             Přehled kampaní
           </a>
@@ -189,23 +189,28 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
     // Přihlášení + kredity v hlavičce + jednoduchý DEMO submit
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) {
-        console.warn("Firebase není dostupný na vytvorit-kampan.html");
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      if (!auth) {
+        console.warn("Firebase Auth není dostupný na vytvorit-kampan.html");
         return;
       }
 
       const headerCreditsEl = document.getElementById("headerCredits");
       const btn = document.getElementById("createCampaignBtn");
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -213,7 +218,7 @@
 
         window.currentUserId = user.uid;
 
-        // Kredity přes CreditsSystem
+        // Kredity přes CreditsSystem – stejný systém jako jinde
         try {
           const creditsSystem = new CreditsSystem(user.uid);
           window.creditSys = {
@@ -257,7 +262,7 @@
             );
 
             // Po DEMO odeslání skočíme na přehled kampaní
-            window.location.href = "kampane-dashboard.html";
+            window.location.href = "kampane-firma.html";
           });
         }
       });
