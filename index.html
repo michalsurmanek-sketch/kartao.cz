@@ -1837,7 +1837,36 @@
   });
   </script>
 
-  <!-- ŠIPKA NAHORU + Auth pro header -->
+    <!-- Firebase – načtení + inicializace (doplněno) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
+      authDomain: "kartao-97df7.firebaseapp.com",
+      projectId: "kartao-97df7",
+      storageBucket: "kartao-97df7.firebasestorage.app",
+      messagingSenderId: "1041236043484",
+      appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
+      measurementId: "G-77NDPH3TXM"
+    };
+
+    // Inicializace pouze pokud už neproběhla
+    if (typeof firebase !== "undefined" && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    // Pro tvé ostatní skripty
+    if (typeof firebase !== "undefined") {
+      window.auth = firebase.auth();
+      window.db = firebase.firestore();
+    }
+  </script>
+
+
+  <!-- ŠIPKA NAHORU + Auth pro header (TVŮJ PŮVODNÍ KÓD) -->
   <script>
   window.addEventListener("scroll", () => {
     const scrollBtn = document.getElementById("scrollTopBtn");
@@ -1908,7 +1937,8 @@
   });
   </script>
 
-  <!-- Footer collapsible -->
+
+  <!-- Footer collapsible (TVŮJ KÓD) -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('footer button[aria-controls]');
@@ -1926,7 +1956,8 @@
   });
   </script>
 
-  <!-- Service Worker Registration -->
+
+  <!-- Service Worker Registration (TVŮJ KÓD) -->
   <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -1967,7 +1998,8 @@
   });
   </script>
 
-  <!-- Dynamická změna "Moje karta" podle role (influencer/firma) -->
+
+  <!-- Dynamická změna podle role (TVŮJ KÓD) -->
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     const role =
