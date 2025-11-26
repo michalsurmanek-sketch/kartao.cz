@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AO HUB – Vstup do ekosystému</title>
+
+  <!-- Favicon – jednoduché emoji -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='85'>🌀</text></svg>">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neutral: tailwind.colors.neutral,
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            violet: tailwind.colors.violet,
+            slate: tailwind.colors.slate,
+          },
+          boxShadow: {
+            soft: "0 24px 60px rgba(15,23,42,0.85)",
+            glow: "0 0 45px rgba(129,140,248,0.7)",
+          },
+          backgroundImage: {
+            'ao-gradient': "radial-gradient(circle at 0% 0%, rgba(96,165,250,0.25), transparent 55%), radial-gradient(circle at 100% 100%, rgba(244,114,182,0.35), transparent 55%), linear-gradient(135deg, #020617, #020617, #020617)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.2), transparent 55%),
+                  radial-gradient(circle at 100% 100%, rgba(244,114,182,0.28), transparent 55%),
+                  #020617;
+      color: #e5e7eb;
+    }
+
+    .glass-panel {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.09), transparent 60%) border-box,
+                  linear-gradient(135deg, rgba(148,163,184,0.8), rgba(30,64,175,0.9)) border-box;
+      border: 1px solid transparent;
+      border-radius: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom right, rgba(15,23,42,0.8), rgba(15,23,42,0.95));
+      mix-blend-mode: multiply;
+      opacity: 0.95;
+    }
+
+    .glass-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tilt-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .tilt-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 22px 45px rgba(15,23,42,0.9);
+      border-color: rgba(250,204,21,0.7);
+      background: radial-gradient(circle at top left, rgba(250,204,21,0.06), rgba(15,23,42,1));
+    }
+
+    .badge-gradient {
+      background: radial-gradient(circle at 0% 0%, rgba(244,114,182,0.4), transparent 55%),
+                  radial-gradient(circle at 100% 100%, rgba(250,204,21,0.4), transparent 55%);
+    }
+
+    .pulse-dot {
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+      animation: pulse 1.7s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 14px rgba(34,197,94,0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Hlavní kontejner -->
+  <div class="min-h-screen flex flex-col">
+
+    <!-- Horní lišta -->
+    <header class="border-b border-slate-800/80 bg-gradient-to-b from-slate-900/80 to-slate-950/95 backdrop-blur">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <!-- Logo / název -->
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-fuchsia-500 via-amber-400 to-emerald-400 flex items-center justify-center shadow-soft">
+              <span class="text-xl font-black text-slate-950">AO</span>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-semibold text-slate-50 tracking-wide">AO HUB</h1>
+              <span class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 border border-slate-700/80 px-2 py-0.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                <span class="text-[10px] uppercase tracking-[0.16em] text-slate-300">EKOSYSTÉM ONLINE</span>
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 max-w-sm">
+              Jedno přihlášení. Všechny projekty. Peníze se mění v možnosti.
+            </p>
+          </div>
+        </div>
+
+        <!-- Uživatelský blok -->
+        <div class="flex items-center gap-3">
+          <!-- Kredity -->
+          <div class="hidden sm:flex items-center gap-2 rounded-2xl border border-amber-400/60 bg-slate-950/80 px-3 py-1.5 shadow-soft">
+            <div class="flex flex-col leading-none">
+              <span class="text-[10px] tracking-[0.16em] uppercase text-amber-200/80">K-Coins</span>
+              <span id="topKcoins" class="text-sm font-semibold text-amber-300">12 450</span>
+            </div>
+            <span class="inline-flex items-center justify-center rounded-full bg-amber-400/90 text-slate-950 text-[10px] font-semibold px-2 py-0.5">
+              +320 dnes
+            </span>
+          </div>
+
+          <!-- AO level -->
+          <div class="hidden sm:flex flex-col items-end">
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] uppercase tracking-[0.18em] text-slate-400">ÚROVEŇ</span>
+              <span class="inline-flex items-center gap-1 rounded-full badge-gradient px-2 py-0.5 border border-slate-500/40">
+                <span class="text-[11px] font-semibold text-slate-950 bg-amber-300 rounded-full px-1.5">GOLD</span>
+                <span class="text-[11px] text-slate-100/90">AO Member</span>
+              </span>
+            </div>
+            <div class="mt-1 w-32 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+              <div class="h-full w-2/3 bg-gradient-to-r from-emerald-400 via-amber-300 to-fuchsia-400"></div>
+            </div>
+          </div>
+
+          <!-- Avatar -->
+          <button class="relative flex items-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/80 px-2.5 py-1.5 hover:border-amber-400/80 hover:bg-slate-900 transition">
+            <div class="h-7 w-7 rounded-full bg-gradient-to-br from-sky-400 to-violet-500 flex items-center justify-center text-xs font-semibold text-slate-950 border border-slate-900">MS</div>
+            <div class="hidden sm:flex flex-col items-start">
+              <span class="text-xs font-medium text-slate-100">Michal</span>
+              <span class="text-[10px] text-slate-400">AO ekosystém</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Obsah -->
+    <main class="flex-1">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.4fr)] gap-6 lg:gap-8">
+
+        <!-- Levý hlavní sloupec -->
+        <section class="space-y-6 lg:space-y-7">
+
+          <!-- Hero / AO přehled -->
+          <div class="glass-panel shadow-soft">
+            <div class="glass-inner px-4 sm:px-6 lg:px-7 py-4 sm:py-5 lg:py-6">
+              <div class="flex flex-col lg:flex-row gap-5 lg:gap-7 items-start lg:items-center">
+                <div class="flex-1 space-y-3">
+                  <div class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 border border-slate-700/70 px-2.5 py-1">
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-slate-400">AO EKOSYSTÉM</span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                    <span class="text-[11px] text-slate-200/80">kartao • reklamas • startao • domenao • e-shop</span>
+                  </div>
+                  <div class="space-y-1.5">
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold text-slate-50 tracking-tight">
+                      Jednou dovnitř, pak už jen <span class="bg-gradient-to-r from-amber-300 via-emerald-300 to-fuchsia-300 bg-clip-text text-transparent">hra s možnostmi</span>.
+                    </h2>
+                    <p class="text-sm sm:text-[13px] text-slate-300 max-w-2xl">
+                      Všechno, co vyděláš, rozhýbeš nebo vložíš, zůstává v AO světě: K-Coins, kredity, sleva na reklamu,
+                      domény, mystery boxy, VIP levely. Žádné mrtvé peníze, jen nový tah na branku.
+                    </p>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-3">
+                    <a href="#projekty" class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-fuchsia-400 to-emerald-400 px-4 py-1.5 text-sm font-semibold text-slate-950 shadow-soft hover:shadow-glow transition">
+                      <i data-lucide="rocket" class="w-4 h-4"></i>
+                      Do ekosystému
+                    </a>
+                    <button class="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950/60 px-3.5 py-1.5 text-xs text-slate-200 hover:border-amber-400/70 hover:text-amber-100 transition">
+                      <i data-lucide="brain" class="w-3.5 h-3.5"></i>
+                      Jak AO vydělává &nbsp;<span class="hidden sm:inline">a nevyfukuje peníze ven</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Mini statistiky -->
+                <div class="w-full lg:w-60 flex-shrink-0">
+                  <div class="rounded-2xl border border-slate-700/80 bg-slate-900/80 backdrop-blur px-4 py-3 space-y-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] uppercase tracking-[0.18em] text-slate-400">AO Wallet</span>
+                      <span class="text-[11px] text-slate-300 flex items-center gap-1">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        Bezpečné
+                      </span>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-[11px] text-slate-400">Zůstatek peněženky</p>
+                      <p class="text-lg font-semibold text-slate-50"><span id="walletCzk">12 980</span> Kč</p>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-[11px] text-slate-400">K-Coins v oběhu</p>
+                      <p class="text-sm font-semibold text-amber-300"><span id="walletKcoins">42 300</span> K-Coins</p>
+                      <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                        <div class="h-full w-[78%] bg-gradient-to-r from-sky-400 via-emerald-400 to-amber-300"></div>
+                      </div>
+                    </div>
+                    <button class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 text-slate-950 text-xs font-semibold py-1.5 shadow-soft hover:shadow-glow transition">
+                      <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                      Dobít / převést K-Coins
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projekty AO – hlavní dlaždice -->
+          <div id="projekty" class="space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-sm font-semibold text-slate-100 tracking-wide">Projekty v ekosystému AO</h3>
+              <span class="text-[11px] text-slate-400">Vše přihlášené pod jedním účtem</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+
+              <!-- Kartao.cz -->
+              <a href="https://www.kartao.cz" class="tilt-card relative rounded-2xl border border-slate-700/80 bg-slate-950/80 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-amber-400 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-slate-950"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-fuchsia-200/80">Influenceři & kampaně</p>
+                    <h4 class="text-sm font-semibold text-slate-50">Kartao.cz</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-300">
+                  Digitální karty tvůrců, kredity, Mystery Box, VIP levely a chytré kampaně pro firmy.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <div class="flex flex-col">
+                    <span class="text-[11px] text-slate-400">Aktivní kampaně</span>
+                    <span class="text-sm font-semibold text-slate-50">24</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
+                    Otevřít centrum
+                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+              <!-- Reklamas.cz -->
+              <a href="https://www.reklamas.cz" class="tilt-card relative rounded-2xl border border-slate-700/80 bg-slate-950/80 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-500 flex items-center justify-center">
+                    <i data-lucide="megaphone" class="w-4 h-4 text-slate-950"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-amber-200/90">Mobilní reklama</p>
+                    <h4 class="text-sm font-semibold text-slate-50">Reklamas.cz</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-300">
+                  Kola, auta, maskoti, konstrukce. AO kredity se mění v kilometry viditelnosti.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <div class="flex flex-col">
+                    <span class="text-[11px] text-slate-400">Rezervace na měsíc</span>
+                    <span class="text-sm font-semibold text-slate-50">87 % kapacity</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
+                    Vytvořit kampaň
+                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+              <!-- StartAO.cz -->
+              <a href="https://www.startao.cz" class="tilt-card relative rounded-2xl border border-slate-700/80 bg-slate-950/80 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-400 flex items-center justify-center">
+                    <i data-lucide="launchpad" class="w-4 h-4 text-slate-950"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-emerald-200/90">Start podnikání</p>
+                    <h4 class="text-sm font-semibold text-slate-50">StartAO.cz</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-300">
+                  Logo, doména, miniweb, první reklama – zabalené do balíčků, které můžeš platit v K-Coins.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <div class="flex flex-col">
+                    <span class="text-[11px] text-slate-400">Balíčky aktivní</span>
+                    <span class="text-sm font-semibold text-slate-50">7</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
+                    Složit si start
+                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+              <!-- DomenAO.cz -->
+              <a href="https://www.domenao.cz" class="tilt-card relative rounded-2xl border border-slate-700/80 bg-slate-950/80 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-slate-200 to-sky-400 flex items-center justify-center">
+                    <i data-lucide="globe-2" class="w-4 h-4 text-slate-950"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-slate-200/90">Domény & značky</p>
+                    <h4 class="text-sm font-semibold text-slate-50">DomenAO.cz</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-300">
+                  Katalog AO domén – můžeš je kupovat, půjčovat, nebo jimi krmit další projekty.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <div class="flex flex-col">
+                    <span class="text-[11px] text-slate-400">Domén ve správě</span>
+                    <span class="text-sm font-semibold text-slate-50">72</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
+                    Projít katalog
+                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+              <!-- AO E-shop -->
+              <a href="#" class="tilt-card relative rounded-2xl border border-slate-700/80 bg-slate-950/80 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-violet-500 to-sky-400 flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-950"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-violet-200/90">AO E-shop</p>
+                    <h4 class="text-sm font-semibold text-slate-50">AO Shop (coming)</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-300">
+                  Merch, fyzické karty, mystery balíčky, doplňky pro mobilní reklamu. Všechno napojené na K-Coins.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <span class="text-[11px] text-slate-400">Připravuje se</span>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-300">
+                    Rezervovat místo
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+              <!-- AO AI / Mystery box -->
+              <a href="#" class="tilt-card relative rounded-2xl border border-amber-400/50 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 p-4 flex flex-col gap-3 hover:no-underline">
+                <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br from-amber-400/60 via-fuchsia-400/40 to-sky-400/40 blur-xl opacity-60 pointer-events-none"></div>
+                <div class="flex items-center gap-2">
+                  <div class="h-9 w-9 rounded-2xl bg-slate-950 border border-amber-300 flex items-center justify-center">
+                    <i data-lucide="box" class="w-4 h-4 text-amber-300"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.18em] text-amber-200/90">AI Mystery Box</p>
+                    <h4 class="text-sm font-semibold text-slate-50">Chytré odměny</h4>
+                  </div>
+                </div>
+                <p class="text-[12px] text-slate-200">
+                  Box, který počítá riziko za tebe: uživatel má zážitek, ty máš jistotu zisku v AO ekosystému.
+                </p>
+                <div class="flex items-center justify-between mt-auto pt-1">
+                  <div class="flex flex-col">
+                    <span class="text-[11px] text-slate-200/80">Dnes otevřeno</span>
+                    <span class="text-sm font-semibold text-amber-200">37 boxů</span>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-950 bg-amber-300 rounded-full px-3 py-1">
+                    Otevřít box
+                    <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </a>
+
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Pravý sloupec: úkoly, levely, přehled -->
+        <aside class="space-y-5">
+
+          <!-- Denní úkoly -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-950/90 px-4 py-4 space-y-3 shadow-soft">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Dnešní AO úkoly</p>
+                <h3 class="text-sm font-semibold text-slate-50">Získej další K-Coins bez přemýšlení</h3>
+              </div>
+              <span class="inline-flex items-center gap-1 rounded-full bg-slate-900 px-2 py-0.5 border border-slate-700">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span class="text-[11px] text-amber-100">+1 200 K-Coins</span>
+              </span>
+            </div>
+
+            <div class="space-y-2">
+              <!-- Úkol 1 -->
+              <div class="flex items-center gap-3 rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5">
+                <div class="h-7 w-7 rounded-xl bg-sky-500/10 border border-sky-400/40 flex items-center justify-center">
+                  <i data-lucide="user-plus" class="w-3.5 h-3.5 text-sky-300"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-100">Pozvi nového tvůrce do Kartao.cz</p>
+                    <span class="text-[11px] text-emerald-300 font-semibold">+500</span>
+                  </div>
+                  <div class="mt-1 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                    <div class="h-full w-[40%] bg-gradient-to-r from-sky-400 to-emerald-400"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Úkol 2 -->
+              <div class="flex items-center gap-3 rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5">
+                <div class="h-7 w-7 rounded-xl bg-emerald-500/10 border border-emerald-400/40 flex items-center justify-center">
+                  <i data-lucide="badge-percent" class="w-3.5 h-3.5 text-emerald-300"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-100">Založ mini-kampaň v Reklamas.cz</p>
+                    <span class="text-[11px] text-emerald-300 font-semibold">+300</span>
+                  </div>
+                  <div class="mt-1 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                    <div class="h-full w-[10%] bg-gradient-to-r from-emerald-400 to-amber-300"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Úkol 3 -->
+              <div class="flex items-center gap-3 rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5">
+                <div class="h-7 w-7 rounded-xl bg-amber-500/10 border border-amber-400/40 flex items-center justify-center">
+                  <i data-lucide="credit-card" class="w-3.5 h-3.5 text-amber-300"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-100">Dobij AO peněženku (min. 500 Kč)</p>
+                    <span class="text-[11px] text-emerald-300 font-semibold">+400</span>
+                  </div>
+                  <div class="mt-1 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                    <div class="h-full w-[60%] bg-gradient-to-r from-amber-300 to-fuchsia-300"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="w-full mt-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 text-[11px] text-slate-200 py-1.5 hover:border-amber-400/70 hover:text-amber-100 transition">
+              <i data-lucide="list-checks" class="w-3.5 h-3.5"></i>
+              Zobrazit všechny úkoly
+            </button>
+          </div>
+
+          <!-- Přehled účtu / shrnutí -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-950/90 px-4 py-4 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm font-semibold text-slate-50">Rychlé shrnutí účtu</h3>
+              <span class="text-[11px] text-slate-400">AO Snapshot</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5 space-y-1.5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Projekty</p>
+                <p class="text-lg font-semibold text-slate-50">4</p>
+                <p class="text-[11px] text-slate-400">napojené na tento AO účet</p>
+              </div>
+              <div class="rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5 space-y-1.5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Transakce</p>
+                <p class="text-lg font-semibold text-slate-50">128</p>
+                <p class="text-[11px] text-slate-400">posledních 30 dní</p>
+              </div>
+            </div>
+
+            <div class="rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2.5 flex items-center gap-3">
+              <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-400 flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-4 h-4 text-slate-950"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-slate-100">Celkový zisk z AO vs. čisté výběry ven</p>
+                <p class="text-[11px] text-emerald-300">+18 400 Kč &nbsp;•&nbsp; uživatel většinou reinvestuje</p>
+              </div>
+            </div>
+
+            <button class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-slate-200 via-amber-200 to-emerald-200 text-[11px] text-slate-950 font-semibold py-1.5 hover:brightness-105 transition">
+              <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+              Otevřít detailní AO dashboard
+            </button>
+          </div>
+
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- Paticka -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/95">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="text-[11px] text-slate-500">
+          AO HUB • propojení projektů: Kartao.cz, Reklamas.cz, StartAO.cz, DomenAO.cz & další.
+        </p>
+        <div class="flex items-center gap-3 text-[11px] text-slate-500">
+          <span>AO Wallet • K-Coins • VIP levely • AI Mystery Box</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Inicializace ikon
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      // Jednoduché demo – náhodný posun čísel, ať to žije
+      function animateNumber(id, base, spread) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const value = base + Math.floor(Math.random() * spread);
+        el.textContent = value.toLocaleString("cs-CZ");
+      }
+
+      animateNumber("walletCzk", 10000, 6000);
+      animateNumber("walletKcoins", 30000, 20000);
+      animateNumber("topKcoins", 8000, 7000);
+    });
+  </script>
+
+</body>
+</html>
