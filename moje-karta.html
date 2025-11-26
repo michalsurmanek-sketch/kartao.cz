@@ -320,48 +320,88 @@
   <script src="api-services.js"></script>
 
   <script>
-    // Napojení na uživatele + kredity
+    // Napojení na uživatele + K-Coins (influencer účet) + KONTROLA ROLE = INFLUENCER
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth =
+        window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const db =
+        window.db ||
+        (window.firebase &&
+          firebase.firestore &&
+          firebase.firestore());
+
       if (!auth) {
         console.warn("Firebase Auth není dostupný na moje-karta.html");
         return;
       }
+      if (!db) {
+        console.warn("Firestore (db) není dostupný na moje-karta.html");
+        return;
+      }
 
-      auth.onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(async function (user) {
         if (!user) {
+          // nikdo nepřihlášen -> na login
           window.location.href = "login.html";
           return;
         }
 
-        window.currentUserId = user.uid;
-
-        // Jméno do hlavičky
-        const nameEl = document.getElementById("userName");
-        const initialEl = document.getElementById("userInitial");
-        const displayName = user.displayName || "Tvoje karta na Kartao.cz";
-
-        if (nameEl) nameEl.textContent = displayName;
-        if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
-
-        // Kredity přes CreditsSystem
         try {
-          const creditsSystem = new CreditsSystem(user.uid);
-          window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
-          };
+          // načteme uživatele z kolekce users
+          const userDoc = await db.collection("users").doc(user.uid).get();
+          const data = userDoc.data() || {};
 
-          const val = creditsSystem.getCredits();
-          const h1 = document.getElementById("headerCredits");
-          const s1 = document.getElementById("summaryCredits");
-          if (typeof val === "number") {
-            if (h1) h1.textContent = val;
-            if (s1) s1.textContent = val;
+          // role můžeme číst z `role` nebo z `activerole` (pro jistotu oboje)
+          const role = data.role || data.activerole || "influencer";
+
+          // ❌ NENÍ INFLUENCER -> kopneme ho do firemní části
+          if (role !== "influencer") {
+            console.warn(
+              "Uživatel nemá influencer roli, přesměrovávám na moje-firma.html"
+            );
+            window.location.href = "moje-firma.html";
+            return;
           }
-        } catch (e) {
-          console.warn("Moje karta: chyba při načítání kreditů:", e);
+
+          // ✅ SEM SE DOSTANE JEN UŽIVATEL S ROLE = "influencer"
+          window.currentUserId = user.uid;
+
+          // Jméno influencera
+          const nameEl = document.getElementById("userName");
+          const initialEl = document.getElementById("userInitial");
+          const displayName =
+            user.displayName || data.displayName || "Tvoje karta na Kartao.cz";
+
+          if (nameEl) nameEl.textContent = displayName;
+          if (initialEl && displayName)
+            initialEl.textContent = displayName.charAt(0).toUpperCase();
+
+          // Kredity přes CreditsSystem – stejný systém jako všude
+          try {
+            const creditsSystem = new CreditsSystem(user.uid);
+            window.creditSys = {
+              getCredits: () => creditsSystem.getCredits(),
+              addCredits: (a) => creditsSystem.addCredits(a),
+              subtractCredits: (a) => creditsSystem.subtractCredits(a),
+            };
+
+            const val = creditsSystem.getCredits();
+            const h1 = document.getElementById("headerCredits");
+            const s1 = document.getElementById("summaryCredits");
+            if (typeof val === "number") {
+              if (h1) h1.textContent = val;
+              if (s1) s1.textContent = val;
+            }
+          } catch (e) {
+            console.warn(
+              "Influencer účet: chyba při načítání kreditů:",
+              e
+            );
+          }
+        } catch (err) {
+          console.error("Chyba při ověřování influencer role:", err);
+          // když se něco posere, radši pryč
+          window.location.href = "index.html";
         }
       });
     });
