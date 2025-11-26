@@ -1,1108 +1,396 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VIP tvůrci na Kartao.cz - exkluzivní influenceři s 100k+ sledujícími. Prémiová spolupráce s ověřenými tvůrci pro vaši značku.">
-  <meta name="keywords" content="VIP influenceři, prémiový influencer marketing, ověření tvůrci, top influenceři česko">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
-  <title>VIP Tvůrci – Kartao.cz | Prémiový Influencer Marketing</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – VIP sekce & Zlatá karta Exclusive</title>
+  <meta name="description" content="VIP sekce Kartao.cz – Zlatá karta Exclusive. Získej speciální status v ekosystému Kartao, vyšší odměny a přístup k exkluzivním kampaním." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👑</text></svg>">
-  <link rel="canonical" href="https://www.kartao.cz/vip.html">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="VIP Tvůrci - Kartao.cz">
-  <meta property="og:description" content="Exkluzivní influenceři s 100k+ sledujícími pro prémiové kampaně">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.kartao.cz/vip.html">
-  <meta property="og:image" content="https://www.kartao.cz/og-image-placeholder.svg">
-
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          animation: {
-            'crown-glow': 'crownPulse 1.6s ease-in-out infinite'
-          },
-          keyframes: {
-            crownPulse: {
-              '0%, 100%': { filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.8))' },
-              '50%': { filter: 'drop-shadow(0 0 16px rgba(219,88,246,0.9))' }
+          colors: {
+            night: {
+              900: '#050816',
+              950: '#02010a'
             }
+          },
+          boxShadow: {
+            'card-soft': '0 22px 70px rgba(0,0,0,0.8)',
+            'neon-gold': '0 0 25px rgba(250,204,21,0.65)',
           }
         }
       }
     }
   </script>
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    @keyframes crownPulse {
-      0%,100% { filter: drop-shadow(0 0 0.6rem rgba(251,191,36,.9)); transform: translateY(0) rotate(0deg); }
-      50%     { filter: drop-shadow(0 0 1.2rem rgba(219,88,246,1)); transform: translateY(-2px) rotate(-5deg); }
+    .gradient-shell {
+      background: radial-gradient(circle at top left,#1f2937 0,transparent 55%),
+                  radial-gradient(circle at bottom right,#4b0082 0,transparent 55%),
+                  radial-gradient(circle at top right,#111827 0,transparent 55%),
+                  #050816;
     }
-    @keyframes shimmer {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
+    .pill {
+      border-radius: 9999px;
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+    .gold-card {
+      background: radial-gradient(circle at top left, rgba(250,204,21,0.35), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(236,72,153,0.3), transparent 55%),
+                  linear-gradient(135deg,#111827,#020617);
     }
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(251,191,36,0.3), 0 0 40px rgba(219,88,246,0.2); }
-      50% { box-shadow: 0 0 30px rgba(251,191,36,0.5), 0 0 60px rgba(219,88,246,0.4); }
-    }
-    .crown-anim {
-      animation: crownPulse 2s ease-in-out infinite;
-      display: inline-block;
-    }
-    .vip-badge {
-      background: linear-gradient(135deg, #db58f6 0%, #fbbf24 50%, #db58f6 100%);
-      background-size: 200% 100%;
-      animation: shimmer 3s linear infinite;
-    }
-    .glass {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-    .glass:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(251,191,36,0.3);
-      transform: translateY(-2px);
-    }
-    .vip-card {
+    .gold-border {
       position: relative;
-      overflow: hidden;
+      border-radius: 1.75rem;
+      padding: 1px;
+      background: linear-gradient(135deg,#fbbf24,#f97316,#ec4899,#facc15);
     }
-    .vip-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s;
+    .gold-border > .inner {
+      border-radius: 1.7rem;
+      background: radial-gradient(circle at top left,rgba(255,255,255,0.08),transparent 55%),
+                  rgba(15,23,42,0.98);
     }
-    .vip-card:hover::before {
-      left: 100%;
-    }
-    .stat-card {
-      animation: float 3s ease-in-out infinite;
-    }
-    .stat-card:nth-child(2) { animation-delay: 0.5s; }
-    .stat-card:nth-child(3) { animation-delay: 1s; }
-    .stat-card:nth-child(4) { animation-delay: 1.5s; }
-    .glow-box {
-      animation: glow 2s ease-in-out infinite;
-    }
-    .premium-gradient {
-      background: linear-gradient(135deg, rgba(219,88,246,0.1) 0%, rgba(251,191,36,0.1) 100%);
+    .chip {
+      border-radius: 0.75rem;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
     }
   </style>
 </head>
 
-<body class="min-h-screen bg-neutral-950 text-white">
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
-          <i data-lucide="crown" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a&nbsp;tvůrců</div>
-        </div>
-      </a>
-
-      <nav aria-label="Hlavní navigace" class="hidden md:flex items-center gap-6 text-sm text-white/70">
-        <a href="index.html" class="hover:text-white transition flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i>Domů</a>
-        <a href="kartao-marketplace.html" class="hover:text-white transition flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně</a>
-        <a href="kartao-pro-tvurce.html" class="hover:text-white transition flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4"></i>Pro tvůrce</a>
-        <a href="vip.html" class="text-amber-300 font-semibold flex items-center gap-2"><i data-lucide="crown" class="w-4 h-4"></i>VIP</a>
-      </nav>
-
-      <div class="hidden md:flex items-center gap-3">
-        <!-- Nepřihlášen -->
-        <a id="loginBtnDesktop" href="login.html" class="btn btn-outline text-sm">
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-          Přihlásit se
+<body class="min-h-screen gradient-shell text-white">
+  <!-- HORNÍ NAVBAR (influencer hub styl) -->
+  <header class="border-b border-white/10 bg-gradient-to-b from-black/80 to-black/40 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4 justify-between">
+      <!-- Logo + název -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 via-amber-300 to-yellow-400 shadow-neon-gold grid place-items-center">
+            <span class="font-black text-lg text-black">K</span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-extrabold text-base">Kartao.cz</div>
+            <div class="text-[11px] text-slate-300">Mozek tvého influencer profilu</div>
+          </div>
         </a>
-        <!-- Přihlášen -->
-        <div id="userMenuDesktop" class="hidden items-center gap-2">
-          <a href="kartao-muj-ucet.html" class="btn btn-outline text-sm">
-            <i data-lucide="user" class="w-4 h-4"></i>
-            <span id="userNameDesktop">Můj účet</span>
-          </a>
-          <button id="logoutBtnDesktop" class="btn btn-outline text-sm">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            Odhlásit
-          </button>
-        </div>
+        <span class="hidden sm:inline-flex items-center pill bg-emerald-500/10 border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-200 ml-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+          Přihlášený uživatel
+        </span>
       </div>
 
-      <!-- Mobile Auth Buttons -->
-      <a id="userMenuMobile" href="kartao-muj-ucet.html" class="hidden md:hidden items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-        <i data-lucide="user" class="w-5 h-5"></i>
-        <span class="sr-only">Můj účet</span>
-      </a>
-      <a id="loginBtnMobile" href="login.html" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition">
-        <i data-lucide="log-in" class="w-5 h-5"></i>
-        <span class="sr-only">Přihlásit se</span>
-      </a>
+      <!-- Střed – odkaz zpět na kartu -->
+      <nav class="hidden md:flex items-center gap-2 text-xs">
+        <a href="moje-karta.html" class="pill px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-yellow-400/20 border border-yellow-400/50 grid place-items-center">
+            <i class="block w-2 h-2 rounded-full bg-yellow-300"></i>
+          </span>
+          <span class="font-medium">Zpět na moji kartu</span>
+        </a>
+      </nav>
 
-      <!-- HAMBURGER MENU BUTTON -->
-      <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-        <i data-lucide="menu" class="w-6 h-6"></i>
-        <span class="sr-only">Otevřít menu</span>
-      </button>
+      <!-- Pravá strana – K-Coins + akce -->
+      <div class="flex items-center gap-2 text-xs">
+        <div class="hidden sm:flex items-center pill bg-black/60 border border-yellow-500/60 px-3 py-1.5 shadow-inner">
+          <span class="text-[10px] tracking-[0.16em] text-yellow-200/80 uppercase mr-2">K-Coins</span>
+          <span class="font-semibold text-yellow-300">361&nbsp;079</span>
+        </div>
+
+        <a href="credits-dashboard.html" class="hidden sm:inline-flex pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 transition text-[11px] font-medium">
+          Kredity &amp; Mystery Box
+        </a>
+
+        <a href="dobit-kredity.html" class="pill px-3 sm:px-4 py-1.5 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-black text-[11px] font-semibold shadow-neon-gold hover:brightness-110 transition">
+          Dobít kredity +
+        </a>
+
+        <button class="pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 text-[11px] font-medium">
+          Odhlásit
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- MOBILNÍ MENU -->
-  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
-    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-    <div class="relative h-full svh flex flex-col items-stretch">
-      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
-          <a href="index.html" class="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 rounded-xl">
-            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-              <i data-lucide="crown" class="w-5 h-5 animate-crown-glow"></i>
+  <main class="max-w-6xl mx-auto px-4 pt-8 pb-16 space-y-10">
+    <!-- HLAVNÍ VIP KARTA -->
+    <section class="grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-6 items-stretch">
+      <!-- Zlatá karta detail -->
+      <div class="gold-border shadow-card-soft">
+        <div class="inner gold-card p-6 md:p-7 flex flex-col gap-5 h-full">
+          <div class="flex flex-col md:flex-row md:items-start gap-4 justify-between">
+            <div class="space-y-3">
+              <div class="inline-flex items-center gap-2 pill px-3 py-1 bg-black/40 border border-yellow-400/50 text-[11px] font-semibold text-yellow-200 uppercase tracking-wide">
+                <span class="w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-orange-400 grid place-items-center text-[11px] text-black font-bold">VIP</span>
+                Zlatá karta Exclusive
+              </div>
+              <h1 class="text-2xl md:text-3xl font-black leading-tight">
+                VIP sekce Kartao
+                <span class="block text-sm md:text-base font-semibold text-yellow-200/90 mt-1">
+                  speciální status v ekosystému, vyšší odměny a přístup k exkluzivním kampaním
+                </span>
+              </h1>
             </div>
-            <div>
-              <div class="font-extrabold">Kartao.cz</div>
-              <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
+            <div class="chip px-4 py-3 text-right space-y-1 min-w-[150px]">
+              <p class="text-[11px] text-slate-300 uppercase tracking-wide">Cena aktivace</p>
+              <p class="text-xl font-extrabold text-yellow-300">1000 K-Coins</p>
+              <p class="text-[11px] text-slate-400">jednorázový poplatek za odemknutí VIP</p>
             </div>
-          </a>
-          <div class="flex items-center gap-2">
-            <a href="kartao-marketplace.html" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500/20 to-fuchsia-500/20 border border-sky-400/30 hover:from-sky-500/30 hover:to-fuchsia-500/30 transition">
-              <i data-lucide="search" class="w-5 h-5 text-sky-400"></i>
-              <span class="sr-only">Marketplace</span>
-            </a>
-            <button id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50">
-              <i data-lucide="x" class="w-5 h-5"></i>
-              <span class="sr-only">Zavřít</span>
+          </div>
+
+          <!-- Parametry karty -->
+          <div class="grid sm:grid-cols-3 gap-4 mt-1">
+            <div class="chip px-4 py-3 flex flex-col justify-between">
+              <div class="text-[11px] text-slate-300 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Stav VIP
+              </div>
+              <div class="text-sm font-semibold">
+                <span class="px-2 py-0.5 pill bg-emerald-500/15 border border-emerald-400/50 text-emerald-200 text-[11px]">zatím OFF</span>
+              </div>
+            </div>
+            <div class="chip px-4 py-3">
+              <div class="text-[11px] text-slate-300 uppercase tracking-wide mb-1">Bonus z kampaní</div>
+              <p class="text-sm"><span class="font-semibold text-emerald-300">+10&nbsp;% K-Coins</span> navíc za každou dokončenou kampaň.</p>
+            </div>
+            <div class="chip px-4 py-3">
+              <div class="text-[11px] text-slate-300 uppercase tracking-wide mb-1">Exkluzivní kampaně</div>
+              <p class="text-sm text-slate-100">Přístup ke speciálním VIP nabídkám a vyšším rozpočtům značek.</p>
+            </div>
+          </div>
+
+          <!-- Akce -->
+          <div class="flex flex-col md:flex-row gap-3 pt-1">
+            <button class="flex-1 pill px-4 py-2.5 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-black font-semibold text-sm shadow-neon-gold hover:brightness-110 transition">
+              Aktivovat VIP za 1000 K-Coins
             </button>
-          </div>
-        </div>
-
-        <nav class="px-3 py-3 overflow-y-auto flex-1">
-          <!-- Hlavní navigace -->
-          <div class="pb-2 mb-2 border-b border-white/10">
-            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">Hlavní menu</div>
-            <a href="index.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="home" class="w-5 h-5 text-white/70"></i>
-              <span>Domů</span>
-            </a>
-            <a href="kartao-marketplace.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="briefcase" class="w-5 h-5 text-white/70"></i>
-              <span>Kampaně</span>
-            </a>
-            <a href="kartao-pro-tvurce.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="user-plus" class="w-5 h-5 text-white/70"></i>
-              <span>Pro tvůrce</span>
-            </a>
-            <a href="kartao-pro-firmy.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="building" class="w-5 h-5 text-white/70"></i>
-              <span>Pro firmy</span>
+            <a href="moje-karta.html" class="flex-1 pill px-4 py-2.5 bg-black/40 border border-white/15 text-sm font-medium text-slate-100 hover:bg-black/60 transition text-center flex items-center justify-center gap-2">
+              <span>Zpět na moji kartu</span>
             </a>
           </div>
 
-          <!-- Účet a akce -->
-          <div class="pb-2 mb-2 border-b border-white/10">
-            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">Účet</div>
-            <a href="kartao-zalozit-kartu.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="id-card" class="w-5 h-5 text-white/70"></i>
-              <span>Založit kartu</span>
-              <span class="ml-auto px-2 py-1 bg-gradient-to-r from-fuchsia-500 to-amber-400 text-xs font-bold rounded-full">ZDARMA</span>
-            </a>
-            <a id="mobileMenuLoginBtn" href="login.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="log-in" class="w-5 h-5 text-white/70"></i>
-              <span>Přihlásit se</span>
-            </a>
-            <a id="mobileMenuUserBtn" href="kartao-muj-ucet.html" class="hidden px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="user" class="w-5 h-5 text-white/70"></i>
-              <span id="mobileMenuUserName">Můj účet</span>
-            </a>
-            <button id="mobileMenuLogoutBtn" class="hidden w-full text-left px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="log-out" class="w-5 h-5 text-white/70"></i>
-              <span>Odhlásit se</span>
-            </button>
-          </div>
-
-          <!-- Obsah a informace -->
-          <div class="pb-2 mb-2">
-            <div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">Obsah</div>
-            <a href="kartao-magazin.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="newspaper" class="w-5 h-5 text-white/70"></i>
-              <span>Magazín</span>
-            </a>
-            <a href="kartao-recenze.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="star" class="w-5 h-5 text-white/70"></i>
-              <span>Recenze</span>
-            </a>
-            <a href="kartao-faq.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="help-circle" class="w-5 h-5 text-white/70"></i>
-              <span>FAQ</span>
-            </a>
-            <a href="kartao-o-nas.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="info" class="w-5 h-5 text-white/70"></i>
-              <span>O nás</span>
-            </a>
-            <a href="kontakt.html" class="block px-3 py-3 rounded-xl hover:bg-white/5 transition text-white/90 flex items-center gap-3">
-              <i data-lucide="mail" class="w-5 h-5 text-white/70"></i>
-              <span>Kontakt</span>
-            </a>
-            <a href="vip.html" class="block px-3 py-3 rounded-xl bg-white/10 transition text-amber-300 flex items-center gap-3">
-              <i data-lucide="crown" class="w-5 h-5 text-amber-400"></i>
-              <span>VIP tvůrci</span>
-            </a>
-          </div>
-        </nav>
-      </div>
-    </div>
-  </div>
-
-  <section class="relative border-b border-white/10 overflow-hidden">
-    <!-- Animated background -->
-    <div class="absolute inset-0">
-      <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-600/20 via-amber-400/10 to-fuchsia-600/20"></div>
-      <div class="absolute top-20 right-20 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 left-20 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl animate-pulse stat-card"></div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 py-16 relative">
-      <div class="flex flex-col lg:flex-row items-start justify-between gap-8">
-        <div class="flex-1">
-          <!-- VIP Badge -->
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full vip-badge text-neutral-900 font-bold text-sm uppercase tracking-wider glow-box">
-            <i data-lucide="crown" class="w-5 h-5 crown-anim"></i>
-            <span>Exkluzivní VIP Sekce</span>
-          </div>
-
-          <!-- Heading -->
-          <h1 class="mt-6 text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent">
-            VIP Tvůrci<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-amber-400">Limited Edition</span>
-          </h1>
-
-          <!-- Description -->
-          <p class="mt-6 text-lg text-white/80 max-w-2xl leading-relaxed">
-            Prémiově ověření influenceři s garantovaným výkonem, prioritním servisem
-            a exkluzivní viditelností. Pouze <strong class="text-amber-400">20 vybraných míst</strong>.
+          <p class="text-[11px] text-slate-400 pt-1">
+            Aktivace VIP probíhá přímo v tvojí kartě. Tato stránka slouží jako přehled výhod a podmínek.
           </p>
-
-          <!-- Features -->
-          <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-            <div class="flex items-start gap-3 p-4 rounded-xl premium-gradient border border-white/10">
-              <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 grid place-items-center flex-shrink-0">
-                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white mb-1">Ověřená kvalita</h3>
-                <p class="text-sm text-white/70">Důkladně prověření tvůrci s historií úspěšných kampaní</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 p-4 rounded-xl premium-gradient border border-white/10">
-              <div class="w-10 h-10 rounded-lg bg-fuchsia-500/20 border border-fuchsia-500/30 grid place-items-center flex-shrink-0">
-                <i data-lucide="trending-up" class="w-5 h-5 text-fuchsia-400"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white mb-1">Záruka výkonu</h3>
-                <p class="text-sm text-white/70">Úspěšnost kampaní s měřitelnými výsledky</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 p-4 rounded-xl premium-gradient border border-white/10">
-              <div class="w-10 h-10 rounded-lg bg-sky-500/20 border border-sky-500/30 grid place-items-center flex-shrink-0">
-                <i data-lucide="zap" class="w-5 h-5 text-sky-400"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white mb-1">Prioritní podpora</h3>
-                <p class="text-sm text-white/70">Dedikovaný account manager a 24h odezva</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 p-4 rounded-xl premium-gradient border border-white/10">
-              <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/30 grid place-items-center flex-shrink-0">
-                <i data-lucide="star" class="w-5 h-5 text-amber-400"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white mb-1">Exkluzivní přístup</h3>
-                <p class="text-sm text-white/70">První nabídka nejlepších kampaní</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats sidebar -->
-        <div class="lg:w-80 space-y-4">
-          <div class="glass rounded-2xl p-6 text-center glow-box">
-            <div class="text-sm text-white/60 mb-2">Obsazenost VIP pozic</div>
-            <div class="text-5xl font-black mb-3">
-              <span id="taken" class="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-amber-400">0</span>
-              <span class="text-white/30">/</span>
-              <span class="text-white/50">20</span>
-            </div>
-            <div class="w-full bg-neutral-800 rounded-full h-2 mb-4">
-              <div id="progressBar" class="h-2 rounded-full vip-badge transition-all duration-500"></div>
-            </div>
-            <p class="text-xs text-white/60 mb-4">
-              <i data-lucide="clock" class="w-3 h-3 inline"></i>
-              Poslední aktualizace: dnes
-            </p>
-            <a href="#vip-apply" class="block w-full rounded-xl px-6 py-3 font-bold text-neutral-900 vip-badge hover:opacity-90 transition">
-              <i data-lucide="sparkles" class="w-4 h-4 inline mr-2"></i>
-              Získat VIP status
-            </a>
-          </div>
-
-          <!-- Quick stats -->
-          <div class="grid grid-cols-2 gap-3">
-            <div class="glass rounded-xl p-4 text-center">
-              <div class="text-2xl font-bold text-emerald-400">4.9★</div>
-              <div class="text-xs text-white/60 mt-1">Průměrné hodnocení</div>
-            </div>
-            <div class="glass rounded-xl p-4 text-center">
-              <div class="text-2xl font-bold text-sky-400">48h</div>
-              <div class="text-xs text-white/60 mt-1">Průměrná odezva</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Filter header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold flex items-center gap-3">
-          <i data-lucide="users" class="w-6 h-6 text-amber-400"></i>
-          Dostupní VIP tvůrci
-        </h2>
-        <p class="text-sm text-white/60 mt-1">
-          <span id="resultCount">0</span> tvůrců odpovídá vašim kritériím
-        </p>
-      </div>
-      <button type="button" id="clearFilters" class="hidden px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
-        <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>
-        Zrušit filtry
-      </button>
-    </div>
-
-    <!-- Filters -->
-    <div class="grid md:grid-cols-4 gap-3 mb-8">
-      <div class="relative">
-        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"></i>
-        <input type="text" id="q" class="w-full rounded-xl bg-neutral-900 border border-white/10 pl-10 pr-3 py-3 focus:outline-none focus:border-amber-400/50 transition" placeholder="Hledat podle jména...">
-      </div>
-      <select id="cat" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-3 focus:outline-none focus:border-amber-400/50 transition">
-        <option value="">Všechny kategorie</option>
-        <option>Beauty</option><option>Lifestyle</option><option>Gaming</option>
-        <option>Tech</option><option>Auto/Moto</option><option>Fitness</option>
-        <option>Travel</option><option>Food</option><option>Business</option>
-      </select>
-      <select id="platform" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-3 focus:outline-none focus:border-amber-400/50 transition">
-        <option value="">Všechny platformy</option>
-        <option>Facebook</option><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Pinterest</option>
-      </select>
-      <select id="sortBy" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-3 focus:outline-none focus:border-amber-400/50 transition">
-        <option value="default">Seřadit podle</option>
-        <option value="followers">Počet sledujících</option>
-        <option value="er">Engagement rate</option>
-        <option value="price">Cena (nejnižší)</option>
-      </select>
-    </div>
-  </section>
-
-  <section class="max-w-7xl mx-auto px-4 pb-16">
-    <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-
-    <!-- Empty state -->
-    <div id="emptyState" class="hidden text-center py-16">
-      <div class="inline-flex w-20 h-20 rounded-full bg-white/5 border border-white/10 items-center justify-center mb-4">
-        <i data-lucide="search-x" class="w-10 h-10 text-white/40"></i>
-      </div>
-      <h3 class="text-xl font-bold mb-2">Žádní tvůrci nenalezeni</h3>
-      <p class="text-white/60 mb-6">Zkuste upravit filtry nebo hledat jiné klíčové slovo</p>
-      <button type="button" id="resetSearch" class="px-6 py-3 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 transition">
-        Obnovit vyhledávání
-      </button>
-    </div>
-  </section>
-
-  <!-- DETAIL MODAL -->
-  <div id="detailModal" class="fixed inset-0 hidden items-center justify-center bg-black/80 backdrop-blur-md z-50 p-4">
-    <div class="max-w-3xl w-full rounded-2xl bg-neutral-950 border border-white/20 shadow-2xl overflow-hidden">
-      <!-- Header -->
-      <div class="relative h-32 bg-gradient-to-br from-fuchsia-600/30 to-amber-400/30 border-b border-white/10">
-        <button type="button" id="modalClose" class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-black/40 border border-white/20 hover:bg-black/60 transition grid place-items-center backdrop-blur" aria-label="Zavřít modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Content -->
-      <div class="p-6 -mt-16">
-        <div class="flex items-end gap-6 mb-6">
-          <img id="modalImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect fill='%23333' width='128' height='128'/%3E%3C/svg%3E" alt="Profil" class="w-32 h-32 rounded-2xl object-cover border-4 border-neutral-950 shadow-xl">
-          <div class="flex-1 pb-2">
-            <div class="flex items-center gap-3 mb-2">
-              <h3 id="modalName" class="text-2xl font-black">—</h3>
-              <span class="inline-flex items-center gap-1 text-xs font-bold uppercase px-3 py-1 rounded-full text-neutral-900 vip-badge">
-                <i data-lucide="crown" class="w-3 h-3"></i> VIP
-              </span>
-            </div>
-            <div id="modalMeta" class="text-white/70">—</div>
-          </div>
-        </div>
-
-        <!-- Stats grid -->
-        <div class="grid grid-cols-3 gap-4 mb-6">
-          <div class="rounded-xl bg-gradient-to-br from-sky-500/20 to-sky-600/10 border border-sky-500/30 p-4">
-            <div class="flex items-center gap-2 text-xs text-sky-300 mb-2">
-              <i data-lucide="users" class="w-4 h-4"></i>
-              Sledující
-            </div>
-            <div id="modalFollowers" class="text-2xl font-bold text-white">—</div>
-          </div>
-          <div class="rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 p-4">
-            <div class="flex items-center gap-2 text-xs text-emerald-300 mb-2">
-              <i data-lucide="trending-up" class="w-4 h-4"></i>
-              Engagement
-            </div>
-            <div id="modalEr" class="text-2xl font-bold text-emerald-400">—</div>
-          </div>
-          <div class="rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30 p-4">
-            <div class="flex items-center gap-2 text-xs text-amber-300 mb-2">
-              <i data-lucide="tag" class="w-4 h-4"></i>
-              Cena
-            </div>
-            <div id="modalPrice" class="text-2xl font-bold text-amber-400">—</div>
-          </div>
-        </div>
-
-        <!-- Features -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-          <div class="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-            <span class="text-sm">Ověřený profil</span>
-          </div>
-          <div class="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-            <i data-lucide="zap" class="w-4 h-4 text-sky-400"></i>
-            <span class="text-sm">Rychlá odezva</span>
-          </div>
-          <div class="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-            <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
-            <span class="text-sm">Premium podpora</span>
-          </div>
-          <div class="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-            <i data-lucide="award" class="w-4 h-4 text-fuchsia-400"></i>
-            <span class="text-sm">Top 20 tvůrce</span>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center gap-3">
-          <a id="modalContact" href="#" class="flex-1 rounded-xl px-6 py-4 font-bold text-neutral-900 vip-badge text-center hover:opacity-90 transition inline-flex items-center justify-center gap-2">
-            <i data-lucide="mail" class="w-5 h-5"></i>
-            Kontaktovat tvůrce
-          </a>
-          <button type="button" class="w-14 h-14 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Přidat do záložek">
-            <i data-lucide="bookmark" class="w-5 h-5"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <section id="vip-apply" class="border-t border-white/10 bg-gradient-to-br from-neutral-900/50 to-neutral-950 relative overflow-hidden">
-    <!-- Background effects -->
-    <div class="absolute inset-0 opacity-30">
-      <div class="absolute top-0 right-0 w-96 h-96 bg-fuchsia-500/20 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-0 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl"></div>
-    </div>
-
-    <div class="max-w-4xl mx-auto px-4 py-16 relative">
-      <div class="text-center mb-12">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 font-semibold text-sm mb-6">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-          Limitovaná nabídka
-        </div>
-        <h2 class="text-3xl md:text-4xl font-black mb-4 flex items-center justify-center gap-3">
-          <i data-lucide="crown" class="w-8 h-8 crown-anim text-amber-400"></i>
-          Získejte VIP status
-        </h2>
-        <p class="text-lg text-white/70 max-w-2xl mx-auto">
-          VIP je prémiová placená služba s exkluzivní kapacitou <strong class="text-amber-400">pouze 20 míst</strong>.
-          Každá žádost prochází důkladným ručním schválením.
-        </p>
-      </div>
-
-      <!-- Benefits grid -->
-      <div class="grid md:grid-cols-3 gap-4 mb-12">
-        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-          <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/30 grid place-items-center">
-            <i data-lucide="eye" class="w-6 h-6 text-fuchsia-400"></i>
-          </div>
-          <h3 class="font-bold mb-2">3× vyšší viditelnost</h3>
-          <p class="text-sm text-white/60">Homepage featured + priorita ve výsledcích</p>
-        </div>
-        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-          <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 grid place-items-center">
-            <i data-lucide="briefcase" class="w-6 h-6 text-emerald-400"></i>
-          </div>
-          <h3 class="font-bold mb-2">Prémiové kampaně</h3>
-          <p class="text-sm text-white/60">První přístup k nejlépe placeným projektům</p>
-        </div>
-        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-          <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-sky-500/20 border border-sky-500/30 grid place-items-center">
-            <i data-lucide="headphones" class="w-6 h-6 text-sky-400"></i>
-          </div>
-          <h3 class="font-bold mb-2">Dedikovaná podpora</h3>
-          <p class="text-sm text-white/60">Osobní account manager k dispozici 24/7</p>
         </div>
       </div>
 
-      <!-- Application form -->
-      <form id="vipForm" class="glass rounded-2xl p-8">
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-semibold mb-2">Jméno / Název profilu *</label>
-            <input type="text" required name="name" placeholder="např. Anna Beauty"
-                   class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition">
-          </div>
-          <div>
-            <label class="block text-sm font-semibold mb-2">E-mail *</label>
-            <input required name="email" type="email" placeholder="vas@email.cz"
-                   class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition">
-          </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-semibold mb-2">Primární platforma *</label>
-            <select required name="platform"
-                    class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition">
-              <option value="">Vyberte platformu</option>
-              <option>Instagram</option>
-              <option>TikTok</option>
-              <option>YouTube</option>
-              <option>Facebook</option>
-              <option>Pinterest</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold mb-2">Kategorie *</label>
-            <select required name="category"
-                    class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition">
-              <option value="">Vyberte kategorii</option>
-              <option>Beauty</option>
-              <option>Lifestyle</option>
-              <option>Gaming</option>
-              <option>Tech</option>
-              <option>Auto/Moto</option>
-              <option>Fitness</option>
-              <option>Travel</option>
-              <option>Food</option>
-              <option>Business</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="mb-6">
-          <label class="block text-sm font-semibold mb-2">Odkaz na profil *</label>
-          <input required name="profileUrl" type="url" placeholder="https://instagram.com/vasprofil"
-                 class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition">
-        </div>
-
-        <div class="mb-6">
-          <label class="block text-sm font-semibold mb-2">Proč si zasloužíte VIP status? *</label>
-          <textarea required name="message" rows="5" placeholder="Popište svou dosavadní zkušenost, úspěšné kampaně, engagement rate a proč by vás měli klienti vybrat..."
-                    class="w-full rounded-xl bg-neutral-900 border border-white/10 px-4 py-3 focus:outline-none focus:border-amber-400/50 transition resize-none"></textarea>
-        </div>
-
-        <div class="flex items-start gap-3 mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          <i data-lucide="info" class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
-          <div class="text-sm text-amber-200/90">
-            <strong>Důležité:</strong> VIP status je placená služba (5,999 Kč/měsíc).
-            Po schválení vás budeme kontaktovat s detaily platby a aktivace.
-          </div>
-        </div>
-
-        <button type="submit" class="w-full rounded-xl px-6 py-4 font-bold text-lg text-neutral-900 vip-badge hover:opacity-90 transition">
-          <i data-lucide="send" class="w-5 h-5 inline mr-2"></i>
-          Odeslat žádost o VIP status
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- =============== UNIFIED FOOTER =============== -->
-  <footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40">
-    <div class="max-w-7xl mx-auto px-4">
-
-      <!-- Main Footer Content -->
-      <div class="py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-        <!-- Informace -->
-        <div class="mb-6 sm:mb-0">
-          <button type="button"
-                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
-                  aria-controls="footer-section-1"
-                  aria-expanded="false">
-            <i data-lucide="sparkles" class="w-5 h-5"></i>
-            <span>Informace</span>
-            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform ml-auto"></i>
-          </button>
-          <ul id="footer-section-1" class="hidden sm:block space-y-2 text-sm text-white/70 mb-4">
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-o-nas.html">
-              <i data-lucide="info" class="w-4 h-4"></i>O nás
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kontakt.html">
-              <i data-lucide="mail" class="w-4 h-4"></i>Kontakt
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-recenze.html">
-              <i data-lucide="star" class="w-4 h-4"></i>Recenze
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="mapa-webu.html">
-              <i data-lucide="map" class="w-4 h-4"></i>Mapa webu
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="vip.html">
-              <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>VIP tvůrci
-            </a></li>
+      <!-- Stručný přehled výhod -->
+      <aside class="space-y-4">
+        <div class="rounded-3xl bg-black/50 border border-white/12 shadow-card-soft p-4 md:p-5">
+          <p class="text-xs uppercase tracking-wide text-slate-300 mb-3 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-yellow-300"></span>
+            Co ti VIP reálně přinese
+          </p>
+          <ul class="space-y-3 text-sm text-slate-100">
+            <li class="flex items-start gap-2">
+              <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span><strong>Více peněz za stejnou práci</strong> – automatický bonus v K-Coins za dokončené kampaně.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              <span><strong>Lepší pozice v Marketplace</strong> – tvoje karta je zvýrazněná pro značky.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-fuchsia-400"></span>
+              <span><strong>Přístup do VIP kampaní</strong> – speciální poptávky jen pro ověřené tvůrce.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+              <span><strong>Značky tě berou vážněji</strong> – vidí, že jsi aktivní a Kartao za tebe ručí.</span>
+            </li>
           </ul>
         </div>
 
-        <!-- Pro firmy -->
-        <div class="mb-6 sm:mb-0">
-          <button type="button"
-                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-amber-400"
-                  aria-controls="footer-section-2"
-                  aria-expanded="false">
-            <i data-lucide="building" class="w-5 h-5"></i>
-            <span>Pro firmy</span>
-            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform ml-auto"></i>
-          </button>
-          <ul id="footer-section-2" class="hidden sm:block space-y-2 text-sm text-white/70 mb-4">
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-firmy.html">
-              <i data-lucide="megaphone" class="w-4 h-4"></i>Zadat kampaň
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-marketplace.html">
-              <i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-faq.html">
-              <i data-lucide="help-circle" class="w-4 h-4"></i>FAQ
-            </a></li>
+        <div class="rounded-3xl bg-gradient-to-br from-fuchsia-600/20 via-yellow-400/10 to-amber-500/20 border border-amber-400/40 p-4 md:p-5">
+          <p class="text-xs uppercase tracking-wide text-yellow-200 mb-1 flex items-center gap-2">
+            <i class="w-3 h-3 rounded-full bg-yellow-300 inline-block"></i>
+            Doporučené
+          </p>
+          <p class="text-sm text-slate-50 mb-2">
+            VIP se vyplatí, pokud:
+          </p>
+          <ul class="text-xs text-slate-100 space-y-1.5">
+            <li>• řešíš kampaně pravidelně (min. 1–2 za měsíc),</li>
+            <li>• chceš růst a vyjednávat lepší rozpočty,</li>
+            <li>• chceš mít podporu Kartao při jednání se značkami.</li>
           </ul>
         </div>
+      </aside>
+    </section>
 
-        <!-- Pro tvůrce -->
-        <div class="mb-6 sm:mb-0">
-          <button type="button"
-                  class="sm:pointer-events-none w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 font-bold mb-4 text-fuchsia-400"
-                  aria-controls="footer-section-3"
-                  aria-expanded="false">
-            <i data-lucide="camera" class="w-5 h-5"></i>
-            <span>Pro tvůrce</span>
-            <i data-lucide="chevron-down" class="w-5 h-5 sm:hidden transition-transform ml-auto"></i>
-          </button>
-          <ul id="footer-section-3" class="hidden sm:block space-y-2 text-sm text-white/70 mb-4">
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-tvurce.html">
-              <i data-lucide="user-plus" class="w-4 h-4"></i>Začít jako tvůrce
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-zalozit-kartu.html">
-              <i data-lucide="id-card" class="w-4 h-4"></i>Založit kartu
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="creator-dashboard.html">
-              <i data-lucide="bar-chart" class="w-4 h-4"></i>Dashboard
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-cenik.html">
-              <i data-lucide="tag" class="w-4 h-4"></i>Ceník
-            </a></li>
-            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-faq.html">
-              <i data-lucide="help-circle" class="w-4 h-4"></i>FAQ
-            </a></li>
-          </ul>
-        </div>
-
-        <!-- Newsletter & Social - VŽDY ROZBALENO -->
+    <!-- JAK VIP FUNGUJE -->
+    <section class="rounded-3xl bg-black/40 border border-white/10 shadow-card-soft p-5 md:p-7 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-sky-400">
-            <i data-lucide="mail" class="w-5 h-5"></i>
-            <span>Novinky</span>
-          </div>
-          <p class="text-sm text-white/60 mb-3">Žádný spam. Jen podstatné novinky a tipy.</p>
-          <form id="footer-newsletter" class="flex gap-2 mb-4">
-            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail"
-                   class="flex-1 rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
-            <button type="submit" class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium text-sm whitespace-nowrap transition">
-              Odebírat
-            </button>
-          </form>
-
-          <!-- Social Icons -->
-          <div class="flex items-center gap-2">
-            <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Facebook">
-              <i data-lucide="facebook" class="w-4 h-4"></i>
-            </a>
-            <a href="https://instagram.com/kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Instagram">
-              <i data-lucide="instagram" class="w-4 h-4"></i>
-            </a>
-            <a href="https://youtube.com/@kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="YouTube">
-              <i data-lucide="youtube" class="w-4 h-4"></i>
-            </a>
-            <a href="https://tiktok.com/@kartao.cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="TikTok">
-              <i data-lucide="music" class="w-4 h-4"></i>
-            </a>
-            <a href="https://pinterest.com/kartao_cz" target="_blank" rel="noopener"
-               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
-               aria-label="Pinterest">
-              <i data-lucide="image" class="w-4 h-4"></i>
-            </a>
-          </div>
+          <p class="text-xs uppercase tracking-wide text-slate-300 mb-1 flex items-center gap-2">
+            <i class="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block"></i>
+            Jednoduchý proces
+          </p>
+          <h2 class="text-lg md:text-xl font-bold">Jak probíhá aktivace VIP statusu</h2>
         </div>
+        <p class="text-xs md:text-sm text-slate-400 max-w-md">
+          Vše se řeší přes tvoji kartu. Tady máš jen jasný přehled kroků, ať víš, do čeho jdeš.
+        </p>
       </div>
 
-      <!-- Bottom Bar -->
-      <div class="border-t border-white/10 py-6">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
-
-          <!-- Copyright -->
-          <div class="flex items-center gap-2">
-            <span>© 2025</span>
-            <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>
-            <strong class="text-white/80">Kartao.cz</strong>
-            <span class="hidden sm:inline">– síť influencerů a tvůrců</span>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="chip px-4 py-4 flex flex-col gap-2">
+          <div class="flex items-center justify-between text-xs text-slate-300">
+            <span>Krok 1</span>
+            <span class="pill px-2 py-0.5 bg-white/5 border border-white/15 text-[10px]">Na kartě</span>
           </div>
+          <p class="font-semibold">Otevřeš Zlatou kartu z „Moje karta“</p>
+          <p class="text-xs text-slate-400">
+            Na své kartě klikneš na blok <strong>Zlatá karta Exclusive</strong> a přejdeš na aktivaci.
+          </p>
+        </div>
 
-          <!-- Legal Links -->
-          <div class="flex flex-wrap items-center justify-center gap-4">
-            <a href="ochrana-osobnich-udaju.html" class="hover:text-white transition">Ochrana údajů</a>
-            <span class="text-white/30">•</span>
-            <a href="obchodni-podminky.html" class="hover:text-white transition">Podmínky</a>
-            <span class="text-white/30">•</span>
-            <a href="cookies.html" class="hover:text-white transition">Cookies</a>
-            <span class="text-white/30">•</span>
-            <a href="sitemap.xml" class="hover:text-white transition">Sitemap</a>
+        <div class="chip px-4 py-4 flex flex-col gap-2">
+          <div class="flex items-center justify-between text-xs text-slate-300">
+            <span>Krok 2</span>
+            <span class="pill px-2 py-0.5 bg-yellow-500/10 border border-yellow-400/40 text-[10px] text-yellow-200">Platba K-Coins</span>
           </div>
+          <p class="font-semibold">Potvrdíš aktivaci za 1000 K-Coins</p>
+          <p class="text-xs text-slate-400">
+            Systém zkontroluje zůstatek, strhne K-Coins a nastaví tvůj účet jako VIP.
+          </p>
+        </div>
+
+        <div class="chip px-4 py-4 flex flex-col gap-2">
+          <div class="flex items-center justify-between text-xs text-slate-300">
+            <span>Krok 3</span>
+            <span class="pill px-2 py-0.5 bg-emerald-500/10 border border-emerald-400/40 text-[10px] text-emerald-200">Hotovo</span>
+          </div>
+          <p class="font-semibold">VIP výhody se ti aktivují napříč systémem</p>
+          <p class="text-xs text-slate-400">
+            V Marketplace, přehledu odměn i Mystery Boxu uvidíš nové možnosti a bonusy.
+          </p>
         </div>
       </div>
+    </section>
 
-    </div>
-  </footer>
-  <!-- =============== UNIFIED FOOTER END =============== -->
-
-  <script>
-    const vipCreators = [
-      {name:"Anna Beauty", cat:"Beauty", platform:"Instagram", followers:"120k", er:"3.8%", price:"25–40 tis.", img:"https://i.pravatar.cc/120?img=15"},
-      {name:"Tom Gaming", cat:"Gaming", platform:"YouTube", followers:"280k", er:"5.1%", price:"30–60 tis.", img:"https://i.pravatar.cc/120?img=11"},
-      {name:"Lukáš Tech", cat:"Tech", platform:"YouTube", followers:"95k", er:"2.9%", price:"20–35 tis.", img:"https://i.pravatar.cc/120?img=5"},
-      {name:"Ema Lifestyle", cat:"Lifestyle", platform:"Instagram", followers:"210k", er:"4.2%", price:"35–70 tis.", img:"https://i.pravatar.cc/120?img=1"},
-      {name:"Petr Auto", cat:"Auto/Moto", platform:"TikTok", followers:"340k", er:"7.1%", price:"40–80 tis.", img:"https://i.pravatar.cc/120?img=7"},
-      {name:"Verča Fit", cat:"Fitness", platform:"Instagram", followers:"150k", er:"4.0%", price:"25–45 tis.", img:"https://i.pravatar.cc/120?img=13"},
-      {name:"Jakub Travel", cat:"Travel", platform:"Instagram", followers:"85k", er:"4.5%", price:"20–35 tis.", img:"https://i.pravatar.cc/120?img=8"},
-      {name:"Marie Food", cat:"Food", platform:"TikTok", followers:"190k", er:"6.2%", price:"30–50 tis.", img:"https://i.pravatar.cc/120?img=2"},
-      {name:"David Business", cat:"Business", platform:"YouTube", followers:"75k", er:"3.1%", price:"25–40 tis.", img:"https://i.pravatar.cc/120?img=14"},
-      {name:"Klára Beauty", cat:"Beauty", platform:"TikTok", followers:"320k", er:"7.8%", price:"50–90 tis.", img:"https://i.pravatar.cc/120?img=6"},
-      {name:"Filip Gaming", cat:"Gaming", platform:"TikTok", followers:"450k", er:"8.1%", price:"60–100 tis.", img:"https://i.pravatar.cc/120?img=12"},
-      {name:"Tereza Lifestyle", cat:"Lifestyle", platform:"YouTube", followers:"165k", er:"3.6%", price:"30–55 tis.", img:"https://i.pravatar.cc/120?img=3"},
-      {name:"Martin Tech", cat:"Tech", platform:"Instagram", followers:"110k", er:"4.1%", price:"25–45 tis.", img:"https://i.pravatar.cc/120?img=9"},
-      {name:"Nikol Fitness", cat:"Fitness", platform:"YouTube", followers:"130k", er:"3.9%", price:"25–50 tis.", img:"https://i.pravatar.cc/120?img=4"},
-      {name:"Adam Auto", cat:"Auto/Moto", platform:"YouTube", followers:"220k", er:"4.7%", price:"40–70 tis.", img:"https://i.pravatar.cc/120?img=10"},
-      {name:"Sára Travel", cat:"Travel", platform:"Facebook", followers:"95k", er:"2.8%", price:"20–35 tis.", img:"https://i.pravatar.cc/120?img=16"},
-      {name:"Pavel Food", cat:"Food", platform:"Instagram", followers:"80k", er:"5.2%", price:"18–30 tis.", img:"https://i.pravatar.cc/120?img=17"},
-      {name:"Jana Business", cat:"Business", platform:"TikTok", followers:"60k", er:"4.8%", price:"15–25 tis.", img:"https://i.pravatar.cc/120?img=18"},
-    ];
-
-    // Initialize everything on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      // Get all elements
-      const grid = document.getElementById('grid');
-      const takenEl = document.getElementById('taken');
-      const progressBar = document.getElementById('progressBar');
-      const resultCount = document.getElementById('resultCount');
-      const emptyState = document.getElementById('emptyState');
-      const clearFiltersBtn = document.getElementById('clearFilters');
-      const modal = document.getElementById('detailModal');
-      const q = document.getElementById('q');
-      const cat = document.getElementById('cat');
-      const platform = document.getElementById('platform');
-      const sortBy = document.getElementById('sortBy');
-
-      const limit = 20;
-
-      // Modal helpers
-      const modalClose = () => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = '';
-      };
-      
-      const openDetailByName = (name) => {
-        const src = (window._currentList || vipCreators).find(v => v.name === name);
-        if(!src) return;
-        document.getElementById('modalImg').src = src.img;
-        document.getElementById('modalName').textContent = src.name;
-        document.getElementById('modalMeta').textContent = `${src.cat} • ${src.platform}`;
-        document.getElementById('modalFollowers').textContent = src.followers;
-        document.getElementById('modalEr').textContent = src.er;
-        document.getElementById('modalPrice').textContent = src.price;
-        const contact = document.getElementById('modalContact');
-        contact.href = `mailto:info@kartao.cz?subject=VIP%20spolupráce%20—%20${encodeURIComponent(src.name)}`;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => lucide.createIcons(), 50);
-      };
-
-      // Modal event listeners
-      document.addEventListener('click', (e)=>{
-        if(e.target && (e.target.id === 'detailModal' || e.target.id === 'modalClose')) modalClose();
-      });
-      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modalClose(); });
-
-      // Render function
-      function render(list){
-        grid.innerHTML = '';
-        const sliced = list.slice(0, limit);
-        window._currentList = sliced;
-        takenEl.textContent = sliced.length;
-        resultCount.textContent = list.length;
-
-        // Update progress bar
-        const percentage = (sliced.length / limit) * 100;
-        progressBar.style.width = percentage + '%';
-
-        // Show/hide empty state
-        if (list.length === 0) {
-          emptyState.classList.remove('hidden');
-          grid.classList.add('hidden');
-        } else {
-          emptyState.classList.add('hidden');
-          grid.classList.remove('hidden');
-        }
-
-        for(const c of sliced){
-          grid.insertAdjacentHTML('beforeend', `
-            <article class="glass rounded-2xl p-5 vip-card group">
-              <div class="flex items-start gap-4 mb-4">
-                <div class="relative">
-                  <img src="${c.img}" alt="VIP tvůrce ${c.name}" class="w-16 h-16 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-amber-400/50 transition" />
-                  <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-gradient-to-br from-fuchsia-500 to-amber-400 grid place-items-center">
-                    <i data-lucide="crown" class="w-3 h-3 text-white"></i>
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-lg truncate mb-1">${c.name}</h3>
-                  <div class="flex items-center gap-2 text-xs text-white/60">
-                    <span>${c.cat}</span>
-                    <span class="w-1 h-1 rounded-full bg-white/30"></span>
-                    <span>${c.platform}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="rounded-xl bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 p-3 text-center">
-                  <div class="text-xs text-sky-300 mb-1">Sledující</div>
-                  <div class="font-bold text-sm">${c.followers}</div>
-                </div>
-                <div class="rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-3 text-center">
-                  <div class="text-xs text-emerald-300 mb-1">ER</div>
-                  <div class="font-bold text-sm text-emerald-400">${c.er}</div>
-                </div>
-                <div class="rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 text-center">
-                  <div class="text-xs text-amber-300 mb-1">Cena</div>
-                  <div class="font-bold text-sm text-amber-400">${c.price}</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button type="button" class="btn-detail flex-1 rounded-xl px-4 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition text-sm font-medium" data-name="${c.name}">
-                  <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
-                  Detail
-                </button>
-                <a href="mailto:info@kartao.cz?subject=VIP%20spolupr%C3%A1ce%20%E2%80%94%20${encodeURIComponent(c.name)}"
-                   class="flex-1 rounded-xl px-4 py-2.5 font-semibold text-neutral-900 vip-badge text-sm text-center hover:opacity-90 transition">
-                  Kontakt
-                </a>
-              </div>
-            </article>
-          `);
-        }
-
-        // Add empty slot if under limit
-        if (sliced.length < limit) {
-          grid.insertAdjacentHTML('beforeend', `
-            <article class="glass rounded-2xl p-5 border-dashed border-2 hover:border-amber-400/30 transition group">
-              <div class="text-center py-8">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-amber-400/20 border border-white/10 grid place-items-center group-hover:scale-110 transition">
-                  <i data-lucide="crown" class="w-8 h-8 crown-anim text-amber-400"></i>
-                </div>
-                <h3 class="font-bold mb-2">Volné místo #${sliced.length + 1}</h3>
-                <p class="text-sm text-white/60 mb-4">Staňte se součástí VIP elit</p>
-                <a href="#vip-apply" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 transition text-sm font-medium">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
-                  Požádat
-                </a>
-              </div>
-            </article>
-          `);
-        }
-
-        lucide.createIcons();
-        attachDetailHandlers();
-      }
-
-      function attachDetailHandlers(){
-        document.querySelectorAll('.btn-detail').forEach(btn => {
-          btn.onclick = () => openDetailByName(btn.getAttribute('data-name'));
-        });
-      }
-
-      // Filters function
-      function applyFilters(){
-        const term = q.value.toLowerCase().trim();
-        const c = cat.value;
-        const p = platform.value;
-        const sort = sortBy.value;
-
-        let out = vipCreators.filter(v =>
-          (!term || (v.name.toLowerCase().includes(term) || v.cat.toLowerCase().includes(term) || v.platform.toLowerCase().includes(term))) &&
-          (!c || v.cat===c) &&
-          (!p || v.platform===p)
-        );
-
-        // Sorting
-        if (sort === 'followers') {
-          out.sort((a, b) => {
-            const aNum = parseInt(a.followers.replace('k', '')) * 1000;
-            const bNum = parseInt(b.followers.replace('k', '')) * 1000;
-            return bNum - aNum;
-          });
-        } else if (sort === 'er') {
-          out.sort((a, b) => parseFloat(b.er) - parseFloat(a.er));
-        } else if (sort === 'price') {
-          out.sort((a, b) => {
-            const aPrice = parseInt(a.price.split('–')[0]);
-            const bPrice = parseInt(b.price.split('–')[0]);
-            return aPrice - bPrice;
-          });
-        }
-
-        // Show/hide clear filters button
-        if (term || c || p || sort !== 'default') {
-          clearFiltersBtn.classList.remove('hidden');
-        } else {
-          clearFiltersBtn.classList.add('hidden');
-        }
-
-        render(out);
-      }
-
-      // Filter event listeners
-      [q, cat, platform, sortBy].forEach(el => el.addEventListener('input', applyFilters));
-      [q, cat, platform, sortBy].forEach(el => el.addEventListener('change', applyFilters));
-
-      // Clear filters
-      clearFiltersBtn.addEventListener('click', () => {
-        q.value = '';
-        cat.value = '';
-        platform.value = '';
-        sortBy.value = 'default';
-        applyFilters();
-      });
-
-      // Reset search from empty state
-      document.getElementById('resetSearch')?.addEventListener('click', () => {
-        q.value = '';
-        cat.value = '';
-        platform.value = '';
-        sortBy.value = 'default';
-        applyFilters();
-      });
-
-      // Form submission
-      document.getElementById('vipForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
-        console.log('VIP Application:', data);
-
-        // Show success message
-        const form = e.target;
-        form.innerHTML = `
-          <div class="text-center py-12">
-            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/20 border border-emerald-500/30 grid place-items-center">
-              <i data-lucide="check" class="w-10 h-10 text-emerald-400"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Žádost odeslána!</h3>
-            <p class="text-white/70 mb-6 max-w-md mx-auto">
-              Děkujeme za zájem o VIP status. Vaši žádost pečlivě prozkoumáme
-              a do 48 hodin se vám ozveme na <strong>${data.email}</strong>.
+    <!-- ROZPIS VÝHOD -->
+    <section class="grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-6 items-start">
+      <div class="rounded-3xl bg-black/40 border border-white/10 shadow-card-soft p-5 md:p-6 space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-300 mb-1 flex items-center gap-2">
+              <i class="w-1.5 h-1.5 rounded-full bg-fuchsia-400 inline-block"></i>
+              Detail výhod
             </p>
-            <button onclick="window.location.reload()" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition">
-              Zpět na přehled
-            </button>
+            <h2 class="text-lg font-bold">Co všechno VIP ovlivní</h2>
           </div>
-        `;
-        lucide.createIcons();
-      });
+        </div>
 
-      // Footer collapsible sections (mobile only)
-      document.querySelectorAll('footer button[aria-controls]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const targetId = btn.getAttribute('aria-controls');
-          const target = document.getElementById(targetId);
-          const chevron = btn.querySelector('[data-lucide="chevron-down"]');
-          const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        <div class="divide-y divide-white/10 text-sm">
+          <div class="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="sm:w-1/3 text-slate-300">Marketplace</div>
+            <div class="flex-1 text-slate-100">
+              Tvoje karta se zvýrazní, posune výše ve výpise a u profilů se zobrazí badge VIP.
+            </div>
+          </div>
+          <div class="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="sm:w-1/3 text-slate-300">Kampaně &amp; nabídky</div>
+            <div class="flex-1 text-slate-100">
+              Značky uvidí, že jsi ověřený tvůrce. Snáz tě vyberou do kampaně a můžeš si říct o vyšší odměnu.
+            </div>
+          </div>
+          <div class="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="sm:w-1/3 text-slate-300">K-Coins &amp; Mystery Box</div>
+            <div class="flex-1 text-slate-100">
+              Za dokončené spolupráce a úkoly získáváš procentuální bonus v K-Coins. U Mystery Boxu může
+              být lepší šance na prémiové výhry.
+            </div>
+          </div>
+          <div class="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="sm:w-1/3 text-slate-300">Podpora &amp; řešení problémů</div>
+            <div class="flex-1 text-slate-100">
+              VIP tvůrci mají přednostní podporu – rychlejší reakce, pomoc s vyjednáváním i řešení sporných situací.
+            </div>
+          </div>
+        </div>
+      </div>
 
-          // Toggle
-          btn.setAttribute('aria-expanded', !isExpanded);
-          target.classList.toggle('hidden');
-          if (chevron) {
-            chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
-          }
-        });
-      });
+      <!-- Porovnání BASIC vs VIP -->
+      <div class="rounded-3xl bg-black/45 border border-white/10 shadow-card-soft p-5 md:p-6 space-y-4">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-300 mb-1">Porovnání</p>
+          <h2 class="text-lg font-bold">Běžný účet vs VIP</h2>
+        </div>
+        <div class="text-xs text-slate-300 mb-2">
+          Zjednodušený přehled – pro orientaci, co se ti odemkne navíc.
+        </div>
 
-      // Newsletter form
-      document.getElementById('footer-newsletter')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        console.log('Newsletter subscription:', email);
-        alert('Děkujeme! Přihlášení k odběru novinek bylo úspěšné.');
-        e.target.reset();
-      });
+        <div class="grid grid-cols-2 text-xs font-semibold text-slate-200 bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+          <div class="px-3 py-2 text-center bg-black/40">BASIC</div>
+          <div class="px-3 py-2 text-center bg-gradient-to-r from-yellow-400/30 via-amber-400/30 to-orange-400/40 text-yellow-100">
+            VIP
+          </div>
+        </div>
 
-      // Initial render
-      render(vipCreators);
-      
-      // Initialize hamburger menu
-      initHamburgerMenu();
-      
-      // Initialize Lucide icons last
-      lucide.createIcons();
-    });
-  </script>
-  <script src="hamburger-menu.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-<script src="auth-header.js"></script>
+        <ul class="text-xs space-y-2 mt-3">
+          <li class="flex items-center justify-between gap-2">
+            <span class="text-slate-300">Zvýraznění v Marketplace</span>
+            <span class="pill px-2 py-0.5 bg-white/5 border border-white/15 text-slate-400">jen VIP</span>
+          </li>
+          <li class="flex items-center justify-between gap-2">
+            <span class="text-slate-300">Bonusové K-Coins z kampaní</span>
+            <span class="pill px-2 py-0.5 bg-emerald-500/10 border border-emerald-400/40 text-emerald-200">+10&nbsp;% VIP</span>
+          </li>
+          <li class="flex items-center justify-between gap-2">
+            <span class="text-slate-300">Přístup k VIP kampaním</span>
+            <span class="pill px-2 py-0.5 bg-fuchsia-500/10 border border-fuchsia-400/40 text-fuchsia-200">jen VIP</span>
+          </li>
+          <li class="flex items-center justify-between gap-2">
+            <span class="text-slate-300">Prioritní podpora</span>
+            <span class="pill px-2 py-0.5 bg-sky-500/10 border border-sky-400/40 text-sky-200">rychlejší odpovědi</span>
+          </li>
+        </ul>
+
+        <button class="mt-4 w-full pill px-4 py-2.5 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-black text-sm font-semibold shadow-neon-gold hover:brightness-110 transition">
+          Chci přejít na VIP – otevřít Zlatou kartu v „Moje karta“
+        </button>
+      </div>
+    </section>
+
+    <!-- SPOLEČNÉ FAQ / INFO -->
+    <section class="rounded-3xl bg-black/40 border border-white/10 shadow-card-soft p-5 md:p-6 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-300 mb-1">Časté otázky</p>
+          <h2 class="text-lg font-bold">FAQ k VIP a Zlaté kartě</h2>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div>
+          <p class="font-semibold text-slate-100 mb-1">Můžu VIP kdykoliv vypnout?</p>
+          <p class="text-slate-400 text-sm">
+            VIP status je navázaný na tvůj účet. Pokud se rozhodneš VIP dál nevyužívat, napiš na podporu
+            a domluvíme se na zrušení do dalšího období – přístup ke kampaním ti ale může být omezen,
+            pokud máš rozpracované spolupráce.
+          </p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-100 mb-1">Co když nemám dost K-Coins?</p>
+          <p class="text-slate-400 text-sm">
+            Můžeš je dobít, získat z Mystery Boxu nebo nasbírat plněním úkolů a kampaní. Aktivaci
+            doporučujeme ve chvíli, kdy už máš první spolupráce za sebou.
+          </p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-100 mb-1">Je VIP jen pro velké influencery?</p>
+          <p class="text-slate-400 text-sm">
+            Ne. VIP má dávat smysl i středním a menším tvůrcům, kteří chtějí růst. Nejde jen o počet
+            sledujících, ale o kvalitu obsahu a spoluprací.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
