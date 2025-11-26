@@ -18,8 +18,9 @@
   - getAdsCooldownRemainingMs()
   - clearAdsCooldown()
 
-  Aktuálně funguje přes localStorage.
-  Později jej napojíme na Firebase.
+  Kredity:
+  - Hlavní zdroj = Firestore (kolekce "users", dokument userId, pole "credits")
+  - localStorage = pouze cache pro rychlé zobrazení na daném zařízení
 */
 
 class CreditsSystem {
@@ -51,6 +52,15 @@ class CreditsSystem {
 
     this.userId = finalUserId;
 
+    // Firestore instance (pokud je k dispozici)
+    this.db =
+      (typeof window !== "undefined" && window.db) ||
+      (typeof window !== "undefined" &&
+        window.firebase &&
+        window.firebase.firestore &&
+        window.firebase.firestore()) ||
+      null;
+
     // Klíče localStorage – podle userId
     this.keys = {
       credits: `kartao_credits_${this.userId}`,
@@ -71,7 +81,9 @@ class CreditsSystem {
       },
     };
 
+    // Inicializace localStorage + async sync z Firestore
     this.init();
+    this.syncCreditsFromFirestore();
   }
 
   // Pomocná funkce – datum YYYY-MM-DD
@@ -83,7 +95,7 @@ class CreditsSystem {
     )}-${String(d.getDate()).padStart(2, "0")}`;
   }
 
-  // Inicializace kreditů a denního stavu
+  // Inicializace kreditů a denního stavu (localStorage)
   init() {
     if (!localStorage.getItem(this.keys.credits)) {
       localStorage.setItem(this.keys.credits, "0");
@@ -113,29 +125,79 @@ class CreditsSystem {
     }
   }
 
-  // --- Kredity ---
+  // --- Kredity – SYNC API, Firestore jako hlavní zdroj, localStorage jako cache ---
+
+  // Interní pomocná – načte credits z Firestore a uloží do localStorage (async, neblokuje UI)
+  async syncCreditsFromFirestore() {
+    try {
+      if (!this.db || !this.userId || this.userId === "localuser") return;
+
+      const ref = this.db.collection("users").doc(this.userId);
+      const snap = await ref.get();
+
+      let credits = 0;
+      if (snap.exists) {
+        const data = snap.data() || {};
+        if (typeof data.credits === "number") {
+          credits = data.credits;
+        }
+      } else {
+        // pokud dokument neexistuje, založíme s credits: 0
+        await ref.set({ credits: 0 }, { merge: true });
+        credits = 0;
+      }
+
+      localStorage.setItem(this.keys.credits, String(credits));
+    } catch (e) {
+      console.warn("CreditsSystem: sync z Firestore selhal:", e);
+    }
+  }
+
+  // Interní pomocná – uloží credits do Firestore i localStorage
+  saveCredits(value) {
+    // local cache
+    localStorage.setItem(this.keys.credits, String(value));
+
+    // Firestore update (neblokující)
+    try {
+      if (!this.db || !this.userId || this.userId === "localuser") return;
+
+      const ref = this.db.collection("users").doc(this.userId);
+      ref
+        .set({ credits: value }, { merge: true })
+        .catch((e) => console.warn("CreditsSystem: zápis do Firestore selhal:", e));
+    } catch (e) {
+      console.warn("CreditsSystem: chyba při zápisu do Firestore:", e);
+    }
+  }
+
+  // --- SYNC API – čtou/zapisují přes localStorage, ale jsou napojené na Firestore přes saveCredits/syncCreditsFromFirestore ---
+
   getCredits() {
     return parseInt(localStorage.getItem(this.keys.credits) || "0", 10);
   }
 
   setCredits(value) {
-    localStorage.setItem(this.keys.credits, String(value));
+    const v = Number.isFinite(value) ? value : 0;
+    this.saveCredits(v);
   }
 
   addCredits(amount) {
-    const c = this.getCredits() + amount;
-    this.setCredits(c);
-    return c;
+    const current = this.getCredits();
+    const next = current + amount;
+    this.saveCredits(next);
+    return next;
   }
 
   subtractCredits(amount) {
     const current = this.getCredits();
     const newVal = Math.max(0, current - amount);
-    this.setCredits(newVal);
+    this.saveCredits(newVal);
     return newVal;
   }
 
-  // --- Denní stav ---
+  // --- Denní stav (zatím čistě v localStorage) ---
+
   getDailyState() {
     const raw = localStorage.getItem(this.keys.daily);
     if (!raw) {
@@ -168,6 +230,7 @@ class CreditsSystem {
   }
 
   // --- Reklamní systém ---
+
   addAdWatch() {
     const daily = this.getDailyState();
 
