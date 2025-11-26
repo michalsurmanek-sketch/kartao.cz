@@ -42,7 +42,9 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">Podpora & account manager</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
+                Podpora & account manager
+              </span>
             </div>
             <p class="text-[11px] text-white/60">Pomoc pro firmy, kampaně a Gold partnery</p>
           </div>
@@ -71,12 +73,21 @@
           <div class="space-y-3">
             <h1 class="text-2xl font-semibold">Podpora & account manager pro firmy</h1>
             <p class="text-sm text-white/70 max-w-xl">
-              Máš dotaz k kampani, rozpočtům, K‑Coins nebo spolupráci s influencery? Napiš nám přes formulář nebo si domluv call s naším account manažerem.
+              Máš dotaz k kampani, rozpočtům, K-Coins nebo spolupráci s influencery? Napiš nám přes formulář nebo si domluv call s naším account manažerem.
             </p>
             <ul class="text-xs text-white/65 space-y-1">
-              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Individuální pomoc s kampaněmi a strategiemi.</li>
-              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Nastavení firemního účtu, fakturace a VIP služeb.</li>
-              <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Podpora pro Gold Brand Partnery a velké rozpočty.</li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Individuální pomoc s kampaněmi a strategiemi.
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                Nastavení firemního účtu, fakturace a VIP služeb.
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                Podpora pro Gold Brand Partnery a velké rozpočty.
+              </li>
             </ul>
           </div>
           <div class="rounded-3xl bg-gradient-to-br from-fuchsia-500/25 via-amber-400/15 to-emerald-400/25 border border-fuchsia-300/60 p-4 shadow-[0_0_30px_rgba(236,72,153,0.5)] text-xs space-y-2">
@@ -122,7 +133,7 @@
               <p class="text-white/50 mb-1">Téma dotazu</p>
               <select class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2">
                 <option>Kampaně a strategie</option>
-                <option>K‑Coins, rozpočty a fakturace</option>
+                <option>K-Coins, rozpočty a fakturace</option>
                 <option>Influencer Marketplace</option>
                 <option>Gold Brand Partner / VIP služby</option>
                 <option>Jiné</option>
@@ -155,8 +166,14 @@
               <p class="text-sm font-semibold">(placeholder) Jméno account manažera</p>
               <p class="text-white/65">Pomůžeme ti sestavit kampaně, nastavit rozpočty a vybrat správné influencery.</p>
               <div class="space-y-1 text-white/70">
-                <p class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i> support@kartao.cz</p>
-                <p class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i> +420 777 555 333</p>
+                <p class="flex items-center gap-2">
+                  <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                  support@kartao.cz
+                </p>
+                <p class="flex items-center gap-2">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                  +420 777 555 333
+                </p>
               </div>
             </div>
 
@@ -179,8 +196,8 @@
               <ul class="space-y-1 text-white/75">
                 <li><a href="moje-firma.html" class="underline underline-offset-2">Firemní dashboard</a></li>
                 <li><a href="profil-firmy.html" class="underline underline-offset-2">Profil firmy & fakturace</a></li>
-                <li><a href="kampane-prehled.html" class="underline underline-offset-2">Přehled kampaní</a></li>
-                <li><a href="influencer-marketplace.html" class="underline underline-offset-2">Influencer Marketplace</a></li>
+                <li><a href="kampane-firma.html" class="underline underline-offset-2">Přehled kampaní</a></li>
+                <li><a href="marketplace.html" class="underline underline-offset-2">Influencer Marketplace</a></li>
               </ul>
             </div>
           </div>
@@ -203,18 +220,37 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      if (!window.firebase || !firebase.auth) return;
+      // Ikony
+      if (window.lucide) {
+        lucide.createIcons();
+      }
 
-      const db = firebase.firestore();
+      const auth =
+        window.auth ||
+        (window.firebase && firebase.auth && firebase.auth());
+      const db =
+        window.db ||
+        (window.firebase && firebase.firestore && firebase.firestore());
 
-      firebase.auth().onAuthStateChanged(async (user) => {
+      if (!auth || !db) {
+        console.warn("Podpora – Firebase Auth nebo Firestore není dostupný.");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+
+      auth.onAuthStateChanged(async (user) => {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -226,27 +262,18 @@
         try {
           const cs = new CreditsSystem(user.uid);
           const credits = cs.getCredits();
-          const headerEl = document.getElementById("headerCredits");
-          if (headerEl) headerEl.textContent = credits;
+          if (headerCreditsEl && typeof credits === "number") {
+            headerCreditsEl.textContent = credits;
+          }
         } catch (e) {
           console.warn("Podpora – chyba CreditsSystem:", e);
         }
 
-        if (window.lucide) lucide.createIcons();
+        if (window.lucide) {
+          lucide.createIcons();
+        }
       });
     });
   </script>
-
-  <script>
-    // Globální inicializace Lucide ikon po načtení celé stránky
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        setTimeout(() => {
-          lucide.createIcons();
-        }, 0);
-      }
-    });
-  </script>
-
 </body>
 </html>
