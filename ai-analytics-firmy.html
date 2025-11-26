@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao.cz – Detail kampaně (FULL)</title>
+  <title>Kartao.cz – Podpora & account manager</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -14,10 +14,9 @@
           colors: {
             fuchsia: tailwind.colors.fuchsia,
             amber: tailwind.colors.amber,
-            neutral: tailwind.colors.neutral,
-            emerald: tailwind.colors.emerald,
             sky: tailwind.colors.sky,
-            rose: tailwind.colors.rose,
+            emerald: tailwind.colors.emerald,
+            neutral: tailwind.colors.neutral,
           },
           boxShadow: {
             soft: "0 18px 45px rgba(15,23,42,0.85)",
@@ -36,23 +35,21 @@
     <!-- HLAVIČKA -->
     <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <!-- Logo -->
-        <a href="kampane-dashboard.html" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-sky-400 to-fuchsia-400 grid place-items-center shadow-soft">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-neutral-900"></i>
+        <a href="moje-firma.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-400 to-amber-400 grid place-items-center shadow-soft">
+            <i data-lucide="headset" class="w-5 h-5 text-neutral-900"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-sky-500/15 text-sky-200 border border-sky-400/40">
-                Detail kampaně
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
+                Podpora & account manager
               </span>
             </div>
-            <p class="text-[11px] text-white/60">Kompletní statistiky a výkon kampaně</p>
+            <p class="text-[11px] text-white/60">Pomoc pro firmy, kampaně a Gold partnery</p>
           </div>
         </a>
 
-        <!-- Pravá strana -->
         <div class="flex items-center gap-3">
           <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
             <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
@@ -71,122 +68,138 @@
     <main class="flex-1">
       <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
-        <!-- HLAVNÍ INFORMACE O KAMPANI -->
-        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-3">
-          <h1 class="text-2xl font-semibold" id="campaignName">Jarní launch kolekce – FULL STATS</h1>
-          <p class="text-xs text-white/60">Komplexní analýza výkonu kampaně · AI predikce · Influencer data</p>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-              <p class="text-white/60">Rozpočet</p>
-              <p class="text-sm font-semibold" id="budget">5 000 K-Coins</p>
-            </div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-              <p class="text-white/60">Utraceno</p>
-              <p class="text-sm font-semibold" id="spent">2 000 K-Coins</p>
-            </div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-              <p class="text-white/60">Platformy</p>
-              <p class="text-sm font-semibold">Instagram + TikTok</p>
-            </div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-              <p class="text-white/60">Cíl</p>
-              <p class="text-sm font-semibold">Brand awareness</p>
-            </div>
+        <!-- HERO BLOK -->
+        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft grid md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-6 items-center">
+          <div class="space-y-3">
+            <h1 class="text-2xl font-semibold">Podpora & account manager pro firmy</h1>
+            <p class="text-sm text-white/70 max-w-xl">
+              Máš dotaz k kampani, rozpočtům, K-Coins nebo spolupráci s influencery? Napiš nám přes formulář nebo si domluv call s naším account manažerem.
+            </p>
+            <ul class="text-xs text-white/65 space-y-1">
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Individuální pomoc s kampaněmi a strategiemi.
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                Nastavení firemního účtu, fakturace a VIP služeb.
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                Podpora pro Gold Brand Partnery a velké rozpočty.
+              </li>
+            </ul>
+          </div>
+          <div class="rounded-3xl bg-gradient-to-br from-fuchsia-500/25 via-amber-400/15 to-emerald-400/25 border border-fuchsia-300/60 p-4 shadow-[0_0_30px_rgba(236,72,153,0.5)] text-xs space-y-2">
+            <p class="text-[11px] uppercase tracking-wide text-fuchsia-100 flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              VIP podpora pro značky
+            </p>
+            <p>Pro Gold Brand Partnery zajišťujeme prioritní podporu, návrhy kampaní na míru a osobního account manažera.</p>
+            <p class="text-white/70">Chceš se stát Gold Brand Partnerem? Napiš do zprávy „Gold partner“.</p>
           </div>
         </section>
 
-        <!-- GRAFY: dosah / zapojení / růst -->
-        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-6">
-          <h2 class="text-sm font-semibold text-white/70">Výkon kampaně</h2>
+        <!-- KONTAKTNÍ FORMULÁŘ + KONTAKTY -->
+        <section class="grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1.1fr)] gap-6 items-start">
 
-          <div class="grid md:grid-cols-3 gap-6">
-            <div class="rounded-3xl bg-black/20 border border-white/10 p-4 text-center">
-              <h3 class="text-xs text-white/60 mb-2">Celkový dosah</h3>
-              <canvas id="reachChart" height="140"></canvas>
+          <!-- Formulář -->
+          <div class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4 text-xs">
+            <h2 class="text-sm font-semibold text-white/80 flex items-center gap-2">
+              <i data-lucide="inbox" class="w-4 h-4"></i>
+              Kontaktní formulář pro firmy
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-white/50 mb-1">Jméno a příjmení</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Jan Novák" />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Název firmy</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Moje firma s.r.o." />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Email</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="you@firma.cz" />
+              </div>
+              <div>
+                <p class="text-white/50 mb-1">Telefon</p>
+                <input class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="+420 777 000 000" />
+              </div>
             </div>
 
-            <div class="rounded-3xl bg-black/20 border border-white/10 p-4 text-center">
-              <h3 class="text-xs text-white/60 mb-2">Zapojení</h3>
-              <canvas id="engagementChart" height="140"></canvas>
+            <div>
+              <p class="text-white/50 mb-1">Téma dotazu</p>
+              <select class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2">
+                <option>Kampaně a strategie</option>
+                <option>K-Coins, rozpočty a fakturace</option>
+                <option>Influencer Marketplace</option>
+                <option>Gold Brand Partner / VIP služby</option>
+                <option>Jiné</option>
+              </select>
             </div>
 
-            <div class="rounded-3xl bg-black/20 border border-white/10 p-4 text-center">
-              <h3 class="text-xs text-white/60 mb-2">Růst sledujících</h3>
-              <canvas id="growthChart" height="140"></canvas>
+            <div>
+              <p class="text-white/50 mb-1">Zpráva</p>
+              <textarea rows="5" class="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2" placeholder="Popiš nám, s čím potřebuješ pomoct…"></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <button class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-fuchsia-500/25 border border-fuchsia-400/70 text-[11px] font-semibold text-fuchsia-50 hover:bg-fuchsia-500/35">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                Odeslat zprávu podpoře
+              </button>
+              <p class="text-[11px] text-white/50 max-w-xs">
+                Odpovíme ti co nejdřív. U účtů s Gold Brand Partner statusem řešíme zprávy přednostně.
+              </p>
             </div>
           </div>
-        </section>
 
-        <!-- TABULKA INFLUENCERŮ -->
-        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft">
-          <h2 class="text-sm font-semibold mb-4">Influenceři v kampani</h2>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-[13px]">
-              <thead class="text-white/60 text-xs border-b border-white/10">
-                <tr>
-                  <th class="py-2">Influencer</th>
-                  <th class="py-2">Reach</th>
-                  <th class="py-2">Engagement</th>
-                  <th class="py-2">Cena (K-Coins)</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5">
-                <tr>
-                  <td class="py-3">@fashion.lucy</td>
-                  <td>34 200</td>
-                  <td>8.4%</td>
-                  <td>900</td>
-                </tr>
-                <tr>
-                  <td class="py-3">@style.mates</td>
-                  <td>28 900</td>
-                  <td>6.1%</td>
-                  <td>700</td>
-                </tr>
-                <tr>
-                  <td class="py-3">@trend.shop</td>
-                  <td>41 500</td>
-                  <td>9.7%</td>
-                  <td>1200</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- TIMELINE -->
-        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft space-y-4">
-          <h2 class="text-sm font-semibold text-white/70">Průběh kampaně (Timeline)</h2>
-
-          <div class="space-y-3 text-xs">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 mt-1 rounded-full bg-emerald-400"></div>
-              <p>1. 3. 2025 – Kampaň zahájena</p>
+          <!-- Kontakty / account manager -->
+          <div class="space-y-4 text-xs">
+            <div class="rounded-3xl bg-neutral-950/80 border border-emerald-400/60 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-emerald-200 flex items-center gap-2">
+                <i data-lucide="user-round" class="w-4 h-4"></i>
+                Tvůj account manager
+              </p>
+              <p class="text-sm font-semibold">(placeholder) Jméno account manažera</p>
+              <p class="text-white/65">Pomůžeme ti sestavit kampaně, nastavit rozpočty a vybrat správné influencery.</p>
+              <div class="space-y-1 text-white/70">
+                <p class="flex items-center gap-2">
+                  <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                  support@kartao.cz
+                </p>
+                <p class="flex items-center gap-2">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                  +420 777 555 333
+                </p>
+              </div>
             </div>
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 mt-1 rounded-full bg-sky-400"></div>
-              <p>3. 3. 2025 – Nahrány první příspěvky influencerů</p>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 mt-1 rounded-full bg-amber-400"></div>
-              <p>10. 3. 2025 – Nejvyšší denní dosah (89 500 uživatelů)</p>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 mt-1 rounded-full bg-rose-400"></div>
-              <p>18. 3. 2025 – AI doporučila zvýšit rozpočet (nepovinné)</p            </div>
-          </div>
-        </section>
 
-        <!-- AKČNÍ TLAČÍTKA -->
-        <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft text-xs space-y-3">
-          <h2 class="text-sm font-semibold text-white/70 mb-2">Akce s kampaní</h2>
-          <div class="flex flex-wrap gap-3">
-            <a href="#" class="px-4 py-2 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-amber-100 hover:bg-amber-500/30 transition">Upravit kampaň</a>
-            <a href="#" class="px-4 py-2 rounded-2xl bg-sky-500/20 border border-sky-400/50 text-sky-100 hover:bg-sky-500/30 transition">Pozastavit</a>
-            <a href="#" class="px-4 py-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-100 hover:bg-emerald-500/30 transition">Navýšit rozpočet</a>
-            <a href="#" class="px-4 py-2 rounded-2xl bg-fuchsia-500/20 border border-fuchsia-400/50 text-fuchsia-100 hover:bg-fuchsia-500/30 transition">Duplikovat</a>
+            <div class="rounded-3xl bg-neutral-950/80 border border-white/10 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-white/60 flex items-center gap-2">
+                <i data-lucide="clock-3" class="w-4 h-4"></i>
+                Kdy jsme k dispozici
+              </p>
+              <ul class="space-y-1 text-white/70">
+                <li>Pondělí – Pátek: 9:00 – 17:00</li>
+                <li>Víkendy: podpora pro běžící kampaně (email)</li>
+              </ul>
+            </div>
+
+            <div class="rounded-3xl bg-neutral-950/80 border border-amber-400/60 p-5 shadow-soft space-y-3">
+              <p class="text-[11px] uppercase tracking-wide text-amber-200 flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4"></i>
+                Rychlé odkazy
+              </p>
+              <ul class="space-y-1 text-white/75">
+                <li><a href="moje-firma.html" class="underline underline-offset-2">Firemní dashboard</a></li>
+                <li><a href="profil-firmy.html" class="underline underline-offset-2">Profil firmy & fakturace</a></li>
+                <li><a href="kampane-firma.html" class="underline underline-offset-2">Přehled kampaní</a></li>
+                <li><a href="marketplace.html" class="underline underline-offset-2">Influencer Marketplace</a></li>
+              </ul>
+            </div>
           </div>
         </section>
 
@@ -196,42 +209,71 @@
     <!-- FOOTER -->
     <footer class="border-t border-white/10 mt-8">
       <div class="max-w-6xl mx-auto px-4 py-4 text-[11px] text-white/50 flex items-center justify-between">
-        <span>© 2025 Kartao.cz – Detail kampaně</span>
-        <span>K-Coins · statistiky · výkon</span>
+        <span>© 2025 Kartao.cz – Podpora pro firmy</span>
+        <span>K-Coins · kampaně · account manažeři</span>
       </div>
     </footer>
+
   </div>
 
-  <!-- Firebase + CreditsSystem -->
+  <!-- Firebase + Credits System -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) return;
+    document.addEventListener("DOMContentLoaded", () => {
+      // Ikony
+      if (window.lucide) {
+        lucide.createIcons();
+      }
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      const auth =
+        window.auth ||
+        (window.firebase && firebase.auth && firebase.auth());
+      const db =
+        window.db ||
+        (window.firebase && firebase.firestore && firebase.firestore());
+
+      if (!auth || !db) {
+        console.warn("Podpora – Firebase Auth nebo Firestore není dostupný.");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+
+      auth.onAuthStateChanged(async (user) => {
         if (!user) {
           window.location.href = "login.html";
           return;
         }
 
         window.currentUserId = user.uid;
-        const creditsSystem = new CreditsSystem(user.uid);
-        const credits = creditsSystem.getCredits();
 
-        const headerEl = document.getElementById("headerCredits");
-        if (headerEl) headerEl.textContent = credits;
+        // Kredity z CreditsSystem
+        try {
+          const cs = new CreditsSystem(user.uid);
+          const credits = cs.getCredits();
+          if (headerCreditsEl && typeof credits === "number") {
+            headerCreditsEl.textContent = credits;
+          }
+        } catch (e) {
+          console.warn("Podpora – chyba CreditsSystem:", e);
+        }
 
-        if (window.lucide) lucide.createIcons();
+        if (window.lucide) {
+          lucide.createIcons();
+        }
       });
     });
   </script>
-
 </body>
 </html>
