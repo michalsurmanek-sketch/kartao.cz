@@ -299,70 +299,84 @@
     </footer>
   </div>
 
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    });
-  </script>
-
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-  <!-- Konfigurace + init + databáze + kredity + API služby -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
-  <script src="database-init.js"></script>
-  <script src="credits-system.js"></script>
-  <script src="api-services.js"></script>
-
-  <script>
-    // Napojení na uživatele + kredity (firemní účet)
+   <script>
+    // Napojení na uživatele + K-Coins (firemní účet) + KONTROLA ROLE = FIRMA
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth =
+        window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const db =
+        window.db ||
+        (window.firebase &&
+          firebase.firestore &&
+          firebase.firestore());
+
       if (!auth) {
         console.warn("Firebase Auth není dostupný na moje-firma.html");
         return;
       }
+      if (!db) {
+        console.warn("Firestore (db) není dostupný na moje-firma.html");
+        return;
+      }
 
-      auth.onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(async function (user) {
         if (!user) {
+          // nikdo nepřihlášen -> na login
           window.location.href = "login.html";
           return;
         }
 
-        window.currentUserId = user.uid;
-
-        // Název firmy (zatím displayName)
-        const nameEl = document.getElementById("userName");
-        const initialEl = document.getElementById("userInitial");
-        const displayName = user.displayName || "Tvoje firma na Kartao.cz";
-
-        if (nameEl) nameEl.textContent = displayName;
-        if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
-
-        // Kredity přes CreditsSystem – stejný systém jako všude
         try {
-          const creditsSystem = new CreditsSystem(user.uid);
-          window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
-          };
+          // načteme uživatele z kolekce users
+          const userDoc = await db.collection("users").doc(user.uid).get();
+          const data = userDoc.data() || {};
 
-          const val = creditsSystem.getCredits();
-          const h1 = document.getElementById("headerCredits");
-          const s1 = document.getElementById("summaryCredits");
-          if (typeof val === "number") {
-            if (h1) h1.textContent = val;
-            if (s1) s1.textContent = val;
+          // role můžeme číst z `role` nebo z `activerole` (pro jistotu oboje)
+          const role = data.role || data.activerole || "influencer";
+
+          // ❌ NENÍ FIRMA -> na influencer část
+          if (role !== "firma") {
+            console.warn("Uživatel nemá firemní roli, přesměrovávám na moje-karta.html");
+            window.location.href = "moje-karta.html";
+            return;
           }
-        } catch (e) {
-          console.warn("Firemní účet: chyba při načítání kreditů:", e);
+
+          // ✅ SEM SE DOSTANE JEN UŽIVATEL S ROLE = "firma"
+          window.currentUserId = user.uid;
+
+          // Název firmy (zatím displayName)
+          const nameEl = document.getElementById("userName");
+          const initialEl = document.getElementById("userInitial");
+          const displayName =
+            user.displayName || data.displayName || "Tvoje firma na Kartao.cz";
+
+          if (nameEl) nameEl.textContent = displayName;
+          if (initialEl && displayName)
+            initialEl.textContent = displayName.charAt(0).toUpperCase();
+
+          // Kredity přes CreditsSystem – stejný systém jako všude
+          try {
+            const creditsSystem = new CreditsSystem(user.uid);
+            window.creditSys = {
+              getCredits: () => creditsSystem.getCredits(),
+              addCredits: (a) => creditsSystem.addCredits(a),
+              subtractCredits: (a) => creditsSystem.subtractCredits(a),
+            };
+
+            const val = creditsSystem.getCredits();
+            const h1 = document.getElementById("headerCredits");
+            const s1 = document.getElementById("summaryCredits");
+            if (typeof val === "number") {
+              if (h1) h1.textContent = val;
+              if (s1) s1.textContent = val;
+            }
+          } catch (e) {
+            console.warn("Firemní účet: chyba při načítání kreditů:", e);
+          }
+        } catch (err) {
+          console.error("Chyba při ověřování firemní role:", err);
+          // když se něco posere, raději pryč z firemní sekce
+          window.location.href = "moje-karta.html";
         }
       });
     });
