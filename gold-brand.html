@@ -42,7 +42,9 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-yellow-400/20 text-yellow-100 border border-yellow-300/70">Gold Brand Partner</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-yellow-400/20 text-yellow-100 border border-yellow-300/70">
+                Gold Brand Partner
+              </span>
             </div>
             <p class="text-[11px] text-white/60">Exkluzivní partnerství pro značky</p>
           </div>
@@ -81,7 +83,7 @@
             <div class="grid sm:grid-cols-3 gap-3 text-xs">
               <div class="rounded-2xl bg-yellow-400/10 border border-yellow-300/60 px-4 py-3">
                 <p class="text-white/60">Cena</p>
-                <p class="text-sm font-semibold text-yellow-100">10 000 K‑Coins / měsíc</p>
+                <p class="text-sm font-semibold text-yellow-100">10 000 K-Coins / měsíc</p>
               </div>
               <div class="rounded-2xl bg-emerald-400/10 border border-emerald-300/60 px-4 py-3">
                 <p class="text-white/60">Priorita v kampaních</p>
@@ -94,7 +96,10 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3 pt-2 text-xs">
-              <button id="activateGoldBtn" data-state="idle" class="inline-flex items-center gap-2 px-5 py-2 rounded-2xl bg-yellow-300 text-neutral-950 font-semibold shadow-[0_0_22px_rgba(250,204,21,0.9)] hover:shadow-[0_0_30px_rgba(250,224,21,1)]">
+              <button
+                id="activateGoldBtn"
+                data-state="idle"
+                class="inline-flex items-center gap-2 px-5 py-2 rounded-2xl bg-yellow-300 text-neutral-950 font-semibold shadow-[0_0_22px_rgba(250,204,21,0.9)] hover:shadow-[0_0_30px_rgba(250,224,21,1)]">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
                 <span>Aktivovat Gold Brand Partner</span>
               </button>
@@ -102,7 +107,9 @@
                 <i data-lucide="file-text" class="w-4 h-4"></i>
                 <span>Stáhnout PDF přehled</span>
               </button>
-              <p id="goldStatusMessage" class="text-[11px] text-white/60">Aktivaci Gold statusu může potvrdit i náš account manager.</p>
+              <p id="goldStatusMessage" class="text-[11px] text-white/60">
+                Aktivaci Gold statusu může potvrdit i náš account manager.
+              </p>
             </div>
           </div>
 
@@ -125,12 +132,12 @@
                   </div>
                   <div class="text-right">
                     <p class="text-[10px] uppercase tracking-wide text-yellow-200/80">Cena</p>
-                    <p class="text-sm font-semibold">10 000 K‑Coins</p>
+                    <p class="text-sm font-semibold">10 000 K-Coins</p>
                   </div>
                 </div>
                 <div class="flex items-center justify-between text-[10px] text-yellow-100/85">
                   <p>Priorita v kampaních · VIP podpora · Speciální nabídky</p>
-                  <p>ID: GOLD‑XXXX</p>
+                  <p>ID: GOLD-XXXX</p>
                 </div>
               </div>
             </div>
@@ -157,7 +164,7 @@
               <ul class="space-y-1 text-white/70">
                 <li>– návrhy kampaní na míru tvému budgetu</li>
                 <li>– kontrola výstupů a výsledků kampaní</li>
-                <li>– doporučení optimálního využití K‑Coins</li>
+                <li>– doporučení optimálního využití K-Coins</li>
               </ul>
             </div>
             <div class="space-y-2">
@@ -209,7 +216,7 @@
           </div>
         </section>
 
-                <!-- CTA DO PODPORY -->
+        <!-- CTA DO PODPORY -->
         <section class="rounded-3xl bg-neutral-950/80 border border-yellow-400/40 p-6 shadow-soft text-xs flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="space-y-1 max-w-xl">
             <h2 class="text-sm font-semibold text-yellow-100 flex items-center gap-2">
@@ -246,121 +253,171 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + init + databáze + kredity + API služby -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
+  <script src="api-services.js"></script>
 
   <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!window.firebase || !firebase.auth) return;
+    document.addEventListener("DOMContentLoaded", () => {
+      // Ikony
+      if (window.lucide) {
+        lucide.createIcons();
+      }
 
-    const db = firebase.firestore();
+      const auth =
+        window.auth ||
+        (window.firebase && firebase.auth && firebase.auth());
+      const db =
+        window.db ||
+        (window.firebase && firebase.firestore && firebase.firestore());
 
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = "login.html";
+      if (!auth || !db) {
+        console.warn("Gold Brand – Firebase Auth nebo Firestore není dostupný.");
         return;
       }
 
-      window.currentUserId = user.uid;
-
-      let cs;
-      try {
-        cs = new CreditsSystem(user.uid);
-        const credits = cs.getCredits();
-        const headerEl = document.getElementById("headerCredits");
-        if (headerEl) headerEl.textContent = credits;
-      } catch (e) {
-        console.warn("Gold Brand Partner – chyba CreditsSystem:", e);
-      }
-
+      const headerCreditsEl = document.getElementById("headerCredits");
       const activateBtn = document.getElementById("activateGoldBtn");
       const statusMsg = document.getElementById("goldStatusMessage");
 
-      if (activateBtn && cs) {
-        activateBtn.addEventListener("click", async () => {
-          if (activateBtn.dataset.state === "processing") return;
+      function setGoldActiveUI() {
+        if (!activateBtn) return;
+        activateBtn.dataset.state = "active";
+        activateBtn.innerHTML = `
+          <span class="inline-flex items-center gap-2">
+            <i data-lucide="crown" class="w-4 h-4"></i>
+            <span>Gold Brand Partner aktivní</span>
+          </span>
+        `;
+        activateBtn.classList.add("bg-yellow-400");
+        if (statusMsg) {
+          statusMsg.textContent = "Gold Brand Partner je aktivní. Děkujeme za důvěru.";
+          statusMsg.classList.remove("text-white/60", "text-rose-300");
+          statusMsg.classList.add("text-emerald-300");
+        }
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      }
 
-          const currentCredits = cs.getCredits();
-          if (currentCredits < 10000) {
-            if (statusMsg) {
-              statusMsg.textContent = `Nedostatek K-Coins: máš ${currentCredits}, potřebuješ 10 000.`;
-              statusMsg.classList.remove("text-white/60");
-              statusMsg.classList.add("text-rose-300");
-            }
-            return;
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        // Kredity
+        let cs = null;
+        try {
+          cs = new CreditsSystem(user.uid);
+          const credits = cs.getCredits();
+          if (headerCreditsEl && typeof credits === "number") {
+            headerCreditsEl.textContent = credits;
           }
+        } catch (e) {
+          console.warn("Gold Brand Partner – chyba CreditsSystem:", e);
+        }
 
-          activateBtn.dataset.state = "processing";
-          activateBtn.disabled = true;
-          activateBtn.classList.add("opacity-70", "cursor-not-allowed");
-          const originalInner = activateBtn.innerHTML;
-          activateBtn.innerHTML = `
-            <span class="inline-flex items-center gap-2">
-              <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
-              <span>Aktivuji Gold status…</span>
-            </span>
-          `;
-          if (window.lucide) lucide.createIcons();
+        // Zjistit, jestli už je Gold aktivní
+        let isGold = false;
+        try {
+          const docRef = db.collection("companies").doc(user.uid);
+          const snap = await docRef.get();
+          if (snap.exists && snap.data().isGoldPartner) {
+            isGold = true;
+            setGoldActiveUI();
+          }
+        } catch (e) {
+          console.warn("Gold Brand Partner – čtení company doc selhalo:", e);
+        }
 
-          try {
-            // Odečtení 10 000 K-Coins
-            cs.subtractCredits(10000);
-            const newCredits = cs.getCredits();
-            const headerEl = document.getElementById("headerCredits");
-            if (headerEl) headerEl.textContent = newCredits;
-
-            // Zápis Gold statusu do Firestore
-            const companyDocRef = db.collection("companies").doc(user.uid);
-            await companyDocRef.set({
-              isGoldPartner: true,
-              goldActivatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-              goldLastPlan: "monthly_10000_kcoins",
-            }, { merge: true });
-
-            if (statusMsg) {
-              statusMsg.textContent = "Gold Brand Partner je aktivní. Děkujeme za důvěru.";
-              statusMsg.classList.remove("text-white/60", "text-rose-300");
-              statusMsg.classList.add("text-emerald-300");
+        if (activateBtn && cs) {
+          activateBtn.addEventListener("click", async () => {
+            if (activateBtn.dataset.state === "processing" || activateBtn.dataset.state === "active") {
+              return;
             }
 
+            if (isGold) {
+              setGoldActiveUI();
+              return;
+            }
+
+            const currentCredits = cs.getCredits();
+            if (typeof currentCredits !== "number" || currentCredits < 10000) {
+              if (statusMsg) {
+                statusMsg.textContent = `Nedostatek K-Coins: máš ${currentCredits || 0}, potřebuješ 10 000.`;
+                statusMsg.classList.remove("text-white/60");
+                statusMsg.classList.add("text-rose-300");
+              }
+              return;
+            }
+
+            activateBtn.dataset.state = "processing";
+            activateBtn.disabled = true;
+            activateBtn.classList.add("opacity-70", "cursor-not-allowed");
+
+            const originalInner = activateBtn.innerHTML;
             activateBtn.innerHTML = `
               <span class="inline-flex items-center gap-2">
-                <i data-lucide="crown" class="w-4 h-4"></i>
-                <span>Gold Brand Partner aktivní</span>
+                <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                <span>Aktivuji Gold status…</span>
               </span>
             `;
-          } catch (e) {
-            console.error("Gold Brand Partner – chyba při aktivaci:", e);
-            if (statusMsg) {
-              statusMsg.textContent = "Došlo k chybě při aktivaci Gold statusu. Zkus to prosím znovu nebo kontaktuj podporu.";
-              statusMsg.classList.remove("text-white/60");
-              statusMsg.classList.add("text-rose-300");
+            if (window.lucide) {
+              lucide.createIcons();
             }
-            activateBtn.innerHTML = originalInner;
-          } finally {
-            activateBtn.disabled = false;
-            activateBtn.classList.remove("opacity-70", "cursor-not-allowed");
-            activateBtn.dataset.state = "idle";
-            if (window.lucide) lucide.createIcons();
-          }
-        });
-      }
-    });
-  });
-</script>
 
-  <script>
-    // Globální inicializace Lucide ikon po načtení celé stránky
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) {
-        setTimeout(() => {
-          lucide.createIcons();
-        }, 0);
-      }
+            try {
+              // Odečteme 10 000 K-Coins (demo přes CreditsSystem)
+              cs.subtractCredits(10000);
+              const newCredits = cs.getCredits();
+              if (headerCreditsEl && typeof newCredits === "number") {
+                headerCreditsEl.textContent = newCredits;
+              }
+
+              // Zápis Gold statusu do Firestore
+              const companyDocRef = db.collection("companies").doc(user.uid);
+              await companyDocRef.set(
+                {
+                  isGoldPartner: true,
+                  goldActivatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  goldLastPlan: "monthly_10000_kcoins",
+                },
+                { merge: true }
+              );
+
+              isGold = true;
+              setGoldActiveUI();
+            } catch (e) {
+              console.error("Gold Brand Partner – chyba při aktivaci:", e);
+              if (statusMsg) {
+                statusMsg.textContent =
+                  "Došlo k chybě při aktivaci Gold statusu. Zkus to prosím znovu nebo kontaktuj podporu.";
+                statusMsg.classList.remove("text-white/60");
+                statusMsg.classList.add("text-rose-300");
+              }
+              activateBtn.innerHTML = originalInner;
+              if (window.lucide) {
+                lucide.createIcons();
+              }
+            } finally {
+              activateBtn.disabled = false;
+              activateBtn.classList.remove("opacity-70", "cursor-not-allowed");
+              if (!isGold) {
+                activateBtn.dataset.state = "idle";
+              }
+            }
+          });
+        }
+      });
     });
   </script>
-
 </body>
 </html>
