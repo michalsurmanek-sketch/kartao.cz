@@ -28,11 +28,10 @@
     };
   </script>
   
-  <!-- Ikony -->
+  <!-- Ikony Lucide -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <style>
-    /* Globální pozadí a panely v kartao stylu */
     .gradient-shell {
       background:
         radial-gradient(circle at top left, rgba(251,191,36,0.13), transparent 55%),
@@ -76,7 +75,7 @@
   <script src="firebase-init.js"></script>
   <script src="api-services.js"></script>
 
-  <!-- HORNÍ NAVBAR (stejný feeling jako „Moje karta“) -->
+  <!-- HORNÍ NAVBAR -->
   <header class="border-b border-white/10 bg-gradient-to-b from-black/90 to-black/60 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
       <!-- Logo -->
@@ -227,7 +226,20 @@
     let messagesListener = null;
     let conversationsListener = null;
 
-    // Bezpečné získání čísla z Firestore Timestamp / Date
+    // Funkce na bezpečné překreslení ikon (malé zpoždění kvůli DOM změnám)
+    function refreshIcons() {
+      if (typeof lucide !== 'undefined') {
+        setTimeout(() => {
+          try {
+            lucide.createIcons();
+          } catch (e) {
+            console.warn('Lucide icons error:', e);
+          }
+        }, 10);
+      }
+    }
+
+    // Bezpečné získání milisekund z Timestamp / Date
     function toMillis(ts) {
       if (!ts) return 0;
       if (typeof ts.toMillis === 'function') return ts.toMillis();
@@ -243,9 +255,9 @@
       }
 
       currentUser = user;
-      chatService = new ChatService(); // definováno v api-services.js
+      chatService = new ChatService(); // z api-services.js
 
-      // můžeš si sem případně načíst kredity a doplnit do #headerCredits
+      // sem můžeš doplnit načtení realných kreditů
       // document.getElementById('headerCredits').textContent = '361 079';
 
       loadConversations();
@@ -269,6 +281,7 @@
             Došlo k chybě při načítání konverzací. Zkuste stránku obnovit.
           </div>
         `;
+        refreshIcons();
       }
     }
 
@@ -283,7 +296,7 @@
             <div class="text-xs mt-1 text-slate-400">První zprávu můžete poslat z profilu tvůrce nebo z detailu kampaně.</div>
           </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
         return;
       }
 
@@ -329,7 +342,7 @@
         });
       });
 
-      lucide.createIcons();
+      refreshIcons();
     }
 
     async function openConversation(conversationId, otherUserId) {
@@ -365,6 +378,8 @@
 
         renderMessages(messages);
       });
+
+      refreshIcons();
     }
 
     async function loadMessages(conversationId) {
@@ -380,6 +395,7 @@
             Došlo k chybě při načítání zpráv. Zkuste to prosím znovu.
           </div>
         `;
+        refreshIcons();
       }
     }
 
@@ -396,7 +412,7 @@
             </div>
           </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
         return;
       }
 
@@ -417,9 +433,8 @@
         `;
       }).join('');
 
-      // scroll na konec
       container.scrollTop = container.scrollHeight;
-      lucide.createIcons();
+      refreshIcons();
     }
 
     // ODESLÁNÍ ZPRÁVY
@@ -430,7 +445,7 @@
       const text = messageInputEl.value.trim();
       if (!text || !currentConversationId) return;
 
-      const payload = text; // tady můžeš případně udělat sanitaci
+      const payload = text;
 
       try {
         sendBtn.disabled = true;
@@ -469,15 +484,15 @@
     if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     if (logoutMobileBtn) logoutMobileBtn.addEventListener('click', handleLogout);
 
-    // Cleanup listenerů
+    // Úklid listenerů
     window.addEventListener('beforeunload', () => {
       if (messagesListener) messagesListener();
       if (conversationsListener) conversationsListener();
     });
 
-    // Lucide ikony po načtení
+    // Lucide ikony po prvním načtení
     document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
+      refreshIcons();
     });
   </script>
 </body>
