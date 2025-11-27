@@ -381,5 +381,19 @@
       });
     });
   </script>
+  <script>
+    // 🔧 Inicializace Lucide ikon – BEZ TOHOTO SE NEZOBRAZÍ
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.lucide) {
+        try {
+          lucide.createIcons();
+        } catch (e) {
+          console.warn("Lucide ikonky nešly inicializovat:", e);
+        }
+      } else {
+        console.warn("Lucide knihovna není načtena.");
+      }
+    });
+  </script>
 </body>
 </html>
