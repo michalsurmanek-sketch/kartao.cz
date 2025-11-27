@@ -8,7 +8,7 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
+    tailwind.config = { 
       theme: {
         extend: {
           colors: {
@@ -365,7 +365,7 @@
       const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
 
       if (!auth || !db) {
-        console.warn("Auth nebo DB nejsou dostupné na credits-dashboard.html – zkontroluj firebase-config.js a firebase-init.js");
+        console.warn("Auth nebo DB nejsou dostupné – zkontroluj firebase-config.js a firebase-init.js");
         return;
       }
 
@@ -380,8 +380,10 @@
         const creditSys = new CreditsSystem(user.uid);
 
         // DOM prvky
-        const creditsValueEl       = document.getElementById("creditsValue");
-        const creditsValueHeroEl   = document.getElementById("creditsValueHero");
+        const creditsValueEl       = document.getElementById("creditsValue");      // univerzální ID (jiné stránky)
+        const creditsValueHeroEl   = document.getElementById("creditsValueHero");  // box v hero
+        const currentCreditsEl     = document.getElementById("currentCredits");    // číslo v hlavičce
+
         const streakValueEl        = document.getElementById("streakValue");
         const levelValueEl         = document.getElementById("levelValue");
 
@@ -484,11 +486,13 @@
           cooldownTimer = setInterval(tick, 1000);
         }
 
+        // OPRAVA: aktualizujeme všechny tři možné elementy s kredity
         function syncCreditsDisplay() {
           const credits = creditSys.getCredits();
           const formatted = formatNumber(credits);
           if (creditsValueEl)     creditsValueEl.textContent     = formatted;
           if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
+          if (currentCreditsEl)   currentCreditsEl.textContent   = formatted;
         }
 
         syncCreditsDisplay();
@@ -504,10 +508,6 @@
             let streak  = Number.isFinite(data.streakDays) ? data.streakDays : 0;
             let last    = data.lastActiveDate || null;
 
-            // jednoduchá logika streaku:
-            // - první den: 1
-            // - nový den: streak + 1
-            // (neřešíme zatím mezery = MVP)
             if (last === today) {
               // nic
             } else if (last) {
@@ -516,7 +516,6 @@
               streak = 1;
             }
 
-            // kredity z dokumentu (primárně z Firestore)
             let credits = 0;
             if (typeof data.credits === "number") {
               credits = data.credits;
@@ -524,10 +523,8 @@
               credits = creditSys.getCredits();
             }
 
-            // jednoduché pravidlo levelu: každých 100 K-Coins = +1 level, min 1
             let level = Math.max(1, Math.floor(credits / 100) + 1);
 
-            // update Firestore
             await ref.set(
               {
                 streakDays: streak,
@@ -537,7 +534,6 @@
               { merge: true }
             );
 
-            // update UI
             if (streakValueEl) streakValueEl.textContent = String(streak);
             if (levelValueEl)  levelValueEl.textContent  = String(level);
           } catch (e) {
@@ -742,7 +738,6 @@
               if (ok) {
                 creditSys.addCredits(4);
                 syncCreditsDisplay();
-                // po změně kreditů přepočítáme level
                 syncStreakAndLevel();
               }
 
