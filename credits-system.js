@@ -23,282 +23,220 @@
   - localStorage = pouze cache pro rychlé zobrazení na daném zařízení
 */
 
+// credits-system.js
+// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
+// LocalStorage se používá jen na denní úkoly a limity reklam.
+
+// credits-system.js
+// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
+// LocalStorage se používá jen na denní úkoly a limity reklam.
+
 class CreditsSystem {
   constructor(userId) {
-    let finalUserId = userId;
-
-    // 1) Globální proměnná z loginu
-    if (!finalUserId && typeof window !== "undefined" && window.currentUserId) {
-      finalUserId = window.currentUserId;
-    }
-
-    // 2) Firebase uživatel
-    if (
-      !finalUserId &&
-      typeof window !== "undefined" &&
-      window.firebase &&
-      window.firebase.auth
-    ) {
-      const currentUser = window.firebase.auth().currentUser;
-      if (currentUser && currentUser.uid) {
-        finalUserId = currentUser.uid;
-      }
-    }
-
-    // 3) fallback pro testování
-    if (!finalUserId) {
-      finalUserId = "localuser";
-    }
-
-    this.userId = finalUserId;
-
-    // Firestore instance (pokud je k dispozici)
+    this.userId = userId;
     this.db =
-      (typeof window !== "undefined" && window.db) ||
-      (typeof window !== "undefined" &&
-        window.firebase &&
-        window.firebase.firestore &&
-        window.firebase.firestore()) ||
-      null;
+      window.db ||
+      (window.firebase &&
+        firebase.firestore &&
+        firebase.firestore());
+    this.credits = 0;
 
-    // Klíče localStorage – podle userId
-    this.keys = {
-      credits: `kartao_credits_${this.userId}`,
-      daily: `kartao_daily_${this.userId}`,
-    };
-
-    // Výchozí denní hodnoty
-    this.dailyDefault = {
-      date: this.todayString(),
-      adsWatched: 0,
-      maxAds: 5,
-      adsCooldownAt: null,
-      tasks: {
-        login: true,
-        stats: false,
-        campaign: false,
-        watchAd: false,
-      },
-    };
-
-    // Inicializace localStorage + async sync z Firestore
-    this.init();
-    this.syncCreditsFromFirestore();
+    // LocalStorage klíče – PER UŽIVATEL / ZAŘÍZENÍ
+    this.dailyKey = `kartao_daily_${this.userId}`;
+    this.adsCooldownKey = `kartao_adsCooldown_${this.userId}`;
   }
 
-  // Pomocná funkce – datum YYYY-MM-DD
-  todayString() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(d.getDate()).padStart(2, "0")}`;
-  }
-
-  // Inicializace kreditů a denního stavu (localStorage)
-  init() {
-    if (!localStorage.getItem(this.keys.credits)) {
-      localStorage.setItem(this.keys.credits, "0");
-    }
-
-    let dailyRaw = localStorage.getItem(this.keys.daily);
-
-    if (!dailyRaw) {
-      localStorage.setItem(this.keys.daily, JSON.stringify(this.dailyDefault));
-      return;
-    }
-
-    let daily;
-    try {
-      daily = JSON.parse(dailyRaw);
-    } catch (e) {
-      // kdyby se náhodou něco rozbilo v JSONu → reset
-      daily = { ...this.dailyDefault, date: this.todayString() };
-      localStorage.setItem(this.keys.daily, JSON.stringify(daily));
-      return;
-    }
-
-    // nový den = reset
-    if (!daily || daily.date !== this.todayString()) {
-      const reset = { ...this.dailyDefault, date: this.todayString() };
-      localStorage.setItem(this.keys.daily, JSON.stringify(reset));
-    }
-  }
-
-  // --- Kredity – SYNC API, Firestore jako hlavní zdroj, localStorage jako cache ---
-
-  // Interní pomocná – načte credits z Firestore a uloží do localStorage (async, neblokuje UI)
-  async syncCreditsFromFirestore() {
-    try {
-      if (!this.db || !this.userId || this.userId === "localuser") return;
-
-      const ref = this.db.collection("users").doc(this.userId);
-      const snap = await ref.get();
-
-      let credits = 0;
-      if (snap.exists) {
-        const data = snap.data() || {};
-        if (typeof data.credits === "number") {
-          credits = data.credits;
-        }
-      } else {
-        // pokud dokument neexistuje, založíme s credits: 0
-        await ref.set({ credits: 0 }, { merge: true });
-        credits = 0;
-      }
-
-      localStorage.setItem(this.keys.credits, String(credits));
-    } catch (e) {
-      console.warn("CreditsSystem: sync z Firestore selhal:", e);
-    }
-  }
-
-  // Interní pomocná – uloží credits do Firestore i localStorage
-  saveCredits(value) {
-    // local cache
-    localStorage.setItem(this.keys.credits, String(value));
-
-    // Firestore update (neblokující)
-    try {
-      if (!this.db || !this.userId || this.userId === "localuser") return;
-
-      const ref = this.db.collection("users").doc(this.userId);
-      ref
-        .set({ credits: value }, { merge: true })
-        .catch((e) => console.warn("CreditsSystem: zápis do Firestore selhal:", e));
-    } catch (e) {
-      console.warn("CreditsSystem: chyba při zápisu do Firestore:", e);
-    }
-  }
-
-  // --- SYNC API – čtou/zapisují přes localStorage, ale jsou napojené na Firestore přes saveCredits/syncCreditsFromFirestore ---
+  // ========== KREDITY ==========
 
   getCredits() {
-    return parseInt(localStorage.getItem(this.keys.credits) || "0", 10);
+    return this.credits;
   }
 
   setCredits(value) {
-    const v = Number.isFinite(value) ? value : 0;
-    this.saveCredits(v);
+    if (!Number.isFinite(value)) value = 0;
+    this.credits = value;
+    return this.credits;
   }
 
+  /**
+   * Přičte kredity a ZKUSÍ zároveň uložit do Firestore.
+   * Vrací okamžitě nový lokální stav (synchronní),
+   * Firestore update běží na pozadí (Promise ignorujeme).
+   */
   addCredits(amount) {
-    const current = this.getCredits();
-    const next = current + amount;
-    this.saveCredits(next);
-    return next;
-  }
-
-  subtractCredits(amount) {
-    const current = this.getCredits();
-    const newVal = Math.max(0, current - amount);
-    this.saveCredits(newVal);
-    return newVal;
-  }
-
-  // --- Denní stav (zatím čistě v localStorage) ---
-
-  getDailyState() {
-    const raw = localStorage.getItem(this.keys.daily);
-    if (!raw) {
-      const reset = { ...this.dailyDefault, date: this.todayString() };
-      localStorage.setItem(this.keys.daily, JSON.stringify(reset));
-      return reset;
-    }
+    const num = Number(amount) || 0;
+    this.credits += num;
 
     try {
-      return JSON.parse(raw);
-    } catch (e) {
-      const reset = { ...this.dailyDefault, date: this.todayString() };
-      localStorage.setItem(this.keys.daily, JSON.stringify(reset));
-      return reset;
-    }
-  }
+      if (this.db && this.userId) {
+        const ref = this.db.collection("users").doc(this.userId);
 
-  saveDailyState(state) {
-    localStorage.setItem(this.keys.daily, JSON.stringify(state));
-  }
-
-  updateDailyTask(taskKey) {
-    const daily = this.getDailyState();
-    if (!daily.tasks[taskKey]) {
-      daily.tasks[taskKey] = true;
-      this.saveDailyState(daily);
-      return true;
-    }
-    return false;
-  }
-
-  // --- Reklamní systém ---
-
-  addAdWatch() {
-    const daily = this.getDailyState();
-
-    if (daily.adsWatched >= daily.maxAds) {
-      return false;
-    }
-
-    daily.adsWatched++;
-
-    // Pokud nově dosáhl limitu → startne cooldown
-    if (daily.adsWatched >= daily.maxAds && !daily.adsCooldownAt) {
-      daily.adsCooldownAt = Date.now();
-    }
-
-    this.saveDailyState(daily);
-    return true;
-  }
-
-  getAdsCooldownRemainingMs() {
-    const daily = this.getDailyState();
-    if (!daily.adsCooldownAt) return 0;
-
-    const now = Date.now();
-    const diff = 24 * 60 * 60 * 1000 - (now - daily.adsCooldownAt);
-
-    if (diff <= 0) {
-      // cooldown skončil → denní limit reset
-      daily.adsCooldownAt = null;
-      daily.adsWatched = 0;
-      if (daily.tasks && daily.tasks.watchAd) {
-        daily.tasks.watchAd = false;
+        if (
+          window.firebase &&
+          firebase.firestore &&
+          firebase.firestore.FieldValue
+        ) {
+          // Bezpečná varianta – atomický increment
+          const inc = firebase.firestore.FieldValue.increment(num);
+          ref
+            .set({ credits: inc }, { merge: true })
+            .catch(function (e) {
+              console.warn(
+                "CreditsSystem: chyba při ukládání credits (increment):",
+                e
+              );
+            });
+        } else {
+          // Fallback – pořád jen async, UI to neblokuje
+          ref
+            .get()
+            .then((snap) => {
+              const data = snap.exists ? snap.data() || {} : {};
+              const oldCredits =
+                typeof data.credits === "number" ? data.credits : 0;
+              const newCredits = oldCredits + num;
+              return ref.set({ credits: newCredits }, { merge: true });
+            })
+            .catch(function (e) {
+              console.warn(
+                "CreditsSystem: chyba při ukládání credits (fallback):",
+                e
+              );
+            });
+        }
       }
-      this.saveDailyState(daily);
-      return 0;
+    } catch (e) {
+      console.warn("CreditsSystem: výjimka při ukládání credits:", e);
     }
 
-    return diff;
+    return this.credits;
   }
 
-  // Cooldown aktivní nebo ne
-  hasAdsCooldown() {
-    const daily = this.getDailyState();
-    if (!daily) return false;
+  // ========== POMOCNÉ FUNKCE PRO DENNÍ STAV ==========
 
-    const maxAds = daily.maxAds || 5;
+  _todayString() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
 
-    // Pokud ještě nemá odsledovaných maxAds reklam → žádný cooldown
-    if (daily.adsWatched < maxAds) {
-      return false;
+  _loadDaily() {
+    const today = this._todayString();
+    try {
+      const raw = localStorage.getItem(this.dailyKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.date === today) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn("CreditsSystem: chyba při čtení daily state:", e);
     }
-
-    // Pokud limit dosáhl, teprve pak běží 24h cooldown
-    return this.getAdsCooldownRemainingMs() > 0;
+    return {
+      date: today,
+      adsWatched: 0,
+      maxAds: 5,
+      tasks: {}
+    };
   }
 
-  clearAdsCooldown() {
-    const daily = this.getDailyState();
-    daily.adsCooldownAt = null;
-    this.saveDailyState(daily);
+  _saveDaily(state) {
+    try {
+      localStorage.setItem(this.dailyKey, JSON.stringify(state));
+    } catch (e) {
+      console.warn("CreditsSystem: chyba při ukládání daily state:", e);
+    }
+  }
+
+  // ========== PUBLIC API – DENNÍ STAV / ÚKOLY / REKLAMY ==========
+
+  getDailyState() {
+    return this._loadDaily();
   }
 
   resetDaily() {
-    const reset = { ...this.dailyDefault, date: this.todayString() };
-    localStorage.setItem(this.keys.daily, JSON.stringify(reset));
+    const state = {
+      date: this._todayString(),
+      adsWatched: 0,
+      maxAds: 5,
+      tasks: {}
+    };
+    this._saveDaily(state);
+    try {
+      localStorage.removeItem(this.adsCooldownKey);
+    } catch (e) {}
+    return state;
+  }
+
+  /**
+   * Označí denní úkol jako splněný.
+   * taskKey např. "stats", "campaign"
+   * Vrací true = právě splněno; false = už bylo splněno dřív.
+   */
+  updateDailyTask(taskKey) {
+    const state = this._loadDaily();
+    if (!state.tasks) state.tasks = {};
+    if (state.tasks[taskKey]) {
+      return false; // už splněno
+    }
+    state.tasks[taskKey] = true;
+    this._saveDaily(state);
+    return true;
+  }
+
+  /**
+   * Zaznamenání shlédnutí reklamy – hlídá limit a spouští cooldown.
+   * Vrací true = započítáno; false = už byl limit.
+   */
+  addAdWatch() {
+    const state = this._loadDaily();
+    const maxAds = state.maxAds || 5;
+
+    if (state.adsWatched >= maxAds) {
+      this._startAdsCooldown();
+      return false;
+    }
+
+    state.adsWatched += 1;
+    this._saveDaily(state);
+
+    if (state.adsWatched >= maxAds) {
+      this._startAdsCooldown();
+    }
+
+    return true;
+  }
+
+  _startAdsCooldown() {
+    const now = Date.now();
+    const until = now + 24 * 60 * 60 * 1000; // 24 hodin
+    try {
+      localStorage.setItem(this.adsCooldownKey, String(until));
+    } catch (e) {
+      console.warn("CreditsSystem: nelze uložit cooldown:", e);
+    }
+  }
+
+  hasAdsCooldown() {
+    return this.getAdsCooldownRemainingMs() > 0;
+  }
+
+  getAdsCooldownRemainingMs() {
+    try {
+      const raw = localStorage.getItem(this.adsCooldownKey);
+      if (!raw) return 0;
+      const until = parseInt(raw, 10);
+      if (!Number.isFinite(until)) return 0;
+      const diff = until - Date.now();
+      return diff > 0 ? diff : 0;
+    } catch (e) {
+      return 0;
+    }
   }
 }
 
-// Export – bezpečně
-if (typeof window !== "undefined") {
-  window.CreditsSystem = CreditsSystem;
-}
+// zpřístupníme globálně
+window.CreditsSystem = CreditsSystem;
