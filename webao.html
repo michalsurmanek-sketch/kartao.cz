@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weby jako služba – Prodej & Pronájem webových stránek</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a855f7',
+              500: '#7c3aed',
+              600: '#6d28d9',
+              700: '#5b21b6',
+              800: '#4c1d95',
+              900: '#2e1065',
+            },
+            accent: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          boxShadow: {
+            glow: '0 18px 45px rgba(15,23,42,0.85)',
+            soft: '0 20px 60px rgba(15,23,42,0.85)'
+          },
+          backdropBlur: {
+            xs: '2px'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1e40af 0, #020617 40%, #020617 100%);
+    }
+
+    .glass {
+      background: linear-gradient(135deg, rgba(15,23,42,0.92), rgba(15,23,42,0.88));
+      border: 1px solid rgba(148,163,184,0.3);
+      backdrop-filter: blur(18px);
+    }
+
+    .glass-soft {
+      background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.7));
+      border: 1px solid rgba(148,163,184,0.25);
+      backdrop-filter: blur(14px);
+    }
+
+    .gradient-border {
+      position: relative;
+    }
+
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #a855f7, #fbbf24, #22c55e);
+      opacity: 0.45;
+      z-index: -1;
+    }
+
+    .shine {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shine::after {
+      content: '';
+      position: absolute;
+      top: -120%;
+      left: -40%;
+      width: 80%;
+      height: 240%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%) rotate(12deg);
+    }
+
+    .shine:hover::after {
+      transform: translateX(280%) rotate(12deg);
+      transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .floating {
+      animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-8px) translateX(4px); }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 antialiased">
+  <div class="relative min-h-screen">
+    <!-- Dekorační prvky -->
+    <div class="pointer-events-none fixed inset-0 -z-10">
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top,_#4c1d95_0,_transparent_55%)]"></div>
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_bottom,_#0f172a_0,_#020617_55%)]"></div>
+      <div class="absolute -left-32 top-1/4 w-72 h-72 bg-primary-500/20 blur-3xl rounded-full"></div>
+      <div class="absolute -right-24 bottom-10 w-80 h-80 bg-amber-500/15 blur-3xl rounded-full"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-30 border-b border-slate-800/70 bg-slate-950/65 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6 lg:px-8">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3">
+          <div class="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-500 via-primary-400 to-amber-400 flex items-center justify-center shadow-lg shadow-primary-900/60">
+            <span class="text-xl font-black tracking-tight text-slate-950">W</span>
+            <div class="absolute -right-1 -top-1 rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold text-slate-950 shadow-md shadow-amber-500/50">
+              PRO
+            </div>
+          </div>
+          <div class="leading-tight">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm font-semibold uppercase tracking-[0.27em] text-slate-400">
+                WEBY
+              </span>
+              <span class="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                100% NA KLÍČ
+              </span>
+            </div>
+            <p class="text-xs text-slate-400">Prodej & pronájem webových stránek</p>
+          </div>
+        </a>
+
+        <!-- Menu -->
+        <nav class="hidden items-center gap-7 text-sm text-slate-300 md:flex">
+          <a href="#templates" class="hover:text-white transition">Šablony</a>
+          <a href="#features" class="hover:text-white transition">Funkce</a>
+          <a href="#pricing" class="hover:text-white transition">Ceník</a>
+          <a href="#process" class="hover:text-white transition">Jak to funguje</a>
+          <a href="#faq" class="hover:text-white transition">FAQ</a>
+        </nav>
+
+        <!-- CTA -->
+        <div class="flex items-center gap-3">
+          <button class="hidden rounded-full border border-slate-600/70 bg-slate-900/70 px-4 py-1.5 text-xs font-medium text-slate-200 shadow-sm hover:border-slate-400/80 hover:bg-slate-900 transition md:inline-flex items-center gap-1.5">
+            <i data-lucide="monitor-smartphone" class="h-3.5 w-3.5"></i>
+            Ukázková administrace
+          </button>
+          <a href="#pricing" class="shine gradient-border relative inline-flex items-center justify-center rounded-full bg-gradient-to-r from-primary-500 via-primary-400 to-amber-400 px-4 py-1.5 text-xs font-semibold text-slate-950 shadow-soft hover:brightness-110">
+            <span>Chci vlastní web</span>
+            <span class="ml-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-slate-950/20 text-[10px]">
+              <i data-lucide="arrow-right" class="h-3 w-3"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="mx-auto flex max-w-6xl flex-col gap-12 px-4 pb-20 pt-10 md:px-6 lg:px-8 lg:pt-12">
+      <section class="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        <!-- Text -->
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-200 shadow-sm shadow-emerald-500/20">
+            <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+            <span>Design lepší než běžné e-shopové krabice</span>
+          </div>
+
+          <div class="space-y-4">
+            <h1 class="text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
+              Prodávej <span class="bg-gradient-to-r from-amber-300 via-amber-200 to-white bg-clip-text text-transparent">weby, které prodávají</span>.
+            </h1>
+            <p class="max-w-xl text-sm leading-relaxed text-slate-300 md:text-base">
+              Tvoříme profi webové stránky a e-shopy <span class="font-semibold text-amber-300">na míru</span>,
+              které můžeš <span class="font-semibold text-emerald-300">prodat jednorázově</span>
+              nebo <span class="font-semibold text-emerald-300">pronajímat na měsíční fee</span>. 
+              Moderní design, rychlé načítání, připraveno na mobil, SEO i reklamy.
+            </p>
+          </div>
+
+          <!-- Přepínač Prodej vs Pronájem -->
+          <div class="glass-soft gradient-border relative max-w-md rounded-2xl px-4 py-3 shadow-soft">
+            <div class="flex items-center justify-between text-[11px] uppercase tracking-wide text-slate-400">
+              <span>Model spolupráce</span>
+              <span id="planLabel" class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                Pronájem webu
+              </span>
+            </div>
+            <div class="mt-3 flex items-center justify-between gap-3">
+              <div class="flex flex-1 items-center justify-between rounded-full bg-slate-900/80 p-1 text-xs">
+                <button id="rentTab" class="flex-1 rounded-full bg-slate-800/90 px-3 py-1.5 text-center font-semibold text-amber-300 shadow-sm">
+                  Pronájem
+                </button>
+                <button id="saleTab" class="flex-1 rounded-full px-3 py-1.5 text-center font-medium text-slate-300">
+                  Prodej
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-300">
+                <i data-lucide="check-circle-2" class="h-3.5 w-3.5 text-emerald-400"></i>
+                <span>Bez starostí s technikou</span>
+              </div>
+            </div>
+            <div class="mt-3 grid gap-3 text-xs text-slate-300 md:grid-cols-2">
+              <div class="flex items-center gap-2">
+                <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+                  <i data-lucide="clock" class="h-3.5 w-3.5"></i>
+                </div>
+                <div>
+                  <p class="font-semibold text-slate-100">Start do 7 dní</p>
+                  <p class="text-[11px] text-slate-400">První verze webu běží během týdne.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300">
+                  <i data-lucide="refresh-cw" class="h-3.5 w-3.5"></i>
+                </div>
+                <div>
+                  <p class="font-semibold text-slate-100">Průběžné úpravy</p>
+                  <p class="text-[11px] text-slate-400">Texty, fotky i sekce upravujeme průběžně.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA blok -->
+          <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+            <a href="#pricing" class="shine inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary-500 via-primary-400 to-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-soft hover:brightness-110">
+              <span class="mr-1.5">Spočítat cenu webu</span>
+              <i data-lucide="sparkle" class="h-4 w-4"></i>
+            </a>
+            <button class="inline-flex items-center gap-2 rounded-2xl border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 hover:border-slate-400 hover:bg-slate-900 transition">
+              <i data-lucide="play-circle" class="h-4 w-4"></i>
+              <span>Ukázka demo webu</span>
+            </button>
+          </div>
+
+          <!-- Důvěryhodnost -->
+          <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-slate-400">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-400"></i>
+              <span>Zabezpečené HTTPS, zálohy, monitoring</span>
+            </div>
+            <div class="h-1 w-1 rounded-full bg-slate-500"></div>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="activity" class="h-3.5 w-3.5 text-amber-300"></i>
+              <span>Optimalizace pro rychlost a reklamy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mockup webu -->
+        <div class="relative">
+          <div class="floating">
+            <div class="shine glass gradient-border relative rounded-3xl p-2 shadow-glow">
+              <!-- Horní lišta -->
+              <div class="flex items-center justify-between rounded-2xl bg-slate-900/70 px-3 py-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-rose-500/80"></span>
+                  <span class="h-2 w-2 rounded-full bg-amber-400/80"></span>
+                  <span class="h-2 w-2 rounded-full bg-emerald-400/80"></span>
+                </div>
+                <div class="flex items-center gap-2 rounded-full bg-slate-900/90 px-3 py-1 text-[10px] text-slate-400">
+                  <i data-lucide="globe-2" class="h-3 w-3 text-slate-500"></i>
+                  <span>mojeznacka.cz</span>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-slate-400">
+                  <i data-lucide="smartphone" class="h-3.5 w-3.5 text-emerald-300"></i>
+                  <span>100% mobilní</span>
+                </div>
+              </div>
+
+              <!-- Obsah makety -->
+              <div class="mt-2 grid gap-3 md:grid-cols-[1.2fr_minmax(0,1fr)]">
+                <!-- Vlevo hero webu -->
+                <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-3">
+                  <div class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/90 px-2 py-1 text-[10px] text-amber-200">
+                    <i data-lucide="zap" class="h-3 w-3"></i>
+                    <span>Limitovaná nabídka</span>
+                  </div>
+                  <h2 class="mt-2 text-sm font-semibold text-slate-50">
+                    E-shop s vlastní značkou do 14 dní
+                  </h2>
+                  <p class="mt-1 text-[11px] leading-snug text-slate-400">
+                    Perfektní pro módu, kosmetiku, služby i lokální podnikání.
+                  </p>
+
+                  <div class="mt-3 grid grid-cols-3 gap-2 text-[10px]">
+                    <div class="rounded-xl border border-emerald-400/20 bg-emerald-500/5 p-2">
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="mouse-pointer-click" class="h-3.5 w-3.5 text-emerald-300"></i>
+                        <span class="font-semibold text-emerald-200">+41 %</span>
+                      </div>
+                      <p class="mt-0.5 text-[10px] text-emerald-100/90">více prokliků</p>
+                    </div>
+                    <div class="rounded-xl border border-amber-400/20 bg-amber-500/5 p-2">
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="shopping-bag" class="h-3.5 w-3.5 text-amber-300"></i>
+                        <span class="font-semibold text-amber-200">+28 %</span>
+                      </div>
+                      <p class="mt-0.5 text-[10px] text-amber-100/90">vyšší obrat</p>
+                    </div>
+                    <div class="rounded-xl border border-sky-400/20 bg-sky-500/5 p-2">
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="bar-chart-3" class="h-3.5 w-3.5 text-sky-300"></i>
+                        <span class="font-semibold text-sky-200">SEO</span>
+                      </div>
+                      <p class="mt-0.5 text-[10px] text-sky-100/90">připraveno</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
+                    <button class="inline-flex flex-1 items-center justify-center rounded-xl bg-amber-400 px-3 py-1.5 font-semibold text-slate-950 shadow-md shadow-amber-500/40">
+                      Přejít do obchodu
+                    </button>
+                    <button class="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 font-medium text-slate-200">
+                      Detail produktu
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vpravo mini přehled -->
+                <div class="space-y-2">
+                  <div class="rounded-2xl bg-slate-900/85 p-2">
+                    <div class="flex items-center justify-between text-[10px] text-slate-300">
+                      <span class="flex items-center gap-1">
+                        <i data-lucide="credit-card" class="h-3.5 w-3.5 text-amber-300"></i>
+                        Měsíční pronájem
+                      </span>
+                      <span class="rounded-full bg-amber-400/10 px-2 py-0.5 font-semibold text-amber-200">
+                        od <span id="mockPrice">1 490 Kč</span>
+                      </span>
+                    </div>
+                    <div class="mt-1 grid grid-cols-2 gap-2 text-[10px] text-slate-400">
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="check" class="h-3 w-3 text-emerald-300"></i>
+                        <span>hosting v ceně</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="check" class="h-3 w-3 text-emerald-300"></i>
+                        <span>správa domény</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="check" class="h-3 w-3 text-emerald-300"></i>
+                        <span>SSL certifikát</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <i data-lucide="check" class="h-3 w-3 text-emerald-300"></i>
+                        <span>průběžné úpravy</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="glass-soft rounded-2xl p-2 text-[10px] text-slate-300">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5">
+                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/15 text-primary-200">
+                          <i data-lucide="bolt" class="h-3.5 w-3.5"></i>
+                        </div>
+                        <div>
+                          <p class="font-semibold text-slate-100">Připraveno na reklamu</p>
+                          <p class="text-[10px] text-slate-400">Facebook, Instagram, Google Ads.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-2 text-[10px] text-slate-400">
+                    <div class="flex items-center justify-between">
+                      <span>Design skóre</span>
+                      <span class="flex items-center gap-1 text-amber-300">
+                        <i data-lucide="star" class="h-3.5 w-3.5"></i>
+                        9.6 / 10
+                      </span>
+                    </div>
+                    <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                      <div class="h-full w-[92%] rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-400"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Malá „štítková“ karta -->
+            <div class="mt-3 flex items-center gap-2 rounded-2xl bg-slate-900/80 px-3 py-2 text-[11px] text-slate-300 shadow-lg shadow-slate-950/80">
+              <i data-lucide="sparkles" class="h-4 w-4 text-amber-300"></i>
+              <span>Vizuál, který prodává dřív, než někdo čte text.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Šablony / ukázky -->
+      <section id="templates" class="space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-white md:text-xl">Hotové koncepty pro různé obory</h2>
+            <p class="max-w-xl text-sm text-slate-400">
+              Základní design už je připravený. Doladíme barvy, fonty, fotky a obsah přesně pro tvůj projekt.
+            </p>
+          </div>
+          <div class="hidden text-[11px] text-slate-400 md:flex items-center gap-2">
+            <i data-lucide="layout-dashboard" class="h-4 w-4 text-primary-300"></i>
+            <span>Možnost plně individuálního řešení</span>
+          </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <!-- Karta 1 -->
+          <article class="shine glass-soft relative flex flex-col overflow-hidden rounded-2xl p-3 shadow-soft">
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 font-medium text-emerald-200">
+                <i data-lucide="shopping-bag" class="h-3.5 w-3.5"></i>
+                E-shop
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] text-slate-300">
+                Móda & doplňky
+              </span>
+            </div>
+            <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-2">
+              <div class="h-full rounded-lg border border-slate-700/60 bg-slate-950/90 p-2">
+                <div class="flex items-center justify-between text-[9px] text-slate-400">
+                  <div class="flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                    <span>NovaStyle.cz</span>
+                  </div>
+                  <span>- 12 % sleva dnes</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-1.5">
+                  <div class="rounded-lg bg-slate-900/90 p-1">
+                    <div class="h-10 rounded-md bg-gradient-to-br from-fuchsia-500 to-amber-300"></div>
+                    <p class="mt-1 text-[9px] text-slate-200 truncate">Oversize mikina</p>
+                    <p class="text-[9px] text-amber-300">1 190 Kč</p>
+                  </div>
+                  <div class="rounded-lg bg-slate-900/90 p-1">
+                    <div class="h-10 rounded-md bg-gradient-to-br from-sky-500 to-emerald-400"></div>
+                    <p class="mt-1 text-[9px] text-slate-200 truncate">Set šperků</p>
+                    <p class="text-[9px] text-amber-300">890 Kč</p>
+                  </div>
+                  <div class="rounded-lg bg-slate-900/90 p-1">
+                    <div class="h-10 rounded-md bg-gradient-to-br from-rose-500 to-amber-400"></div>
+                    <p class="mt-1 text-[9px] text-slate-200 truncate">Limitované tenisky</p>
+                    <p class="text-[9px] text-amber-300">2 490 Kč</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="mt-2 text-sm font-semibold text-slate-50">Fashion / lifestyle e-shop</h3>
+            <p class="mt-1 text-xs text-slate-400">
+              Velké fotky, výrazná typografie, připravené na lookbook i influencery.
+            </p>
+          </article>
+
+          <!-- Karta 2 -->
+          <article class="shine glass-soft relative flex flex-col overflow-hidden rounded-2xl p-3 shadow-soft">
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2 py-0.5 font-medium text-sky-200">
+                <i data-lucide="briefcase" class="h-3.5 w-3.5"></i>
+                Služby
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] text-slate-300">
+                Lokální firma
+              </span>
+            </div>
+            <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-2">
+              <div class="h-full rounded-lg border border-slate-700/60 bg-slate-950/90 p-2">
+                <div class="flex items-center justify-between text-[9px] text-slate-400">
+                  <div class="flex items-center gap-1">
+                    <i data-lucide="map-pin" class="h-3 w-3 text-emerald-300"></i>
+                    <span>Brno</span>
+                  </div>
+                  <span>Otevírací doba · Recenze</span>
+                </div>
+                <div class="mt-2 grid h-[70%] grid-cols-[1.2fr_minmax(0,1fr)] gap-1.5">
+                  <div class="rounded-lg bg-slate-900/90 p-2">
+                    <p class="text-[9px] font-semibold text-slate-200">Realizace zakázek</p>
+                    <p class="mt-0.5 text-[9px] text-slate-400">
+                      Fotogalerie, popis služeb, kalkulačka poptávky.
+                    </p>
+                  </div>
+                  <div class="flex flex-col justify-between rounded-lg bg-slate-900/90 p-2">
+                    <div class="flex items-center justify-between text-[9px] text-slate-400">
+                      <span>+420 777 000 000</span>
+                      <i data-lucide="phone-call" class="h-3.5 w-3.5 text-emerald-300"></i>
+                    </div>
+                    <button class="mt-2 inline-flex items-center justify-center rounded-md bg-emerald-500/90 px-2 py-1 text-[9px] font-semibold text-slate-950">
+                      Rychlá poptávka
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="mt-2 text-sm font-semibold text-slate-50">Web pro služby / řemesla</h3>
+            <p class="mt-1 text-xs text-slate-400">
+              Ideální pro zedníky, autoservisy, salony, restaurace, poradce…
+            </p>
+          </article>
+
+          <!-- Karta 3 -->
+          <article class="shine glass-soft relative flex flex-col overflow-hidden rounded-2xl p-3 shadow-soft">
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-primary-500/15 px-2 py-0.5 font-medium text-primary-200">
+                <i data-lucide="rocket" class="h-3.5 w-3.5"></i>
+                Premium
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] text-slate-300">
+                Osobní brand
+              </span>
+            </div>
+            <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-2">
+              <div class="h-full rounded-lg border border-slate-700/60 bg-slate-950/90 p-2">
+                <div class="flex items-center justify-between text-[9px] text-slate-400">
+                  <div class="flex items-center gap-1">
+                    <i data-lucide="user" class="h-3.5 w-3.5 text-amber-300"></i>
+                    <span>Jméno & logo</span>
+                  </div>
+                  <span>Newsletter · Blog</span>
+                </div>
+                <div class="mt-2 grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-1.5">
+                  <div class="rounded-lg bg-slate-900/90 p-2">
+                    <p class="text-[9px] font-semibold text-slate-200">Portfolio & spolupráce</p>
+                    <p class="mt-0.5 text-[9px] text-slate-400">
+                      Skvělé pro freelancery, konzultanty, influencery.
+                    </p>
+                  </div>
+                  <div class="flex flex-col justify-between rounded-lg bg-slate-900/90 p-2">
+                    <div class="flex items-center gap-1 text-[9px] text-slate-400">
+                      <i data-lucide="mail" class="h-3 w-3 text-sky-300"></i>
+                      <span>Odběr novinek</span>
+                    </div>
+                    <button class="mt-2 inline-flex items-center justify-center rounded-md bg-primary-500/90 px-2 py-1 text-[9px] font-semibold text-slate-950">
+                      Domluvit konzultaci
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="mt-2 text-sm font-semibold text-slate-50">Osobní / firemní brand</h3>
+            <p class="mt-1 text-xs text-slate-400">
+              Silná vizuální identita, kterou můžeš tahat všude po sítích.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Funkce -->
+      <section id="features" class="space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-white md:text-xl">Co dostaneš v základu</h2>
+            <p class="max-w-xl text-sm text-slate-400">
+              Nemusíš řešit hosting, SSL, aktualizace ani technické kraviny. Ty se soustředíš na byznys, my na web.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="glass-soft rounded-2xl p-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
+              <i data-lucide="check-circle-2" class="h-4 w-4"></i>
+            </div>
+            <h3 class="mt-3 text-sm font-semibold text-slate-50">Technické zázemí v ceně</h3>
+            <ul class="mt-2 space-y-1.5 text-xs text-slate-400">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="shield" class="h-3 w-3 text-emerald-300"></i>
+                <span>Hosting, SSL, zálohy, monitoring</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="globe-2" class="h-3 w-3 text-emerald-300"></i>
+                <span>Nastavení domény a e-mailů</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="settings-2" class="h-3 w-3 text-emerald-300"></i>
+                <span>Aktualizace a bezpečnostní záplaty</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-500/10 text-primary-200">
+              <i data-lucide="sparkles" class="h-4 w-4"></i>
+            </div>
+            <h3 class="mt-3 text-sm font-semibold text-slate-50">Design, co prodává</h3>
+            <ul class="mt-2 space-y-1.5 text-xs text-slate-400">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="eye" class="h-3 w-3 text-primary-200"></i>
+                <span>Moderní layout, animace, micro-interaction</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="star" class="h-3 w-3 text-primary-200"></i>
+                <span>Vizuál sladěný s tvou značkou</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="mobile" class="h-3 w-3 text-primary-200"></i>
+                <span>Perfektní zobrazení na mobilu</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300">
+              <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
+            </div>
+            <h3 class="mt-3 text-sm font-semibold text-slate-50">Připraveno na výkon</h3>
+            <ul class="mt-2 space-y-1.5 text-xs text-slate-400">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="search" class="h-3 w-3 text-amber-300"></i>
+                <span>SEO, strukturovaná data, rychlé načítání</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="mouse-pointer-click" class="h-3 w-3 text-amber-300"></i>
+                <span>Připravené konverzní prvky, CTA, formuláře</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="pie-chart" class="h-3 w-3 text-amber-300"></i>
+                <span>Napojení na analytiku a reklamy</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ceník -->
+      <section id="pricing" class="space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-white md:text-xl">Cenové balíčky</h2>
+            <p class="max-w-xl text-sm text-slate-400">
+              Vyber si, jestli chceš <span class="font-semibold text-emerald-300">jednorázový prodej webu</span>,
+              nebo <span class="font-semibold text-amber-300">pronájem s minimem starostí</span>.
+            </p>
+          </div>
+          <div class="hidden items-center gap-2 text-[11px] text-slate-400 md:flex">
+            <i data-lucide="info" class="h-3.5 w-3.5 text-slate-500"></i>
+            <span>Cena se vždy upřesňuje podle rozsahu projektu.</span>
+          </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <!-- Pronájem Start -->
+          <div class="glass-soft relative flex flex-col rounded-2xl p-4 shadow-soft">
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 font-medium text-emerald-200">
+                <i data-lucide="leaf" class="h-3.5 w-3.5"></i>
+                Start pronájem
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px]">
+                ideální začátek
+              </span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceRentStart" class="text-2xl font-semibold text-white">1 490 Kč</span>
+              <span class="text-xs text-slate-400">/ měsíc</span>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              Jednoduchý web / mini e-shop pro první ověření nápadu.
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                1–5 podstránek
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                1 jednoduchý formulář
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Hosting + SSL + doména v ceně
+              </li>
+            </ul>
+            <button class="mt-4 inline-flex items-center justify-center rounded-xl bg-emerald-500/90 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/40">
+              Chci nabídku na Start
+            </button>
+          </div>
+
+          <!-- Pronájem Pro (highlight) -->
+          <div class="gradient-border glass relative flex flex-col rounded-2xl p-4 shadow-soft">
+            <div class="absolute right-4 top-4 rounded-full bg-amber-400/90 px-2 py-0.5 text-[10px] font-semibold text-slate-950 shadow-md shadow-amber-500/50">
+              Nejoblíbenější
+            </div>
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-primary-500/15 px-2 py-0.5 font-medium text-primary-200">
+                <i data-lucide="crown" class="h-3.5 w-3.5"></i>
+                Pro pronájem
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px]">
+                e-shop & služby
+              </span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceRentPro" class="text-2xl font-semibold text-white">2 990 Kč</span>
+              <span class="text-xs text-slate-400">/ měsíc</span>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              Plnohodnotný web nebo e-shop se správou a průběžnými úpravami.
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                5–20 podstránek
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                E-shop / rezervační systém
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Průběžné úpravy obsahu
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Napojení analytiky, základní SEO
+              </li>
+            </ul>
+            <button class="mt-4 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-primary-500 via-primary-400 to-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-primary-900/60 hover:brightness-110">
+              Chci Pro pronájem
+            </button>
+          </div>
+
+          <!-- Prodej -->
+          <div class="glass-soft relative flex flex-col rounded-2xl p-4 shadow-soft">
+            <div class="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 font-medium text-amber-200">
+                <i data-lucide="hand-coins" class="h-3.5 w-3.5"></i>
+                Jednorázový prodej
+              </span>
+              <span class="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px]">
+                vlastnictví webu
+              </span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceSale" class="text-2xl font-semibold text-white">od 39 000 Kč</span>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              Web nebo e-shop, který si koupíš jednorázově a je čistě tvůj.
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Kompletní předání kódu / přístupu
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Onboarding + školení administrace
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-300"></i>
+                Možnost následné správy za fee
+              </li>
+            </ul>
+            <button class="mt-4 inline-flex items-center justify-center rounded-xl border border-amber-500/70 bg-slate-950/70 px-4 py-2 text-xs font-semibold text-amber-200 hover:bg-slate-900">
+              Chci nacenit prodej webu
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Jak to funguje -->
+      <section id="process" class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold text-white md:text-xl">Jak probíhá spolupráce</h2>
+          <p class="max-w-xl text-sm text-slate-400">
+            Jednoduchý proces, ve kterém tě vedeme krok za krokem. Žádné zbytečné papírování ani IT slovník.
+          </p>
+        </div>
+        <div class="grid gap-3 md:grid-cols-4">
+          <div class="glass-soft rounded-2xl p-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-300">
+                1
+              </span>
+              <span class="font-semibold text-slate-100">Rychlý call / zpráva</span>
+            </div>
+            <p class="mt-1.5 text-slate-400">
+              Probereme typ byznysu, cílovku, rozpočet a cíle. 
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-300">
+                2
+              </span>
+              <span class="font-semibold text-slate-100">Návrh & wireframe</span>
+            </div>
+            <p class="mt-1.5 text-slate-400">
+              Navrhneme strukturu webu a posíláme první vizuál ke schválení.
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-300">
+                3
+              </span>
+              <span class="font-semibold text-slate-100">Programování & testy</span>
+            </div>
+            <p class="mt-1.5 text-slate-400">
+              Nakódujeme web, testujeme rychlost, mobil, formuláře, košík…
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-300">
+                4
+              </span>
+              <span class="font-semibold text-slate-100">Spuštění & ladění</span>
+            </div>
+            <p class="mt-1.5 text-slate-400">
+              Web jde ven, sledujeme čísla a optimalizujeme podle dat.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold text-white md:text-xl">Časté otázky</h2>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2">
+          <div class="glass-soft rounded-2xl p-3 text-sm text-slate-200">
+            <div class="flex items-center gap-2">
+              <i data-lucide="help-circle" class="h-4 w-4 text-amber-300"></i>
+              <p class="font-semibold">Jaký je rozdíl mezi pronájmem a prodejem?</p>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              U pronájmu platíš měsíční fee, ale nemusíš řešit technické věci, aktualizace ani hosting. 
+              U prodeje zaplatíš jednorázově, web je tvůj a můžeš si ho spravovat kdekoliv.
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-sm text-slate-200">
+            <div class="flex items-center gap-2">
+              <i data-lucide="timer" class="h-4 w-4 text-amber-300"></i>
+              <p class="font-semibold">Za jak dlouho může být web hotový?</p>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              U menších webů běžně 7–14 dní od dodání podkladů. Větší e-shopy nebo složitější projekty 
+              můžou trvat 3–6 týdnů podle rozsahu a napojení na další systémy.
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-sm text-slate-200">
+            <div class="flex items-center gap-2">
+              <i data-lucide="pencil-line" class="h-4 w-4 text-amber-300"></i>
+              <p class="font-semibold">Můžu si sám měnit texty a fotky?</p>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              Ano, web stavíme tak, aby sis základní obsah mohl měnit sám. Zároveň máš možnost, 
+              abychom úpravy dělali za tebe v rámci pronájmu nebo servisních hodin.
+            </p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3 text-sm text-slate-200">
+            <div class="flex items-center gap-2">
+              <i data-lucide="wallet" class="h-4 w-4 text-amber-300"></i>
+              <p class="font-semibold">Umíte i napojení plateb a fakturace?</p>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">
+              Ano, můžeme propojit platební brány, fakturační systémy, CRM i další nástroje – podle toho, 
+              kde a jak chceš vydělávat peníze.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Závěrečné CTA -->
+      <section class="mt-4">
+        <div class="gradient-border glass relative flex flex-col gap-4 rounded-3xl px-5 py-5 text-sm text-slate-100 shadow-soft md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Poslední krok</p>
+            <h2 class="mt-1 text-lg font-semibold text-white">
+              Napiš, co chceš, aby tvůj web prodával – a navrhneme ti konkrétní řešení.
+            </h2>
+            <p class="mt-1 text-xs text-slate-400">
+              Můžeš začít malým webem a časem ho rozšířit na celý ekosystém. Design i strukturu máme připravené.
+            </p>
+          </div>
+          <div class="flex flex-col gap-2 md:w-72">
+            <button class="shine inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary-500 via-primary-400 to-amber-400 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-soft hover:brightness-110">
+              Chci spočítat svůj web
+            </button>
+            <button class="inline-flex items-center justify-center rounded-2xl border border-slate-700/80 bg-slate-950/60 px-4 py-2 text-[11px] font-medium text-slate-200 hover:border-slate-400/80 hover:bg-slate-900">
+              Poslat rychlou zprávu přes e-mail / Messenger
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/80">
+      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-4 text-[11px] text-slate-500 sm:flex-row md:px-6 lg:px-8">
+        <p>© <span id="year"></span> Weby jako služba · Vše pro profi prezentaci online.</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="flex items-center gap-1">
+            <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-300"></i>
+            Zabezpečené řešení
+          </span>
+          <span class="flex items-center gap-1">
+            <i data-lucide="headset" class="h-3.5 w-3.5 text-primary-200"></i>
+            Podpora na telefonu i e-mailu
+          </span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Inicializace ikon
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      // Rok ve footeru
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Přepínání Prodej vs Pronájem (jen vizuálně + ceny)
+      const rentTab = document.getElementById('rentTab');
+      const saleTab = document.getElementById('saleTab');
+      const planLabel = document.getElementById('planLabel');
+
+      const priceRentStart = document.getElementById('priceRentStart');
+      const priceRentPro = document.getElementById('priceRentPro');
+      const priceSale = document.getElementById('priceSale');
+      const mockPrice = document.getElementById('mockPrice');
+
+      function activateRent() {
+        rentTab.classList.add('bg-slate-800/90', 'text-amber-300', 'font-semibold');
+        saleTab.classList.remove('bg-slate-800/90', 'text-amber-300', 'font-semibold');
+        saleTab.classList.add('text-slate-300');
+
+        planLabel.textContent = 'Pronájem webu';
+        planLabel.classList.remove('text-primary-200');
+        planLabel.classList.add('text-amber-300');
+
+        // Ceny pro pronájem
+        priceRentStart.textContent = '1 490 Kč';
+        priceRentPro.textContent = '2 990 Kč';
+        priceSale.textContent = 'od 39 000 Kč';
+        mockPrice.textContent = '1 490 Kč';
+      }
+
+      function activateSale() {
+        saleTab.classList.add('bg-slate-800/90', 'text-amber-300', 'font-semibold');
+        rentTab.classList.remove('bg-slate-800/90', 'text-amber-300', 'font-semibold');
+        rentTab.classList.add('text-slate-300');
+
+        planLabel.textContent = 'Jednorázový prodej webu';
+        planLabel.classList.remove('text-amber-300');
+        planLabel.classList.add('text-primary-200');
+
+        // Ceny pro prodej – jen orientačně vizuálně posuneme
+        priceRentStart.textContent = 'od 29 000 Kč';
+        priceRentPro.textContent = 'od 49 000 Kč';
+        priceSale.textContent = 'od 69 000 Kč';
+        mockPrice.textContent = 'od 29 000 Kč';
+      }
+
+      rentTab.addEventListener('click', activateRent);
+      saleTab.addEventListener('click', activateSale);
+
+      // Defaultně pronájem
+      activateRent();
+    });
+  </script>
+</body>
+</html>
