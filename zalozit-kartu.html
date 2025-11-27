@@ -30,16 +30,13 @@
   <!-- Lucide ikony – UMD verze -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-  <!-- Firebase SDK (jen JEDNOU) -->
+  <!-- Firebase SDK + config + init -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-  <!-- 1) Konfigurace Firebase (musí definovat const firebaseConfig = {...}) -->
+  <!-- tvůj config MUSÍ být před firebase-init.js -->
   <script src="firebase-config.js"></script>
-
-  <!-- 2) Tvoje sjednocená inicializace -->
   <script src="firebase-init.js"></script>
 
   <style>
@@ -47,8 +44,7 @@
       background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
     }
     .glass-panel {
-      background:
-        radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
         radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.08), transparent);
       backdrop-filter: blur(24px);
     }
@@ -72,15 +68,7 @@
         </a>
 
         <div class="flex items-center gap-2 text-sm">
-          <!-- Tlačítko pro přihlášení (volitelně) 
-          <button
-            data-show-when="loggedout"
-            onclick="window.location.href='login.html'"
-            class="md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
-            Přihlásit se
-          </button>-->
-
-          <!-- Tlačítko pro odhlášení -->
+          <!-- pro přihlášené -->
           <button
             data-show-when="loggedin"
             class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
@@ -344,6 +332,7 @@
               Uložit kartu a pokračovat
             </button>
             
+            <!-- Tlačítko pro smazání draftu -->
             <button type="button" id="clearDraft" class="w-full mt-2 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white text-xs font-medium transition">
               <i data-lucide="trash-2" class="w-3 h-3"></i>
               Smazat uložená data a začít znovu
@@ -368,14 +357,15 @@
     </footer>
   </div>
 
-  <!-- 👇 Všechen JS (auto-save, Firebase logika) – nechávám jak jsi měl, jen neměním Firebase inicializaci -->
   <script>
     console.log("✅ Firebase načteno z firebase-init.js");
 
+    // Lucide ikony – bezpečné volání
     if (window.lucide && typeof lucide.createIcons === "function") {
       lucide.createIcons();
     }
 
+    // === AUTO-SAVE DO LOCALSTORAGE ===
     const AUTOSAVE_KEY = "kartao_card_draft";
     const AUTOSAVE_DEBOUNCE = 500;
     let autosaveTimeout = null;
@@ -444,13 +434,13 @@
       try {
         const formData = JSON.parse(saved);
 
-        if (formData.name)      document.getElementById("name").value = formData.name;
-        if (formData.handle)    document.getElementById("handle").value = formData.handle;
-        if (formData.email)     document.getElementById("email").value = formData.email;
-        if (formData.city)      document.getElementById("city").value  = formData.city;
-        if (formData.age)       document.getElementById("age").value   = formData.age;
+        if (formData.name)      document.getElementById("name").value    = formData.name;
+        if (formData.handle)    document.getElementById("handle").value  = formData.handle;
+        if (formData.email)     document.getElementById("email").value   = formData.email;
+        if (formData.city)      document.getElementById("city").value    = formData.city;
+        if (formData.age)       document.getElementById("age").value     = formData.age;
         if (formData.category)  document.getElementById("category").value = formData.category;
-        if (formData.bio)       document.getElementById("bio").value   = formData.bio;
+        if (formData.bio)       document.getElementById("bio").value     = formData.bio;
 
         if (formData.avatar) {
           document.getElementById("avatar").value = formData.avatar;
@@ -505,6 +495,7 @@
       autosaveTimeout = setTimeout(saveFormData, AUTOSAVE_DEBOUNCE);
     }
 
+    // náhled avatar + cover
     avatarFileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -610,6 +601,102 @@
       }, 100);
     });
 
+    // ====== FUNKCE PRO NAČTENÍ KARTY Z FIRESTORE ======
+    async function loadExistingCard(user, db) {
+      try {
+        const docRef = db.collection("creators").doc(user.uid);
+        const snap = await docRef.get();
+
+        if (!snap.exists) {
+          console.log("ℹ️ U tohoto uživatele zatím karta neexistuje.");
+          return;
+        }
+
+        const data = snap.data();
+        console.log("📥 Načtena karta z Firestore:", data);
+
+        // ZÁKLADNÍ ÚDAJE
+        if (data.name)     document.getElementById("name").value    = data.name;
+        if (data.handle)   document.getElementById("handle").value  = data.handle;
+        if (data.email)    document.getElementById("email").value   = data.email;
+        if (data.city)     document.getElementById("city").value    = data.city;
+        if (data.age)      document.getElementById("age").value     = data.age;
+        if (data.category) document.getElementById("category").value = data.category;
+        if (data.bio)      document.getElementById("bio").value     = data.bio;
+
+        // AVATAR + COVER
+        if (data.avatar) {
+          avatarUrlInput.value = data.avatar;
+          avatarUrlInput.dispatchEvent(new Event("input"));
+        }
+        if (data.cover) {
+          coverUrlInput.value = data.cover;
+          coverUrlInput.dispatchEvent(new Event("input"));
+        }
+
+        // METRIKY
+        if (data.metrics) {
+          if (data.metrics.instagram) {
+            if (data.metrics.instagram.url)
+              document.getElementById("instagramUrl").value = data.metrics.instagram.url;
+            if (data.metrics.instagram.followers)
+              document.getElementById("instagramFollowers").value = data.metrics.instagram.followers;
+            if (data.metrics.instagram.engagement)
+              document.getElementById("instagramEngagement").value = data.metrics.instagram.engagement;
+          }
+
+          if (data.metrics.tiktok) {
+            if (data.metrics.tiktok.url)
+              document.getElementById("tiktokUrl").value = data.metrics.tiktok.url;
+            if (data.metrics.tiktok.followers)
+              document.getElementById("tiktokFollowers").value = data.metrics.tiktok.followers;
+            if (data.metrics.tiktok.reach)
+              document.getElementById("tiktokReach").value = data.metrics.tiktok.reach;
+          }
+
+          if (data.metrics.youtube) {
+            if (data.metrics.youtube.url)
+              document.getElementById("youtubeUrl").value = data.metrics.youtube.url;
+            if (data.metrics.youtube.followers)
+              document.getElementById("youtubeFollowers").value = data.metrics.youtube.followers;
+          }
+
+          if (data.metrics.facebook) {
+            if (data.metrics.facebook.url)
+              document.getElementById("facebookUrl").value = data.metrics.facebook.url;
+            if (data.metrics.facebook.followers)
+              document.getElementById("facebookFollowers").value = data.metrics.facebook.followers;
+          }
+
+          if (data.metrics.pinterest) {
+            if (data.metrics.pinterest.url)
+              document.getElementById("pinterestUrl").value = data.metrics.pinterest.url;
+            if (data.metrics.pinterest.followers)
+              document.getElementById("pinterestFollowers").value = data.metrics.pinterest.followers;
+          }
+        }
+
+        // CENÍK
+        if (data.prices) {
+          if (data.prices.reels)
+            document.getElementById("priceReels").value = data.prices.reels;
+          if (data.prices.stories)
+            document.getElementById("priceStories").value = data.prices.stories;
+          if (data.prices.custom)
+            document.getElementById("priceCustom").value = data.prices.custom;
+        }
+
+        if (data.brandInfo) {
+          document.getElementById("brandInfo").value = data.brandInfo;
+        }
+
+        showMessage("✅ Načtena uložená karta z profilu.", "success");
+      } catch (err) {
+        console.error("❌ Chyba při načítání karty z Firestore:", err);
+        showMessage("Nepodařilo se načíst uloženou kartu.", "error");
+      }
+    }
+
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
     let currentUser = null;
 
@@ -653,6 +740,9 @@
         if (emailInput && !emailInput.value) {
           emailInput.value = user.email || "";
         }
+
+        // 🔹 NAČTI EXISTUJÍCÍ KARTU Z FIRESTORE
+        loadExistingCard(user, db);
       });
 
       if (headerLogout) {
@@ -991,7 +1081,8 @@
     }
   </script>
 
-  <!-- Pokud potřebuješ API služby, nech tohle -->
+  <!-- API služby – musí být tady, Firebase už je nahoře -->
   <script src="api-services.js"></script>
+
 </body>
 </html>
