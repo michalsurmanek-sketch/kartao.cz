@@ -30,21 +30,13 @@
   <!-- Lucide ikony – UMD verze -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-  <!-- Firebase SDK + config + init -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <!-- tvůj config MUSÍ být před firebase-init.js -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
-
   <style>
     body {
       background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
     }
     .glass-panel {
-      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
+      background:
+        radial-gradient(circle at top left, rgba(248, 250, 252, 0.08), transparent),
         radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.08), transparent);
       backdrop-filter: blur(24px);
     }
@@ -57,7 +49,7 @@
     <!-- HEADER -->
     <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <a href="moje-karta.html" class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
             <i data-lucide="crown" class="w-5 h-5"></i>
           </div>
@@ -68,7 +60,15 @@
         </a>
 
         <div class="flex items-center gap-2 text-sm">
-          <!-- pro přihlášené -->
+          <!-- tlačítko pro přihlášení (nepřihlášený) -->
+          <button
+            data-show-when="loggedout"
+            onclick="window.location.href='login.html'"
+            class="hidden md:inline-flex px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:border-white/40">
+            Přihlásit se
+          </button>
+
+          <!-- tlačítko pro odhlášení (přihlášený) -->
           <button
             data-show-when="loggedin"
             class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/15">
@@ -357,18 +357,17 @@
     </footer>
   </div>
 
+  <!-- HLAVNÍ SCRIPT STRÁNKY -->
   <script>
-    console.log("✅ Firebase načteno z firebase-init.js");
-
-    // Lucide ikony – bezpečné volání
+    // Bezpečné spuštění ikon
     if (window.lucide && typeof lucide.createIcons === "function") {
       lucide.createIcons();
     }
 
     // === AUTO-SAVE DO LOCALSTORAGE ===
-    const AUTOSAVE_KEY = "kartao_card_draft";
+    const AUTOSAVE_KEY      = "kartao_card_draft";
     const AUTOSAVE_DEBOUNCE = 500;
-    let autosaveTimeout = null;
+    let autosaveTimeout     = null;
 
     const avatarFileInput = document.getElementById("avatarFile");
     const avatarPreview   = document.getElementById("avatarPreview");
@@ -434,13 +433,13 @@
       try {
         const formData = JSON.parse(saved);
 
-        if (formData.name)      document.getElementById("name").value    = formData.name;
-        if (formData.handle)    document.getElementById("handle").value  = formData.handle;
-        if (formData.email)     document.getElementById("email").value   = formData.email;
-        if (formData.city)      document.getElementById("city").value    = formData.city;
-        if (formData.age)       document.getElementById("age").value     = formData.age;
+        if (formData.name)      document.getElementById("name").value = formData.name;
+        if (formData.handle)    document.getElementById("handle").value = formData.handle;
+        if (formData.email)     document.getElementById("email").value = formData.email;
+        if (formData.city)      document.getElementById("city").value  = formData.city;
+        if (formData.age)       document.getElementById("age").value   = formData.age;
         if (formData.category)  document.getElementById("category").value = formData.category;
-        if (formData.bio)       document.getElementById("bio").value     = formData.bio;
+        if (formData.bio)       document.getElementById("bio").value   = formData.bio;
 
         if (formData.avatar) {
           document.getElementById("avatar").value = formData.avatar;
@@ -485,7 +484,7 @@
         showMessage(`✅ Načtena uložená data z ${timeText}`, "success");
         return true;
       } catch (error) {
-        console.error("❌ Chyba při načítání dat:", error);
+        console.error("❌ Chyba při načítání dat z localStorage:", error);
         return false;
       }
     }
@@ -601,106 +600,110 @@
       }, 100);
     });
 
-    // ====== FUNKCE PRO NAČTENÍ KARTY Z FIRESTORE ======
+    // ==== FUNKCE PRO NAČTENÍ KARTY Z FIRESTORE ====
     async function loadExistingCard(user, db) {
       try {
         const docRef = db.collection("creators").doc(user.uid);
-        const snap = await docRef.get();
+        const snap   = await docRef.get();
 
         if (!snap.exists) {
-          console.log("ℹ️ U tohoto uživatele zatím karta neexistuje.");
+          console.log("ℹ️ Uživatel zatím nemá uloženou kartu v kolekci 'creators'.");
           return;
         }
 
         const data = snap.data();
         console.log("📥 Načtena karta z Firestore:", data);
 
-        // ZÁKLADNÍ ÚDAJE
-        if (data.name)     document.getElementById("name").value    = data.name;
-        if (data.handle)   document.getElementById("handle").value  = data.handle;
-        if (data.email)    document.getElementById("email").value   = data.email;
-        if (data.city)     document.getElementById("city").value    = data.city;
-        if (data.age)      document.getElementById("age").value     = data.age;
+        // Základní údaje
+        if (data.name)     document.getElementById("name").value   = data.name;
+        if (data.handle)   document.getElementById("handle").value = data.handle;
+        if (data.email)    document.getElementById("email").value  = data.email;
+        if (data.city)     document.getElementById("city").value   = data.city;
+        if (data.age)      document.getElementById("age").value    = data.age;
         if (data.category) document.getElementById("category").value = data.category;
-        if (data.bio)      document.getElementById("bio").value     = data.bio;
+        if (data.bio)      document.getElementById("bio").value    = data.bio;
 
-        // AVATAR + COVER
+        // Avatar / cover
         if (data.avatar) {
-          avatarUrlInput.value = data.avatar;
-          avatarUrlInput.dispatchEvent(new Event("input"));
+          document.getElementById("avatar").value = data.avatar;
+          document.getElementById("avatar").dispatchEvent(new Event("input"));
         }
         if (data.cover) {
-          coverUrlInput.value = data.cover;
-          coverUrlInput.dispatchEvent(new Event("input"));
+          document.getElementById("cover").value = data.cover;
+          document.getElementById("cover").dispatchEvent(new Event("input"));
         }
 
-        // METRIKY
+        // Sociální sítě
         if (data.metrics) {
-          if (data.metrics.instagram) {
-            if (data.metrics.instagram.url)
-              document.getElementById("instagramUrl").value = data.metrics.instagram.url;
-            if (data.metrics.instagram.followers)
-              document.getElementById("instagramFollowers").value = data.metrics.instagram.followers;
-            if (data.metrics.instagram.engagement)
-              document.getElementById("instagramEngagement").value = data.metrics.instagram.engagement;
+          const m = data.metrics;
+
+          if (m.instagram) {
+            if (m.instagram.url)        document.getElementById("instagramUrl").value        = m.instagram.url;
+            if (m.instagram.followers)  document.getElementById("instagramFollowers").value  = m.instagram.followers;
+            if (m.instagram.engagement) document.getElementById("instagramEngagement").value = m.instagram.engagement;
           }
 
-          if (data.metrics.tiktok) {
-            if (data.metrics.tiktok.url)
-              document.getElementById("tiktokUrl").value = data.metrics.tiktok.url;
-            if (data.metrics.tiktok.followers)
-              document.getElementById("tiktokFollowers").value = data.metrics.tiktok.followers;
-            if (data.metrics.tiktok.reach)
-              document.getElementById("tiktokReach").value = data.metrics.tiktok.reach;
+          if (m.tiktok) {
+            if (m.tiktok.url)       document.getElementById("tiktokUrl").value       = m.tiktok.url;
+            if (m.tiktok.followers) document.getElementById("tiktokFollowers").value = m.tiktok.followers;
+            if (m.tiktok.reach)     document.getElementById("tiktokReach").value     = m.tiktok.reach;
           }
 
-          if (data.metrics.youtube) {
-            if (data.metrics.youtube.url)
-              document.getElementById("youtubeUrl").value = data.metrics.youtube.url;
-            if (data.metrics.youtube.followers)
-              document.getElementById("youtubeFollowers").value = data.metrics.youtube.followers;
+          if (m.youtube) {
+            if (m.youtube.url)       document.getElementById("youtubeUrl").value       = m.youtube.url;
+            if (m.youtube.followers) document.getElementById("youtubeFollowers").value = m.youtube.followers;
           }
 
-          if (data.metrics.facebook) {
-            if (data.metrics.facebook.url)
-              document.getElementById("facebookUrl").value = data.metrics.facebook.url;
-            if (data.metrics.facebook.followers)
-              document.getElementById("facebookFollowers").value = data.metrics.facebook.followers;
+          if (m.facebook) {
+            if (m.facebook.url)       document.getElementById("facebookUrl").value       = m.facebook.url;
+            if (m.facebook.followers) document.getElementById("facebookFollowers").value = m.facebook.followers;
           }
 
-          if (data.metrics.pinterest) {
-            if (data.metrics.pinterest.url)
-              document.getElementById("pinterestUrl").value = data.metrics.pinterest.url;
-            if (data.metrics.pinterest.followers)
-              document.getElementById("pinterestFollowers").value = data.metrics.pinterest.followers;
+          if (m.pinterest) {
+            if (m.pinterest.url)       document.getElementById("pinterestUrl").value       = m.pinterest.url;
+            if (m.pinterest.followers) document.getElementById("pinterestFollowers").value = m.pinterest.followers;
           }
         }
 
-        // CENÍK
+        // Ceník
         if (data.prices) {
-          if (data.prices.reels)
-            document.getElementById("priceReels").value = data.prices.reels;
-          if (data.prices.stories)
-            document.getElementById("priceStories").value = data.prices.stories;
-          if (data.prices.custom)
-            document.getElementById("priceCustom").value = data.prices.custom;
+          if (data.prices.reels != null)   document.getElementById("priceReels").value   = data.prices.reels;
+          if (data.prices.stories != null) document.getElementById("priceStories").value = data.prices.stories;
+          if (data.prices.custom)          document.getElementById("priceCustom").value  = data.prices.custom;
         }
 
         if (data.brandInfo) {
           document.getElementById("brandInfo").value = data.brandInfo;
         }
 
-        showMessage("✅ Načtena uložená karta z profilu.", "success");
+        showMessage("✅ Načetli jsme uloženou kartu z vašeho profilu.", "success");
       } catch (err) {
         console.error("❌ Chyba při načítání karty z Firestore:", err);
-        showMessage("Nepodařilo se načíst uloženou kartu.", "error");
+
+        // Když je klient offline, jen informativně do konzole
+        if (err && err.message && err.message.includes("client is offline")) {
+          console.warn("ℹ️ Firestore hlásí offline – používám jen lokálně uložený draft.");
+          return;
+        }
+
+        showMessage("Nepodařilo se načíst uloženou kartu z profilu.", "error");
       }
     }
 
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
     let currentUser = null;
 
-    window.addEventListener("load", () => {
+    window.addEventListener("load", async () => {
+      // Pro jistotu zapneme online režim Firestore
+      if (window.firebase && firebase.firestore) {
+        try {
+          await firebase.firestore().enableNetwork();
+          console.log("🌐 Firestore přepnut do ONLINE režimu");
+        } catch (e) {
+          console.warn("⚠️ Nepodařilo se zapnout online režim Firestore:", e);
+        }
+      }
+
       const auth = window.auth || (window.firebase ? firebase.auth() : null);
       const db   = window.db   || (window.firebase ? firebase.firestore() : null);
 
@@ -741,7 +744,7 @@
           emailInput.value = user.email || "";
         }
 
-        // 🔹 NAČTI EXISTUJÍCÍ KARTU Z FIRESTORE
+        // načíst data karty z Firestore
         loadExistingCard(user, db);
       });
 
@@ -1081,8 +1084,17 @@
     }
   </script>
 
-  <!-- API služby – musí být tady, Firebase už je nahoře -->
-  <script src="api-services.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+  <!-- Konfigurace + inicializace Firebase -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
+  <!-- Tvůj společný API skript -->
+  <script src="api-services.js"></script>
 </body>
 </html>
