@@ -2,7 +2,7 @@
 // KARTAO.CZ - API Services pro databázové operace
 // ===============================================
 
-// Služby pro práci s tvůrci
+// =============== CREATOR SERVICE ===============
 class CreatorService {
   constructor() {
     this.db = firebase.firestore();
@@ -13,112 +13,135 @@ class CreatorService {
     try {
       let query = this.db.collection('creators');
 
-      
-      // Základní textové vyhledávání
-      if (filters.q) {
-        // Firestore nemá full-text search, takže simulujeme hledání
-        // V produkci byste použili Algolia, Elasticsearch apod.
-        query = query.where('searchTerms', 'array-contains-any', 
-          filters.q.toLowerCase().split(' ').slice(0, 10)
-        );
+      // Základní textové vyhledávání (simulace přes searchTerms pole)
+      if (filters.q && filters.q.trim()) {
+        const terms = filters.q.toLowerCase().split(' ').slice(0, 10);
+        query = query.where('searchTerms', 'array-contains-any', terms);
       }
-      
+
+      // Kategorie
       if (filters.category && filters.category !== 'all') {
         query = query.where('category', '==', filters.category);
       }
-      
+
+      // Město / region
       if (filters.city && filters.city !== 'all') {
         query = query.where('city', '==', filters.city);
       }
 
-      // Cenové filtry
-      if (filters.minPrice && filters.minPrice > 0) {
+      // Cenové filtry – pokud používáš jedno číslo price
+      if (filters.minPrice && Number(filters.minPrice) > 0) {
         query = query.where('price', '>=', Number(filters.minPrice));
       }
-      
-      if (filters.maxPrice && filters.maxPrice > 0) {
+
+      if (filters.maxPrice && Number(filters.maxPrice) > 0) {
         query = query.where('price', '<=', Number(filters.maxPrice));
       }
 
-      // Rating filter
-      if (filters.minRating && filters.minRating > 0) {
+      // Rating
+      if (filters.minRating && Number(filters.minRating) > 0) {
         query = query.where('rating', '>=', Number(filters.minRating));
       }
-      
+
       const snapshot = await query.limit(filters.limit || 50).get();
+
       let creators = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
-      // Post-processing filtry (kvůli omezením Firestore)
-      
-      // Filtrování podle platformy
+
+      // Post-processing – filtry co nejdou ve Firestore
+
+      // Platforma (pokud používáš creator.platforms = ['instagram','tiktok',...])
       if (filters.platform && filters.platform !== 'all') {
-        creators = creators.filter(creator => 
-          creator.platforms?.includes(filters.platform)
+        creators = creators.filter(creator =>
+          Array.isArray(creator.platforms) &&
+          creator.platforms.includes(filters.platform)
         );
       }
 
-      // Minimum followerů (jen pro specifikovanou platformu)
-      if (filters.minFollowers && filters.minFollowers > 0 && filters.platform && filters.platform !== 'all') {
+      // Minimum followerů na konkrétní platformě
+      if (
+        filters.minFollowers &&
+        Number(filters.minFollowers) > 0 &&
+        filters.platform &&
+        filters.platform !== 'all'
+      ) {
+        const minF = Number(filters.minFollowers);
         creators = creators.filter(creator => {
           const metrics = creator.metrics?.[filters.platform];
-          return metrics?.connected && metrics?.followers >= Number(filters.minFollowers);
+          return metrics?.connected && Number(metrics.followers || 0) >= minF;
         });
       }
 
-      // Premium/ověřené účty
+      // Premium / ověřené účty
       if (filters.premiumOnly) {
         creators = creators.filter(creator => {
-          if (filters.platform && filters.platform !== 'all') {
-            const metrics = creator.metrics?.[filters.platform];
-            return metrics?.verified || (metrics?.followers >= 100000);
-          } else {
-            // Pro všechny platformy - alespoň jedna musí být ověřená nebo 100k+
-            return Object.values(creator.metrics || {}).some(metric => 
-              metric.verified || (metric.followers >= 100000)
-            );
-          }
+          if (creator.verified) return true;
+
+          const metricsObj = creator.metrics || {};
+          return Object.values(metricsObj).some(m =>
+            m &&
+            m.connected &&
+            (m.verified || Number(m.followers || 0) >= 100000)
+          );
         });
       }
 
       // Řazení
       if (filters.sort) {
         switch (filters.sort) {
-          case 'followers':
+          case 'followers': {
             if (filters.platform && filters.platform !== 'all') {
+              const p = filters.platform;
               creators.sort((a, b) => {
-                const aFollowers = a.metrics?.[filters.platform]?.followers || 0;
-                const bFollowers = b.metrics?.[filters.platform]?.followers || 0;
-                return bFollowers - aFollowers;
+                const aF = Number(a.metrics?.[p]?.followers || 0);
+                const bF = Number(b.metrics?.[p]?.followers || 0);
+                return bF - aF;
               });
             } else {
-              // Celkový počet followerů napříč platformami
+              // součet všech followerů
               creators.sort((a, b) => {
-                const aTotal = Object.values(a.metrics || {}).reduce((sum, metric) => 
-                  sum + (metric.followers || 0), 0);
-                const bTotal = Object.values(b.metrics || {}).reduce((sum, metric) => 
-                  sum + (metric.followers || 0), 0);
+                const aTotal = Object.values(a.metrics || {}).reduce(
+                  (sum, m) => sum + Number(m?.followers || 0),
+                  0
+                );
+                const bTotal = Object.values(b.metrics || {}).reduce(
+                  (sum, m) => sum + Number(m?.followers || 0),
+                  0
+                );
                 return bTotal - aTotal;
               });
             }
             break;
+          }
+
           case 'priceLow':
-            creators.sort((a, b) => (a.price || 0) - (b.price || 0));
+            creators.sort(
+              (a, b) => Number(a.price || 0) - Number(b.price || 0)
+            );
             break;
+
           case 'priceHigh':
-            creators.sort((a, b) => (b.price || 0) - (a.price || 0));
+            creators.sort(
+              (a, b) => Number(b.price || 0) - Number(a.price || 0)
+            );
             break;
+
           case 'rating':
-            creators.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            creators.sort(
+              (a, b) => Number(b.rating || 0) - Number(a.rating || 0)
+            );
             break;
+
           case 'newest':
-            creators.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            creators.sort(
+              (a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)
+            );
             break;
         }
       }
-      
+
       return creators;
     } catch (error) {
       console.error('Chyba při vyhledávání tvůrců:', error);
@@ -126,10 +149,11 @@ class CreatorService {
     }
   }
 
-  // Získání social accounts pro tvůrce
+  // Získání social accounts pro tvůrce (pokud kolekci používáš)
   async getSocialAccounts(creatorId) {
     try {
-      const snapshot = await this.db.collection('socialAccounts')
+      const snapshot = await this.db
+        .collection('socialAccounts')
         .where('creatorId', '==', creatorId)
         .get();
 
@@ -163,48 +187,66 @@ class CreatorService {
     return metrics;
   }
 
-  // Filtry které nelze aplikovat na úrovni Firestore
+  // Filtrování na klientovi (text, platforma, followers, premium)
   applyClientSideFilters(creators, filters) {
     let filtered = [...creators];
 
     // Textové hledání
     if (filters.q && filters.q.trim()) {
-      const searchTerm = filters.q.toLowerCase().trim();
-      filtered = filtered.filter(creator => 
-        creator.name.toLowerCase().includes(searchTerm) ||
-        creator.handle.toLowerCase().includes(searchTerm) ||
-        creator.city.toLowerCase().includes(searchTerm) ||
-        creator.category.toLowerCase().includes(searchTerm) ||
-        (creator.bio && creator.bio.toLowerCase().includes(searchTerm))
-      );
+      const search = filters.q.toLowerCase().trim();
+      filtered = filtered.filter(creator => {
+        const name = (creator.name || '').toLowerCase();
+        const handle = (creator.handle || '').toLowerCase();
+        const city = (creator.city || '').toLowerCase();
+        const category = (creator.category || '').toLowerCase();
+        const bio = (creator.bio || '').toLowerCase();
+
+        return (
+          name.includes(search) ||
+          handle.includes(search) ||
+          city.includes(search) ||
+          category.includes(search) ||
+          bio.includes(search)
+        );
+      });
     }
 
-    // Filtrování podle platformy
+    // Platforma
     if (filters.platform && filters.platform !== 'all') {
-      filtered = filtered.filter(creator => 
+      filtered = filtered.filter(creator =>
+        Array.isArray(creator.platforms) &&
         creator.platforms.includes(filters.platform)
       );
     }
 
-    // Filtrování podle minimálních followerů
-    if (filters.minFollowers && filters.platform && filters.platform !== 'all') {
+    // Min followers
+    if (
+      filters.minFollowers &&
+      filters.platform &&
+      filters.platform !== 'all'
+    ) {
+      const minF = Number(filters.minFollowers);
       filtered = filtered.filter(creator => {
-        const platformData = creator.metrics?.[filters.platform];
-        return platformData && platformData.connected && 
-               platformData.followers >= filters.minFollowers;
+        const m = creator.metrics?.[filters.platform];
+        return m && m.connected && Number(m.followers || 0) >= minF;
       });
     }
 
-    // Prémiové účty (ověřené nebo 100k+ followerů)
+    // Premium
     if (filters.premiumOnly) {
       filtered = filtered.filter(creator => {
         if (creator.verified) return true;
-        
-        // Kontrola followerů napříč platformami
+
+        const metricsObj = creator.metrics || {};
         const platforms = ['facebook', 'instagram', 'youtube', 'tiktok'];
-        return platforms.some(platform => {
-          const metric = creator.metrics?.[platform];
-          return metric && metric.connected && metric.followers > 100000;
+
+        return platforms.some(p => {
+          const m = metricsObj[p];
+          return (
+            m &&
+            m.connected &&
+            Number(m.followers || 0) > 100000
+          );
         });
       });
     }
@@ -212,19 +254,18 @@ class CreatorService {
     return filtered;
   }
 
-  // Získání detailu tvůrce
+  // Detail tvůrce
   async getCreatorDetail(id) {
     try {
       const doc = await this.db.collection('creators').doc(id).get();
-      
-      if (!doc.exists) {
-        return null;
-      }
+      if (!doc.exists) return null;
 
       const creatorData = { id: doc.id, ...doc.data() };
       const socialAccounts = await this.getSocialAccounts(id);
-      creatorData.metrics = this.processSocialAccounts(socialAccounts);
-      
+      if (socialAccounts.length) {
+        creatorData.metrics = this.processSocialAccounts(socialAccounts);
+      }
+
       return creatorData;
     } catch (error) {
       console.error('Chyba při načítání detailu tvůrce:', error);
@@ -232,29 +273,30 @@ class CreatorService {
     }
   }
 
-  // Vytvoření/aktualizace profilu tvůrce
+  // Vytvoření / aktualizace profilu tvůrce (doc id = userId)
   async updateCreatorProfile(userId, profileData) {
     try {
       const creatorRef = this.db.collection('creators').doc(userId);
-      
+
       const updateData = {
         ...profileData,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
+      // vytvoří nebo mergne
       await creatorRef.set(updateData, { merge: true });
       return true;
     } catch (error) {
-      console.error('Chyba při aktualizaci profilu:', error);
+      console.error('Chyba při aktualizaci profilu tvůrce:', error);
       return false;
     }
   }
 
-  // Přidání/aktualizace social account
+  // Přidání / update social account
   async updateSocialAccount(creatorId, platform, accountData) {
     try {
-      // Najít existující account nebo vytvořit nový
-      const existingQuery = await this.db.collection('socialAccounts')
+      const existingQuery = await this.db
+        .collection('socialAccounts')
         .where('creatorId', '==', creatorId)
         .where('platform', '==', platform)
         .get();
@@ -267,11 +309,9 @@ class CreatorService {
       };
 
       if (!existingQuery.empty) {
-        // Aktualizace existujícího
         const doc = existingQuery.docs[0];
         await doc.ref.set(updateData, { merge: true });
       } else {
-        // Vytvoření nového
         await this.db.collection('socialAccounts').add(updateData);
       }
 
@@ -283,7 +323,7 @@ class CreatorService {
   }
 }
 
-// Služby pro uživatele
+// =============== USER SERVICE ===============
 class UserService {
   constructor() {
     this.db = firebase.firestore();
@@ -305,7 +345,7 @@ class UserService {
   async updateUserProfile(userId, profileData) {
     try {
       const userRef = this.db.collection('users').doc(userId);
-      
+
       const updateData = {
         ...profileData,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -319,7 +359,7 @@ class UserService {
     }
   }
 
-  // Kontrola role uživatele
+  // Získání role
   async getUserRole(userId) {
     try {
       const profile = await this.getUserProfile(userId);
@@ -330,7 +370,7 @@ class UserService {
     }
   }
 
-  // Nastavení role uživatele
+  // Nastavení role
   async setUserRole(userId, role) {
     try {
       await this.updateUserProfile(userId, { role });
@@ -342,27 +382,28 @@ class UserService {
   }
 }
 
-// Helper funkce pro práci s daty
+// =============== DATA HELPERS ===============
 class DataHelpers {
   static formatFollowers(count) {
-    if (typeof count !== 'number') return null;
-    if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
-    if (count >= 1000) return (count / 1000).toFixed(0) + 'k';
-    return String(count);
+    const n = Number(count);
+    if (Number.isNaN(n)) return null;
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(0) + 'k';
+    return String(n);
   }
 
   static calculateTotalFollowers(metrics, mode = 'sum') {
     const platforms = ['facebook', 'instagram', 'youtube', 'tiktok'];
-    const followers = platforms.map(platform => {
-      const metric = metrics?.[platform];
-      return metric && metric.connected && typeof metric.followers === 'number' 
-        ? metric.followers 
+    const followers = platforms.map(p => {
+      const m = metrics?.[p];
+      return m && m.connected && typeof m.followers === 'number'
+        ? m.followers
         : 0;
     });
 
-    return mode === 'max' 
+    return mode === 'max'
       ? Math.max(0, ...followers)
-      : followers.reduce((sum, count) => sum + count, 0);
+      : followers.reduce((sum, v) => sum + v, 0);
   }
 
   static getPlatformIcon(platform) {
@@ -378,7 +419,7 @@ class DataHelpers {
   static getPlatformLabel(platform) {
     const labels = {
       facebook: 'Facebook',
-      instagram: 'Instagram', 
+      instagram: 'Instagram',
       youtube: 'YouTube',
       tiktok: 'TikTok'
     };
@@ -386,22 +427,7 @@ class DataHelpers {
   }
 }
 
-// Export služeb
-if (typeof window !== 'undefined') {
-  window.CreatorService = CreatorService;
-  window.UserService = UserService;
-  window.ReviewService = ReviewService;
-  window.ChatService = ChatService;
-  window.DataHelpers = DataHelpers;
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { CreatorService, UserService, ReviewService, ChatService, DataHelpers };
-}
-
-// ===============================================
-// REVIEW SERVICE - Správa recenzí a hodnocení
-// ===============================================
+// =============== REVIEW SERVICE ===============
 class ReviewService {
   constructor() {
     this.db = firebase.firestore();
@@ -410,12 +436,13 @@ class ReviewService {
   // Načíst recenze pro tvůrce
   async getCreatorReviews(creatorId, limit = 10) {
     try {
-      const snapshot = await this.db.collection('reviews')
+      const snapshot = await this.db
+        .collection('reviews')
         .where('creatorId', '==', creatorId)
         .orderBy('createdAt', 'desc')
         .limit(limit)
         .get();
-      
+
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -426,20 +453,20 @@ class ReviewService {
     }
   }
 
-  // Vypočítat průměrné hodnocení tvůrce
+  // Průměrné hodnocení
   async getCreatorAverageRating(creatorId) {
     try {
       const reviews = await this.getCreatorReviews(creatorId, 100);
-      
-      if (reviews.length === 0) {
-        return { rating: 0, count: 0 };
-      }
+      if (!reviews.length) return { rating: 0, count: 0 };
 
-      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-      const averageRating = totalRating / reviews.length;
+      const totalRating = reviews.reduce(
+        (sum, r) => sum + Number(r.rating || 0),
+        0
+      );
+      const avg = totalRating / reviews.length;
 
       return {
-        rating: Math.round(averageRating * 10) / 10,
+        rating: Math.round(avg * 10) / 10,
         count: reviews.length
       };
     } catch (error) {
@@ -448,7 +475,7 @@ class ReviewService {
     }
   }
 
-  // Formatovat datum
+  // Formát data
   static formatDate(timestamp) {
     const date = new Date(timestamp);
     return date.toLocaleDateString('cs-CZ', {
@@ -458,88 +485,83 @@ class ReviewService {
     });
   }
 
-  // Vygenerovat hvězdičky
+  // Hvězdičky
   static renderStars(rating) {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    const r = Number(rating) || 0;
+    const full = Math.floor(r);
+    const hasHalf = r - full >= 0.5;
+    const empty = 5 - full - (hasHalf ? 1 : 0);
 
     let stars = '';
-    
-    for (let i = 0; i < fullStars; i++) {
+
+    for (let i = 0; i < full; i++) {
       stars += '<i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>';
     }
-    
-    if (hasHalfStar) {
+    if (hasHalf) {
       stars += '<i data-lucide="star-half" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>';
     }
-    
-    for (let i = 0; i < emptyStars; i++) {
+    for (let i = 0; i < empty; i++) {
       stars += '<i data-lucide="star" class="w-4 h-4 text-gray-400"></i>';
     }
-    
+
     return stars;
   }
 }
 
-// ===============================================
-// CHAT SERVICE - Správa zpráv a konverzací
-// ===============================================
+// =============== CHAT SERVICE ===============
 class ChatService {
   constructor() {
     this.db = firebase.firestore();
   }
 
-  // Vytvoření nebo nalezení konverzace mezi dvěma uživateli
+  // Vytvořit / najít konverzaci mezi dvěma uživateli
   async getOrCreateConversation(userId1, userId2) {
     try {
-      // Hledat existující konverzaci
-      const snapshot = await this.db.collection('conversations')
+      const snapshot = await this.db
+        .collection('conversations')
         .where('participants', 'array-contains', userId1)
         .get();
-      
-      let existingConversation = null;
+
+      let existing = null;
       snapshot.docs.forEach(doc => {
         const data = doc.data();
-        if (data.participants.includes(userId2)) {
-          existingConversation = { id: doc.id, ...data };
+        if (Array.isArray(data.participants) && data.participants.includes(userId2)) {
+          existing = { id: doc.id, ...data };
         }
       });
-      
-      if (existingConversation) {
-        return existingConversation;
-      }
-      
-      // Vytvoření nové konverzace
+
+      if (existing) return existing;
+
+      const now = Date.now();
       const conversationData = {
         participants: [userId1, userId2],
         lastMessage: null,
-        lastActivity: Date.now(),
+        lastActivity: now,
         unreadCount: {
           [userId1]: 0,
           [userId2]: 0
         },
-        createdAt: Date.now()
+        createdAt: now
       };
-      
+
       const docRef = await this.db.collection('conversations').add(conversationData);
       return { id: docRef.id, ...conversationData };
-      
     } catch (error) {
       console.error('Chyba při vytváření konverzace:', error);
       return null;
     }
   }
 
-  // Získání seznamu konverzací pro uživatele
+  // Konverzace uživatele
   async getUserConversations(userId) {
     try {
-      const snapshot = await this.db.collection('conversations')
+      const snapshot = await this.db
+        .collection('conversations')
         .where('participants', 'array-contains', userId)
         .orderBy('lastActivity', 'desc')
         .limit(20)
         .get();
-      
+
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -550,40 +572,36 @@ class ChatService {
     }
   }
 
-  // Odesílání zprávy
+  // Odeslat zprávu
   async sendMessage(conversationId, senderId, text, type = 'text') {
     try {
+      const now = Date.now();
       const messageData = {
         conversationId,
         senderId,
         text: text.trim(),
         type,
         read: false,
-        createdAt: Date.now()
+        createdAt: now
       };
-      
-      // Přidání zprávy
+
       const messageRef = await this.db.collection('messages').add(messageData);
-      
-      // Aktualizace konverzace
+
       const conversationRef = this.db.collection('conversations').doc(conversationId);
-      
-      // Získání info o konverzaci pro update unread
       const conversationDoc = await conversationRef.get();
       const conversationData = conversationDoc.data();
-      
-      const otherParticipant = conversationData.participants.find(p => p !== senderId);
-      
+      const otherParticipant = (conversationData.participants || []).find(p => p !== senderId);
+
       await conversationRef.update({
         lastMessage: {
           text: text.trim().substring(0, 100),
           senderId,
-          createdAt: Date.now()
+          createdAt: now
         },
-        lastActivity: Date.now(),
+        lastActivity: now,
         [`unreadCount.${otherParticipant}`]: firebase.firestore.FieldValue.increment(1)
       });
-      
+
       return messageRef.id;
     } catch (error) {
       console.error('Chyba při odesílání zprávy:', error);
@@ -591,47 +609,46 @@ class ChatService {
     }
   }
 
-  // Načítání zpráv konverzace
+  // Zprávy v konverzaci
   async getMessages(conversationId, limit = 50) {
     try {
-      const snapshot = await this.db.collection('messages')
+      const snapshot = await this.db
+        .collection('messages')
         .where('conversationId', '==', conversationId)
         .orderBy('createdAt', 'desc')
         .limit(limit)
         .get();
-      
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })).reverse(); // Nejnovější nakonec
+
+      return snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .reverse();
     } catch (error) {
       console.error('Chyba při načítání zpráv:', error);
       return [];
     }
   }
 
-  // Označení zpráv jako přečtených
+  // Označit jako přečtené
   async markAsRead(conversationId, userId) {
     try {
       const batch = this.db.batch();
-      
-      // Označení zpráv jako přečtených
-      const messagesSnapshot = await this.db.collection('messages')
+
+      const messagesSnapshot = await this.db
+        .collection('messages')
         .where('conversationId', '==', conversationId)
         .where('read', '==', false)
         .where('senderId', '!=', userId)
         .get();
-      
+
       messagesSnapshot.docs.forEach(doc => {
         batch.update(doc.ref, { read: true });
       });
-      
-      // Resetování unread counter
+
       const conversationRef = this.db.collection('conversations').doc(conversationId);
       batch.update(conversationRef, {
         [`unreadCount.${userId}`]: 0
       });
-      
+
       await batch.commit();
       return true;
     } catch (error) {
@@ -640,9 +657,10 @@ class ChatService {
     }
   }
 
-  // Real-time listener pro zprávy
+  // Real-time listener na zprávy
   listenToMessages(conversationId, callback) {
-    return this.db.collection('messages')
+    return this.db
+      .collection('messages')
       .where('conversationId', '==', conversationId)
       .orderBy('createdAt', 'asc')
       .onSnapshot(callback, error => {
@@ -650,9 +668,10 @@ class ChatService {
       });
   }
 
-  // Real-time listener pro konverzace
+  // Real-time listener na konverzace
   listenToConversations(userId, callback) {
-    return this.db.collection('conversations')
+    return this.db
+      .collection('conversations')
       .where('participants', 'array-contains', userId)
       .orderBy('lastActivity', 'desc')
       .onSnapshot(callback, error => {
@@ -660,28 +679,31 @@ class ChatService {
       });
   }
 
-  // Formatování času zprávy
+  // Formát času zprávy
   static formatMessageTime(timestamp) {
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
-      return date.toLocaleTimeString('cs-CZ', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      return date.toLocaleTimeString('cs-CZ', {
+        hour: '2-digit',
+        minute: '2-digit'
       });
     } else if (diffDays === 1) {
-      return 'Včera ' + date.toLocaleTimeString('cs-CZ', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
+      return (
+        'Včera ' +
+        date.toLocaleTimeString('cs-CZ', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      );
     } else if (diffDays < 7) {
-      return date.toLocaleDateString('cs-CZ', { 
+      return date.toLocaleDateString('cs-CZ', {
         weekday: 'short',
-        hour: '2-digit', 
-        minute: '2-digit' 
+        hour: '2-digit',
+        minute: '2-digit'
       });
     } else {
       return date.toLocaleDateString('cs-CZ', {
@@ -692,10 +714,23 @@ class ChatService {
   }
 }
 
-// Export služeb pro použití v modulech i globálně
+// ===============================================
+// EXPORTY – JEDEN JEDINÝ BLOK NA KONCI SOUBORU
+// ===============================================
 if (typeof window !== 'undefined') {
   window.CreatorService = CreatorService;
   window.UserService = UserService;
-  window.CampaignService = CampaignService;
+  window.ReviewService = ReviewService;
+  window.ChatService = ChatService;
   window.DataHelpers = DataHelpers;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    CreatorService,
+    UserService,
+    ReviewService,
+    ChatService,
+    DataHelpers
+  };
 }
