@@ -35,7 +35,7 @@
     <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <!-- Logo / název -->
-        <a href="moje-firma.html" class="flex items-center gap-3">
+        <a href="firma-dashboard.html" class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
             <i data-lucide="crown" class="w-5 h-5"></i>
           </div>
@@ -265,9 +265,16 @@
           return;
         }
 
-        // Uložíme skutečného uživatele, ale kredity jdou na firmu
+        // Uložíme skutečného uživatele, ale K-Coins řešíme přes firemní účet
         window.currentUserId = user.uid;
-        window.currentFirmId = localStorage.getItem("kartao_firma_id") || user.uid;
+
+        const firmId = localStorage.getItem("kartao_firma_id");
+        if (!firmId) {
+          console.warn("Na stránce dobíjení chybí kartao_firma_id – nejdřív musí být vybraná / založená firma.");
+          window.currentFirmId = null;
+        } else {
+          window.currentFirmId = firmId;
+        }
 
         let creditsSystem;
         try {
@@ -275,11 +282,12 @@
             throw new Error("CreditsSystem není dostupný – zkontroluj credits-system.js");
           }
 
-          // 🔁 Přesměrování kreditů na firemní účet
-          const firmId = localStorage.getItem("kartao_firma_id");
-          const targetId = firmId ? firmId : user.uid;
+          // 🔁 Kredity jsou svázané s firemním účtem
+          if (!window.currentFirmId) {
+            throw new Error("Nelze inicializovat CreditsSystem – není nastavená firmId (kartao_firma_id).");
+          }
 
-          creditsSystem = new window.CreditsSystem(targetId);
+          creditsSystem = new window.CreditsSystem(window.currentFirmId);
 
           // Pro debug
           window.creditSys = {
