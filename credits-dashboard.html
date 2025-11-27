@@ -93,11 +93,15 @@
         </div>
         <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
           <p class="text-xs text-white/60">Streak</p>
-          <p class="text-2xl font-semibold text-emerald-300">12 dní</p>
+          <p class="text-2xl font-semibold text-emerald-300">
+            <span id="streakValue">0</span> dní
+          </p>
         </div>
         <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
           <p class="text-xs text-white/60">Level</p>
-          <p class="text-2xl font-semibold text-fuchsia-300">18</p>
+          <p class="text-2xl font-semibold text-fuchsia-300">
+            <span id="levelValue">1</span>
+          </p>
         </div>
       </div>
     </section>
@@ -335,7 +339,7 @@
   <!-- Centrální kreditní systém -->
   <script src="credits-system.js"></script>
 
-  <!-- Dashboard JS + kontrola přihlášení -->
+  <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.lucide) {
@@ -343,8 +347,10 @@
       }
 
       const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
-      if (!auth) {
-        console.warn("Auth není dostupné na credits-dashboard.html – zkontroluj firebase-config.js a firebase-init.js");
+      const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
+
+      if (!auth || !db) {
+        console.warn("Auth nebo DB nejsou dostupné na credits-dashboard.html – zkontroluj firebase-config.js a firebase-init.js");
         return;
       }
 
@@ -359,42 +365,53 @@
         const creditSys = new CreditsSystem(user.uid);
 
         // DOM prvky
-        const creditsValueEl = document.getElementById("creditsValue");
-        const creditsValueHeroEl = document.getElementById("creditsValueHero");
-        const watchAdButton = document.getElementById("watchAdButton");
-        const adOverlay = document.getElementById("adOverlay");
-        const adCountdownSpan = document.getElementById("adCountdown");
-        const adMessage = document.getElementById("adMessage");
-        const adCounter = document.getElementById("adCounter");
-        const adVideo = document.getElementById("adVideo");
-        const adSrc = document.getElementById("adSrc");
-        const nextAdButton = document.getElementById("nextAdButton");
-        const resetButton = document.getElementById("resetAdsButton");
+        const creditsValueEl       = document.getElementById("creditsValue");
+        const creditsValueHeroEl   = document.getElementById("creditsValueHero");
+        const streakValueEl        = document.getElementById("streakValue");
+        const levelValueEl         = document.getElementById("levelValue");
 
-        const adCloseButton = document.getElementById("adCloseButton");
-        const adPauseToggle = document.getElementById("adPauseToggle");
-        const adMuteToggle = document.getElementById("adMuteToggle");
+        const watchAdButton        = document.getElementById("watchAdButton");
+        const adOverlay            = document.getElementById("adOverlay");
+        const adCountdownSpan      = document.getElementById("adCountdown");
+        const adMessage            = document.getElementById("adMessage");
+        const adCounter            = document.getElementById("adCounter");
+        const adVideo              = document.getElementById("adVideo");
+        const adSrc                = document.getElementById("adSrc");
+        const nextAdButton         = document.getElementById("nextAdButton");
+        const resetButton          = document.getElementById("resetAdsButton");
 
-        const taskStatsItem = document.getElementById("taskStats");
-        const taskStatsBadge = document.getElementById("taskStatsBadge");
-        const taskCampaignItem = document.getElementById("taskCampaign");
-        const taskCampaignBadge = document.getElementById("taskCampaignBadge");
-        const campaignList = document.getElementById("campaignList");
-        const taskWatchAdBadge = document.getElementById("taskWatchAdBadge");
-        const taskWatchAdDone = document.getElementById("taskWatchAdDone");
+        const adCloseButton        = document.getElementById("adCloseButton");
+        const adPauseToggle        = document.getElementById("adPauseToggle");
+        const adMuteToggle         = document.getElementById("adMuteToggle");
+
+        const taskStatsItem        = document.getElementById("taskStats");
+        const taskStatsBadge       = document.getElementById("taskStatsBadge");
+        const taskCampaignItem     = document.getElementById("taskCampaign");
+        const taskCampaignBadge    = document.getElementById("taskCampaignBadge");
+        const campaignList         = document.getElementById("campaignList");
+        const taskWatchAdBadge     = document.getElementById("taskWatchAdBadge");
+        const taskWatchAdDone      = document.getElementById("taskWatchAdDone");
         const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
-        const dailyTasksSection = document.getElementById("dailyTasksSection");
-        const adCooldown = document.getElementById("adCooldown");
-        const topupTestButton = document.getElementById("topupTestButton");
+        const dailyTasksSection    = document.getElementById("dailyTasksSection");
+        const adCooldown           = document.getElementById("adCooldown");
+        const topupTestButton      = document.getElementById("topupTestButton");
 
         // Mini historie Mystery Boxu
-        const mysteryBoxMiniHistory = document.getElementById("mysteryBoxMiniHistory");
+        const mysteryBoxMiniHistory     = document.getElementById("mysteryBoxMiniHistory");
         const mysteryBoxMiniHistoryList = document.getElementById("mysteryBoxMiniHistoryList");
-        const MYSTERY_HISTORY_KEY = "kartao_mysteryBox_history";
+        const MYSTERY_HISTORY_KEY       = "kartao_mysteryBox_history";
 
-        let adTimer = null;
-        let adInProgress = false;
+        let adTimer       = null;
+        let adInProgress  = false;
         let cooldownTimer = null;
+
+        function todayString() {
+          const d = new Date();
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
 
         function formatNumber(num) {
           const s = String(num);
@@ -455,11 +472,65 @@
         function syncCreditsDisplay() {
           const credits = creditSys.getCredits();
           const formatted = formatNumber(credits);
-          if (creditsValueEl) creditsValueEl.textContent = formatted;
+          if (creditsValueEl)     creditsValueEl.textContent     = formatted;
           if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
         }
 
         syncCreditsDisplay();
+
+        // === STREAK + LEVEL – Firestore: users/{uid} ===
+        async function syncStreakAndLevel() {
+          try {
+            const ref  = db.collection("users").doc(user.uid);
+            const snap = await ref.get();
+            const data = snap.exists ? (snap.data() || {}) : {};
+
+            const today = todayString();
+            let streak  = Number.isFinite(data.streakDays) ? data.streakDays : 0;
+            let last    = data.lastActiveDate || null;
+
+            // jednoduchá logika streaku:
+            // - první den: 1
+            // - nový den: streak + 1
+            // (neřešíme zatím mezery = MVP)
+            if (last === today) {
+              // nic
+            } else if (last) {
+              streak = streak + 1;
+            } else {
+              streak = 1;
+            }
+
+            // kredity z dokumentu (primárně z Firestore)
+            let credits = 0;
+            if (typeof data.credits === "number") {
+              credits = data.credits;
+            } else {
+              credits = creditSys.getCredits();
+            }
+
+            // jednoduché pravidlo levelu: každých 100 K-Coins = +1 level, min 1
+            let level = Math.max(1, Math.floor(credits / 100) + 1);
+
+            // update Firestore
+            await ref.set(
+              {
+                streakDays: streak,
+                lastActiveDate: today,
+                level: level
+              },
+              { merge: true }
+            );
+
+            // update UI
+            if (streakValueEl) streakValueEl.textContent = String(streak);
+            if (levelValueEl)  levelValueEl.textContent  = String(level);
+          } catch (e) {
+            console.warn("Dashboard: chyba při sync streak/level:", e);
+          }
+        }
+
+        syncStreakAndLevel();
 
         function getDaily() {
           return creditSys.getDailyState();
@@ -492,10 +563,10 @@
         }
 
         function updateUIFromDaily() {
-          const daily = getDaily();
-          const maxAds = daily.maxAds || 5;
-          const cooldownMs = creditSys.getAdsCooldownRemainingMs();
-          const inCooldown = cooldownMs > 0;
+          const daily   = getDaily();
+          const maxAds  = daily.maxAds || 5;
+          const cooldownMs  = creditSys.getAdsCooldownRemainingMs();
+          const inCooldown  = cooldownMs > 0;
 
           if (adCounter) {
             adCounter.textContent = `Dnes: ${daily.adsWatched} / ${maxAds}`;
@@ -655,9 +726,10 @@
               const ok = creditSys.addAdWatch();
               if (ok) {
                 creditSys.addCredits(4);
+                syncCreditsDisplay();
+                // po změně kreditů přepočítáme level
+                syncStreakAndLevel();
               }
-
-              syncCreditsDisplay();
 
               if (adCountdownSpan) {
                 adCountdownSpan.innerHTML =
@@ -665,8 +737,8 @@
               }
 
               if (nextAdButton) {
-                const dailyAfter = getDaily();
-                const maxAdsAfter = dailyAfter.maxAds || 5;
+                const dailyAfter   = getDaily();
+                const maxAdsAfter  = dailyAfter.maxAds || 5;
                 if (dailyAfter.adsWatched < maxAdsAfter) {
                   nextAdButton.innerHTML =
                     "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
@@ -708,13 +780,14 @@
           topupTestButton.addEventListener("click", function () {
             creditSys.addCredits(50);
             syncCreditsDisplay();
+            syncStreakAndLevel();
             alert("Test: připsáno +50 K-Coins");
           });
         }
 
         if (watchAdButton) {
           watchAdButton.addEventListener("click", function () {
-            const daily = getDaily();
+            const daily  = getDaily();
             const maxAds = daily.maxAds || 5;
 
             if (creditSys.hasAdsCooldown()) {
@@ -767,7 +840,7 @@
 
         if (nextAdButton) {
           nextAdButton.addEventListener("click", function () {
-            const daily = getDaily();
+            const daily  = getDaily();
             const maxAds = daily.maxAds || 5;
 
             if (daily.adsWatched >= maxAds) {
@@ -805,6 +878,7 @@
             if (newlyDone) {
               creditSys.addCredits(5);
               syncCreditsDisplay();
+              syncStreakAndLevel();
               updateUIFromDaily();
             }
           });
@@ -827,6 +901,7 @@
               if (newlyDone) {
                 creditSys.addCredits(6);
                 syncCreditsDisplay();
+                syncStreakAndLevel();
                 updateUIFromDaily();
               }
               if (campaignList) campaignList.classList.add("hidden");
