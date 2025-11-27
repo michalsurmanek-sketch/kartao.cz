@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Kreditní systém</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Pozadí – modro-černý přechod -->
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 60% 140%, rgba(14,165,233,0.55) 0%, rgba(2,6,23,0.90) 40%, #020617 90%),
+        linear-gradient(to bottom right, #020617 65%, #0ea5e9 120%);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+  <!-- HLAVIČKA -->
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <a href="moje-karta.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-lg">Kartao.cz</span>
+            <span class="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-400/40">Kreditní zóna</span>
+          </div>
+          <p class="text-xs text-white/60">K-Coins · gamifikace pro tvůrce</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex flex-col items-end text-xs">
+          <span class="text-white/60">Tvoje současné kredity</span>
+          <span class="font-semibold text-amber-300 text-sm"><span id="creditsValue">0</span> K-Coins</span>
+        </div>
+        <button id="topupTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span>Dobít kredity</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Drobečková navigace -->
+  <nav class="max-w-6xl mx-auto px-4 py-3 text-sm text-white/60 flex items-center gap-2">
+    <a href="index.html" class="hover:text-white transition">Domů</a>
+    <span>/</span>
+    <span class="text-white">Kreditní systém</span>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <!-- HERO -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft text-center">
+      <h1 class="text-3xl font-semibold mb-2">Kreditní systém <span class="text-amber-300">K-Coins</span></h1>
+      <p class="text-white/70 max-w-xl mx-auto mb-6">
+        Plň úkoly, dokončuj kampaně a získávej kredity. Za kredity můžeš kupovat VIP, zvýraznění profilu,
+        mystery boxy a další bonusy.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Kredity</p>
+          <p class="text-2xl font-semibold text-amber-300">
+            <span id="creditsValueHero">0</span>
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Streak</p>
+          <p class="text-2xl font-semibold text-emerald-300">
+            <span id="streakValue">0</span> dní
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <p class="text-xs text-white/60">Level</p>
+          <p class="text-2xl font-semibold text-fuchsia-300">
+            <span id="levelValue">1</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REKLAMNÍ ODMĚNY -->
+    <section class="rounded-3xl border border-amber-400/30 bg-amber-500/5 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i data-lucide="play" class="w-5 h-5 text-amber-300"></i>
+        Reklamní odměny
+      </h2>
+
+      <p class="text-white/70 text-sm mb-4 max-w-2xl">
+        Sleduj krátké reklamy (cca 10 sekund) a získej okamžité kredity.
+        Každá reklama dává <span class="text-amber-300 font-semibold">+4 K-Coins</span>.
+        Limit je 5 reklam denně (max. 20 K-Coins).
+      </p>
+
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center justify-between gap-4 flex-col sm:flex-row">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-amber-400/20 flex items-center justify-center">
+            <i data-lucide="play-circle" class="w-6 h-6 text-amber-300"></i>
+          </div>
+          <div>
+            <p class="font-medium text-sm">Sleduj reklamu a získej kredity</p>
+            <p class="text-xs text-white/60">Limit: 5 reklam denně · 20 K-Coins maximálně</p>
+          </div>
+        </div>
+        <button id="watchAdButton" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 font-semibold text-neutral-900 text-sm shadow-soft w-full sm:w-auto">
+          Spustit reklamu
+        </button>
+      </div>
+
+      <div id="adStatus" class="mt-4 text-xs text-white/70 flex items-center justify-between gap-3 flex-col sm:flex-row">
+        <span id="adMessage">Připraveno ke spuštění reklamy.</span>
+        <span id="adCounter" class="text-amber-300">Dnes: 0 / 5</span>
+      </div>
+
+      <div class="mt-2 flex justify-end">
+        <button id="resetAdsButton" class="text-[11px] text-white/40 hover:text-white underline underline-offset-2">
+          Resetovat denní limit (test)
+        </button>
+      </div>
+
+      <!-- OVERLAY S VIDEEM -->
+      <div id="adOverlay" class="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 gap-4 hidden">
+        <div class="w-full max-w-5xl">
+          <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-soft border border-white/10">
+            <video id="adVideo" class="w-full h-auto max-h-[90vh] object-contain" muted playsinline>
+              <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            </video>
+
+            <!-- Odpočet -->
+            <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs">
+              <div class="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
+              <div class="text-right">
+                <p class="font-medium text-white/90">Reklama běží…</p>
+                <p class="text-[11px] text-white/70"><span id="adCountdown">10</span></p>
+              </div>
+            </div>
+
+            <!-- Další / Zavřít -->
+            <button id="nextAdButton" class="hidden absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs text-amber-300 font-medium">
+              <i data-lucide="skip-forward" class="w-4 h-4 text-amber-300"></i>
+              <span>Další reklama</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- OVLÁDACÍ PANEL VIDEA -->
+        <div id="adControlPanel" class="flex items-center gap-3 mt-2">
+          <button id="adMuteToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+            Zvuk
+          </button>
+          <button id="adPauseToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
+            <i data-lucide="pause" class="w-4 h-4"></i>
+            Zastavit
+          </button>
+          <button id="adCloseButton" class="px-3 py-1.5 rounded-full bg-red-500/80 text-neutral-900 text-xs flex items-center gap-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            Zavřít
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DENNÍ ÚKOLY -->
+    <section id="dailyTasksSection" class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i data-lucide="list-checks" class="w-5 h-5 text-amber-300"></i>
+        Denní úkoly
+      </h2>
+      <ul class="space-y-3 text-sm">
+        <!-- Přihlášení – vždy splněno, protože bez loginu se sem nedostane -->
+        <li class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <span>Přihlas se dnes</span>
+          <span class="text-emerald-300 text-xs flex items-center gap-1">
+            +2 <i data-lucide="coins" class="w-3 h-3"></i>
+            <span class="text-emerald-300 text-[11px] font-medium ml-2">Splněno ✓</span>
+          </span>
+        </li>
+
+        <!-- Aktualizuj statistiky -->
+        <li id="taskStats" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+          <span>Aktualizuj statistiky</span>
+          <span id="taskStatsBadge" class="text-red-400 text-xs flex items-center gap-1">
+            +5 <i data-lucide="coins" class="w-3 h-3"></i>
+          </span>
+        </li>
+
+        <!-- Odpověz na kampaň -->
+        <li id="taskCampaign" class="p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+          <div class="flex items-center justify-between gap-2">
+            <span>Odpověz na kampaň</span>
+            <span id="taskCampaignBadge" class="text-red-400 text-xs flex items-center gap-1">
+              +6 <i data-lucide="coins" class="w-3 h-3"></i>
+            </span>
+          </div>
+          <!-- Rozbalená nabídka dvou kampaní -->
+          <div id="campaignList" class="mt-3 hidden w-full text-xs text-white/80 space-y-2">
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3 flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-sm">Kampaň #1 – Produktová spolupráce</p>
+                <p class="text-[11px] text-white/60">Story + 1 feed post · rozpočet 3 000 Kč</p>
+              </div>
+              <button class="campaign-respond px-3 py-1.5 rounded-full bg-emerald-500/90 text-neutral-900 text-[11px] font-semibold">
+                Odpovědět
+              </button>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3 flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-sm">Kampaň #2 – Uvedení nového e-shopu</p>
+                <p class="text-[11px] text-white/60">Reels + swipe up · barter + odměna</p>
+              </div>
+              <button class="campaign-respond px-3 py-1.5 rounded-full bg-emerald-500/90 text-neutral-900 text-[11px] font-semibold">
+                Odpovědět
+              </button>
+            </div>
+          </div>
+        </li>
+
+        <!-- Karta Mystery Boxu -->
+        <a
+          href="mystery-box.html"
+          class="group relative overflow-hidden rounded-3xl border border-amber-400/40 bg-gradient-to-br from-neutral-950 via-sky-950 to-amber-900/40 p-4 shadow-soft flex flex-col gap-2 hover:brightness-110 transition"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-300/40 text-[11px] text-amber-100">
+                Mystery Box
+                <span class="uppercase tracking-wide text-[10px] text-amber-200">Novinka</span>
+              </div>
+              <h3 class="mt-2 text-sm font-semibold text-white">
+                K-Coins Mystery Box
+              </h3>
+              <p class="mt-1 text-xs text-sky-100/80">
+                Vyměň 30 K-Coins za šanci získat až +50 K-Coins, VIP den nebo slevu 10 %.
+              </p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/60">
+              <span class="text-xl font-extrabold text-neutral-950"> 🎁 </span>
+            </div>
+          </div>
+
+          <!-- MINI HISTORIE VÝHER (jen náhled) -->
+          <div
+            id="mysteryBoxMiniHistory"
+            class="mt-3 pt-2 border-t border-amber-400/30 text-[11px] text-amber-50/85 hidden"
+          >
+            <p class="mb-1 text-[11px] text-amber-100/80">
+              Poslední výhry z Mystery Boxu:
+            </p>
+            <ul id="mysteryBoxMiniHistoryList" class="space-y-0.5"></ul>
+          </div>
+        </a>
+
+        <!-- Sleduj krátkou reklamu -->
+        <li id="taskWatchAd" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+          <span class="flex items-center gap-2">
+            <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
+            <span>Sleduj krátkou reklamu (10 s)</span>
+          </span>
+          <span id="taskWatchAdBadge" class="text-red-400 text-xs flex flex-col items-end gap-0.5">
+            <span class="inline-flex items-center gap-1">+4 <i data-lucide="coins" class="w-3 h-3"></i></span>
+            <span class="text-[10px] text-white/60">Max. 5× denně</span>
+            <span id="taskWatchAdDone" class="hidden text-[11px] font-medium mt-0.5">Splněno ✓</span>
+            <span id="adCooldown" class="hidden text-[11px] text-white/60">Další reklamy za 24:00:00</span>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ODMĚNY ZA KREDITY -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i data-lucide="gift" class="w-5 h-5 text-fuchsia-300"></i>
+        Odměny za kredity
+      </h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm">
+          <p class="font-semibold mb-1">Zvýraznění karty</p>
+          <p class="text-xs text-white/70 mb-2">24 hodin top pozice v Marketplace.</p>
+          <span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-amber-300 text-xs">
+            40 <i data-lucide="coins" class="w-3 h-3"></i>
+          </span>
+        </div>
+        <div class="rounded-xl border border-fuchsia-400/40 bg-fuchsia-500/10 p-4 text-sm">
+          <p class="font-semibold mb-1">VIP profil 7 dní</p>
+          <p class="text-xs text-white/70 mb-2">Lepší pozice &amp; VIP styl.</p>
+          <span class="inline-flex items-center gap-1 bg-neutral-950/40 px-2 py-1 rounded-full text-fuchsia-300 text-xs">
+            300 <i data-lucide="coins" class="w-3 h-3"></i>
+          </span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 text-center text-white/50 py-4 text-xs">
+    © 2025 Kartao.cz – Kreditní systém K-Coins
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- Konfigurace + jednotná inicializace -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
+  <!-- Další inicializace (pokud máš) -->
+  <script src="database-init.js"></script>
+
+  <!-- Centrální kreditní systém -->
+  <script src="credits-system.js"></script>
+
+  <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
+
+      if (!auth || !db) {
+        console.warn("Auth nebo DB nejsou dostupné na credits-dashboard.html – zkontroluj firebase-config.js a firebase-init.js");
+        return;
+      }
+
+      auth.onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        window.currentUserId = user.uid;
+
+        const creditSys = new CreditsSystem(user.uid);
+
+        // DOM prvky
+        const creditsValueEl       = document.getElementById("creditsValue");
+        const creditsValueHeroEl   = document.getElementById("creditsValueHero");
+        const streakValueEl        = document.getElementById("streakValue");
+        const levelValueEl         = document.getElementById("levelValue");
+
+        const watchAdButton        = document.getElementById("watchAdButton");
+        const adOverlay            = document.getElementById("adOverlay");
+        const adCountdownSpan      = document.getElementById("adCountdown");
+        const adMessage            = document.getElementById("adMessage");
+        const adCounter            = document.getElementById("adCounter");
+        const adVideo              = document.getElementById("adVideo");
+        const adSrc                = document.getElementById("adSrc");
+        const nextAdButton         = document.getElementById("nextAdButton");
+        const resetButton          = document.getElementById("resetAdsButton");
+
+        const adCloseButton        = document.getElementById("adCloseButton");
+        const adPauseToggle        = document.getElementById("adPauseToggle");
+        const adMuteToggle         = document.getElementById("adMuteToggle");
+
+        const taskStatsItem        = document.getElementById("taskStats");
+        const taskStatsBadge       = document.getElementById("taskStatsBadge");
+        const taskCampaignItem     = document.getElementById("taskCampaign");
+        const taskCampaignBadge    = document.getElementById("taskCampaignBadge");
+        const campaignList         = document.getElementById("campaignList");
+        const taskWatchAdBadge     = document.getElementById("taskWatchAdBadge");
+        const taskWatchAdDone      = document.getElementById("taskWatchAdDone");
+        const campaignRespondButtons = document.querySelectorAll(".campaign-respond");
+        const dailyTasksSection    = document.getElementById("dailyTasksSection");
+        const adCooldown           = document.getElementById("adCooldown");
+        const topupTestButton      = document.getElementById("topupTestButton");
+
+        // Mini historie Mystery Boxu
+        const mysteryBoxMiniHistory     = document.getElementById("mysteryBoxMiniHistory");
+        const mysteryBoxMiniHistoryList = document.getElementById("mysteryBoxMiniHistoryList");
+        const MYSTERY_HISTORY_KEY       = "kartao_mysteryBox_history";
+
+        let adTimer       = null;
+        let adInProgress  = false;
+        let cooldownTimer = null;
+
+        function todayString() {
+          const d = new Date();
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+
+        function formatNumber(num) {
+          const s = String(num);
+          let out = "";
+          let count = 0;
+          for (let i = s.length - 1; i >= 0; i--) {
+            out = s[i] + out;
+            count++;
+            if (count === 3 && i > 0) {
+              out = " " + out;
+              count = 0;
+            }
+          }
+          return out;
+        }
+
+        function formatMs(ms) {
+          const h = Math.floor(ms / 3600000);
+          const m = Math.floor((ms % 3600000) / 60000);
+          const s = Math.floor((ms % 60000) / 1000);
+          return (
+            String(h).padStart(2, "0") +
+            ":" +
+            String(m).padStart(2, "0") +
+            ":" +
+            String(s).padStart(2, "0")
+          );
+        }
+
+        function stopCooldownTimer() {
+          if (cooldownTimer) {
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
+          }
+        }
+
+        function startCooldownTimer() {
+          if (!adCooldown) return;
+
+          stopCooldownTimer();
+
+          function tick() {
+            const ms = creditSys.getAdsCooldownRemainingMs();
+            if (ms <= 0) {
+              adCooldown.classList.add("hidden");
+              stopCooldownTimer();
+              updateUIFromDaily();
+              return;
+            }
+            adCooldown.classList.remove("hidden");
+            adCooldown.textContent = "Další reklamy za " + formatMs(ms);
+          }
+
+          tick();
+          cooldownTimer = setInterval(tick, 1000);
+        }
+
+        function syncCreditsDisplay() {
+          const credits = creditSys.getCredits();
+          const formatted = formatNumber(credits);
+          if (creditsValueEl)     creditsValueEl.textContent     = formatted;
+          if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
+        }
+
+        syncCreditsDisplay();
+
+        // === STREAK + LEVEL – Firestore: users/{uid} ===
+        async function syncStreakAndLevel() {
+          try {
+            const ref  = db.collection("users").doc(user.uid);
+            const snap = await ref.get();
+            const data = snap.exists ? (snap.data() || {}) : {};
+
+            const today = todayString();
+            let streak  = Number.isFinite(data.streakDays) ? data.streakDays : 0;
+            let last    = data.lastActiveDate || null;
+
+            // jednoduchá logika streaku:
+            // - první den: 1
+            // - nový den: streak + 1
+            // (neřešíme zatím mezery = MVP)
+            if (last === today) {
+              // nic
+            } else if (last) {
+              streak = streak + 1;
+            } else {
+              streak = 1;
+            }
+
+            // kredity z dokumentu (primárně z Firestore)
+            let credits = 0;
+            if (typeof data.credits === "number") {
+              credits = data.credits;
+            } else {
+              credits = creditSys.getCredits();
+            }
+
+            // jednoduché pravidlo levelu: každých 100 K-Coins = +1 level, min 1
+            let level = Math.max(1, Math.floor(credits / 100) + 1);
+
+            // update Firestore
+            await ref.set(
+              {
+                streakDays: streak,
+                lastActiveDate: today,
+                level: level
+              },
+              { merge: true }
+            );
+
+            // update UI
+            if (streakValueEl) streakValueEl.textContent = String(streak);
+            if (levelValueEl)  levelValueEl.textContent  = String(level);
+          } catch (e) {
+            console.warn("Dashboard: chyba při sync streak/level:", e);
+          }
+        }
+
+        syncStreakAndLevel();
+
+        function getDaily() {
+          return creditSys.getDailyState();
+        }
+
+        const videos = [
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+        ];
+
+        function setTaskBadgeState(badgeEl, done) {
+          if (!badgeEl) return;
+          badgeEl.classList.remove("text-red-400", "text-emerald-300");
+          const doneLabel = badgeEl.querySelector(".task-done-label");
+          if (done) {
+            badgeEl.classList.add("text-emerald-300");
+            if (!doneLabel) {
+              const label = document.createElement("span");
+              label.className = "task-done-label text-emerald-300 text-[11px] font-medium ml-2";
+              label.textContent = "Splněno ✓";
+              badgeEl.appendChild(label);
+            }
+          } else {
+            badgeEl.classList.add("text-red-400");
+            if (doneLabel) doneLabel.remove();
+          }
+        }
+
+        function updateUIFromDaily() {
+          const daily   = getDaily();
+          const maxAds  = daily.maxAds || 5;
+          const cooldownMs  = creditSys.getAdsCooldownRemainingMs();
+          const inCooldown  = cooldownMs > 0;
+
+          if (adCounter) {
+            adCounter.textContent = `Dnes: ${daily.adsWatched} / ${maxAds}`;
+          }
+
+          if (watchAdButton) {
+            const reachedLimit = daily.adsWatched >= maxAds;
+            watchAdButton.disabled = reachedLimit || adInProgress || inCooldown;
+            watchAdButton.classList.toggle("opacity-60", watchAdButton.disabled);
+            watchAdButton.classList.toggle("cursor-not-allowed", watchAdButton.disabled);
+          }
+
+          if (adCooldown) {
+            if (inCooldown) {
+              adCooldown.classList.remove("hidden");
+              adCooldown.textContent = "Další reklamy za " + formatMs(cooldownMs);
+              startCooldownTimer();
+            } else {
+              adCooldown.classList.add("hidden");
+            }
+          }
+
+          if (taskWatchAdBadge && taskWatchAdDone) {
+            taskWatchAdBadge.classList.remove("text-red-400", "text-emerald-300");
+            if (daily.adsWatched >= maxAds) {
+              taskWatchAdBadge.classList.add("text-emerald-300");
+              taskWatchAdDone.classList.remove("hidden");
+            } else {
+              taskWatchAdBadge.classList.add("text-red-400");
+              taskWatchAdDone.classList.add("hidden");
+            }
+          }
+
+          const tasks = daily.tasks || {};
+          setTaskBadgeState(taskStatsBadge, !!tasks.stats);
+          setTaskBadgeState(taskCampaignBadge, !!tasks.campaign);
+        }
+
+        function scrollToDailyTasks() {
+          if (dailyTasksSection) {
+            dailyTasksSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+
+        function loadMysteryHistory() {
+          try {
+            const raw = localStorage.getItem(MYSTERY_HISTORY_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            console.warn("Dashboard: chyba při načítání mystery history:", e);
+            return [];
+          }
+        }
+
+        function formatMysteryHistoryTime(isoString) {
+          const d = new Date(isoString);
+          if (isNaN(d.getTime())) return "";
+
+          const now = new Date();
+          const isToday =
+            d.getFullYear() === now.getFullYear() &&
+            d.getMonth() === now.getMonth() &&
+            d.getDate() === now.getDate();
+
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+
+          if (isToday) {
+            return `${hh}:${mm} dnes`;
+          }
+
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mo = String(d.getMonth() + 1).padStart(2, "0");
+          return `${dd}.${mo}. ${hh}:${mm}`;
+        }
+
+        function renderMiniMysteryHistory() {
+          if (!mysteryBoxMiniHistory || !mysteryBoxMiniHistoryList) return;
+
+          const history = loadMysteryHistory();
+          if (!history.length) {
+            mysteryBoxMiniHistory.classList.add("hidden");
+            mysteryBoxMiniHistoryList.innerHTML = "";
+            return;
+          }
+
+          const latest = history.slice(0, 3);
+
+          mysteryBoxMiniHistory.classList.remove("hidden");
+          mysteryBoxMiniHistoryList.innerHTML = "";
+
+          latest.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = "flex items-center justify-between gap-2 text-[11px]";
+
+            const labelSpan = document.createElement("span");
+            labelSpan.className = "font-medium";
+            labelSpan.textContent = item.label;
+
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "text-[10px] text-amber-100/70";
+            timeSpan.textContent = formatMysteryHistoryTime(item.ts);
+
+            li.appendChild(labelSpan);
+            li.appendChild(timeSpan);
+            mysteryBoxMiniHistoryList.appendChild(li);
+          });
+        }
+
+        updateUIFromDaily();
+        renderMiniMysteryHistory();
+
+        if (creditSys.hasAdsCooldown()) {
+          startCooldownTimer();
+        }
+
+        function startAd() {
+          const daily = getDaily();
+          const maxAds = daily.maxAds || 5;
+          if (!watchAdButton || !adOverlay || !adCountdownSpan) return;
+          if (daily.adsWatched >= maxAds || adInProgress) return;
+
+          adInProgress = true;
+          let remaining = 10;
+          adCountdownSpan.textContent = String(remaining);
+          adOverlay.classList.remove("hidden");
+          if (nextAdButton) nextAdButton.classList.add("hidden");
+          if (adMessage) adMessage.textContent = "Reklama běží…";
+
+          if (adVideo && adSrc) {
+            try {
+              const index = daily.adsWatched % videos.length;
+              adSrc.src = videos[index];
+              adVideo.load();
+              adVideo.currentTime = 0;
+              const playPromise = adVideo.play();
+              if (playPromise && playPromise.catch) playPromise.catch(function () {});
+            } catch (e) {}
+          }
+
+          updateUIFromDaily();
+
+          if (adTimer) {
+            window.clearInterval(adTimer);
+          }
+
+          adTimer = window.setInterval(function () {
+            remaining -= 1;
+
+            if (remaining <= 0) {
+              window.clearInterval(adTimer);
+              adTimer = null;
+              adInProgress = false;
+
+              const ok = creditSys.addAdWatch();
+              if (ok) {
+                creditSys.addCredits(4);
+                syncCreditsDisplay();
+                // po změně kreditů přepočítáme level
+                syncStreakAndLevel();
+              }
+
+              if (adCountdownSpan) {
+                adCountdownSpan.innerHTML =
+                  "<span style='color:#4ade80;font-weight:600'>připsáno&nbsp;+4&nbsp;K-Coins</span>";
+              }
+
+              if (nextAdButton) {
+                const dailyAfter   = getDaily();
+                const maxAdsAfter  = dailyAfter.maxAds || 5;
+                if (dailyAfter.adsWatched < maxAdsAfter) {
+                  nextAdButton.innerHTML =
+                    "<i data-lucide='skip-forward' class='w-4 h-4 text-amber-300'></i><span>Další reklama</span>";
+                } else {
+                  nextAdButton.innerHTML =
+                    "<i data-lucide='x' class='w-4 h-4 text-amber-300'></i><span>Zavřít</span>";
+                }
+                nextAdButton.classList.remove("hidden");
+                if (window.lucide) window.lucide.createIcons();
+              }
+
+              if (adMessage) adMessage.textContent = "Reklama dokončena. Kredity připsány.";
+
+              updateUIFromDaily();
+            } else {
+              if (adCountdownSpan) adCountdownSpan.textContent = String(remaining);
+            }
+          }, 1000);
+        }
+
+        function cancelAd() {
+          if (adTimer) {
+            window.clearInterval(adTimer);
+            adTimer = null;
+          }
+          adInProgress = false;
+          if (adOverlay) adOverlay.classList.add("hidden");
+          if (adVideo) {
+            try {
+              adVideo.pause();
+              adVideo.currentTime = 0;
+            } catch (e) {}
+          }
+          if (adMessage) adMessage.textContent = "Reklama zrušena. Kredity nebyly připsány.";
+          updateUIFromDaily();
+        }
+
+        if (topupTestButton) {
+          topupTestButton.addEventListener("click", function () {
+            creditSys.addCredits(50);
+            syncCreditsDisplay();
+            syncStreakAndLevel();
+            alert("Test: připsáno +50 K-Coins");
+          });
+        }
+
+        if (watchAdButton) {
+          watchAdButton.addEventListener("click", function () {
+            const daily  = getDaily();
+            const maxAds = daily.maxAds || 5;
+
+            if (creditSys.hasAdsCooldown()) {
+              if (adMessage) {
+                adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán. Počkej na obnovení limitu.";
+              }
+              updateUIFromDaily();
+              scrollToDailyTasks();
+              return;
+            }
+
+            if (daily.adsWatched >= maxAds) {
+              if (adMessage) adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán.";
+              updateUIFromDaily();
+              scrollToDailyTasks();
+              return;
+            }
+            startAd();
+          });
+        }
+
+        if (adCloseButton) {
+          adCloseButton.addEventListener("click", function () {
+            cancelAd();
+          });
+        }
+
+        if (adPauseToggle && adVideo) {
+          adPauseToggle.addEventListener("click", function () {
+            if (adVideo.paused) {
+              adVideo.play();
+              adPauseToggle.innerHTML = "<i data-lucide='pause' class='w-4 h-4'></i> Zastavit";
+            } else {
+              adVideo.pause();
+              adPauseToggle.innerHTML = "<i data-lucide='play' class='w-4 h-4'></i> Pokračovat";
+            }
+            if (window.lucide) window.lucide.createIcons();
+          });
+        }
+
+        if (adMuteToggle && adVideo) {
+          adMuteToggle.addEventListener("click", function () {
+            adVideo.muted = !adVideo.muted;
+            adMuteToggle.innerHTML = adVideo.muted
+              ? "<i data-lucide='volume-x' class='w-4 h-4'></i> Zvuk"
+              : "<i data-lucide='volume-2' class='w-4 h-4'></i> Zvuk";
+            if (window.lucide) window.lucide.createIcons();
+          });
+        }
+
+        if (nextAdButton) {
+          nextAdButton.addEventListener("click", function () {
+            const daily  = getDaily();
+            const maxAds = daily.maxAds || 5;
+
+            if (daily.adsWatched >= maxAds) {
+              if (adOverlay) adOverlay.classList.add("hidden");
+              if (adVideo) {
+                try {
+                  adVideo.pause();
+                  adVideo.currentTime = 0;
+                } catch (e) {}
+              }
+              adInProgress = false;
+              if (adMessage) adMessage.textContent = "Dnešní limit reklam je splněn. Kredity máš připsané.";
+              updateUIFromDaily();
+              scrollToDailyTasks();
+              return;
+            }
+
+            startAd();
+          });
+        }
+
+        if (resetButton) {
+          resetButton.addEventListener("click", function () {
+            creditSys.resetDaily();
+            stopCooldownTimer();
+            if (adCooldown) adCooldown.classList.add("hidden");
+            updateUIFromDaily();
+            if (adMessage) adMessage.textContent = "Denní limit byl resetován (test).";
+          });
+        }
+
+        if (taskStatsItem && taskStatsBadge) {
+          taskStatsItem.addEventListener("click", function () {
+            const newlyDone = creditSys.updateDailyTask("stats");
+            if (newlyDone) {
+              creditSys.addCredits(5);
+              syncCreditsDisplay();
+              syncStreakAndLevel();
+              updateUIFromDaily();
+            }
+          });
+        }
+
+        if (taskCampaignItem && taskCampaignBadge) {
+          taskCampaignItem.addEventListener("click", function () {
+            const daily = getDaily();
+            const tasks = daily.tasks || {};
+            if (tasks.campaign) return;
+            if (campaignList) campaignList.classList.toggle("hidden");
+          });
+        }
+
+        if (campaignRespondButtons && campaignRespondButtons.length) {
+          campaignRespondButtons.forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+              e.preventDefault();
+              const newlyDone = creditSys.updateDailyTask("campaign");
+              if (newlyDone) {
+                creditSys.addCredits(6);
+                syncCreditsDisplay();
+                syncStreakAndLevel();
+                updateUIFromDaily();
+              }
+              if (campaignList) campaignList.classList.add("hidden");
+            });
+          });
+        }
+
+        window.creditSys = creditSys;
+      });
+    });
+  </script>
+</body>
+</html>
