@@ -324,10 +324,26 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <!-- Konfigurace + init + databáze + kredity -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
-  <script src="database-init.js"></script>
-  <script src="credits-system.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-init.js"></script>
+
+<!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
+<script>
+  if (window.firebase && firebase.firestore) {
+    firebase.firestore().enableNetwork()
+      .then(() => {
+        console.log("🌐 Firestore ONLINE (moje-karta.html)");
+      })
+      .catch((err) => {
+        console.warn("⚠️ Nepodařilo se zapnout Firestore online (moje-karta.html):", err);
+      });
+  } else {
+    console.warn("⚠️ Firebase/Firestore není na moje-karta.html k dispozici");
+  }
+</script>
+
+<script src="database-init.js"></script>
+<script src="credits-system.js"></script>
 
   <script>
     // Napojení na uživatele + K-Coins (stejně jednoduše jako na credits-dashboard.html)
