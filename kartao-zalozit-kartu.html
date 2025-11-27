@@ -41,6 +41,12 @@
 
   <!-- 2) Tvoje sjednocená inicializace -->
   <script src="firebase-init.js"></script>
+  
+  <script>
+firebase.firestore().enableNetwork()
+  .then(() => console.log("🌐 Firestore ONLINE"))
+  .catch(err => console.error("❌ Nepodařilo se zapnout Firestore online:", err));
+</script>
 
   <style>
     body {
