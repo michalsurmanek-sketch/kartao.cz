@@ -445,34 +445,66 @@
 
         window.currentUserId = user.uid;
 
-        // 🔥 FIREMNÍ KREDITY – NAČTENÍ Z FIRESTORE (ne z localStorage)
-        try {
-          const db = window.db;
-          const uid = user.uid;
+       <!-- Firebase + CreditsSystem -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-          // 1) Čti firemní dokument (firma má kredity uložené zde)
-          db.collection("firmy").doc(uid).get().then((doc) => {
-            if (doc.exists) {
-              const data = doc.data();
-              const firemniKoiny = data.kredity || 0;
-              updateCreditsDisplay(firemniKoiny);
-            } else {
-              console.warn("Firemní dokument nenalezen – kredity 0");
-              updateCreditsDisplay(0);
-            }
-          }).catch((e) => {
-            console.warn("Chyba při načítání firemních kreditů:", e);
-          });
-        } catch (e) {
-          console.warn("Chyba firemních kreditů:", e);
+  <script src="firebase-init.js"></script>
+  <script src="database-init.js"></script>
+  <script src="credits-system.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.firebase || !firebase.auth) {
+        console.warn("Firebase není dostupný na kampane-dashboard.html");
+        return;
+      }
+
+      const headerCreditsEl = document.getElementById("headerCredits");
+      const currentCreditsEl = document.getElementById("currentCredits"); // připraveno do budoucna
+
+      function updateCreditsDisplay(val) {
+        if (val == null) return;
+        const num = typeof val === "number" ? val : parseInt(val, 10);
+        if (isNaN(num)) return;
+        if (headerCreditsEl) headerCreditsEl.textContent = num;
+        if (currentCreditsEl) currentCreditsEl.textContent = num;
+      }
+
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
         }
 
-        // aktualizace UI kreditů
-        updateCreditsDisplay(val);
+        // firemní UID
+        window.currentUserId = user.uid;
+
+        try {
+          const creditsSystem = new CreditsSystem(user.uid);
+
+          // Globálně, kdybys to chtěl použít jinde
+          window.creditSys = {
+            getCredits: function () {
+              return creditsSystem.getCredits();
+            },
+            addCredits: function (a) {
+              return creditsSystem.addCredits(a);
+            },
+            subtractCredits: function (a) {
+              return creditsSystem.subtractCredits(a);
+            },
+          };
+
+          const val = creditsSystem.getCredits();
+          updateCreditsDisplay(val);
         } catch (e) {
           console.warn("Přehled kampaní: chyba při práci s CreditsSystem:", e);
         }
 
+        // DETAIL KAMPANĚ
+        const rows = document.querySelectorAll("[data-campaign-row]");
         const detailName = document.getElementById("detailName");
         const detailBudget = document.getElementById("detailBudget");
         const detailSpent = document.getElementById("detailSpent");
@@ -482,12 +514,11 @@
         const detailInfluencers = document.getElementById("detailInfluencers");
         const detailStatusBadge = document.getElementById("detailStatusBadge");
 
-        rows.forEach((row) => {
-          // Klik na řádek = označení kampaně + načtení detailu
-          row.addEventListener("click", () => {
-            rows.forEach((r) =>
-              r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10")
-            );
+        rows.forEach(function (row) {
+          row.addEventListener("click", function () {
+            rows.forEach(function (r) {
+              r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10");
+            });
             row.classList.add("ring-2", "ring-emerald-400", "bg-white/10");
 
             const name = row.getAttribute("data-name") || "Kampaň";
@@ -498,20 +529,6 @@
             const period = row.getAttribute("data-period") || "";
             const objective = row.getAttribute("data-objective") || "";
             const influencers = row.getAttribute("data-influencers") || "";
-
-            // Uložíme označenou kampaň do proměnné
-            selectedCampaign = {
-              name,
-              status,
-              platform,
-              budget,
-              spent,
-              period,
-              objective,
-              influencers,
-            };
-
-            selectedRow = row;
 
             if (detailName) detailName.textContent = name;
             if (detailBudget) detailBudget.textContent = budget;
@@ -526,161 +543,19 @@
               detailStatusBadge.className = "px-2 py-1 rounded-full text-[10px] border";
 
               if (status === "Aktivní") {
-                detailStatusBadge.classList.add(
-                  "bg-emerald-500/20",
-                  "border-emerald-400/60",
-                  "text-emerald-200"
-                );
+                detailStatusBadge.classList.add("bg-emerald-500/20", "border-emerald-400/60", "text-emerald-200");
               } else if (status === "Čeká na schválení") {
-                detailStatusBadge.classList.add(
-                  "bg-amber-500/20",
-                  "border-amber-300/60",
-                  "text-amber-100"
-                );
+                detailStatusBadge.classList.add("bg-amber-500/20", "border-amber-300/60", "text-amber-100");
               } else if (status === "Dokončené") {
-                detailStatusBadge.classList.add(
-                  "bg-sky-500/20",
-                  "border-sky-400/60",
-                  "text-sky-100"
-                );
+                detailStatusBadge.classList.add("bg-sky-500/20", "border-sky-400/60", "text-sky-100");
               } else if (status === "Návrh") {
-                detailStatusBadge.classList.add(
-                  "bg-white/10",
-                  "border-white/40",
-                  "text-white/80"
-                );
+                detailStatusBadge.classList.add("bg-white/10", "border-white/40", "text-white/80");
               } else {
-                detailStatusBadge.classList.add(
-                  "bg-white/10",
-                  "border-white/30",
-                  "text-white/70"
-                );
+                detailStatusBadge.classList.add("bg-white/10", "border-white/30", "text-white/70");
               }
             }
           });
         });
-
-        // Listener na tlačítko "Upravit kampaň"
-        if (editCampaignBtn) {
-          editCampaignBtn.addEventListener("click", () => {
-            if (!selectedCampaign || !selectedRow) {
-              alert("Vyber prosím nejdřív kampaň v tabulce, kterou chceš upravit.");
-              return;
-            }
-
-            const editableEls = [
-              detailName,
-              detailBudget,
-              detailSpent,
-              detailPlatform,
-              detailPeriod,
-              detailObjective,
-              detailInfluencers,
-            ];
-
-            if (!isEditing) {
-              // Přepnutí do režimu úprav
-              isEditing = true;
-              editCampaignBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>Uložit změny</span>';
-
-              editableEls.forEach((el) => {
-                if (!el) return;
-                el.contentEditable = "true";
-                el.classList.add(
-                  "outline-none",
-                  "ring-1",
-                  "ring-emerald-400/60",
-                  "rounded-md",
-                  "px-0.5",
-                  "bg-emerald-500/5"
-                );
-              });
-
-              if (window.lucide) {
-                lucide.createIcons();
-              }
-            } else {
-              // Uložení změn a návrat do režimu náhledu
-              isEditing = false;
-
-              const newName = detailName
-                ? detailName.textContent.trim()
-                : selectedCampaign.name;
-              const newBudget = detailBudget
-                ? detailBudget.textContent.trim()
-                : selectedCampaign.budget;
-              const newSpent = detailSpent
-                ? detailSpent.textContent.trim()
-                : selectedCampaign.spent;
-              const newPlatform = detailPlatform
-                ? detailPlatform.textContent.trim()
-                : selectedCampaign.platform;
-              const newPeriod = detailPeriod
-                ? detailPeriod.textContent.trim()
-                : selectedCampaign.period;
-              const newObjective = detailObjective
-                ? detailObjective.textContent.trim()
-                : selectedCampaign.objective;
-              const newInfluencers = detailInfluencers
-                ? detailInfluencers.textContent.trim()
-                : selectedCampaign.influencers;
-
-              selectedCampaign = {
-                name: newName,
-                status: selectedCampaign.status,
-                platform: newPlatform,
-                budget: newBudget,
-                spent: newSpent,
-                period: newPeriod,
-                objective: newObjective,
-                influencers: newInfluencers,
-              };
-
-              try {
-                // Aktualizace atributů na řádku tabulky
-                selectedRow.setAttribute("data-name", newName);
-                selectedRow.setAttribute("data-platform", newPlatform);
-                selectedRow.setAttribute("data-budget", newBudget);
-                selectedRow.setAttribute("data-spent", newSpent);
-                selectedRow.setAttribute("data-period", newPeriod);
-                selectedRow.setAttribute("data-objective", newObjective);
-                selectedRow.setAttribute("data-influencers", newInfluencers);
-
-                // Aktualizace textu v buňkách tabulky
-                const cells = selectedRow.querySelectorAll("td");
-                if (cells[0]) cells[0].textContent = newName;
-                if (cells[2]) cells[2].textContent = newPlatform;
-                if (cells[3]) cells[3].textContent = newBudget;
-                if (cells[4]) cells[4].textContent = newSpent;
-                if (cells[5]) cells[5].textContent = newPeriod;
-              } catch (e) {
-                console.warn("Nepodařilo se aktualizovat řádek kampaně:", e);
-              }
-
-              editableEls.forEach((el) => {
-                if (!el) return;
-                el.contentEditable = "false";
-                el.classList.remove(
-                  "ring-1",
-                  "ring-emerald-400/60",
-                  "rounded-md",
-                  "px-0.5",
-                  "bg-emerald-500/5"
-                );
-              });
-
-              editCampaignBtn.innerHTML =
-                '<i data-lucide="edit-3" class="w-3.5 h-3.5"></i><span>Upravit kampaň</span>';
-
-              if (window.lucide) {
-                lucide.createIcons();
-              }
-            }
-          });
-        }
-
-        // Po přihlášení automaticky aplikuj filtry
-        applyFilters();
       });
     });
   </script>
