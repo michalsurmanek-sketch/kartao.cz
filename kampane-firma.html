@@ -69,10 +69,10 @@
             Nová kampaň
           </a>
 
-          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+          <button id="logoutBtn" type="button" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
-          </a>
+          </button>
         </div>
       </div>
     </header>
@@ -112,34 +112,34 @@
           <div class="rounded-3xl bg-neutral-950/80 border border-white/10 shadow-soft p-4 md:p-5 text-xs flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2 text-white/60">
               <i data-lucide="filter" class="w-4 h-4"></i>
-              <span>Filtr kampaní (zatím vizuální – logiku doplníme až bude backend).</span>
+              <span>Filtr kampaní – můžeš kombinovat stav, platformu, typ a řazení.</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
-              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option>Stav: Vše</option>
-                <option>Aktivní</option>
-                <option>Návrh</option>
-                <option>Schvalování</option>
-                <option>Dokončené</option>
+              <select id="filterStatus" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option value="all">Stav: Vše</option>
+                <option value="Aktivní">Aktivní</option>
+                <option value="Návrh">Návrh</option>
+                <option value="Čeká na schválení">Schvalování</option>
+                <option value="Dokončené">Dokončené</option>
               </select>
-              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option>Platforma: Vše</option>
-                <option>Instagram</option>
-                <option>TikTok</option>
-                <option>YouTube</option>
-                <option>Mix platforem</option>
+              <select id="filterPlatform" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option value="all">Platforma: Vše</option>
+                <option value="Instagram">Instagram</option>
+                <option value="TikTok">TikTok</option>
+                <option value="YouTube">YouTube</option>
+                <option value="Mix platforem">Mix platforem</option>
               </select>
-              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option>Typ kampaně</option>
-                <option>Brand awareness</option>
-                <option>Výkonnostní</option>
-                <option>Soutěž / Giveaway</option>
+              <select id="filterType" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option value="all">Typ kampaně</option>
+                <option value="Brand awareness">Brand awareness</option>
+                <option value="Výkonnostní">Výkonnostní</option>
+                <option value="Soutěž / Giveaway">Soutěž / Giveaway</option>
               </select>
-              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option>Řazení: nejnovější</option>
-                <option>Nejstarší</option>
-                <option>Nejvyšší rozpočet</option>
-                <option>Nejnižší rozpočet</option>
+              <select id="filterSort" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option value="newest">Řazení: nejnovější</option>
+                <option value="oldest">Nejstarší</option>
+                <option value="budgetDesc">Nejvyšší rozpočet</option>
+                <option value="budgetAsc">Nejnižší rozpočet</option>
               </select>
             </div>
           </div>
@@ -173,7 +173,7 @@
                 <tbody id="campaignList" class="divide-y divide-white/5">
                   <!-- DEMO DATA -->
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Jarní launch kolekce" data-status="Aktivní" data-platform="Instagram + TikTok"
+                      data-name="Jarní launch kolekce" data-status="Aktivní" data-platform="Mix platforem" data-type="Brand awareness"
                       data-budget="5 000 K-Coins" data-spent="2 000 K-Coins" data-objective="Brand awareness · představení nové kolekce"
                       data-period="1. 3. – 31. 3." data-influencers="5 mikroinfluencerů · 2 mid-tier">
                     <td class="py-3">Jarní launch kolekce</td>
@@ -187,7 +187,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Velikonoční soutěž" data-status="Čeká na schválení" data-platform="Instagram"
+                      data-name="Velikonoční soutěž" data-status="Čeká na schválení" data-platform="Instagram" data-type="Soutěž / Giveaway"
                       data-budget="3 000 K-Coins" data-spent="0 K-Coins" data-objective="Soutěž · sběr nových sledujících"
                       data-period="10. 3. – 20. 3." data-influencers="3 influenceri">
                     <td class="py-3">Velikonoční soutěž</td>
@@ -201,7 +201,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Testovací kampaň – jaro" data-status="Návrh" data-platform="TikTok"
+                      data-name="Testovací kampaň – jaro" data-status="Návrh" data-platform="TikTok" data-type="Výkonnostní"
                       data-budget="1 000 K-Coins" data-spent="0 K-Coins" data-objective="Test · otestovat formáty a kreativu"
                       data-period="TBD" data-influencers="1–2 influenceři (návrh)">
                     <td class="py-3">Testovací kampaň – jaro</td>
@@ -215,7 +215,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Vánoční kampaň 2024" data-status="Dokončené" data-platform="Mix platforem"
+                      data-name="Vánoční kampaň 2024" data-status="Dokončené" data-platform="Mix platforem" data-type="Brand awareness"
                       data-budget="8 000 K-Coins" data-spent="7 500 K-Coins" data-objective="Prodej · vánoční nákupy"
                       data-period="1. 12. – 24. 12. 2024" data-influencers="8 influencérů (mix)">
                     <td class="py-3">Vánoční kampaň 2024</td>
@@ -328,18 +328,108 @@
         window.auth ||
         (window.firebase && firebase.auth && firebase.auth());
 
-      if (!auth) {
-        console.warn("Firebase Auth není dostupný na kampane-dashboard.html");
-        return;
-      }
-
+      const logoutBtn = document.getElementById("logoutBtn");
       const headerCreditsEl = document.getElementById("headerCredits");
-      const currentCreditsEl = document.getElementById("currentCredits"); // placeholder pro budoucno
+      const currentCreditsEl = document.getElementById("currentCredits");
+
+      const rows = document.querySelectorAll("[data-campaign-row]");
+      const filterStatus = document.getElementById("filterStatus");
+      const filterPlatform = document.getElementById("filterPlatform");
+      const filterType = document.getElementById("filterType");
+      const filterSort = document.getElementById("filterSort");
 
       function updateCreditsDisplay(val) {
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
+      }
+
+      function parseBudget(str) {
+        if (!str) return 0;
+        let digits = "";
+        for (let i = 0; i < str.length; i++) {
+          const ch = str[i];
+          if (ch >= "0" && ch <= "9") {
+            digits += ch;
+          }
+        }
+        if (!digits) return 0;
+        return parseInt(digits, 10) || 0;
+      }
+
+      function applyFilters() {
+        const statusVal = filterStatus ? filterStatus.value : "all";
+        const platformVal = filterPlatform ? filterPlatform.value : "all";
+        const typeVal = filterType ? filterType.value : "all";
+        const sortVal = filterSort ? filterSort.value : "newest";
+
+        const tbody = document.getElementById("campaignList");
+        if (!tbody) return;
+
+        const rowsArr = Array.from(rows);
+
+        // Filtrování viditelnosti
+        rowsArr.forEach((row) => {
+          const rowStatus = row.getAttribute("data-status") || "";
+          const rowPlatform = row.getAttribute("data-platform") || "";
+          const rowType = row.getAttribute("data-type") || "";
+
+          let visible = true;
+          if (statusVal !== "all" && rowStatus !== statusVal) visible = false;
+          if (platformVal !== "all" && rowPlatform !== platformVal) visible = false;
+          if (typeVal !== "all" && rowType !== typeVal) visible = false;
+
+          row.style.display = visible ? "" : "none";
+        });
+
+        // Řazení – jen viditelné řádky
+        let visibleRows = rowsArr.filter((r) => r.style.display !== "none");
+        let sorted = [...visibleRows];
+
+        if (sortVal === "oldest") {
+          sorted.reverse();
+        } else if (sortVal === "budgetDesc") {
+          sorted.sort(
+            (a, b) =>
+              parseBudget(b.getAttribute("data-budget")) -
+              parseBudget(a.getAttribute("data-budget"))
+          );
+        } else if (sortVal === "budgetAsc") {
+          sorted.sort(
+            (a, b) =>
+              parseBudget(a.getAttribute("data-budget")) -
+              parseBudget(b.getAttribute("data-budget"))
+          );
+        }
+        // "newest" = ponecháme původní pořadí
+
+        sorted.forEach((row) => tbody.appendChild(row));
+      }
+
+      // Reakce na změnu filtrů
+      if (filterStatus) filterStatus.addEventListener("change", applyFilters);
+      if (filterPlatform) filterPlatform.addEventListener("change", applyFilters);
+      if (filterType) filterType.addEventListener("change", applyFilters);
+      if (filterSort) filterSort.addEventListener("change", applyFilters);
+
+      // Odhlášení firmy / uživatele
+      if (logoutBtn && auth) {
+        logoutBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          auth
+            .signOut()
+            .then(function () {
+              window.location.href = "login.html";
+            })
+            .catch(function (error) {
+              console.error("Chyba při odhlašování:", error);
+            });
+        });
+      }
+
+      if (!auth) {
+        console.warn("Firebase Auth není dostupný na kampane-dashboard.html");
+        return;
       }
 
       auth.onAuthStateChanged(function (user) {
@@ -365,8 +455,6 @@
           console.warn("Přehled kampaní: chyba při práci s CreditsSystem:", e);
         }
 
-        // Logika pro detail kampaně
-        const rows = document.querySelectorAll("[data-campaign-row]");
         const detailName = document.getElementById("detailName");
         const detailBudget = document.getElementById("detailBudget");
         const detailSpent = document.getElementById("detailSpent");
@@ -378,7 +466,9 @@
 
         rows.forEach((row) => {
           row.addEventListener("click", () => {
-            rows.forEach((r) => r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10"));
+            rows.forEach((r) =>
+              r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10")
+            );
             row.classList.add("ring-2", "ring-emerald-400", "bg-white/10");
 
             const name = row.getAttribute("data-name") || "Kampaň";
@@ -403,19 +493,42 @@
               detailStatusBadge.className = "px-2 py-1 rounded-full text-[10px] border";
 
               if (status === "Aktivní") {
-                detailStatusBadge.classList.add("bg-emerald-500/20", "border-emerald-400/60", "text-emerald-200");
+                detailStatusBadge.classList.add(
+                  "bg-emerald-500/20",
+                  "border-emerald-400/60",
+                  "text-emerald-200"
+                );
               } else if (status === "Čeká na schválení") {
-                detailStatusBadge.classList.add("bg-amber-500/20", "border-amber-300/60", "text-amber-100");
+                detailStatusBadge.classList.add(
+                  "bg-amber-500/20",
+                  "border-amber-300/60",
+                  "text-amber-100"
+                );
               } else if (status === "Dokončené") {
-                detailStatusBadge.classList.add("bg-sky-500/20", "border-sky-400/60", "text-sky-100");
+                detailStatusBadge.classList.add(
+                  "bg-sky-500/20",
+                  "border-sky-400/60",
+                  "text-sky-100"
+                );
               } else if (status === "Návrh") {
-                detailStatusBadge.classList.add("bg-white/10", "border-white/40", "text-white/80");
+                detailStatusBadge.classList.add(
+                  "bg-white/10",
+                  "border-white/40",
+                  "text-white/80"
+                );
               } else {
-                detailStatusBadge.classList.add("bg-white/10", "border-white/30", "text-white/70");
+                detailStatusBadge.classList.add(
+                  "bg-white/10",
+                  "border-white/30",
+                  "text-white/70"
+                );
               }
             }
           });
         });
+
+        // Po přihlášení automaticky aplikuj filtry
+        applyFilters();
       });
     });
   </script>
