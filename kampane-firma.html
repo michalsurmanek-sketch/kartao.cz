@@ -274,7 +274,7 @@
             </div>
 
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10 mt-2">
-              <button class="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/60 px-3 py-1.5 text-[11px] text-emerald-100 hover:bg-emerald-500/25">
+              <button id="editCampaignBtn" class="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/60 px-3 py-1.5 text-[11px] text-emerald-100 hover:bg-emerald-500/25">
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 Upravit kampaň
               </button>
@@ -333,6 +333,9 @@
       const currentCreditsEl = document.getElementById("currentCredits");
 
       const rows = document.querySelectorAll("[data-campaign-row]");
+      const editCampaignBtn = document.getElementById("editCampaignBtn");
+
+      let selectedCampaign = null;
       const filterStatus = document.getElementById("filterStatus");
       const filterPlatform = document.getElementById("filterPlatform");
       const filterType = document.getElementById("filterType");
@@ -465,6 +468,7 @@
         const detailStatusBadge = document.getElementById("detailStatusBadge");
 
         rows.forEach((row) => {
+          // Klik na řádek = označení kampaně + načtení detailu
           row.addEventListener("click", () => {
             rows.forEach((r) =>
               r.classList.remove("ring-2", "ring-emerald-400", "bg-white/10")
@@ -479,6 +483,18 @@
             const period = row.getAttribute("data-period") || "";
             const objective = row.getAttribute("data-objective") || "";
             const influencers = row.getAttribute("data-influencers") || "";
+
+            // Uložíme označenou kampaň do proměnné
+            selectedCampaign = {
+              name,
+              status,
+              platform,
+              budget,
+              spent,
+              period,
+              objective,
+              influencers,
+            };
 
             if (detailName) detailName.textContent = name;
             if (detailBudget) detailBudget.textContent = budget;
@@ -526,6 +542,29 @@
             }
           });
         });
+
+        // Listener na tlačítko "Upravit kampaň"
+        if (editCampaignBtn) {
+          editCampaignBtn.addEventListener("click", () => {
+            if (!selectedCampaign) {
+              alert("Vyber prosím nejdřív kampaň v tabulce, kterou chceš upravit.");
+              return;
+            }
+
+            try {
+              // Uložíme naposledy označenou kampaň do localStorage
+              localStorage.setItem(
+                "kartao_selectedCampaign",
+                JSON.stringify(selectedCampaign)
+              );
+            } catch (e) {
+              console.warn("Nepodařilo se uložit vybranou kampaň:", e);
+            }
+
+            // Přesměrování na stránku pro vytvoření / úpravu kampaně v režimu editace
+            window.location.href = "vytvorit-kampan.html?mode=edit";
+          });
+        }
 
         // Po přihlášení automaticky aplikuj filtry
         applyFilters();
