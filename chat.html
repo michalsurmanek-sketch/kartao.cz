@@ -28,8 +28,8 @@
     };
   </script>
   
-  <!-- Ikony Lucide -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Ikony Lucide – jsDelivr -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <style>
     .gradient-shell {
@@ -74,6 +74,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="firebase-init.js"></script>
   <script src="api-services.js"></script>
+  <!-- 💰 K-Coins logika -->
+  <script src="credits-system.js"></script>
 
   <!-- HORNÍ NAVBAR -->
   <header class="border-b border-white/10 bg-gradient-to-b from-black/90 to-black/60 backdrop-blur">
@@ -226,20 +228,16 @@
     let messagesListener = null;
     let conversationsListener = null;
 
-    // Funkce na bezpečné překreslení ikon (malé zpoždění kvůli DOM změnám)
+    // ikony
     function refreshIcons() {
       if (typeof lucide !== 'undefined') {
         setTimeout(() => {
-          try {
-            lucide.createIcons();
-          } catch (e) {
-            console.warn('Lucide icons error:', e);
-          }
+          try { lucide.createIcons(); } catch (e) { console.warn('Lucide error:', e); }
         }, 10);
       }
     }
 
-    // Bezpečné získání milisekund z Timestamp / Date
+    // převod času
     function toMillis(ts) {
       if (!ts) return 0;
       if (typeof ts.toMillis === 'function') return ts.toMillis();
@@ -247,7 +245,20 @@
       return Number(ts) || 0;
     }
 
-    // Firebase auth check
+    // K-Coins v headeru
+    function updateHeaderCredits(userId) {
+      try {
+        if (typeof CreditsSystem === 'undefined') return;
+        const cs = new CreditsSystem(userId);
+        const credits = cs.getCredits ? cs.getCredits() : 0;
+        const el = document.getElementById('headerCredits');
+        if (el) el.textContent = (credits || 0).toLocaleString('cs-CZ');
+      } catch (e) {
+        console.warn('Chyba při načítání K-Coins v headeru:', e);
+      }
+    }
+
+    // Firebase auth
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
         window.location.href = 'login.html';
@@ -255,14 +266,19 @@
       }
 
       currentUser = user;
-      chatService = new ChatService(); // z api-services.js
+      if (typeof ChatService === 'undefined') {
+        console.error('ChatService není k dispozici (api-services.js).');
+        return;
+      }
+      chatService = new ChatService();
 
-      // sem můžeš doplnit načtení realných kreditů
-      // document.getElementById('headerCredits').textContent = '361 079';
+      // 💰 K-Coins
+      updateHeaderCredits(currentUser.uid);
 
+      // první načtení konverzací
       loadConversations();
 
-      // realtime konverzace
+      // realtime listener
       conversationsListener = chatService.listenToConversations(user.uid, (snapshot) => {
         const conversations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderConversations(conversations);
@@ -333,7 +349,6 @@
         `;
       }).join('');
 
-      // click handlery na nově vložené prvky
       container.querySelectorAll('.conversation-item').forEach(btn => {
         btn.addEventListener('click', () => {
           const convId = btn.dataset.conversationId;
@@ -354,11 +369,9 @@
         console.warn('Nepovedlo se označit jako přečtené:', err);
       }
 
-      // zobrazení headeru a inputu
       document.getElementById('chatHeader').classList.remove('hidden');
       document.getElementById('messageInput').classList.remove('hidden');
 
-      // nastavení headeru
       const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(otherUserId)}`;
       document.getElementById('chatAvatar').src = avatarUrl;
       document.getElementById('chatName').textContent = otherUserId;
@@ -366,16 +379,12 @@
 
       await loadMessages(conversationId);
 
-      if (messagesListener) {
-        messagesListener(); // unsubscribe předchozí
-      }
-
+      if (messagesListener) messagesListener();
       messagesListener = chatService.listenToMessages(conversationId, (snapshot) => {
         const messages = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })).sort((a, b) => toMillis(a.createdAt) - toMillis(b.createdAt));
-
         renderMessages(messages);
       });
 
@@ -445,11 +454,9 @@
       const text = messageInputEl.value.trim();
       if (!text || !currentConversationId) return;
 
-      const payload = text;
-
       try {
         sendBtn.disabled = true;
-        await chatService.sendMessage(currentConversationId, currentUser.uid, payload);
+        await chatService.sendMessage(currentConversationId, currentUser.uid, text);
         messageInputEl.value = '';
       } catch (error) {
         console.error('Chyba při odesílání zprávy:', error);
@@ -490,7 +497,7 @@
       if (conversationsListener) conversationsListener();
     });
 
-    // Lucide ikony po prvním načtení
+    // první vykreslení ikon
     document.addEventListener('DOMContentLoaded', () => {
       refreshIcons();
     });
