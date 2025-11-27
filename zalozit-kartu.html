@@ -364,7 +364,6 @@
       lucide.createIcons();
     }
 
-    // === AUTO-SAVE → FIRESTORE (ŽÁDNÉ localStorage) ===
     const AUTOSAVE_DEBOUNCE = 700;
     let autosaveTimeout     = null;
 
@@ -400,7 +399,7 @@
         return;
       }
 
-      const db = window.db;
+      const db  = window.db;
       const now = Date.now();
 
       const payload = {
@@ -676,10 +675,10 @@
         return;
       }
 
-      const loggedInEls  = document.querySelectorAll('[data-show-when="loggedin"]');
-      const loggedOutEls = document.querySelectorAll('[data-show-when="loggedout"]');
-      const headerLogout = document.querySelector('[data-show-when="loggedin"]');
-      const clearDraftBtn = document.getElementById("clearDraft");
+      const loggedInEls    = document.querySelectorAll('[data-show-when="loggedin"]');
+      const loggedOutEls   = document.querySelectorAll('[data-show-when="loggedout"]');
+      const headerLogout   = document.querySelector('[data-show-when="loggedin"]');
+      const clearDraftBtn  = document.getElementById("clearDraft");
 
       auth.onAuthStateChanged((user) => {
         if (!user) {
@@ -713,7 +712,7 @@
         });
       }
 
-      // Smazání uložené karty (Firetore dokument creators/{uid})
+      // Smazání uložené karty (Firestore dokument creators/{uid})
       if (clearDraftBtn) {
         clearDraftBtn.addEventListener("click", async () => {
           if (!currentUser) {
