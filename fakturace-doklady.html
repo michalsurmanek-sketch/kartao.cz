@@ -97,9 +97,6 @@
               <option value="leden">Leden</option>
               <option value="unor">Únor</option>
               <option value="brezen">Březen</option>
-              <option>Leden</option>
-              <option>Únor</option>
-              <option>Březen</option>
             </select>
 
             <select id="filterType" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
@@ -107,17 +104,12 @@
               <option value="faktura">Faktura</option>
               <option value="zalohova">Zálohová faktura</option>
               <option value="danovy">Daňový doklad</option>
-              <option>Faktura</option>
-              <option>Zálohová faktura</option>
-              <option>Daňový doklad</option>
             </select>
 
             <select id="filterStatus" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
               <option value="all">Status: Vše</option>
               <option value="paid">Zaplaceno</option>
               <option value="unpaid">Nezaplaceno</option>
-              <option>Zaplaceno</option>
-              <option>Nezaplaceno</option>
             </select>
           </div>
         </section>
@@ -317,15 +309,34 @@
           console.warn(
             "Fakturace: chybí kartao_firma_id – nejdřív musí být vybraná / založená firma."
           );
-          if (invoiceListEl) {
-            invoiceListEl.innerHTML = `
-              <tr>
-                <td colspan="6" class="py-6 text-center text-xs text-amber-200/90">
-                  Pro zobrazení dokladů nejdřív vyber nebo založ firmu.
-                </td>
-              </tr>
-            `;
-          }
+
+          // ⚠️ Nemáme ještě reálnou firmu → zobrazíme demo doklady, ať filtr funguje
+          allInvoices = [
+            {
+              id: "demo-1",
+              number: "2025-0001",
+              dateText: "15. 2. 2025",
+              periodKey: "unor",
+              description: "Dobití 5 000 K-Coins",
+              amountText: "5 000 Kč",
+              status: "paid",
+              type: "faktura",
+              pdfUrl: "",
+            },
+            {
+              id: "demo-2",
+              number: "2025-0002",
+              dateText: "20. 2. 2025",
+              periodKey: "unor",
+              description: "Dobití 1 000 K-Coins",
+              amountText: "1 000 Kč",
+              status: "unpaid",
+              type: "zalohova",
+              pdfUrl: "",
+            },
+          ];
+
+          renderInvoices();
           return;
         }
 
