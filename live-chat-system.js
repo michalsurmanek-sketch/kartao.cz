@@ -3,8 +3,11 @@ class LiveChatSystem {
         this.chatContainer = null;
         this.isOpen = false;
         this.currentUser = null;
-        this.conversations = new Map();
+        this.conversations = new Map();  // id -> data konverzace
+        this.currentConversationId = null;
         this.unreadCount = 0;
+        this.conversationsUnsubscribe = null;
+        this.messagesUnsubscribe = null;
         this.init();
     }
 
@@ -12,7 +15,6 @@ class LiveChatSystem {
         console.log('💬 Inicializace Live Chat systému...');
         this.createChatInterface();
         this.setupFirebaseListeners();
-        this.loadConversations();
         console.log('✅ Live Chat systém připraven');
     }
 
@@ -133,7 +135,14 @@ class LiveChatSystem {
 
         // Click outside to close
         document.addEventListener('click', (e) => {
-            if (this.isOpen && !this.chatContainer.contains(e.target) && !document.getElementById('chat-toggle').contains(e.target)) {
+            const toggle = document.getElementById('chat-toggle');
+            if (
+                this.isOpen &&
+                this.chatContainer &&
+                !this.chatContainer.contains(e.target) &&
+                toggle &&
+                !toggle.contains(e.target)
+            ) {
                 this.toggleChat();
             }
         });
@@ -146,8 +155,11 @@ class LiveChatSystem {
             if (user) {
                 this.currentUser = user;
                 this.startListeningForMessages();
+                this.loadConversations();
             } else {
+                this.currentUser = null;
                 this.stopListeningForMessages();
+                this.showLoginPrompt();
             }
         });
     }
@@ -167,14 +179,16 @@ class LiveChatSystem {
     stopListeningForMessages() {
         if (this.conversationsUnsubscribe) {
             this.conversationsUnsubscribe();
+            this.conversationsUnsubscribe = null;
         }
         if (this.messagesUnsubscribe) {
             this.messagesUnsubscribe();
+            this.messagesUnsubscribe = null;
         }
     }
 
     async loadConversations() {
-        if (!this.currentUser) return;
+        if (!this.currentUser || !window.db) return;
 
         try {
             const snapshot = await window.db.collection('conversations')
@@ -193,14 +207,17 @@ class LiveChatSystem {
     updateConversationsList(snapshot) {
         const conversationsList = document.getElementById('conversations-list');
         this.unreadCount = 0;
+        this.conversations.clear();
 
-        if (snapshot.empty) {
+        if (!snapshot || snapshot.empty) {
             this.showEmptyConversations();
             return;
         }
 
         const conversationsHTML = snapshot.docs.map(doc => {
             const conversation = { id: doc.id, ...doc.data() };
+            this.conversations.set(conversation.id, conversation);
+
             const partner = this.getConversationPartner(conversation);
             const isUnread = conversation.unreadBy && conversation.unreadBy.includes(this.currentUser.uid);
             
@@ -236,6 +253,10 @@ class LiveChatSystem {
         });
 
         this.updateUnreadBadge();
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     showEmptyConversations() {
@@ -260,14 +281,22 @@ class LiveChatSystem {
 
     getConversationPartner(conversation) {
         const partnerId = conversation.participants.find(id => id !== this.currentUser.uid);
-        return conversation.participantInfo[partnerId] || { name: 'Neznámý uživatel' };
+        return (conversation.participantInfo && conversation.participantInfo[partnerId]) || { name: 'Neznámý uživatel' };
+    }
+
+    getPartnerId(conversationId) {
+        const conv = this.conversations.get(conversationId);
+        if (!conv || !conv.participants) return null;
+        return conv.participants.find(id => id !== this.currentUser.uid) || null;
     }
 
     async openConversation(conversationId) {
         try {
-            // Load conversation details
+            // Load conversation details (aktualizace mapy)
             const conversationDoc = await window.db.collection('conversations').doc(conversationId).get();
             const conversation = { id: conversationDoc.id, ...conversationDoc.data() };
+            this.conversations.set(conversation.id, conversation);
+            this.currentConversationId = conversation.id;
 
             // Show chat panel
             this.showChatPanel(conversation);
@@ -298,7 +327,10 @@ class LiveChatSystem {
         
         if (this.messagesUnsubscribe) {
             this.messagesUnsubscribe();
+            this.messagesUnsubscribe = null;
         }
+
+        this.currentConversationId = null;
     }
 
     loadMessages(conversationId) {
@@ -347,14 +379,15 @@ class LiveChatSystem {
         
         if (!text) return;
 
+        const conversationId = this.getCurrentConversationId();
+        if (!conversationId) {
+            console.error('No conversation selected');
+            return;
+        }
+
         try {
-            // Get current conversation ID from chat panel state
-            const conversationId = this.getCurrentConversationId();
-            
-            if (!conversationId) {
-                console.error('No conversation selected');
-                return;
-            }
+            const now = new Date();
+            const partnerId = this.getPartnerId(conversationId);
 
             // Send message
             await window.db.collection('conversations')
@@ -363,16 +396,21 @@ class LiveChatSystem {
                 .add({
                     text: text,
                     senderId: this.currentUser.uid,
-                    timestamp: new Date(),
+                    timestamp: now,
                     type: 'text'
                 });
 
             // Update conversation last message
-            await window.db.collection('conversations').doc(conversationId).update({
+            const updateData = {
                 lastMessage: text,
-                lastMessageTime: new Date(),
-                unreadBy: firebase.firestore.FieldValue.arrayUnion(this.getPartnerId(conversationId))
-            });
+                lastMessageTime: now
+            };
+
+            if (partnerId) {
+                updateData.unreadBy = firebase.firestore.FieldValue.arrayUnion(partnerId);
+            }
+
+            await window.db.collection('conversations').doc(conversationId).update(updateData);
 
             input.value = '';
 
@@ -382,7 +420,6 @@ class LiveChatSystem {
     }
 
     getCurrentConversationId() {
-        // This would be stored when opening a conversation
         return this.currentConversationId;
     }
 
@@ -413,6 +450,8 @@ class LiveChatSystem {
 
     updateUnreadBadge() {
         const badge = document.getElementById('chat-badge');
+        if (!badge) return;
+
         if (this.unreadCount > 0) {
             badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount.toString();
             badge.classList.remove('hidden');
@@ -428,6 +467,9 @@ class LiveChatSystem {
             this.chatContainer.classList.remove('translate-y-full');
             if (!this.currentUser) {
                 this.showLoginPrompt();
+            } else {
+                // vždy znovu načti konverzace při otevření
+                this.loadConversations();
             }
         } else {
             this.chatContainer.classList.add('translate-y-full');
@@ -436,7 +478,10 @@ class LiveChatSystem {
     }
 
     showLoginPrompt() {
-        document.getElementById('conversations-list').innerHTML = `
+        const list = document.getElementById('conversations-list');
+        if (!list) return;
+
+        list.innerHTML = `
             <div class="text-center py-8 text-gray-500">
                 <i data-lucide="user" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
                 <p class="text-sm mb-3">Pro chat se prosím přihlaste</p>
@@ -452,13 +497,14 @@ class LiveChatSystem {
     }
 
     async showStartNewChatModal() {
-        // This would show a modal to select users to chat with
-        console.log('Show start new chat modal - TODO: Implement user selection');
+        // TODO: Implement user selection
+        console.log('Show start new chat modal - TODO');
     }
 
     // Public API methods
     async startConversation(partnerId, initialMessage = null) {
         try {
+            const now = new Date();
             const conversationData = {
                 participants: [this.currentUser.uid, partnerId],
                 participantInfo: {
@@ -468,10 +514,10 @@ class LiveChatSystem {
                     },
                     [partnerId]: await this.getUserInfo(partnerId)
                 },
-                createdAt: new Date(),
-                lastMessageTime: new Date(),
+                createdAt: now,
+                lastMessageTime: now,
                 lastMessage: initialMessage || '',
-                unreadBy: [partnerId]
+                unreadBy: initialMessage ? [partnerId] : []
             };
 
             const conversationRef = await window.db.collection('conversations').add(conversationData);
@@ -480,7 +526,7 @@ class LiveChatSystem {
                 await conversationRef.collection('messages').add({
                     text: initialMessage,
                     senderId: this.currentUser.uid,
-                    timestamp: new Date(),
+                    timestamp: now,
                     type: 'text'
                 });
             }
