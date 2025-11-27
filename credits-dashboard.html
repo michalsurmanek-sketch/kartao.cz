@@ -515,7 +515,7 @@
             } else {
               streak = 1;
             }
-
+--
             let credits = 0;
             if (typeof data.credits === "number") {
               credits = data.credits;
@@ -523,6 +523,11 @@
               credits = creditSys.getCredits();
             }
 
+            // >>> NOVÉ ŘÁDKY <<<
+    creditSys.setCredits(credits);
+    syncCreditsDisplay();
+    // >>> KONEC NOVÉHO <<<
+            
             let level = Math.max(1, Math.floor(credits / 100) + 1);
 
             await ref.set(
