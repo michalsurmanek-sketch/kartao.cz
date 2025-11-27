@@ -357,7 +357,19 @@
     </footer>
   </div>
 
-  <!-- HLAVNÍ SCRIPT STRÁNKY -->
+  <!-- Firebase SDKs – NAČÍST DŘÍV NEŽ NAŠE LOGIKA -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- Konfigurace + inicializace Firebase (stejné jako na ostatních stránkách) -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+  <!-- Tvůj společný API skript (pokud něco řeší) -->
+  <script src="api-services.js"></script>
+
+  <!-- HLAVNÍ SCRIPT STRÁNKY – až po Firebase -->
   <script>
     // Lucide ikony – bezpečné volání
     if (window.lucide && typeof lucide.createIcons === "function") {
@@ -395,7 +407,13 @@
 
     // AUTOSAVE -> Firestore (jen když je přihlášený user + db)
     async function saveFormDataToFirestore() {
-      if (!currentUser || !window.db) {
+      if (!currentUser) {
+        console.warn("⏩ Auto-save přeskočen – není přihlášený uživatel");
+        return;
+      }
+      if (!window.db) {
+        console.error("❌ Auto-save – chybí window.db (Firestore)");
+        showMessage("Chyba připojení k databázi. Zkuste obnovit stránku.", "error");
         return;
       }
 
@@ -453,6 +471,7 @@
         console.log("💾 Auto-save karty do Firestore hotový");
       } catch (err) {
         console.error("❌ Chyba při auto-save do Firestore:", err);
+        showMessage("Chyba při průběžném ukládání.", "error");
       }
     }
 
@@ -649,29 +668,17 @@
 
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
     window.addEventListener("load", async () => {
-      // Pro jistotu zapneme online režim Firestore
-      if (window.firebase && firebase.firestore) {
-        try {
-          await firebase.firestore().enableNetwork();
-          console.log("🌐 Firestore přepnut do ONLINE režimu");
-        } catch (e) {
-          console.warn("⚠️ Nepodařilo se zapnout online režim Firestore:", e);
-        }
-      }
-
-      const auth = window.auth || (window.firebase ? firebase.auth() : null);
-      const db   = window.db   || (window.firebase ? firebase.firestore() : null);
+      const auth = window.auth;
+      const db   = window.db;
 
       console.log("ZK: Firebase na zalozit-kartu.html", {
-        hasFirebase: typeof firebase !== "undefined",
-        hasAuthGlobal: !!window.auth,
-        hasDbGlobal: !!window.db,
-        authObj: !!auth,
-        dbObj: !!db,
+        hasAuthGlobal: !!auth,
+        hasDbGlobal: !!db,
       });
 
       if (!auth || !db) {
         console.error("❌ Firebase auth/db nejsou k dispozici na zalozit-kartu.html");
+        showMessage("Chyba připojení k Firebase. Zkuste obnovit stránku.", "error");
         return;
       }
 
@@ -1059,18 +1066,5 @@
       }, 100);
     }
   </script>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-  <!-- Konfigurace + inicializace Firebase -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
-
-  <!-- Tvůj společný API skript -->
-  <script src="api-services.js"></script>
 </body>
 </html>
