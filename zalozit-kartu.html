@@ -680,7 +680,6 @@
       } catch (err) {
         console.error("❌ Chyba při načítání karty z Firestore:", err);
 
-        // Když je klient offline, jen informativně do konzole
         if (err && err.message && err.message.includes("client is offline")) {
           console.warn("ℹ️ Firestore hlásí offline – používám jen lokálně uložený draft.");
           return;
@@ -693,6 +692,13 @@
     // === FIREBASE ČÁST – přihlášení + uložení karty ===
     let currentUser = null;
 
+    // Pomocná funkce pro upload do Storage
+    async function uploadToStorage(storage, path, file) {
+      const ref = storage.ref().child(path);
+      const snapshot = await ref.put(file);
+      return await snapshot.ref.getDownloadURL();
+    }
+
     window.addEventListener("load", async () => {
       // Pro jistotu zapneme online režim Firestore
       if (window.firebase && firebase.firestore) {
@@ -704,15 +710,18 @@
         }
       }
 
-      const auth = window.auth || (window.firebase ? firebase.auth() : null);
-      const db   = window.db   || (window.firebase ? firebase.firestore() : null);
+      const auth    = window.auth    || (window.firebase ? firebase.auth() : null);
+      const db      = window.db      || (window.firebase ? firebase.firestore() : null);
+      const storage = window.storage || (window.firebase && firebase.storage ? firebase.storage() : null);
 
       console.log("ZK: Firebase na zalozit-kartu.html", {
         hasFirebase: typeof firebase !== "undefined",
         hasAuthGlobal: !!window.auth,
         hasDbGlobal: !!window.db,
+        hasStorageGlobal: !!window.storage,
         authObj: !!auth,
         dbObj: !!db,
+        storageObj: !!storage,
       });
 
       if (!auth || !db) {
@@ -790,26 +799,43 @@
         let coverUrl  = coverUrlInput.value.trim();
 
         try {
-          if (avatarUploadedFile && !avatarUrl) {
-            const reader = new FileReader();
-            await new Promise((resolve) => {
-              reader.onload = (ev) => {
-                avatarUrl = ev.target.result;
-                resolve();
-              };
-              reader.readAsDataURL(avatarUploadedFile);
-            });
-          }
+          // Upload do Storage, pokud máme soubory a storage
+          if (storage) {
+            if (avatarUploadedFile) {
+              const path = `creators/${currentUser.uid}/avatar-${now}.jpg`;
+              avatarUrl = await uploadToStorage(storage, path, avatarUploadedFile);
+              console.log("✅ Avatar nahrán do Storage:", avatarUrl);
+            }
+            if (coverUploadedFile) {
+              const path = `creators/${currentUser.uid}/cover-${now}.jpg`;
+              coverUrl = await uploadToStorage(storage, path, coverUploadedFile);
+              console.log("✅ Cover nahrán do Storage:", coverUrl);
+            }
+          } else {
+            // Fallback – BASE64 do Firestore (kdyby storage nešla)
+            console.warn("⚠️ Storage není dostupná – ukládám obrázky jako BASE64 do Firestore (nedoporučeno).");
 
-          if (coverUploadedFile && !coverUrl) {
-            const reader = new FileReader();
-            await new Promise((resolve) => {
-              reader.onload = (ev) => {
-                coverUrl = ev.target.result;
-                resolve();
-              };
-              reader.readAsDataURL(coverUploadedFile);
-            });
+            if (avatarUploadedFile && !avatarUrl) {
+              const reader = new FileReader();
+              await new Promise((resolve) => {
+                reader.onload = (ev) => {
+                  avatarUrl = ev.target.result;
+                  resolve();
+                };
+                reader.readAsDataURL(avatarUploadedFile);
+              });
+            }
+
+            if (coverUploadedFile && !coverUrl) {
+              const reader = new FileReader();
+              await new Promise((resolve) => {
+                reader.onload = (ev) => {
+                  coverUrl = ev.target.result;
+                  resolve();
+                };
+                reader.readAsDataURL(coverUploadedFile);
+              });
+            }
           }
 
           const data = {
@@ -856,11 +882,18 @@
             visibility: "public",
             status:     "active",
             updatedAt:  now,
-            createdAt:  now,
+            // createdAt nastavíme jen při prvním vytvoření – Firestore merge
           };
 
-          console.log("💾 Ukládám kartu do Firestore pro uživatele:", currentUser.uid);
-          await db.collection("creators").doc(currentUser.uid).set(data);
+          const docRef = db.collection("creators").doc(currentUser.uid);
+          const snap   = await docRef.get();
+
+          if (!snap.exists) {
+            data.createdAt = now;
+          }
+
+          console.log("💾 Ukládám kartu do Firestore pro uživatele:", currentUser.uid, data);
+          await docRef.set(data, { merge: true });
           console.log("✅ Karta úspěšně uložena do Firestore!");
 
           localStorage.removeItem(AUTOSAVE_KEY);
