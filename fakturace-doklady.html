@@ -92,22 +92,30 @@
 
           <!-- FILTRY -->
           <div class="grid sm:grid-cols-3 gap-3 text-xs">
-            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-              <option>Období: Vše</option>
+            <select id="filterPeriod" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option value="all">Období: Vše</option>
+              <option value="leden">Leden</option>
+              <option value="unor">Únor</option>
+              <option value="brezen">Březen</option>
               <option>Leden</option>
               <option>Únor</option>
               <option>Březen</option>
             </select>
 
-            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-              <option>Typ dokladu: Vše</option>
+            <select id="filterType" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option value="all">Typ dokladu: Vše</option>
+              <option value="faktura">Faktura</option>
+              <option value="zalohova">Zálohová faktura</option>
+              <option value="danovy">Daňový doklad</option>
               <option>Faktura</option>
               <option>Zálohová faktura</option>
               <option>Daňový doklad</option>
             </select>
 
-            <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-              <option>Status: Vše</option>
+            <select id="filterStatus" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <option value="all">Status: Vše</option>
+              <option value="paid">Zaplaceno</option>
+              <option value="unpaid">Nezaplaceno</option>
               <option>Zaplaceno</option>
               <option>Nezaplaceno</option>
             </select>
@@ -196,19 +204,105 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) {
-        console.warn("Firebase není dostupný na fakturace-doklady.html");
+      if (!window.firebase || !firebase.auth || !firebase.firestore) {
+        console.warn("Firebase není plně dostupný na fakturace-doklady.html");
         return;
       }
 
       const headerCreditsEl = document.getElementById("headerCredits");
       const currentCreditsEl = document.getElementById("currentCredits");
+      const invoiceListEl = document.getElementById("invoiceList");
+      const filterPeriodEl = document.getElementById("filterPeriod");
+      const filterTypeEl = document.getElementById("filterType");
+      const filterStatusEl = document.getElementById("filterStatus");
+
+      const db = firebase.firestore();
+
+      let allInvoices = [];
 
       function updateCreditsDisplay(val) {
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
       }
+
+      function renderInvoices() {
+        if (!invoiceListEl) return;
+
+        const periodVal = filterPeriodEl ? filterPeriodEl.value : "all";
+        const typeVal = filterTypeEl ? filterTypeEl.value : "all";
+        const statusVal = filterStatusEl ? filterStatusEl.value : "all";
+
+        const filtered = allInvoices.filter((inv) => {
+          if (periodVal !== "all" && inv.periodKey && inv.periodKey !== periodVal)
+            return false;
+          if (typeVal !== "all" && inv.type && inv.type !== typeVal) return false;
+          if (statusVal !== "all" && inv.status && inv.status !== statusVal)
+            return false;
+          return true;
+        });
+
+        if (!filtered.length) {
+          invoiceListEl.innerHTML = `
+            <tr>
+              <td colspan="6" class="py-6 text-center text-xs text-white/50">
+                Zatím nemáte žádné doklady k zobrazení.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        const rowsHtml = filtered
+          .map((inv) => {
+            const statusBadge =
+              inv.status === "paid"
+                ? '<span class="px-2 py-1 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Zaplaceno</span>'
+                : '<span class="px-2 py-1 rounded-full text-[10px] bg-rose-500/20 text-rose-300 border border-rose-400/40">Nezaplaceno</span>';
+
+            const actionBtn = inv.status === "paid"
+              ? `<button data-invoice-pdf="${inv.pdfUrl || ""}" class="px-3 py-1 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-xs">Stáhnout PDF</button>`
+              : `<button data-invoice-pay="${inv.id || ""}" class="px-3 py-1 rounded-xl bg-amber-500/15 border border-amber-300/50 hover:bg-amber-500/25 text-xs">Uhradit</button>`;
+
+            return `
+              <tr class="hover:bg-white/5">
+                <td class="py-3">${inv.number || "–"}</td>
+                <td>${inv.dateText || "–"}</td>
+                <td>${inv.description || "Dobití kreditů"}</td>
+                <td>${inv.amountText || "0 Kč"}</td>
+                <td>${statusBadge}</td>
+                <td class="text-right">${actionBtn}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        invoiceListEl.innerHTML = rowsHtml;
+
+        // Akce na tlačítka (demo – zatím jen alert)
+        const pdfButtons = invoiceListEl.querySelectorAll("[data-invoice-pdf]");
+        pdfButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const url = btn.getAttribute("data-invoice-pdf");
+            if (url) {
+              window.open(url, "_blank");
+            } else {
+              alert("PDF doklad bude dostupný po plné integraci fakturace.");
+            }
+          });
+        });
+
+        const payButtons = invoiceListEl.querySelectorAll("[data-invoice-pay]");
+        payButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            alert("Platba faktury bude napojena po integraci platební brány.");
+          });
+        });
+      }
+
+      if (filterPeriodEl) filterPeriodEl.addEventListener("change", renderInvoices);
+      if (filterTypeEl) filterTypeEl.addEventListener("change", renderInvoices);
+      if (filterStatusEl) filterStatusEl.addEventListener("change", renderInvoices);
 
       firebase.auth().onAuthStateChanged(function (user) {
         if (!user) {
@@ -218,8 +312,28 @@
 
         window.currentUserId = user.uid;
 
+        const firmId = localStorage.getItem("kartao_firma_id");
+        if (!firmId) {
+          console.warn(
+            "Fakturace: chybí kartao_firma_id – nejdřív musí být vybraná / založená firma."
+          );
+          if (invoiceListEl) {
+            invoiceListEl.innerHTML = `
+              <tr>
+                <td colspan="6" class="py-6 text-center text-xs text-amber-200/90">
+                  Pro zobrazení dokladů nejdřív vyber nebo založ firmu.
+                </td>
+              </tr>
+            `;
+          }
+          return;
+        }
+
+        window.currentFirmId = firmId;
+
+        // Kredity – vazba na firemní účet
         try {
-          const creditsSystem = new CreditsSystem(user.uid);
+          const creditsSystem = new CreditsSystem(firmId);
           window.creditSys = {
             getCredits: () => creditsSystem.getCredits(),
             addCredits: (a) => creditsSystem.addCredits(a),
@@ -231,6 +345,73 @@
         } catch (e) {
           console.warn("Fakturace: chyba při práci s CreditsSystem:", e);
         }
+
+        // Načtení dokladů z Firestore (kolekce "invoices") – demo struktura
+        db.collection("invoices")
+          .where("firmId", "==", firmId)
+          .orderBy("createdAt", "desc")
+          .limit(50)
+          .get()
+          .then((snapshot) => {
+            allInvoices = [];
+            snapshot.forEach((doc) => {
+              const d = doc.data();
+              allInvoices.push({
+                id: doc.id,
+                number: d.number || d.invoiceNumber || "–",
+                dateText: d.dateText || d.date || "–",
+                periodKey: d.periodKey || null,
+                description: d.description || "Dobití K-Coins",
+                amountText:
+                  typeof d.amountCZK === "number" ? `${d.amountCZK} Kč` : d.amountText || "0 Kč",
+                status: d.status || "paid", // paid / unpaid
+                type: d.type || "faktura", // faktura / zalohova / danovy
+                pdfUrl: d.pdfUrl || "",
+              });
+            });
+
+            if (!allInvoices.length) {
+              // fallback – demo data, pokud nic v DB není
+              allInvoices = [
+                {
+                  id: "demo-1",
+                  number: "2025-0001",
+                  dateText: "15. 2. 2025",
+                  periodKey: "unor",
+                  description: "Dobití 5 000 K-Coins",
+                  amountText: "5 000 Kč",
+                  status: "paid",
+                  type: "faktura",
+                  pdfUrl: "",
+                },
+                {
+                  id: "demo-2",
+                  number: "2025-0002",
+                  dateText: "20. 2. 2025",
+                  periodKey: "unor",
+                  description: "Dobití 1 000 K-Coins",
+                  amountText: "1 000 Kč",
+                  status: "unpaid",
+                  type: "zalohova",
+                  pdfUrl: "",
+                },
+              ];
+            }
+
+            renderInvoices();
+          })
+          .catch((err) => {
+            console.error("Chyba při načítání dokladů:", err);
+            if (invoiceListEl) {
+              invoiceListEl.innerHTML = `
+                <tr>
+                  <td colspan="6" class="py-6 text-center text-xs text-rose-300/90">
+                    Doklady se nepodařilo načíst. Zkus stránku načíst znovu.
+                  </td>
+                </tr>
+              `;
+            }
+          });
       });
     });
   </script>
