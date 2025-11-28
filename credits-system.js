@@ -3,132 +3,237 @@
 // Jednotná logika pro kredity, limity, úkoly a odměny
 
 /*
-  Tento systém poskytuje funkce:
+  Veřejné API:
   - new CreditsSystem(userId)
   - getCredits()
+  - setCredits(value)
   - addCredits(amount)
   - subtractCredits(amount)
-  - getDailyState()
-  - updateDailyTask(taskKey)
-  - addAdWatch()
-  - resetDaily()
 
-  + nově:
+  - getDailyState()
+  - resetDaily()
+  - updateDailyTask(taskKey)
+
+  - addAdWatch()
   - hasAdsCooldown()
   - getAdsCooldownRemainingMs()
   - clearAdsCooldown()
 
   Kredity:
-  - Hlavní zdroj = Firestore (kolekce "users", dokument userId, pole "credits")
-  - localStorage = pouze cache pro rychlé zobrazení na daném zařízení
+  - MASTER = Firestore (kolekce "users", dokument userId, pole "credits")
+  - localStorage = cache pro dané zařízení (rychlé načtení po reloadu)
 */
 
-// credits-system.js
-// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
-// LocalStorage se používá jen na denní úkoly a limity reklam.
-
-// credits-system.js
-// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
-// LocalStorage se používá jen na denní úkoly a limity reklam.
+// Pomocná funkce pro dnešní datum (YYYY-MM-DD)
+function kartaoTodayString() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate() + 0).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 class CreditsSystem {
   constructor(userId) {
+    if (!userId) {
+      throw new Error("CreditsSystem: chybí userId");
+    }
+
     this.userId = userId;
+
+    // Firestore
     this.db =
       window.db ||
       (window.firebase &&
         firebase.firestore &&
         firebase.firestore());
-    this.credits = 0;
 
-    // LocalStorage klíče – PER UŽIVATEL / ZAŘÍZENÍ
-    this.dailyKey = `kartao_daily_${this.userId}`;
-    this.adsCooldownKey = `kartao_adsCooldown_${this.userId}`;
+    // localStorage klíče
+    this.localCreditsKey = `kartao_credits_${this.userId}`;
+    this.dailyKey        = `kartao_daily_${this.userId}`;
+    this.adsCooldownKey  = `kartao_adsCooldown_${this.userId}`;
+
+    // 1) Načti kredity z localStorage jako start
+    this.credits = 0;
+    try {
+      const raw = localStorage.getItem(this.localCreditsKey);
+      if (raw !== null) {
+        const parsed = Number(raw);
+        if (Number.isFinite(parsed) && parsed >= 0) {
+          this.credits = parsed;
+        }
+      }
+    } catch (e) {
+      console.warn("CreditsSystem: nelze číst credits z localStorage:", e);
+    }
+
+    // 2) Aplikuj okamžitě do DOM (aby se něco zobrazilo)
+    this._applyCreditsToDom();
+
+    // 3) Async stáhni z Firestore a srovnej
+    if (this.db) {
+      this._syncCreditsFromServer();
+    } else {
+      console.warn("CreditsSystem: Firestore není dostupný – kredity pojedou jen lokálně.");
+    }
   }
 
-  // ========== KREDITY ==========
+  // ========= interní pomocné funkce pro kredity =========
+
+  _saveCreditsToLocal() {
+    try {
+      localStorage.setItem(this.localCreditsKey, String(this.credits));
+    } catch (e) {
+      console.warn("CreditsSystem: nelze uložit credits do localStorage:", e);
+    }
+  }
+
+  _applyCreditsToDom() {
+    const value = this.credits;
+
+    const ids = [
+      "headerCredits",
+      "summaryCredits",
+      "creditsValue",
+      "creditsValueHero",
+      "currentCredits"
+    ];
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = value;
+      }
+    });
+  }
+
+  async _syncCreditsFromServer() {
+    try {
+      const ref  = this.db.collection("users").doc(this.userId);
+      const snap = await ref.get();
+      const data = snap.exists ? (snap.data() || {}) : {};
+
+      if (typeof data.credits === "number" && data.credits >= 0) {
+        // Firestore má pravdu
+        this.credits = data.credits;
+        this._saveCreditsToLocal();
+        this._applyCreditsToDom();
+      } else {
+        // Firestore nic neví – pošli tam lokální stav (pokud je > 0)
+        if (this.credits > 0) {
+          await ref.set({ credits: this.credits }, { merge: true });
+        }
+      }
+    } catch (e) {
+      console.warn("CreditsSystem: chyba při sync credits z Firestore:", e);
+    }
+  }
+
+  _saveCreditsToServerExact() {
+    if (!this.db) return;
+    try {
+      const ref = this.db.collection("users").doc(this.userId);
+      ref.set({ credits: this.credits }, { merge: true }).catch((e) => {
+        console.warn("CreditsSystem: chyba při ukládání credits (set):", e);
+      });
+    } catch (e) {
+      console.warn("CreditsSystem: výjimka při ukládání credits (set):", e);
+    }
+  }
+
+  _incrementCreditsOnServer(delta) {
+    if (!this.db) return;
+    try {
+      const ref = this.db.collection("users").doc(this.userId);
+
+      if (
+        window.firebase &&
+        firebase.firestore &&
+        firebase.firestore.FieldValue
+      ) {
+        // atomický increment
+        const inc = firebase.firestore.FieldValue.increment(delta);
+        ref.set({ credits: inc }, { merge: true }).catch((e) => {
+          console.warn("CreditsSystem: chyba při ukládání credits (increment):", e);
+        });
+      } else {
+        // fallback – načti, přičti, ulož
+        ref
+          .get()
+          .then((snap) => {
+            const data = snap.exists ? snap.data() || {} : {};
+            const oldCredits =
+              typeof data.credits === "number" ? data.credits : 0;
+            const newCredits = oldCredits + delta;
+            return ref.set({ credits: newCredits }, { merge: true });
+          })
+          .catch((e) => {
+            console.warn("CreditsSystem: chyba při ukládání credits (fallback):", e);
+          });
+      }
+    } catch (e) {
+      console.warn("CreditsSystem: výjimka při incrementu credits:", e);
+    }
+  }
+
+  // ========= PUBLIC API – KREDITY =========
 
   getCredits() {
     return this.credits;
   }
 
   setCredits(value) {
-    if (!Number.isFinite(value)) value = 0;
-    this.credits = value;
+    let v = Number(value);
+    if (!Number.isFinite(v) || v < 0) v = 0;
+
+    this.credits = v;
+    this._saveCreditsToLocal();
+    this._applyCreditsToDom();
+    this._saveCreditsToServerExact();
+
     return this.credits;
   }
 
-  /**
-   * Přičte kredity a ZKUSÍ zároveň uložit do Firestore.
-   * Vrací okamžitě nový lokální stav (synchronní),
-   * Firestore update běží na pozadí (Promise ignorujeme).
-   */
   addCredits(amount) {
-    const num = Number(amount) || 0;
-    this.credits += num;
+    const delta = Number(amount) || 0;
+    if (delta === 0) return this.credits;
 
-    try {
-      if (this.db && this.userId) {
-        const ref = this.db.collection("users").doc(this.userId);
-
-        if (
-          window.firebase &&
-          firebase.firestore &&
-          firebase.firestore.FieldValue
-        ) {
-          // Bezpečná varianta – atomický increment
-          const inc = firebase.firestore.FieldValue.increment(num);
-          ref
-            .set({ credits: inc }, { merge: true })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při ukládání credits (increment):",
-                e
-              );
-            });
-        } else {
-          // Fallback – pořád jen async, UI to neblokuje
-          ref
-            .get()
-            .then((snap) => {
-              const data = snap.exists ? snap.data() || {} : {};
-              const oldCredits =
-                typeof data.credits === "number" ? data.credits : 0;
-              const newCredits = oldCredits + num;
-              return ref.set({ credits: newCredits }, { merge: true });
-            })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při ukládání credits (fallback):",
-                e
-              );
-            });
-        }
-      }
-    } catch (e) {
-      console.warn("CreditsSystem: výjimka při ukládání credits:", e);
-    }
+    this.credits = Math.max(0, this.credits + delta);
+    this._saveCreditsToLocal();
+    this._applyCreditsToDom();
+    this._incrementCreditsOnServer(delta);
 
     return this.credits;
   }
 
-  // ========== POMOCNÉ FUNKCE PRO DENNÍ STAV ==========
+  subtractCredits(amount) {
+    const delta = Number(amount) || 0;
+    if (delta <= 0) return this.credits;
 
-  _todayString() {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+    const newVal = Math.max(0, this.credits - delta);
+    this.credits = newVal;
+
+    this._saveCreditsToLocal();
+    this._applyCreditsToDom();
+    this._saveCreditsToServerExact();
+
+    return this.credits;
   }
+
+  // ========= DENNÍ STAV / ÚKOLY / REKLAMY (NE peníze) =========
 
   _loadDaily() {
-    const today = this._todayString();
+    const today = kartaoTodayString();
     try {
       const raw = localStorage.getItem(this.dailyKey);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && parsed.date === today) {
+          parsed.maxAds = Number.isFinite(parsed.maxAds) ? parsed.maxAds : 5;
+          parsed.adsWatched = Number.isFinite(parsed.adsWatched)
+            ? parsed.adsWatched
+            : 0;
+          parsed.tasks = parsed.tasks || {};
           return parsed;
         }
       }
@@ -151,46 +256,47 @@ class CreditsSystem {
     }
   }
 
-  // ========== PUBLIC API – DENNÍ STAV / ÚKOLY / REKLAMY ==========
-
   getDailyState() {
     return this._loadDaily();
   }
 
   resetDaily() {
     const state = {
-      date: this._todayString(),
+      date: kartaoTodayString(),
       adsWatched: 0,
       maxAds: 5,
       tasks: {}
     };
     this._saveDaily(state);
-    try {
-      localStorage.removeItem(this.adsCooldownKey);
-    } catch (e) {}
+    this.clearAdsCooldown();
     return state;
   }
 
-  /**
-   * Označí denní úkol jako splněný.
-   * taskKey např. "stats", "campaign"
-   * Vrací true = právě splněno; false = už bylo splněno dřív.
-   */
   updateDailyTask(taskKey) {
     const state = this._loadDaily();
     if (!state.tasks) state.tasks = {};
+
     if (state.tasks[taskKey]) {
       return false; // už splněno
     }
+
     state.tasks[taskKey] = true;
     this._saveDaily(state);
     return true;
   }
 
-  /**
-   * Zaznamenání shlédnutí reklamy – hlídá limit a spouští cooldown.
-   * Vrací true = započítáno; false = už byl limit.
-   */
+  // ========= Reklamy / cooldown =========
+
+  _startAdsCooldown() {
+    const now = Date.now();
+    const until = now + 24 * 60 * 60 * 1000; // 24 h
+    try {
+      localStorage.setItem(this.adsCooldownKey, String(until));
+    } catch (e) {
+      console.warn("CreditsSystem: nelze uložit cooldown:", e);
+    }
+  }
+
   addAdWatch() {
     const state = this._loadDaily();
     const maxAds = state.maxAds || 5;
@@ -210,16 +316,6 @@ class CreditsSystem {
     return true;
   }
 
-  _startAdsCooldown() {
-    const now = Date.now();
-    const until = now + 24 * 60 * 60 * 1000; // 24 hodin
-    try {
-      localStorage.setItem(this.adsCooldownKey, String(until));
-    } catch (e) {
-      console.warn("CreditsSystem: nelze uložit cooldown:", e);
-    }
-  }
-
   hasAdsCooldown() {
     return this.getAdsCooldownRemainingMs() > 0;
   }
@@ -235,6 +331,12 @@ class CreditsSystem {
     } catch (e) {
       return 0;
     }
+  }
+
+  clearAdsCooldown() {
+    try {
+      localStorage.removeItem(this.adsCooldownKey);
+    } catch (e) {}
   }
 }
 
