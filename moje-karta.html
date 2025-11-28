@@ -376,23 +376,24 @@
         if (nameEl) nameEl.textContent = displayName;
         if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
 
-        // kredity přes CreditsSystem – úplně stejně jako dashboard
-        try {
-          const creditSys = new CreditsSystem(user.uid);
-          window.creditSys = creditSys;
+        // kredity přes CreditsSystem – nově se nejdřív načtou z Firestore OPRAVENO
+CreditsSystem.create(user.uid)
+  .then((creditSys) => {
+    window.creditSys = creditSys;
 
-          const val = creditSys.getCredits();
-          const headerEl = document.getElementById("headerCredits");
-          const summaryEl = document.getElementById("summaryCredits");
+    const val = creditSys.getCredits();
+    const headerEl   = document.getElementById("headerCredits");
+    const summaryEl  = document.getElementById("summaryCredits");
 
-          if (typeof val === "number") {
-            if (headerEl) headerEl.textContent = val;
-            if (summaryEl) summaryEl.textContent = val;
-          }
-        } catch (e) {
-          console.warn("Chyba při načítání kreditů na moje-karta.html:", e);
-        }
-      });
+    if (typeof val === "number") {
+      if (headerEl)  headerEl.textContent  = val;
+      if (summaryEl) summaryEl.textContent = val;
+    }
+  })
+  .catch((e) => {
+    console.warn("Chyba při načítání kreditů na moje-karta.html:", e);
+  });
+
     });
   </script>
 </body>
