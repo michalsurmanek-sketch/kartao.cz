@@ -5,137 +5,272 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao.cz – Podmínky používání</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📋</text></svg>" />
+
+  <!-- Preload kritických zdrojů -->
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script" />
+  <link rel="preload" href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" as="script" />
+
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { colors: { neutral: tailwind.colors.neutral, fuchsia: tailwind.colors.fuchsia, amber: tailwind.colors.amber } } } }
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+            rose: tailwind.colors.rose,
+          },
+          boxShadow: {
+            card: "0 24px 80px rgba(15,23,42,0.85)",
+          },
+        },
+      },
+    };
   </script>
-  <!-- Lucide icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Lucide ikony -->
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
   <style>
-    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:.75rem}
-    .btn-primary{background:#e879f9}
-    .btn-primary:hover{background:#db58f6}
-    .btn-light{background:#fff;color:#111}
-    .btn-light:hover{background:#f3f3f3}
-    .btn-outline{border:1px solid rgba(255,255,255,.2)}
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(236,72,153,0.15), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(251,191,36,0.18), transparent 55%),
+        radial-gradient(circle at bottom left, rgba(56,189,248,0.1), transparent 55%),
+        #020617;
+    }
+
+    .glass {
+      background: radial-gradient(circle at top left, rgba(248,250,252,0.12), rgba(15,23,42,0.96));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white">
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
-        <div>
-          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
+<body class="text-slate-100">
+  <div class="relative min-h-screen flex flex-col">
+    <!-- Dekorativní kruhy v pozadí -->
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+      <div class="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
+      <div class="absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-amber-400/10 blur-3xl"></div>
+      <div class="absolute top-1/3 -left-32 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl"></div>
+    </div>
+
+    <!-- Horní lišta -->
+    <header class="relative z-20 w-full">
+      <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4">
+        <!-- Zpět na hlavní stránku -->
+        <a href="index.html"
+           class="inline-flex items-center text-sm text-slate-300 hover:text-white transition">
+          <span class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 ring-1 ring-slate-700/60 px-3 py-1">
+            <span class="text-base">←</span>
+            <span>Zpět na hlavní stránku</span>
+          </span>
+        </a>
+
+        <!-- Kartao brand badge s korunkou -->
+        <div class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full
+                    bg-slate-900/80 ring-1 ring-slate-700/70
+                    shadow-lg shadow-black/40">
+          <!-- Ikona s korunkou -->
+          <div class="relative flex h-8 w-8 items-center justify-center rounded-full
+                      bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400
+                      shadow-md shadow-amber-500/40">
+            <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
+          </div>
+
+          <!-- Textová část -->
+          <div class="flex flex-col leading-tight">
+            <span class="text-xs font-semibold tracking-wide text-slate-200">
+              Kartao.cz
+            </span>
+            <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+              Síť influencerů a tvůrců
+            </span>
+          </div>
         </div>
-      </a>
-      <nav class="hidden md:flex items-center gap-2">
-        <a href="kartao-pro-tvurce.html#form" class="btn btn-primary">Založit kartu</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- BREADCRUMB -->
-  <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
-    <div class="max-w-7xl mx-auto px-4 py-2 text-sm">
-      <a class="text-white/70 hover:text-white" href="index.html">Katalog</a>
-      <span class="mx-2 text-white/40">/</span>
-      <span class="text-white">Podmínky používání</span>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
-    <div class="max-w-7xl mx-auto px-4 py-10">
-      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Podmínky používání</h1>
-      <p class="mt-3 text-white/70 max-w-3xl">Tyto podmínky upravují používání webu Kartao.cz a služeb poskytovaných tvůrcům a firmám. Prosíme, přečti si je pečlivě. Neupravují vztahy sítě na sociálních platformách (Instagram, TikTok, YouTube), které se řídí podmínkami daných platforem.</p>
-      <div class="text-xs text-white/50 mt-3">Poslední aktualizace: <span id="updated"></span></div>
-    </div>
-  </section>
-
-  <!-- CONTENT -->
-  <main class="max-w-7xl mx-auto px-4 py-12 prose prose-invert">
-    <h2 id="definice">1. Definice</h2>
-    <ul>
-      <li><strong>Provozovatel</strong> – subjekt, který provozuje web Kartao.cz.</li>
-      <li><strong>Uživatel</strong> – kdokoliv, kdo web používá; zejména <em>Tvůrce</em> (influencer) a <em>Firma</em> (inzerent).</li>
-      <li><strong>Karta</strong> – veřejný profil tvůrce na Kartao.cz.</li>
-      <li><strong>Spolupráce</strong> – dohoda mezi Firmou a Tvůrcem uzavřená mimo Kartao.cz (nejsme smluvní stranou).</li>
-    </ul>
-
-    <h2 id="registrace">2. Registrace a účet</h2>
-    <ul>
-      <li>Za správnost údajů uvedených na Kartě odpovídá Tvůrce.</li>
-      <li>Zakázaný je obsah porušující práva třetích osob, právní předpisy nebo dobré mravy.</li>
-      <li>Propojení účtů IG/TT/YT probíhá přes OAuth. Stahujeme pouze veřejné/aggregované metriky (např. počty sledujících).</li>
-    </ul>
-
-    <h2 id="nabidky">3. Nabídky a komunikace</h2>
-    <p>Firmy mohou odesílat poptávky přes formuláře. Konkrétní obchodní podmínky spolupráce si sjednávají přímo Firma a Tvůrce. Provozovatel není odpovědný za splnění závazků stran.</p>
-
-    <h2 id="poplatky">4. Poplatky a tarify</h2>
-    <p>Ceny a rozsah služeb jsou uvedeny v <a href="kartao-cenik.html" class="underline">Ceníku</a>. Změny cen zveřejňujeme dopředu; již zaplacené období zůstává nedotčeno.</p>
-
-    <h2 id="obsah">5. Práva k obsahu</h2>
-    <ul>
-      <li>Uživatel odpovídá za materiály, které na Kartao.cz nahrává nebo uvádí (texty, obrázky, odkazy).</li>
-      <li>Provozovatel může odstranit obsah, který je v rozporu s podmínkami nebo zákonem.</li>
-      <li>Uživatel uděluje nevýhradní licenci k zobrazení dat na webu za účelem propagace jeho Karty.</li>
-    </ul>
-
-    <h2 id="ochrana">6. Ochrana soukromí</h2>
-    <p>Zásady zpracování osobních údajů jsou popsány v dokumentu <a href="ochrana-soukromi.html" class="underline">Ochrana soukromí</a>. Propojení sociálních účtů je dobrovolné a lze je kdykoliv odpojit.</p>
-
-    <h2 id="odpovednost">7. Omezení odpovědnosti</h2>
-    <ul>
-      <li>Web je poskytován „tak jak je“. Nezaručujeme nepřetržitou dostupnost.</li>
-      <li>Provozovatel neručí za škody způsobené využitím informací z Karet ani za plnění mezi Firmou a Tvůrcem.</li>
-    </ul>
-
-    <h2 id="zmena">8. Změny podmínek</h2>
-    <p>Podmínky můžeme aktualizovat; platná verze je vždy zveřejněna zde. Podstatné změny oznámíme přiměřeným způsobem.</p>
-
-    <h2 id="kontakt">9. Kontakt</h2>
-    <p>Dotazy k podmínkám: <em>hello@kartao.cz</em> (uprav dle skutečného provozovatele).</p>
-
-    <div class="card p-4 mt-10">
-      <div class="font-semibold mb-1">Shrnutí pro zaneprázdněné</div>
-      <p class="text-white/70 text-sm">Tvůrci si spravují své karty a statistiky. Firmy posílají poptávky. My zajišťujeme platformu, nikoliv samotnou realizaci spoluprací.</p>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
-      <div>
-        <div class="font-semibold mb-2 flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5 text-amber-400"></i>Kartao.cz</div>
-        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
       </div>
-      <div class="space-y-1">
-        <div class="text-amber-400 font-medium">Odkazy</div>
-        <a class="block hover:text-white" href="index.html">Katalog</a>
-        <a class="block hover:text-white" href="kartao-cenik.html">Ceník</a>
-        <a class="block hover:text-white" href="kartao-pro-tvurce.html#form">Založit kartu</a>
+    </header>
+
+    <!-- Obsah -->
+    <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
+      <div class="mx-auto w-full max-w-4xl">
+        <!-- Glass karta s podmínkami -->
+        <section class="glass relative w-full rounded-3xl border border-slate-700/70 p-7 lg:p-9 shadow-card">
+          <div class="absolute -top-6 right-6 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/70 px-3 py-1 text-[11px] font-medium tracking-wide text-amber-100 shadow-lg shadow-amber-500/30">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Právní informace
+          </div>
+
+          <!-- Nadpis + úvod -->
+          <header class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
+              Podmínky používání
+            </h1>
+            <p class="mt-3 text-sm sm:text-base text-slate-300/90">
+              Tyto podmínky upravují používání webu Kartao.cz a služeb poskytovaných tvůrcům a firmám.
+              Prosíme, přečti si je pečlivě. Neupravují vztahy sítě na sociálních platformách
+              (Instagram, TikTok, YouTube), které se řídí podmínkami daných platforem.
+            </p>
+            <div class="text-xs text-slate-500 mt-3">
+              Poslední aktualizace:
+              <span id="updated"></span>
+            </div>
+          </header>
+
+          <div class="space-y-6 text-sm leading-relaxed text-slate-200/90">
+            <section>
+              <h2 id="definice" class="text-base font-semibold text-slate-50 mb-2">
+                1. Definice
+              </h2>
+              <ul class="list-disc list-inside space-y-1 text-slate-200/90">
+                <li><strong>Provozovatel</strong> – subjekt, který provozuje web Kartao.cz.</li>
+                <li><strong>Uživatel</strong> – kdokoliv, kdo web používá; zejména <em>Tvůrce</em> (influencer) a <em>Firma</em> (inzerent).</li>
+                <li><strong>Karta</strong> – veřejný profil tvůrce na Kartao.cz.</li>
+                <li><strong>Spolupráce</strong> – dohoda mezi Firmou a Tvůrcem uzavřená mimo Kartao.cz (nejsme smluvní stranou).</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 id="registrace" class="text-base font-semibold text-slate-50 mb-2">
+                2. Registrace a účet
+              </h2>
+              <ul class="list-disc list-inside space-y-1 text-slate-200/90">
+                <li>Za správnost údajů uvedených na Kartě odpovídá Tvůrce.</li>
+                <li>Zakázaný je obsah porušující práva třetích osob, právní předpisy nebo dobré mravy.</li>
+                <li>Propojení účtů IG/TT/YT probíhá přes OAuth. Stahujeme pouze veřejné/aggregované metriky (např. počty sledujících).</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 id="nabidky" class="text-base font-semibold text-slate-50 mb-2">
+                3. Nabídky a komunikace
+              </h2>
+              <p class="text-slate-200/90">
+                Firmy mohou odesílat poptávky přes formuláře. Konkrétní obchodní podmínky spolupráce si sjednávají přímo
+                Firma a Tvůrce. Provozovatel není odpovědný za splnění závazků stran.
+              </p>
+            </section>
+
+            <section>
+              <h2 id="poplatky" class="text-base font-semibold text-slate-50 mb-2">
+                4. Poplatky a tarify
+              </h2>
+              <p class="text-slate-200/90">
+                Ceny a rozsah služeb jsou uvedeny v
+                <a href="kartao-cenik.html" class="text-amber-300 hover:text-amber-200 underline underline-offset-2">
+                  Ceníku
+                </a>.
+                Změny cen zveřejňujeme dopředu; již zaplacené období zůstává nedotčeno.
+              </p>
+            </section>
+
+            <section>
+              <h2 id="obsah" class="text-base font-semibold text-slate-50 mb-2">
+                5. Práva k obsahu
+              </h2>
+              <ul class="list-disc list-inside space-y-1 text-slate-200/90">
+                <li>Uživatel odpovídá za materiály, které na Kartao.cz nahrává nebo uvádí (texty, obrázky, odkazy).</li>
+                <li>Provozovatel může odstranit obsah, který je v rozporu s podmínkami nebo zákonem.</li>
+                <li>Uživatel uděluje nevýhradní licenci k zobrazení dat na webu za účelem propagace jeho Karty.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 id="ochrana" class="text-base font-semibold text-slate-50 mb-2">
+                6. Ochrana soukromí
+              </h2>
+              <p class="text-slate-200/90">
+                Zásady zpracování osobních údajů jsou popsány v dokumentu
+                <a href="ochrana-soukromi.html" class="text-amber-300 hover:text-amber-200 underline underline-offset-2">
+                  Ochrana soukromí
+                </a>.
+                Propojení sociálních účtů je dobrovolné a lze je kdykoliv odpojit.
+              </p>
+            </section>
+
+            <section>
+              <h2 id="odpovednost" class="text-base font-semibold text-slate-50 mb-2">
+                7. Omezení odpovědnosti
+              </h2>
+              <ul class="list-disc list-inside space-y-1 text-slate-200/90">
+                <li>Web je poskytován „tak jak je“. Nezaručujeme nepřetržitou dostupnost.</li>
+                <li>Provozovatel neručí za škody způsobené využitím informací z Karet ani za plnění mezi Firmou a Tvůrcem.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 id="zmena" class="text-base font-semibold text-slate-50 mb-2">
+                8. Změny podmínek
+              </h2>
+              <p class="text-slate-200/90">
+                Podmínky můžeme aktualizovat; platná verze je vždy zveřejněna zde.
+                Podstatné změny oznámíme přiměřeným způsobem.
+              </p>
+            </section>
+
+            <section>
+              <h2 id="kontakt" class="text-base font-semibold text-slate-50 mb-2">
+                9. Kontakt
+              </h2>
+              <p class="text-slate-200/90">
+                Dotazy k podmínkám:
+                <em>hello@kartao.cz</em> (uprav dle skutečného provozovatele).
+              </p>
+            </section>
+
+            <section class="mt-6">
+              <div class="rounded-2xl border border-slate-700/80 bg-slate-950/70 px-4 py-3">
+                <div class="font-semibold mb-1 text-slate-100">Shrnutí pro zaneprázdněné</div>
+                <p class="text-xs sm:text-sm text-slate-300/80">
+                  Tvůrci si spravují své karty a statistiky. Firmy posílají poptávky.
+                  My zajišťujeme platformu, nikoliv samotnou realizaci spoluprací.
+                </p>
+              </div>
+            </section>
+          </div>
+        </section>
       </div>
-      <div class="space-y-1">
-        <div class="text-amber-400 font-medium">Právo</div>
-        <a class="block hover:text-white" href="podminky.html">Podmínky</a>
-        <a class="block hover:text-white" href="ochrana-soukromi.html">Ochrana soukromí</a>
+    </main>
+
+    <!-- Spodní info -->
+    <footer class="relative z-10 border-t border-slate-800/80 bg-black/40">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-[11px] text-slate-500">
+        <span>© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2.5 py-1 ring-1 ring-slate-700/80">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+            <span>Bezpečné přihlášení přes Firebase</span>
+          </span>
+          <a href="podminky.html" class="hover:text-slate-300">Podmínky používání</a>
+          <a href="ochrana-soukromi.html" class="hover:text-slate-300">Ochrana soukromí</a>
+        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', ()=>{
-      lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', function () {
+      // datum poslední aktualizace
       const d = new Date();
-      const pad=n=> String(n).padStart(2,'0');
-      const ds = `${pad(d.getDate())}. ${pad(d.getMonth()+1)}. ${d.getFullYear()}`;
-      document.getElementById('updated').textContent = ds;
+      const pad = n => String(n).padStart(2, '0');
+      const ds = `${pad(d.getDate())}. ${pad(d.getMonth() + 1)}. ${d.getFullYear()}`;
+      const updatedEl = document.getElementById('updated');
+      if (updatedEl) updatedEl.textContent = ds;
+
+      // rok v patičce
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = d.getFullYear();
+
+      // lucide ikony
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     });
   </script>
 </body>
