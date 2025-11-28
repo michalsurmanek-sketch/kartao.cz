@@ -367,7 +367,7 @@
         return;
       }
 
-      auth.onAuthStateChanged(function (user) {
+      auth.onAuthStateChanged(async function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -375,7 +375,24 @@
 
         window.currentUserId = user.uid;
 
-        const creditSys = new CreditsSystem(user.uid);
+        // 🔥 jednotný CreditsSystem – Firestore master (async create) + fallback
+        let creditSys;
+        try {
+          if (typeof CreditsSystem.create === "function") {
+            creditSys = await CreditsSystem.create(user.uid);
+          } else {
+            creditSys = new CreditsSystem(user.uid);
+          }
+        } catch (err) {
+          console.error("Chyba při inicializaci CreditsSystem na kreditním dashboardu:", err);
+          // když se něco podělá, aspoň se pokus o starý konstruktor
+          try {
+            creditSys = new CreditsSystem(user.uid);
+          } catch (e2) {
+            console.error("Fallback CreditsSystem taky selhal:", e2);
+            return;
+          }
+        }
 
         // DOM prvky
         const creditsValueEl       = document.getElementById("creditsValue");      // univerzální ID (jiné stránky)
@@ -912,6 +929,7 @@
           });
         }
 
+        // zpřístupníme globálně pro další stránky
         window.creditSys = creditSys;
       });
     });
