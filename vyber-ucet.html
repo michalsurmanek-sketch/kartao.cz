@@ -17,11 +17,6 @@
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script> 
 
   <script>
-  lucide.createIcons();
-  </script>
-
-  
-  <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -311,5 +306,15 @@
     // aktuální rok do patičky
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
+
 </body>
 </html>
