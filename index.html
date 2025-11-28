@@ -427,44 +427,60 @@
       </nav>
 
       <div class="hidden md:flex items-center gap-3">
-        <!-- Přihlášen - zobrazí se po načtení Firebase -->
-        <div id="userMenu" class="hidden items-center gap-3">
-          <a href="kartao-muj-ucet.html" class="text-white/80 hover:text-white transition flex items-center gap-2">
-            <i data-lucide="user" class="w-4 h-4"></i>
-            <span id="userName">Můj účet</span>
-          </a>
-          <button id="logoutBtn" class="btn btn-outline text-sm hover:bg:white/5 transition">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            Odhlásit
-          </button>
-        </div>
-        <!-- Nepřihlášen -->
-        <a id="loginBtn" href="login.html" class="btn btn-primary text-sm">
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-          Přihlásit se
-        </a>
-      </div>
+  <!-- Přihlášen - zobrazí se po načtení Firebase -->
+  <div id="userMenu" data-auth="in" class="hidden items-center gap-3">
+    <a href="kartao-muj-ucet.html" class="text-white/80 hover:text-white transition flex items-center gap-2">
+      <i data-lucide="user" class="w-4 h-4"></i>
+      <span id="userName">Můj účet</span>
+    </a>
+    <!-- Odhlášení přes logout.html -->
+    <a id="logoutBtn"
+       href="logout.html"
+       class="btn btn-outline text-sm hover:bg-white/5 transition">
+      <i data-lucide="log-out" class="w-4 h-4"></i>
+      Odhlásit
+    </a>
+  </div>
 
-      <div class="md:hidden flex items-center gap-2">
-        <!-- User menu mobile - přihlášen -->
-        <a id="userMenuMobile" href="kartao-muj-ucet.html" class="hidden items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-          <i data-lucide="user" class="w-5 h-5"></i>
-          <span class="sr-only">Můj účet</span>
-        </a>
-        <!-- Login button mobile - nepřihlášen -->
-        <a id="loginBtnMobile" href="login.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition">
-          <i data-lucide="log-in" class="w-5 h-5"></i>
-          <span class="sr-only">Přihlásit se</span>
-        </a>
-        <a href="vip.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
-          <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
-          <span class="sr-only">VIP</span>
-        </a>
-        <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-          <i data-lucide="menu" class="w-6 h-6"></i>
-          <span class="sr-only">Otevřít menu</span>
-        </button>
-      </div>
+  <!-- Nepřihlášen -->
+  <div data-auth="out">
+    <a id="loginBtn" href="login.html" class="btn btn-primary text-sm">
+      <i data-lucide="log-in" class="w-4 h-4"></i>
+      Přihlásit se
+    </a>
+  </div>
+</div>
+
+<div class="md:hidden flex items-center gap-2">
+  <!-- User menu mobile - přihlášen -->
+  <a id="userMenuMobile"
+     data-auth="in"
+     href="kartao-muj-ucet.html"
+     class="hidden items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+    <i data-lucide="user" class="w-5 h-5"></i>
+    <span class="sr-only">Můj účet</span>
+  </a>
+
+  <!-- Login button mobile - nepřihlášen -->
+  <div data-auth="out">
+    <a id="loginBtnMobile"
+       href="login.html"
+       class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition">
+      <i data-lucide="log-in" class="w-5 h-5"></i>
+      <span class="sr-only">Přihlásit se</span>
+    </a>
+  </div>
+
+  <a href="vip.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
+    <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
+    <span class="sr-only">VIP</span>
+  </a>
+  <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+    <i data-lucide="menu" class="w-6 h-6"></i>
+    <span class="sr-only">Otevřít menu</span>
+  </button>
+</div>
+
     </div>
   </header>
   
