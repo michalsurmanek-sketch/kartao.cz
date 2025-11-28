@@ -73,8 +73,6 @@
           </a>
         </div>  -->
 
-
-        
         <button id="topupTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>Dobít kredity</span>
@@ -185,7 +183,7 @@
           </div>
         </div>
 
-        <!-- OVLÁDACÍ PANEL VIDEa -->
+        <!-- OVLÁDACÍ PANEL VIDEA -->
         <div id="adControlPanel" class="flex items-center gap-3 mt-2">
           <button id="adMuteToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
@@ -486,7 +484,7 @@
           cooldownTimer = setInterval(tick, 1000);
         }
 
-        // OPRAVA: aktualizujeme všechny tři možné elementy s kredity
+        // aktualizace zobrazení kreditů – jen čte ze CreditsSystem
         function syncCreditsDisplay() {
           const credits = creditSys.getCredits();
           const formatted = formatNumber(credits);
@@ -516,19 +514,9 @@
               streak = 1;
             }
 
-            let credits = 0;
-            if (typeof data.credits === "number") {
-              credits = data.credits;
-            } else {
-              credits = creditSys.getCredits();
-            }
-
-            // >>> NOVÉ ŘÁDKY <<<
-            creditSys.setCredits(credits);
-            syncCreditsDisplay();
-            // >>> KONEC NOVÉHO <<<
-            
-            let level = Math.max(1, Math.floor(credits / 100) + 1);
+            // Kredity tady NEPŘEPISUJEME – bereme jen aktuální stav z CreditsSystem
+            const credits = creditSys.getCredits();
+            const level   = Math.max(1, Math.floor(credits / 100) + 1);
 
             await ref.set(
               {
