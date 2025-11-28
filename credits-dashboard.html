@@ -185,7 +185,7 @@
           </div>
         </div>
 
-        <!-- OVLÁDACÍ PANEL VIDEA -->
+        <!-- OVLÁDACÍ PANEL VIDEa -->
         <div id="adControlPanel" class="flex items-center gap-3 mt-2">
           <button id="adMuteToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
@@ -515,7 +515,7 @@
             } else {
               streak = 1;
             }
---
+
             let credits = 0;
             if (typeof data.credits === "number") {
               credits = data.credits;
@@ -524,9 +524,9 @@
             }
 
             // >>> NOVÉ ŘÁDKY <<<
-    creditSys.setCredits(credits);
-    syncCreditsDisplay();
-    // >>> KONEC NOVÉHO <<<
+            creditSys.setCredits(credits);
+            syncCreditsDisplay();
+            // >>> KONEC NOVÉHO <<<
             
             let level = Math.max(1, Math.floor(credits / 100) + 1);
 
