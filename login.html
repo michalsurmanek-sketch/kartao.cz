@@ -542,5 +542,17 @@
       });
     }
   </script>
+  <script>
+      // aktuální rok do patičky
+      document.getElementById("year").textContent =
+        new Date().getFullYear();
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      });
+    </script>
 </body>
 </html>
