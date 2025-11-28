@@ -1,30 +1,28 @@
 // credits-system.js
 // Centrální mozek kreditního systému Kartao.cz
-// Jediný MASTER stav kreditů je ve Firestore: users/{uid}.credits
-// LocalStorage = jen denní úkoly, limity reklam a cooldown.
+// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
+// LocalStorage = jen denní úkoly a limity reklam (per zařízení)
 
 /*
-  Veřejné API:
+  API:
+    const cs = new CreditsSystem(userId)
 
-  - CreditsSystem.create(userId)   // ASYNC – vrátí instanci s načtenými kredity
-  - instance.getCredits()
-  - instance.setCredits(value)
-  - instance.addCredits(amount)
-  - instance.subtractCredits(amount)
+    cs.getCredits()
+    cs.addCredits(amount)
+    cs.subtractCredits(amount)
 
-  - instance.getDailyState()
-  - instance.updateDailyTask(taskKey)
-  - instance.addAdWatch()
-  - instance.resetDaily()
+    cs.getDailyState()
+    cs.updateDailyTask(taskKey)      // "stats", "campaign"...
+    cs.addAdWatch()                  // hlídá limit a nastavuje cooldown
+    cs.resetDaily()
 
-  - instance.hasAdsCooldown()
-  - instance.getAdsCooldownRemainingMs()
-  - instance.clearAdsCooldown()
+    cs.hasAdsCooldown()
+    cs.getAdsCooldownRemainingMs()
 */
 
 class CreditsSystem {
-  constructor(userId, initialCredits = 0) {
-    this.userId = userId;
+  constructor(userId) {
+    this.userId = userId || null;
 
     this.db =
       window.db ||
@@ -32,59 +30,15 @@ class CreditsSystem {
         firebase.firestore &&
         firebase.firestore());
 
-    this.credits = Number.isFinite(initialCredits) ? initialCredits : 0;
+    this.credits = 0;
 
-    // LocalStorage klíče – PER UŽIVATEL / PER ZAŘÍZENÍ
+    // LocalStorage – per uživatel / zařízení
     this.dailyKey = `kartao_daily_${this.userId}`;
     this.adsCooldownKey = `kartao_adsCooldown_${this.userId}`;
-  }
 
-  // ✅ Bezpečná factory – vytvoří instanci a nejdřív stáhne kredity z Firestore
-  static async create(userId) {
-    let initialCredits = 0;
-
-    const db =
-      window.db ||
-      (window.firebase &&
-        firebase.firestore &&
-        firebase.firestore());
-
-    if (db && userId) {
-      try {
-        const ref = db.collection("users").doc(userId);
-        const snap = await ref.get();
-
-        if (snap.exists) {
-          const data = snap.data() || {};
-          if (typeof data.credits === "number" && Number.isFinite(data.credits)) {
-            initialCredits = data.credits;
-          }
-        } else {
-          // když uživatel neexistuje, rovnou založíme dokument s credits: 0
-          await ref.set({ credits: 0 }, { merge: true });
-        }
-      } catch (e) {
-        console.warn("CreditsSystem: chyba při načítání počátečních kreditů:", e);
-      }
-    }
-
-    return new CreditsSystem(userId, initialCredits);
-  }
-
-  // Volitelný manuální refresh kreditů z Firestore
-  async refreshCredits() {
-    if (!this.db || !this.userId) return this.credits;
-    try {
-      const snap = await this.db.collection("users").doc(this.userId).get();
-      if (snap.exists) {
-        const data = snap.data() || {};
-        const val = typeof data.credits === "number" ? data.credits : 0;
-        this.credits = val;
-      }
-    } catch (e) {
-      console.warn("CreditsSystem: chyba při refreshi kreditů:", e);
-    }
-    return this.credits;
+    // hned po vytvoření si potichu načteme kredity z Firestore,
+    // aby se srovnaly mezi PC / mobilem
+    this._loadCreditsFromFirestore();
   }
 
   // ========== KREDITY ==========
@@ -95,33 +49,53 @@ class CreditsSystem {
 
   setCredits(value) {
     if (!Number.isFinite(value)) value = 0;
+    if (value < 0) value = 0;
     this.credits = value;
-
-    // synchronizace do Firestore (nastavení na konkrétní hodnotu)
-    try {
-      if (this.db && this.userId) {
-        const ref = this.db.collection("users").doc(this.userId);
-        ref
-          .set({ credits: this.credits }, { merge: true })
-          .catch((e) => {
-            console.warn("CreditsSystem: chyba při setCredits:", e);
-          });
-      }
-    } catch (e) {
-      console.warn("CreditsSystem: výjimka v setCredits:", e);
-    }
-
     return this.credits;
   }
 
+  _loadCreditsFromFirestore() {
+    try {
+      if (!this.db || !this.userId) return;
+
+      const ref = this.db.collection("users").doc(this.userId);
+
+      ref.get().then((snap) => {
+        if (!snap.exists) {
+          // uživatel ještě nemá dokument – založíme s 0
+          this.setCredits(0);
+          return ref.set({ credits: 0 }, { merge: true }).catch(() => {});
+        }
+
+        const data = snap.data() || {};
+        const val =
+          typeof data.credits === "number" && Number.isFinite(data.credits)
+            ? data.credits
+            : 0;
+
+        this.setCredits(val);
+      }).catch((e) => {
+        console.warn("CreditsSystem: chyba při načítání kreditů z Firestore:", e);
+      });
+    } catch (e) {
+      console.warn("CreditsSystem: výjimka při načítání kreditů:", e);
+    }
+  }
+
   /**
-   * Přičte kredity a zkusí je uložit do Firestore (atomicky přes increment).
-   * Vrací nový lokální stav.
+   * Přičte kredity – lokálně i ve Firestore.
+   * Vrací nový lokální stav (sync),
+   * Firestore update běží async.
    */
   addCredits(amount) {
     const num = Number(amount) || 0;
-    this.credits += num;
+    if (!num) return this.credits;
 
+    // lokální stav
+    this.credits += num;
+    if (this.credits < 0) this.credits = 0;
+
+    // Firestore – atomický increment
     try {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
@@ -132,16 +106,11 @@ class CreditsSystem {
           firebase.firestore.FieldValue
         ) {
           const inc = firebase.firestore.FieldValue.increment(num);
-          ref
-            .set({ credits: inc }, { merge: true })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při ukládání credits (increment):",
-                e
-              );
-            });
+          ref.set({ credits: inc }, { merge: true }).catch((e) => {
+            console.warn("CreditsSystem: chyba při ukládání credits (increment):", e);
+          });
         } else {
-          // fallback – načti, dopočítej, ulož
+          // fallback – načti + zapiš
           ref
             .get()
             .then((snap) => {
@@ -151,11 +120,8 @@ class CreditsSystem {
               const newCredits = oldCredits + num;
               return ref.set({ credits: newCredits }, { merge: true });
             })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při ukládání credits (fallback):",
-                e
-              );
+            .catch((e) => {
+              console.warn("CreditsSystem: chyba při ukládání credits (fallback):", e);
             });
         }
       }
@@ -168,15 +134,18 @@ class CreditsSystem {
 
   /**
    * Odečte kredity – neumožní jít pod nulu.
-   * Vrací nový lokální stav.
    */
   subtractCredits(amount) {
     const num = Number(amount) || 0;
-    if (!Number.isFinite(num) || num <= 0) return this.credits;
+    if (!num) return this.credits;
 
-    const newVal = this.credits - num;
-    this.credits = newVal < 0 ? 0 : newVal;
+    // lokálně
+    this.credits -= num;
+    if (this.credits < 0) this.credits = 0;
 
+    const delta = -Math.abs(num);
+
+    // Firestore – záporný increment
     try {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
@@ -186,15 +155,10 @@ class CreditsSystem {
           firebase.firestore &&
           firebase.firestore.FieldValue
         ) {
-          const inc = firebase.firestore.FieldValue.increment(-num);
-          ref
-            .set({ credits: inc }, { merge: true })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při odečítání credits (increment):",
-                e
-              );
-            });
+          const inc = firebase.firestore.FieldValue.increment(delta);
+          ref.set({ credits: inc }, { merge: true }).catch((e) => {
+            console.warn("CreditsSystem: chyba při odečítání credits (increment):", e);
+          });
         } else {
           ref
             .get()
@@ -202,15 +166,12 @@ class CreditsSystem {
               const data = snap.exists ? snap.data() || {} : {};
               const oldCredits =
                 typeof data.credits === "number" ? data.credits : 0;
-              let newCredits = oldCredits - num;
+              let newCredits = oldCredits + delta;
               if (newCredits < 0) newCredits = 0;
               return ref.set({ credits: newCredits }, { merge: true });
             })
-            .catch(function (e) {
-              console.warn(
-                "CreditsSystem: chyba při odečítání credits (fallback):",
-                e
-              );
+            .catch((e) => {
+              console.warn("CreditsSystem: chyba při odečítání credits (fallback):", e);
             });
         }
       }
@@ -221,7 +182,7 @@ class CreditsSystem {
     return this.credits;
   }
 
-  // ========== POMOCNÉ FUNKCE PRO DENNÍ STAV ==========
+  // ========== DENNÍ STAV / ÚKOLY / REKLAMY ==========
 
   _todayString() {
     const d = new Date();
@@ -260,8 +221,6 @@ class CreditsSystem {
     }
   }
 
-  // ========== PUBLIC API – DENNÍ STAV / ÚKOLY / REKLAMY ==========
-
   getDailyState() {
     return this._loadDaily();
   }
@@ -274,7 +233,9 @@ class CreditsSystem {
       tasks: {}
     };
     this._saveDaily(state);
-    this.clearAdsCooldown();
+    try {
+      localStorage.removeItem(this.adsCooldownKey);
+    } catch (e) {}
     return state;
   }
 
@@ -341,14 +302,6 @@ class CreditsSystem {
       return diff > 0 ? diff : 0;
     } catch (e) {
       return 0;
-    }
-  }
-
-  clearAdsCooldown() {
-    try {
-      localStorage.removeItem(this.adsCooldownKey);
-    } catch (e) {
-      // ignor
     }
   }
 }
