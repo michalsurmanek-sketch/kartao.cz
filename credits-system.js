@@ -19,17 +19,16 @@
   - getAdsCooldownRemainingMs()
   - clearAdsCooldown()
 
-  Kredity:
-  - MASTER = Firestore (kolekce "users", dokument userId, pole "credits")
-  - localStorage = cache pro dané zařízení (rychlé načtení po reloadu)
+  MASTER kredity = Firestore (kolekce "users", dokument userId, pole "credits")
+  localStorage = jen cache na zařízení
 */
 
-// Pomocná funkce pro dnešní datum (YYYY-MM-DD)
+// dnešní datum (YYYY-MM-DD)
 function kartaoTodayString() {
   const d = new Date();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate() + 0).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
@@ -53,7 +52,7 @@ class CreditsSystem {
     this.dailyKey        = `kartao_daily_${this.userId}`;
     this.adsCooldownKey  = `kartao_adsCooldown_${this.userId}`;
 
-    // 1) Načti kredity z localStorage jako start
+    // Načti kredity z localStorage (rychlý start)
     this.credits = 0;
     try {
       const raw = localStorage.getItem(this.localCreditsKey);
@@ -67,14 +66,16 @@ class CreditsSystem {
       console.warn("CreditsSystem: nelze číst credits z localStorage:", e);
     }
 
-    // 2) Aplikuj okamžitě do DOM (aby se něco zobrazilo)
+    console.log("💰 CreditsSystem init – user:", this.userId, "local credits:", this.credits);
+
+    // Okamžitě nacpi číslo do DOM (ať tam něco je)
     this._applyCreditsToDom();
 
-    // 3) Async stáhni z Firestore a srovnej
+    // Dotáhni kredity z Firestore (master pravda)
     if (this.db) {
       this._syncCreditsFromServer();
     } else {
-      console.warn("CreditsSystem: Firestore není dostupný – kredity pojedou jen lokálně.");
+      console.warn("CreditsSystem: Firestore není dostupný – jede jen lokální cache");
     }
   }
 
@@ -113,14 +114,18 @@ class CreditsSystem {
       const snap = await ref.get();
       const data = snap.exists ? (snap.data() || {}) : {};
 
+      console.log("💾 Firestore snapshot:", data);
+
       if (typeof data.credits === "number" && data.credits >= 0) {
         // Firestore má pravdu
         this.credits = data.credits;
+        console.log("✅ Beru kredity z Firestore:", this.credits);
         this._saveCreditsToLocal();
         this._applyCreditsToDom();
       } else {
-        // Firestore nic neví – pošli tam lokální stav (pokud je > 0)
-        if (this.credits > 0) {
+        // Firestore nic neví – pošli tam lokální stav (pokud > 0)
+        console.log("ℹ️ Firestore credits nenalezeny, posílám lokální:", this.credits);
+        if (this.credits >= 0) {
           await ref.set({ credits: this.credits }, { merge: true });
         }
       }
@@ -133,7 +138,9 @@ class CreditsSystem {
     if (!this.db) return;
     try {
       const ref = this.db.collection("users").doc(this.userId);
-      ref.set({ credits: this.credits }, { merge: true }).catch((e) => {
+      const value = this.credits;
+      console.log("💾 Ukládám přesný stav credits do Firestore:", value);
+      ref.set({ credits: value }, { merge: true }).catch((e) => {
         console.warn("CreditsSystem: chyba při ukládání credits (set):", e);
       });
     } catch (e) {
@@ -151,8 +158,8 @@ class CreditsSystem {
         firebase.firestore &&
         firebase.firestore.FieldValue
       ) {
-        // atomický increment
         const inc = firebase.firestore.FieldValue.increment(delta);
+        console.log("⬆️ Firestore increment:", delta);
         ref.set({ credits: inc }, { merge: true }).catch((e) => {
           console.warn("CreditsSystem: chyba při ukládání credits (increment):", e);
         });
@@ -165,6 +172,7 @@ class CreditsSystem {
             const oldCredits =
               typeof data.credits === "number" ? data.credits : 0;
             const newCredits = oldCredits + delta;
+            console.log("⬆️ Firestore fallback set na:", newCredits);
             return ref.set({ credits: newCredits }, { merge: true });
           })
           .catch((e) => {
@@ -187,6 +195,7 @@ class CreditsSystem {
     if (!Number.isFinite(v) || v < 0) v = 0;
 
     this.credits = v;
+    console.log("✏️ setCredits:", v);
     this._saveCreditsToLocal();
     this._applyCreditsToDom();
     this._saveCreditsToServerExact();
@@ -199,6 +208,7 @@ class CreditsSystem {
     if (delta === 0) return this.credits;
 
     this.credits = Math.max(0, this.credits + delta);
+    console.log("➕ addCredits:", delta, "=>", this.credits);
     this._saveCreditsToLocal();
     this._applyCreditsToDom();
     this._incrementCreditsOnServer(delta);
@@ -210,9 +220,8 @@ class CreditsSystem {
     const delta = Number(amount) || 0;
     if (delta <= 0) return this.credits;
 
-    const newVal = Math.max(0, this.credits - delta);
-    this.credits = newVal;
-
+    this.credits = Math.max(0, this.credits - delta);
+    console.log("➖ subtractCredits:", delta, "=>", this.credits);
     this._saveCreditsToLocal();
     this._applyCreditsToDom();
     this._saveCreditsToServerExact();
