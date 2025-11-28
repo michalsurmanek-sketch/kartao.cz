@@ -56,7 +56,6 @@
         </div>
       </a>
       <div class="flex items-center gap-3">
-        
         <div class="flex items-center gap-3">
           <!-- Aktuální kredity -->
           <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/50 bg-amber-400/10 px-3 py-1.5">
@@ -64,14 +63,15 @@
             <span id="currentCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <!-- Zpět 
+          <!-- Zpět – zatím zakomentované
           <a
             href="credits-dashboard.html"
             class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20"
           >
             ← Zpět na kredity
           </a>
-        </div>  -->
+          -->
+        </div>
 
         <button id="topupTestButton" class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-sm font-medium shadow-soft">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
@@ -352,7 +352,7 @@
   <!-- Centrální kreditní systém -->
   <script src="credits-system.js"></script>
 
-  <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL -->
+  <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL + REKLAMY -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.lucide) {
@@ -367,7 +367,7 @@
         return;
       }
 
-      auth.onAuthStateChanged(async function (user) {
+      auth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -375,24 +375,7 @@
 
         window.currentUserId = user.uid;
 
-        // 🔥 jednotný CreditsSystem – Firestore master (async create) + fallback
-        let creditSys;
-        try {
-          if (typeof CreditsSystem.create === "function") {
-            creditSys = await CreditsSystem.create(user.uid);
-          } else {
-            creditSys = new CreditsSystem(user.uid);
-          }
-        } catch (err) {
-          console.error("Chyba při inicializaci CreditsSystem na kreditním dashboardu:", err);
-          // když se něco podělá, aspoň se pokus o starý konstruktor
-          try {
-            creditSys = new CreditsSystem(user.uid);
-          } catch (e2) {
-            console.error("Fallback CreditsSystem taky selhal:", e2);
-            return;
-          }
-        }
+        const creditSys = new CreditsSystem(user.uid);
 
         // DOM prvky
         const creditsValueEl       = document.getElementById("creditsValue");      // univerzální ID (jiné stránky)
@@ -480,13 +463,39 @@
           }
         }
 
+        // 🔐 SAFE WRAPPERY – fungují i když credits-system.js ještě nemá cooldown metody
+        function getCooldownMsSafe() {
+          if (!creditSys || typeof creditSys.getAdsCooldownRemainingMs !== "function") {
+            return 0;
+          }
+          try {
+            const v = creditSys.getAdsCooldownRemainingMs();
+            return Number.isFinite(v) ? v : 0;
+          } catch (e) {
+            console.warn("Cooldown selhal:", e);
+            return 0;
+          }
+        }
+
+        function hasAdsCooldownSafe() {
+          if (!creditSys || typeof creditSys.hasAdsCooldown !== "function") {
+            return false;
+          }
+          try {
+            return !!creditSys.hasAdsCooldown();
+          } catch (e) {
+            console.warn("hasAdsCooldown selhal:", e);
+            return false;
+          }
+        }
+
         function startCooldownTimer() {
           if (!adCooldown) return;
 
           stopCooldownTimer();
 
           function tick() {
-            const ms = creditSys.getAdsCooldownRemainingMs();
+            const ms = getCooldownMsSafe();
             if (ms <= 0) {
               adCooldown.classList.add("hidden");
               stopCooldownTimer();
@@ -524,7 +533,7 @@
             let last    = data.lastActiveDate || null;
 
             if (last === today) {
-              // nic
+              // dnešek už započítaný
             } else if (last) {
               streak = streak + 1;
             } else {
@@ -586,7 +595,7 @@
         function updateUIFromDaily() {
           const daily   = getDaily();
           const maxAds  = daily.maxAds || 5;
-          const cooldownMs  = creditSys.getAdsCooldownRemainingMs();
+          const cooldownMs  = getCooldownMsSafe();
           const inCooldown  = cooldownMs > 0;
 
           if (adCounter) {
@@ -702,7 +711,7 @@
         updateUIFromDaily();
         renderMiniMysteryHistory();
 
-        if (creditSys.hasAdsCooldown()) {
+        if (hasAdsCooldownSafe()) {
           startCooldownTimer();
         }
 
@@ -810,7 +819,7 @@
             const daily  = getDaily();
             const maxAds = daily.maxAds || 5;
 
-            if (creditSys.hasAdsCooldown()) {
+            if (hasAdsCooldownSafe()) {
               if (adMessage) {
                 adMessage.textContent = "Dnešní limit sledování reklam je vyčerpán. Počkej na obnovení limitu.";
               }
@@ -929,7 +938,7 @@
           });
         }
 
-        // zpřístupníme globálně pro další stránky
+        // Globální přístup – používají to jiné stránky (mystery-box atd.)
         window.creditSys = creditSys;
       });
     });
