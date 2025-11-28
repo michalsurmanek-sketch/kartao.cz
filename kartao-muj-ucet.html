@@ -546,35 +546,54 @@
 
         currentUserUid = user.uid;
 
-        // *** DŮLEŽITÉ: Přepnout Firestore ONLINE těsně před načtením profilu ***
+        // 🔧 Přepnout Firestore ONLINE těsně před načtením profilu
         try {
           if (db && typeof db.enableNetwork === "function") {
             await db.enableNetwork();
-            console.log("🌐 Firestore ONLINE potvrzeno těsně před načtením profilu (kartao-muj-ucet.html)");
+            console.log("🌐 Firestore ONLINE – kartao-muj-ucet.html");
           } else if (window.firebase && firebase.firestore && typeof firebase.firestore().enableNetwork === "function") {
             await firebase.firestore().enableNetwork();
-            console.log("🌐 Firestore ONLINE (fallback přes firebase.firestore().enableNetwork)");
+            console.log("🌐 Firestore ONLINE (fallback) – kartao-muj-ucet.html");
           }
         } catch (err) {
-          console.warn("⚠️ enableNetwork před načtením profilu selhalo:", err);
+          console.warn("⚠️ enableNetwork selhalo (kartao-muj-ucet.html):", err);
         }
 
-        try {
-          const docRef = db.collection("users").doc(user.uid);
-          const snap = await docRef.get();
+        const docRef = db.collection("users").doc(user.uid);
 
-          if (snap.exists) {
+        try {
+          // Primárně se snažíme o server
+          let snap;
+          try {
+            snap = await docRef.get({ source: "server" });
+          } catch (serverErr) {
+            console.warn("⚠️ get(...source: 'server') selhalo, zkouším cache:", serverErr);
+            try {
+              snap = await docRef.get({ source: "cache" });
+            } catch (cacheErr) {
+              console.warn("⚠️ get(...source: 'cache') taky selhalo, vytvořím profil z Auth:", cacheErr);
+              snap = null;
+            }
+          }
+
+          if (snap && snap.exists) {
             currentProfileData = snap.data() || {};
           } else {
+            // pokud profil neexistuje nebo se nepovedlo nic načíst – vytvoříme základ
             currentProfileData = {
               email: user.email || null,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
-            await docRef.set(currentProfileData, { merge: true });
+            try {
+              await docRef.set(currentProfileData, { merge: true });
+            } catch (setErr) {
+              console.warn("⚠️ Profil se nepodařilo uložit na server, ale jedu dál s lokálními daty:", setErr);
+            }
           }
 
           applyUserUI(user, currentProfileData);
 
+          // vygenerovat URL vizitky
           if (shareUrlInput) {
             const origin = window.location.origin || "https://kartao.cz";
             const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
@@ -582,8 +601,14 @@
           }
 
         } catch (err) {
-          console.error("Chyba při načítání profilu z Firestore:", err);
-          showMessage("Nepodařilo se načíst profil z databáze.", "error");
+          console.error("Chyba při načítání profilu z Firestore (finální catch):", err);
+          showMessage("Nepodařilo se načíst profil z databáze. Používám data z přihlášení.", "error");
+
+          // fallback čistě z Auth, aby UI jelo i když Firestore úplně klekne
+          currentProfileData = {
+            email: user.email || "",
+          };
+          applyUserUI(user, currentProfileData);
         } finally {
           setLoading(false);
         }
