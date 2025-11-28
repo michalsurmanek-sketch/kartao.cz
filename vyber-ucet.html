@@ -1,341 +1,516 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kartao.cz – Vyber typ účtu</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💳</text></svg>">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kartao.cz – Vyber typ účtu</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💳</text></svg>"
+    />
 
-  <!-- Preload kritických zdrojů -->
-  <link rel="preload" href="https://cdn.tailwindcss.com" as="script" />
-  <link rel="preload" href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" as="script" />
+    <!-- Preload kritických zdrojů -->
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script" />
+    <link
+      rel="preload"
+      href="https://unpkg.com/lucide@latest/dist/umd/lucide.js"
+      as="script"
+    />
 
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide ikony -->
-  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script> 
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            fuchsia: tailwind.colors.fuchsia,
-            amber: tailwind.colors.amber,
-            neutral: tailwind.colors.neutral,
-            emerald: tailwind.colors.emerald,
-            sky: tailwind.colors.sky,
-            rose: tailwind.colors.rose,
-          },
-          boxShadow: {
-            card: "0 24px 80px rgba(15,23,42,0.85)",
+    <!-- Lucide ikony -->
+    <script
+      defer
+      src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"
+    ></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              fuchsia: tailwind.colors.fuchsia,
+              amber: tailwind.colors.amber,
+              neutral: tailwind.colors.neutral,
+              emerald: tailwind.colors.emerald,
+              sky: tailwind.colors.sky,
+              rose: tailwind.colors.rose,
+            },
+            boxShadow: {
+              card: "0 24px 80px rgba(15,23,42,0.85)",
+            },
           },
         },
-      },
-    };
-  </script>
+      };
+    </script>
 
-  <style>
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top left, rgba(236,72,153,0.15), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(251,191,36,0.18), transparent 55%),
-                  radial-gradient(circle at bottom left, rgba(56,189,248,0.1), transparent 55%),
-                  #020617;
-    }
+    <style>
+      body {
+        min-height: 100vh;
+        background: radial-gradient(
+            circle at top left,
+            rgba(236, 72, 153, 0.15),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(251, 191, 36, 0.18),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom left,
+            rgba(56, 189, 248, 0.1),
+            transparent 55%
+          ),
+          #020617;
+      }
 
-    .glass {
-      background: radial-gradient(circle at top left, rgba(248,250,252,0.12), rgba(15,23,42,0.96));
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-    }
+      .glass {
+        background: radial-gradient(
+          circle at top left,
+          rgba(248, 250, 252, 0.12),
+          rgba(15, 23, 42, 0.96)
+        );
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
 
-    .glow-ring {
-      position: absolute;
-      inset: -2px;
-      border-radius: 9999px;
-      background: linear-gradient(120deg, rgba(251,191,36,0.7), rgba(236,72,153,0.8), rgba(56,189,248,0.9));
-      opacity: 0;
-      transform: scale(0.96);
-      transition: all 200ms ease-out;
-      filter: blur(1.5px);
-      pointer-events: none;
-    }
+      .glow-ring {
+        position: absolute;
+        inset: -2px;
+        border-radius: 9999px;
+        background: linear-gradient(
+          120deg,
+          rgba(251, 191, 36, 0.7),
+          rgba(236, 72, 153, 0.8),
+          rgba(56, 189, 248, 0.9)
+        );
+        opacity: 0;
+        transform: scale(0.96);
+        transition: all 200ms ease-out;
+        filter: blur(1.5px);
+        pointer-events: none;
+      }
 
-    .role-card:hover .glow-ring {
-      opacity: 1;
-      transform: scale(1);
-    }
-  </style>
-</head>
-<body class="text-slate-100">
-  <div class="relative min-h-screen flex flex-col">
-    <!-- Dekorativní kruhy v pozadí -->
-    <div class="pointer-events-none fixed inset-0 overflow-hidden">
-      <div class="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
-      <div class="absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-amber-400/10 blur-3xl"></div>
-      <div class="absolute top-1/3 -left-32 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl"></div>
+      .role-card:hover .glow-ring {
+        opacity: 1;
+        transform: scale(1);
+      }
+    </style>
+  </head>
+  <body class="text-slate-100">
+    <div class="relative min-h-screen flex flex-col">
+      <!-- Dekorativní kruhy v pozadí -->
+      <div class="pointer-events-none fixed inset-0 overflow-hidden">
+        <div
+          class="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl"
+        ></div>
+        <div
+          class="absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-amber-400/10 blur-3xl"
+        ></div>
+        <div
+          class="absolute top-1/3 -left-32 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl"
+        ></div>
+      </div>
+
+      <!-- Horní lišta -->
+      <header class="relative z-20 w-full">
+        <div
+          class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4"
+        >
+          <!-- Zpět na hlavní stránku -->
+          <a
+            href="index.html"
+            class="inline-flex items-center text-sm text-slate-300 hover:text-white transition"
+          >
+            <span
+              class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 ring-1 ring-slate-700/60 px-3 py-1"
+            >
+              <span class="text-base">←</span>
+              <span>Zpět</span>
+            </span>
+          </a>
+
+          <!-- Kartao brand badge s korunkou -->
+          <div
+            class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full bg-slate-900/80 ring-1 ring-slate-700/70 shadow-lg shadow-black/40"
+          >
+            <!-- Ikona s korunkou -->
+            <div
+              class="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400 shadow-md shadow-amber-500/40"
+            >
+              <i
+                data-lucide="crown"
+                class="w-4 h-4 text-black/80"
+              ></i>
+            </div>
+
+            <!-- Textová část -->
+            <div class="flex flex-col leading-tight">
+              <span
+                class="text-xs font-semibold tracking-wide text-slate-200"
+              >
+                Kartao.cz
+              </span>
+              <span
+                class="text-[10px] uppercase tracking-[0.18em] text-slate-400"
+              >
+                Síť influencerů
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Obsah -->
+      <main
+        class="relative z-10 flex-1 flex items-center justify-center px-4 py-8"
+      >
+        <div
+          class="mx-auto flex w-full max-w-5xl flex-col gap-8 lg:flex-row lg:items-stretch"
+        >
+          <!-- Textový blok vlevo -->
+          <section
+            class="glass relative w-full max-w-xl rounded-3xl border border-slate-700/70 p-7 lg:p-9 shadow-card"
+          >
+            <div
+              class="absolute -top-6 right-6 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/70 px-3 py-1 text-[11px] font-medium tracking-wide text-amber-100 shadow-lg shadow-amber-500/30"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"
+              ></span>
+              Živý ekosystém spoluprací
+            </div>
+
+            <h1 class="mb-4 text-3xl sm:text-4xl font-bold tracking-tight">
+              Vyber, jak chceš
+              <span
+                class="block bg-gradient-to-r from-amber-300 via-fuchsia-300 to-sky-300 bg-clip-text text-transparent"
+              >
+                hrát v Kartao.cz
+              </span>
+            </h1>
+            <p class="mb-6 text-sm sm:text-base text-slate-300/90">
+              Kartao je ekosystém, kde se potkávají influenceři a firmy. Nejprve
+              si zvol roli, podle které ti připravíme správný dashboard, úkoly
+              a odměny.
+            </p>
+
+            <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
+              <li class="flex items-start gap-2">
+                <span class="mt-0.5 text-emerald-400">●</span>
+                <div>
+                  <span class="font-semibold text-slate-50">Influencer</span>
+                  – buduješ profil, sbíráš K-Coins, aktivuješ benefity a VIP
+                  úrovně.
+                </div>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-0.5 text-sky-400">●</span>
+                <div>
+                  <span class="font-semibold text-slate-50">
+                    Firma / značka
+                  </span>
+                  – zadáváš kampaně, sleduješ výsledky a vybíráš influencery.
+                </div>
+              </li>
+            </ul>
+
+            <div
+              class="mt-auto flex flex-wrap items-center gap-3 pt-2"
+            >
+              <div
+                class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400 ring-1 ring-slate-700/80"
+              >
+                <span
+                  class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-400/10 text-[11px]"
+                >
+                  💳
+                </span>
+                Jedno přihlášení – dva světy
+              </div>
+              <span class="text-[11px] text-slate-500">
+                Role je jen začátek, později ji můžeš upřesnit v profilu.
+              </span>
+            </div>
+          </section>
+
+          <!-- Výběr role vpravo -->
+          <section
+            class="relative w-full lg:max-w-md flex flex-col gap-4"
+          >
+            <div class="mb-1 flex items-center justify-between">
+              <h2
+                class="text-sm font-semibold tracking-wide text-slate-300 uppercase"
+              >
+                Vyber typ účtu
+              </h2>
+              <span class="text-[11px] text-slate-400">
+                krok 1 / 2 – role &gt; přihlášení
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <!-- Influencer karta -->
+              <a
+                href="login.html?role=influencer"
+                class="role-card relative block rounded-3xl border border-slate-700/70 bg-black/60 p-[1px] shadow-card overflow-hidden"
+              >
+                <div class="glow-ring"></div>
+                <div
+                  class="relative flex h-full flex-col gap-4 rounded-[1.4rem] bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95 px-5 py-5 sm:px-6 sm:py-6"
+                >
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400 shadow-lg shadow-fuchsia-500/40"
+                      >
+                        <span
+                          class="text-2xl drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]"
+                        >
+                          ⭐
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span
+                          class="text-sm font-semibold text-slate-50"
+                        >
+                          Influencer
+                        </span>
+                        <span
+                          class="text-[11px] uppercase tracking-[0.22em] text-amber-200/80"
+                        >
+                          tvůrce obsahu
+                        </span>
+                      </div>
+                    </div>
+
+                    <div
+                      class="hidden sm:flex flex-col items-end gap-1 text-right"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-1 text-[11px] font-medium text-amber-200 ring-1 ring-amber-400/40"
+                      >
+                        <span
+                          class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"
+                        ></span>
+                        Aktivní odměny
+                      </span>
+                      <span class="text-[11px] text-slate-400">
+                        K-Coins, VIP úrovně, kampaně
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="text-xs sm:text-sm text-slate-300/95">
+                    Chci budovat svůj profil, sbírat K-Coins, získávat nabídky
+                    od firem a postupně si odemykat VIP výhody.
+                  </p>
+
+                  <div
+                    class="flex flex-wrap items-center gap-2 pt-1"
+                  >
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">🎮</span>
+                      Gamifikace profilu
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">💰</span>
+                      K-Coins odměny
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">📈</span>
+                      Statistiky dosahu
+                    </span>
+                  </div>
+
+                  <div
+                    class="mt-1 flex items-center justify-between gap-3"
+                  >
+                    <span class="text-[11px] text-slate-500">
+                      Ideální pro tvůrce, streamery, sportovce,
+                      osobnosti…
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200"
+                    >
+                      Pokračovat jako influencer
+                      <span class="text-xs">→</span>
+                    </span>
+                  </div>
+                </div>
+              </a>
+
+              <!-- Firma karta -->
+              <a
+                href="login.html?role=firma"
+                class="role-card relative block rounded-3xl border border-slate-700/70 bg-black/60 p-[1px] shadow-card overflow-hidden"
+              >
+                <div class="glow-ring"></div>
+                <div
+                  class="relative flex h-full flex-col gap-4 rounded-[1.4rem] bg-gradient-to-br from-slate-900/95 via-slate-950/95 to-slate-950 px-5 py-5 sm:px-6 sm:py-6"
+                >
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 via-sky-400 to-amber-300 shadow-lg shadow-emerald-500/40"
+                      >
+                        <span
+                          class="text-2xl drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]"
+                        >
+                          🏢
+                        </span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span
+                          class="text-sm font-semibold text-slate-50"
+                        >
+                          Firma / značka
+                        </span>
+                        <span
+                          class="text-[11px] uppercase tracking-[0.22em] text-emerald-200/80"
+                        >
+                          kampaně &amp; spolupráce
+                        </span>
+                      </div>
+                    </div>
+
+                    <div
+                      class="hidden sm:flex flex-col items-end gap-1 text-right"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-[11px] font-medium text-emerald-100 ring-1 ring-emerald-400/40"
+                      >
+                        <span
+                          class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"
+                        ></span>
+                        Připraveno pro firmy
+                      </span>
+                      <span class="text-[11px] text-slate-400">
+                        Kampaně, rozpočty, reporty
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="text-xs sm:text-sm text-slate-300/95">
+                    Chci zadávat kampaně, oslovovat influencery, pracovat s
+                    rozpočtem a sledovat výsledky v přehledném dashboardu.
+                  </p>
+
+                  <div
+                    class="flex flex-wrap items-center gap-2 pt-1"
+                  >
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">🎯</span>
+                      Výběr influencerů
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">📊</span>
+                      Přehled kampaní
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90"
+                    >
+                      <span class="text-xs">💼</span>
+                      Firemní tým
+                    </span>
+                  </div>
+
+                  <div
+                    class="mt-1 flex items-center justify-between gap-3"
+                  >
+                    <span class="text-[11px] text-slate-500">
+                      Pro značky, agentury, e-shopy, eventy, sportovní
+                      kluby…
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-100"
+                    >
+                      Pokračovat jako firma
+                      <span class="text-xs">→</span>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Doplňkový text -->
+            <div
+              class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500"
+            >
+              <span>
+                Už máš účet?
+                <a
+                  href="login.html"
+                  class="text-amber-200 hover:text-amber-100 underline underline-offset-2"
+                >
+                  Přihlásit se
+                </a>
+              </span>
+              <span>
+                Role může být v budoucnu rozšířena (např. agentura,
+                manažer, tým).
+              </span>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- Spodní info -->
+      <footer
+        class="relative z-10 border-t border-slate-800/80 bg-black/40"
+      >
+        <div
+          class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-[11px] text-slate-500"
+        >
+          <span>
+            ©
+            <span id="year"></span>
+            Kartao.cz – digitální ekosystém spoluprací.
+          </span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span
+              class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2.5 py-1 ring-1 ring-slate-700/80"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-emerald-400"
+              ></span>
+              <span>Bezpečné přihlášení přes Firebase</span>
+            </span>
+            <a href="#" class="hover:text-slate-300">
+              Podmínky použití
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
 
-    <!-- Horní lišta -->
-    <header class="relative z-20 w-full">
-      <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4">
+    <script>
+      // aktuální rok do patičky
+      document.getElementById("year").textContent =
+        new Date().getFullYear();
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      });
+    </script>
+  </body>
+</html>
 
-        <!-- Zpět na hlavní stránku -->
-        <a href="index.html"
-           class="inline-flex items-center text-sm text-slate-300 hover:text-white transition">
-
-          <span class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 ring-1 ring-slate-700/60 px-3 py-1">
-            <span class="text-base">←</span>
-            <span>Zpět</span>
-          </span>
-
-        </a>
-
-        <!-- Kartao brand badge s korunkou -->
-        <div class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full
-                    bg-slate-900/80 ring-1 ring-slate-700/70
-                    shadow-lg shadow-black/40">
-
-          <!-- Ikona s korunkou -->
-          <div class="relative flex h-8 w-8 items-center justify-center rounded-full
-                      bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400
-                      shadow-md shadow-amber-500/40">
-            <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
-          </div>
-
-          <!-- Textová část -->
-          <div class="flex flex-col leading-tight">
-            <span class="text-xs font-semibold tracking-wide text-slate-200">
-              Kartao.cz
-            </span>
-            <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
-              Síť influencerů
-            </span>
-          </div>
-
-        </div>
-
-      </div>
-    </header>
-
-    <!-- Obsah -->
-    <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
-      <div class="mx-auto flex w-full max-w-5xl flex-col gap-8 lg:flex-row lg:items-stretch">
-        <!-- Textový blok vlevo -->
-        <section class="glass relative w-full max-w-xl rounded-3xl border border-slate-700/70 p-7 lg:p-9 shadow-card">
-          <div class="absolute -top-6 right-6 inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-black/70 px-3 py-1 text-[11px] font-medium tracking-wide text-amber-100 shadow-lg shadow-amber-500/30">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            Živý ekosystém spoluprací
-          </div>
-
-          <h1 class="mb-4 text-3xl sm:text-4xl font-bold tracking-tight">
-            Vyber, jak chceš
-            <span class="block bg-gradient-to-r from-amber-300 via-fuchsia-300 to-sky-300 bg-clip-text text-transparent">hrát v Kartao.cz</span>
-          </h1>
-          <p class="mb-6 text-sm sm:text-base text-slate-300/90">
-            Kartao je ekosystém, kde se potkávají influenceři a firmy. Nejprve si zvol roli,
-            podle které ti připravíme správný dashboard, úkoly a odměny.
-          </p>
-
-          <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
-            <li class="flex items-start gap-2">
-              <span class="mt-0.5 text-emerald-400">●</span>
-              <div>
-                <span class="font-semibold text-slate-50">Influencer</span> – buduješ profil, sbíráš K-Coins, aktivuješ benefity a VIP úrovně.
-              </div>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="mt-0.5 text-sky-400">●</span>
-              <div>
-                <span class="font-semibold text-slate-50">Firma / značka</span> – zadáváš kampaně, sleduješ výsledky a vybíráš influencery.
-              </div>
-            </li>
-          </ul>
-
-          <div class="mt-auto flex flex-wrap items-center gap-3 pt-2">
-            <div class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400 ring-1 ring-slate-700/80">
-              <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-400/10 text-[11px]">💳</span>
-              Jedno přihlášení – dva světy
-            </div>
-            <span class="text-[11px] text-slate-500">
-              Role je jen začátek, později ji můžeš upřesnit v profilu.
-            </span>
-          </div>
-        </section>
-
-        <!-- Výběr role vpravo -->
-        <section class="relative w-full lg:max-w-md flex flex-col gap-4">
-          <div class="mb-1 flex items-center justify-between">
-            <h2 class="text-sm font-semibold tracking-wide text-slate-300 uppercase">Vyber typ účtu</h2>
-            <span class="text-[11px] text-slate-400">krok 1 / 2 – role &gt; přihlášení</span>
-          </div>
-
-          <div class="space-y-4">
-            <!-- Influencer karta -->
-            <a href="login.html?role=influencer" class="role-card relative block rounded-3xl border border-slate-700/70 bg-black/60 p-[1px] shadow-card overflow-hidden">
-              <div class="glow-ring"></div>
-              <div class="relative flex h-full flex-col gap-4 rounded-[1.4rem] bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95 px-5 py-5 sm:px-6 sm:py-6">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="flex items-center gap-3">
-                    <div class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400 shadow-lg shadow-fuchsia-500/40">
-                      <span class="text-2xl drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]">⭐</span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="text-sm font-semibold text-slate-50">Influencer</span>
-                      <span class="text-[11px] uppercase tracking-[0.22em] text-amber-200/80">tvůrce obsahu</span>
-                    </div>
-                  </div>
-
-                  <div class="hidden sm:flex flex-col items-end gap-1 text-right">
-                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-1 text-[11px] font-medium text-amber-200 ring-1 ring-amber-400/40">
-                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Aktivní odměny
-                    </span>
-                    <span class="text-[11px] text-slate-400">K-Coins, VIP úrovně, kampaně</span>
-                  </div>
-                </div>
-
-                <p class="text-xs sm:text-sm text-slate-300/95">
-                  Chci budovat svůj profil, sbírat K-Coins, získávat nabídky od firem a postupně si odemykat VIP výhody.
-                </p>
-
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">🎮</span>
-                    Gamifikace profilu
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">💰</span>
-                    K-Coins odměny
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">📈</span>
-                    Statistiky dosahu
-                  </span>
-                </div>
-
-                <!-- CTA influencer -->
-                <div class="mt-2 flex items-center justify-between gap-3">
-                  <span class="text-[11px] text-slate-500">
-                    Ideální pro tvůrce, streamery, sportovce, osobnosti…
-                  </span>
-
-                  <a href="login.html?role=influencer"
-                     class="group inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold
-                            bg-gradient-to-r from-amber-400 via-fuchsia-400 to-sky-400
-                            text-slate-900 shadow-md shadow-amber-500/40 transition-all
-                            hover:shadow-amber-400/60 hover:shadow-lg hover:brightness-110 hover:scale-[1.03]">
-                    
-                    <span>Pokračovat jako influencer</span>
-                    <span class="group-hover:translate-x-[3px] transition-transform text-xs">→</span>
-                  </a>
-                </div>
-                <!-- /CTA influencer -->
-
-              </div>
-            </a>
-
-            <!-- Firma karta -->
-            <a href="login.html?role=firma" class="role-card relative block rounded-3xl border border-slate-700/70 bg-black/60 p-[1px] shadow-card overflow-hidden">
-              <div class="glow-ring"></div>
-              <div class="relative flex h-full flex-col gap-4 rounded-[1.4rem] bg-gradient-to-br from-slate-900/95 via-slate-950/95 to-slate-950 px-5 py-5 sm:px-6 sm:py-6">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="flex items-center gap-3">
-                    <div class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 via-sky-400 to-amber-300 shadow-lg shadow-emerald-500/40">
-                      <span class="text-2xl drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]">🏢</span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="text-sm font-semibold text-slate-50">Firma / značka</span>
-                      <span class="text-[11px] uppercase tracking-[0.22em] text-emerald-200/80">kampaně &amp; spolupráce</span>
-                    </div>
-                  </div>
-
-                  <div class="hidden sm:flex flex-col items-end gap-1 text-right">
-                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-[11px] font-medium text-emerald-100 ring-1 ring-emerald-400/40">
-                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Připraveno pro firmy
-                    </span>
-                    <span class="text-[11px] text-slate-400">Kampaně, rozpočty, reporty</span>
-                  </div>
-                </div>
-
-                <p class="text-xs sm:text-sm text-slate-300/95">
-                  Chci zadávat kampaně, oslovovat influencery, pracovat s rozpočtem a sledovat výsledky v přehledném dashboardu.
-                </p>
-
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">🎯</span>
-                    Výběr influencerů
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">📊</span>
-                    Přehled kampaní
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-slate-700/90">
-                    <span class="text-xs">💼</span>
-                    Firemní tým
-                  </span>
-                </div>
-
-                <!-- CTA firma -->
-                <div class="mt-2 flex items-center justify-between gap-3">
-                  <span class="text-[11px] text-slate-500">
-                    Pro značky, agentury, e-shopy, eventy, sportovní kluby…
-                  </span>
-
-                  <a href="login.html?role=firma"
-                     class="group inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold
-                            bg-gradient-to-r from-emerald-300 via-sky-300 to-amber-300
-                            text-slate-900 shadow-md shadow-emerald-500/40 transition-all
-                            hover:shadow-emerald-400/60 hover:shadow-lg hover:brightness-110 hover:scale-[1.03]">
-                    
-                    <span>Pokračovat jako firma</span>
-                    <span class="group-hover:translate-x-[3px] transition-transform text-xs">→</span>
-                  </a>
-                </div>
-                <!-- /CTA firma -->
-
-              </div>
-            </a>
-          </div>
-
-          <!-- Doplňkový text -->
-          <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-            <span>Už máš účet? <a href="login.html" class="text-amber-200 hover:text-amber-100 underline underline-offset-2">Přihlásit se</a></span>
-            <span>Role může být v budoucnu rozšířena (např. agentura, manažer, tým).</span>
-          </div>
-        </section>
-      </div>
-    </main>
-
-    <!-- Spodní info -->
-    <footer class="relative z-10 border-t border-slate-800/80 bg-black/40">
-      <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-[11px] text-slate-500">
-        <span>© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</span>
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2.5 py-1 ring-1 ring-slate-700/80">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-            <span>Bezpečné přihlášení přes Firebase</span>
-          </span>
-          <a href="#" class="hover:text-slate-300">Podmínky použití</a>
-        </div>
-      </div>
-    </footer>
-  </div>
-
-  <script>
-    // aktuální rok do patičky
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    });
-  </script>
 </body>
 </html>
