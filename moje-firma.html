@@ -354,25 +354,24 @@
           if (initialEl && displayName)
             initialEl.textContent = displayName.charAt(0).toUpperCase();
 
-          // Kredity přes CreditsSystem – stejný systém jako všude
-          try {
-            const creditsSystem = new CreditsSystem(user.uid);
-            window.creditSys = {
-              getCredits: () => creditsSystem.getCredits(),
-              addCredits: (a) => creditsSystem.addCredits(a),
-              subtractCredits: (a) => creditsSystem.subtractCredits(a),
-            };
+          // Kredity přes CreditsSystem – nově přes Firestore master
+CreditsSystem.create(user.uid)
+  .then((creditSys) => {
+    window.creditSys = creditSys;
 
-            const val = creditsSystem.getCredits();
-            const h1 = document.getElementById("headerCredits");
-            const s1 = document.getElementById("summaryCredits");
-            if (typeof val === "number") {
-              if (h1) h1.textContent = val;
-              if (s1) s1.textContent = val;
-            }
-          } catch (e) {
-            console.warn("Firemní účet: chyba při načítání kreditů:", e);
-          }
+    const val = creditSys.getCredits();
+    const h1 = document.getElementById("headerCredits");
+    const s1 = document.getElementById("summaryCredits");
+
+    if (typeof val === "number") {
+      if (h1) h1.textContent = val;
+      if (s1) s1.textContent = val;
+    }
+  })
+  .catch((e) => {
+    console.warn("Firemní účet: chyba při načítání kreditů:", e);
+  });
+
         } catch (err) {
           console.error("Chyba při ověřování firemní role:", err);
           // když se něco posere, raději pryč z firemní sekce
