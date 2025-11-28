@@ -29,17 +29,17 @@
 
   <!-- Ikony -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <!-- 🔥 Firebase SDK – MUSÍ být první -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
-<!-- 🔥 Tvůj projektový config – MUSÍ být nad init -->
-<script src="firebase-config.js"></script>
+  <!-- 🔥 Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
-<!-- 🔥 Inicializace Firebase (jednotná) -->
-<script src="firebase-init.js"></script>
+  <!-- Tvůj config + jednotný init -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
   <style>
     body {
       min-height: 100vh;
@@ -84,7 +84,7 @@
           <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
           <span>Zpět na dashboard</span>
         </a>
-        <button id="logoutBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border border-white/20 hover:bg:white/10 hover:bg-white/10">
+        <button id="logoutBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border border-white/20 hover:bg-white/10">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
           <span>Odhlásit se</span>
         </button>
@@ -380,8 +380,21 @@
         try { lucide.createIcons(); } catch (e) { console.warn("Lucide ikonky nešly inicializovat:", e); }
       }
 
-      const auth = window.auth || firebase.auth();
-      const db   = window.db   || firebase.firestore();
+      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
+
+      // 🔹 ZAJISTÍME ONLINE REŽIM FIRESTORE HNED NA ZAČÁTKU
+      if (db && typeof db.enableNetwork === "function") {
+        db.enableNetwork()
+          .then(() => {
+            console.log("🌐 Firestore ONLINE – Můj účet (kartao-muj-ucet.html)");
+          })
+          .catch((err) => {
+            console.warn("⚠️ Nepodařilo se přepnout Firestore do online režimu:", err);
+          });
+      } else {
+        console.warn("⚠️ Firestore nebyl dostupný – zkontroluj firebase-init.js / firebase-config.js");
+      }
 
       if (!auth || !db) {
         console.error("Firebase Auth nebo Firestore nejsou inicializované.");
@@ -512,7 +525,6 @@
           data.activerole ||
           "influencer";
 
-        // uložíme si role i do currentProfileData, pokud tam není
         currentProfileData.role = role;
 
         if (emailInput) emailInput.value = email;
@@ -529,9 +541,13 @@
       }
 
       function updateInlinePreviewFromInputs() {
-        const name = (nameInput && nameInput.value.trim()) || (displayNameEl && displayNameEl.textContent) || "Uživatel Kartao";
-        const nickname = (nicknameInput && nicknameInput.value.trim()) || (currentProfileData.nickname || "");
-        const email = (emailInput && emailInput.value.trim()) || (currentProfileData.email || "");
+        const name = (nameInput && nameInput.value.trim()) ||
+          (displayNameEl && displayNameEl.textContent) ||
+          "Uživatel Kartao";
+        const nickname = (nicknameInput && nicknameInput.value.trim()) ||
+          (currentProfileData.nickname || "");
+        const email = (emailInput && emailInput.value.trim()) ||
+          (currentProfileData.email || "");
         const role = currentProfileData.role || "influencer";
         applyInlineCard(name, nickname, email, role);
       }
@@ -554,7 +570,6 @@
           if (snap.exists) {
             currentProfileData = snap.data() || {};
           } else {
-            // pokud profil neexistuje, vytvoříme základ
             currentProfileData = {
               email: user.email || null,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -564,7 +579,7 @@
 
           applyUserUI(user, currentProfileData);
 
-          // vygenerovat URL vizitky
+          // URL vizitky
           if (shareUrlInput) {
             const origin = window.location.origin || "https://kartao.cz";
             const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
@@ -614,7 +629,7 @@
           try {
             await db.collection("users").doc(uid).set(payload, { merge: true });
 
-            // aktualizace Auth profilu (displayName) – aby se jméno propsalo všude
+            // aktualizace Auth profilu (displayName)
             if (payload.displayName) {
               try {
                 await user.updateProfile({ displayName: payload.displayName });
@@ -623,7 +638,6 @@
               }
             }
 
-            // update lokální cache a náhledu vizitky
             currentProfileData = { ...currentProfileData, ...payload };
             applyInlineCard(
               payload.name || "Uživatel Kartao",
@@ -694,9 +708,18 @@
           const uid = currentUserUid || user.uid;
           const origin = window.location.origin || "https://kartao.cz";
 
-          const name = (nameInput && nameInput.value.trim()) || currentProfileData.name || currentProfileData.displayName || user.displayName || "Uživatel Kartao";
-          const nickname = (nicknameInput && nicknameInput.value.trim()) || currentProfileData.nickname || "";
-          const email = user.email || (emailInput && emailInput.value.trim()) || currentProfileData.email || "";
+          const name = (nameInput && nameInput.value.trim()) ||
+            currentProfileData.name ||
+            currentProfileData.displayName ||
+            user.displayName ||
+            "Uživatel Kartao";
+          const nickname = (nicknameInput && nicknameInput.value.trim()) ||
+            currentProfileData.nickname ||
+            "";
+          const email = user.email ||
+            (emailInput && emailInput.value.trim()) ||
+            currentProfileData.email ||
+            "";
           const role = currentProfileData.role || "influencer";
           const shortRole = role === "firma" ? "Firma / značka" : "Influencer";
 
@@ -732,17 +755,6 @@
           }
         });
       }
-      if (window.firebase && firebase.firestore) {
-  firebase.firestore().enableNetwork()
-    .then(() => {
-      console.log("🌐 Firestore ONLINE – aktivní pro celý web Kartao.cz");
-    })
-    .catch((err) => {
-      console.warn("⚠️ Nepodařilo se přepnout Firestore do online režimu:", err);
-    });
-} else {
-  console.warn("⚠️ Firestore nebyl dostupný – zkontroluj firebase-init.js");
-}
 
       // Odhlášení
       if (logoutBtn) {
