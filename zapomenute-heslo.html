@@ -258,5 +258,43 @@
       });
     });
   </script>
+  <!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-init.js"></script> <!-- stejný soubor jako na loginu -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("resetForm");      // <form id="resetForm">
+    const emailInput = document.getElementById("resetEmail"); // <input id="resetEmail">
+    const statusBox = document.getElementById("resetStatus"); // <p id="resetStatus">
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) {
+        statusBox.textContent = "Zadej prosím e-mail.";
+        return;
+      }
+
+      statusBox.textContent = "Posílám odkaz na e-mail…";
+
+      try {
+        await auth.sendPasswordResetEmail(email);
+        statusBox.textContent = "Poslali jsme ti e-mail s odkazem na obnovení hesla.";
+      } catch (error) {
+        console.error(error);
+        if (error.code === "auth/user-not-found") {
+          statusBox.textContent = "Účet s tímto e-mailem neexistuje.";
+        } else if (error.code === "auth/invalid-email") {
+          statusBox.textContent = "E-mail nemá platný formát.";
+        } else {
+          statusBox.textContent = "Něco se pokazilo, zkus to prosím později.";
+        }
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
