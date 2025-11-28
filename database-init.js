@@ -314,3 +314,18 @@ if (typeof module !== 'undefined' && module.exports) {
   window.COLLECTIONS = COLLECTIONS;
   window.initializeDatabase = initializeDatabase;
 }
+// ============================================
+// 🔌 Globální zapnutí Firestore ONLINE režimu
+// ============================================
+
+if (window.firebase && firebase.firestore) {
+  firebase.firestore().enableNetwork()
+    .then(() => {
+      console.log("🌐 Firestore ONLINE – aktivní pro celý web Kartao.cz");
+    })
+    .catch((err) => {
+      console.warn("⚠️ Nepodařilo se přepnout Firestore do online režimu:", err);
+    });
+} else {
+  console.warn("⚠️ Firestore nebyl dostupný – zkontroluj firebase-init.js");
+}
