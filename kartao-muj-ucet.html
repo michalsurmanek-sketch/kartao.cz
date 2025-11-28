@@ -36,7 +36,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
-  <!-- Tvůj config + jednotný init -->
+  <!-- Konfigurace + init -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 
@@ -380,21 +380,8 @@
         try { lucide.createIcons(); } catch (e) { console.warn("Lucide ikonky nešly inicializovat:", e); }
       }
 
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
-      const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
-
-      // 🔹 ZAJISTÍME ONLINE REŽIM FIRESTORE HNED NA ZAČÁTKU
-      if (db && typeof db.enableNetwork === "function") {
-        db.enableNetwork()
-          .then(() => {
-            console.log("🌐 Firestore ONLINE – Můj účet (kartao-muj-ucet.html)");
-          })
-          .catch((err) => {
-            console.warn("⚠️ Nepodařilo se přepnout Firestore do online režimu:", err);
-          });
-      } else {
-        console.warn("⚠️ Firestore nebyl dostupný – zkontroluj firebase-init.js / firebase-config.js");
-      }
+      const auth = window.auth || firebase.auth();
+      const db   = window.db   || firebase.firestore();
 
       if (!auth || !db) {
         console.error("Firebase Auth nebo Firestore nejsou inicializované.");
@@ -541,13 +528,9 @@
       }
 
       function updateInlinePreviewFromInputs() {
-        const name = (nameInput && nameInput.value.trim()) ||
-          (displayNameEl && displayNameEl.textContent) ||
-          "Uživatel Kartao";
-        const nickname = (nicknameInput && nicknameInput.value.trim()) ||
-          (currentProfileData.nickname || "");
-        const email = (emailInput && emailInput.value.trim()) ||
-          (currentProfileData.email || "");
+        const name = (nameInput && nameInput.value.trim()) || (displayNameEl && displayNameEl.textContent) || "Uživatel Kartao";
+        const nickname = (nicknameInput && nicknameInput.value.trim()) || (currentProfileData.nickname || "");
+        const email = (emailInput && emailInput.value.trim()) || (currentProfileData.email || "");
         const role = currentProfileData.role || "influencer";
         applyInlineCard(name, nickname, email, role);
       }
@@ -562,6 +545,19 @@
         }
 
         currentUserUid = user.uid;
+
+        // *** DŮLEŽITÉ: Přepnout Firestore ONLINE těsně před načtením profilu ***
+        try {
+          if (db && typeof db.enableNetwork === "function") {
+            await db.enableNetwork();
+            console.log("🌐 Firestore ONLINE potvrzeno těsně před načtením profilu (kartao-muj-ucet.html)");
+          } else if (window.firebase && firebase.firestore && typeof firebase.firestore().enableNetwork === "function") {
+            await firebase.firestore().enableNetwork();
+            console.log("🌐 Firestore ONLINE (fallback přes firebase.firestore().enableNetwork)");
+          }
+        } catch (err) {
+          console.warn("⚠️ enableNetwork před načtením profilu selhalo:", err);
+        }
 
         try {
           const docRef = db.collection("users").doc(user.uid);
@@ -579,7 +575,6 @@
 
           applyUserUI(user, currentProfileData);
 
-          // URL vizitky
           if (shareUrlInput) {
             const origin = window.location.origin || "https://kartao.cz";
             const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
@@ -629,7 +624,6 @@
           try {
             await db.collection("users").doc(uid).set(payload, { merge: true });
 
-            // aktualizace Auth profilu (displayName)
             if (payload.displayName) {
               try {
                 await user.updateProfile({ displayName: payload.displayName });
@@ -708,18 +702,9 @@
           const uid = currentUserUid || user.uid;
           const origin = window.location.origin || "https://kartao.cz";
 
-          const name = (nameInput && nameInput.value.trim()) ||
-            currentProfileData.name ||
-            currentProfileData.displayName ||
-            user.displayName ||
-            "Uživatel Kartao";
-          const nickname = (nicknameInput && nicknameInput.value.trim()) ||
-            currentProfileData.nickname ||
-            "";
-          const email = user.email ||
-            (emailInput && emailInput.value.trim()) ||
-            currentProfileData.email ||
-            "";
+          const name = (nameInput && nameInput.value.trim()) || currentProfileData.name || currentProfileData.displayName || user.displayName || "Uživatel Kartao";
+          const nickname = (nicknameInput && nicknameInput.value.trim()) || currentProfileData.nickname || "";
+          const email = user.email || (emailInput && emailInput.value.trim()) || currentProfileData.email || "";
           const role = currentProfileData.role || "influencer";
           const shortRole = role === "firma" ? "Firma / značka" : "Influencer";
 
