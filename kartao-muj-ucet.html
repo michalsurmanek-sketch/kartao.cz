@@ -6,19 +6,6 @@
   <title>Kartao.cz – Můj účet</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👤</text></svg>">
 
-  <!-- 🔥 Firebase SDK – MUSÍ být první -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-<!-- 🔥 Tvůj projektový config – MUSÍ být nad init -->
-<script src="firebase-config.js"></script>
-
-<!-- 🔥 Inicializace Firebase (jednotná) -->
-<script src="firebase-init.js"></script>
-
-  
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -42,7 +29,17 @@
 
   <!-- Ikony -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- 🔥 Firebase SDK – MUSÍ být první -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
+<!-- 🔥 Tvůj projektový config – MUSÍ být nad init -->
+<script src="firebase-config.js"></script>
+
+<!-- 🔥 Inicializace Firebase (jednotná) -->
+<script src="firebase-init.js"></script>
   <style>
     body {
       min-height: 100vh;
