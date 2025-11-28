@@ -34,7 +34,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <!-- tady máš svůj projektový init se stejným configem jako jinde -->
   <script src="firebase-init.js"></script>
 
   <style>
@@ -81,7 +80,7 @@
           <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
           <span>Zpět na dashboard</span>
         </a>
-        <button id="logoutBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border border-white/20 hover:bg-white/10">
+        <button id="logoutBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border border-white/20 hover:bg:white/10 hover:bg-white/10">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
           <span>Odhlásit se</span>
         </button>
@@ -91,7 +90,6 @@
 
   <!-- OBSAH -->
   <main class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-6">
-    <!-- breadcrumb + info -->
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="inline-flex items-center gap-2 text-[11px] text-white/60">
         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/5 border border-white/10">
@@ -140,7 +138,7 @@
           </p>
         </div>
 
-        <!-- MINI STATY / INFO -->
+        <!-- MINI STATY -->
         <div class="grid grid-cols-3 gap-2 text-[11px] mt-3">
           <div class="rounded-2xl bg-white/5 border border-white/10 px-2.5 py-2">
             <p class="text-white/60">Typ účtu</p>
@@ -153,8 +151,8 @@
             <p class="text-[10px] text-emerald-50">Firebase Auth</p>
           </div>
           <div class="rounded-2xl bg-amber-500/10 border border-amber-400/40 px-2.5 py-2">
-            <p class="text-amber-100/90">Údaje</p>
-            <p class="text-[10px] text-amber-50">Uložené v tomto zařízení</p>
+            <p class="text-amber-100/90">Údaje profilu</p>
+            <p class="text-[10px] text-amber-50">Uložené ve Firestore</p>
           </div>
         </div>
 
@@ -208,8 +206,8 @@
             Můj účet & profil
           </h1>
           <p class="text-sm text-white/65">
-            Základní údaje, kontakty a bezpečnost přihlášení. Údaje se zatím ukládají jen do tohoto zařízení
-            (<span class="text-amber-200">localStorage</span>), takže si můžeš profil ladit bez rizika.
+            Základní údaje, kontakty a zabezpečení. Údaje se ukládají do Firestore do tvého profilu
+            <span class="text-amber-200">(kolekce „users“)</span>.
           </p>
         </header>
 
@@ -222,7 +220,7 @@
           <span>Načítám údaje o účtu…</span>
         </div>
 
-        <!-- Role chip (druhá instance) -->
+        <!-- Role chip -->
         <div id="roleChip" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-[11px] text-white/70 mb-3">
           <span>⭐</span>
           <span>Influencer účet</span>
@@ -240,7 +238,7 @@
               readonly
             />
             <p class="text-[11px] text-white/45">
-              E-mail pro přihlášení, změna probíhá přes podporu / Firebase.
+              Přihlašovací e-mail z Firebase. Změnu řešíme přes podporu / ověření.
             </p>
           </div>
 
@@ -352,10 +350,10 @@
               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-sm font-semibold text-neutral-950 shadow-soft hover:brightness-110"
             >
               <i data-lucide="save" class="w-4 h-4"></i>
-              <span>Uložit změny (lokálně)</span>
+              <span>Uložit změny</span>
             </button>
             <p class="text-[11px] text-white/45">
-              Později napojíme i plnou synchronizaci přes Firestore.
+              Údaje se ukládají do Firestore (profil v kolekci <code>users</code>).
             </p>
           </div>
         </form>
@@ -371,7 +369,7 @@
     </div>
   </footer>
 
-  <!-- LOGIKA ÚČTU (Auth + localStorage + inline vizitka) -->
+  <!-- LOGIKA ÚČTU (Auth + Firestore + inline vizitka) -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
@@ -379,6 +377,12 @@
       }
 
       const auth = window.auth || firebase.auth();
+      const db   = window.db   || firebase.firestore();
+
+      if (!auth || !db) {
+        console.error("Firebase Auth nebo Firestore nejsou inicializované.");
+        return;
+      }
 
       // DOM prvky
       const loader = document.getElementById("loader");
@@ -415,6 +419,9 @@
 
       const yearEl = document.getElementById("year");
       if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      let currentUserUid = null;
+      let currentProfileData = {};
 
       function setLoading(isLoading) {
         if (!loader || !accountForm) return;
@@ -492,13 +499,17 @@
 
       function applyUserUI(user, data) {
         const email = user.email || data.email || "";
-        const name = data.name || user.displayName || "Uživatel Kartao";
+        const name = data.name || data.displayName || user.displayName || "Uživatel Kartao";
         const nickname = data.nickname || "";
         const phone = data.phone || "";
+
         const role =
           data.role ||
-          localStorage.getItem("userRole") ||
+          data.activerole ||
           "influencer";
+
+        // uložíme si role i do currentProfileData, pokud tam není
+        currentProfileData.role = role;
 
         if (emailInput) emailInput.value = email;
         if (emailLabelEl) emailLabelEl.textContent = email || "Bez e-mailu";
@@ -513,56 +524,66 @@
         applyInlineCard(name, nickname, email, role);
       }
 
-      function loadLocalProfile(uid) {
-        try {
-          const raw = localStorage.getItem("kartaoProfile_" + uid);
-          if (!raw) return {};
-          return JSON.parse(raw) || {};
-        } catch (e) {
-          console.error("Chyba při čtení local profile:", e);
-          return {};
-        }
+      function updateInlinePreviewFromInputs() {
+        const name = (nameInput && nameInput.value.trim()) || (displayNameEl && displayNameEl.textContent) || "Uživatel Kartao";
+        const nickname = (nicknameInput && nicknameInput.value.trim()) || (currentProfileData.nickname || "");
+        const email = (emailInput && emailInput.value.trim()) || (currentProfileData.email || "");
+        const role = currentProfileData.role || "influencer";
+        applyInlineCard(name, nickname, email, role);
       }
 
-      function saveLocalProfile(uid, payload) {
-        try {
-          localStorage.setItem("kartaoProfile_" + uid, JSON.stringify(payload));
-        } catch (e) {
-          console.error("Chyba při ukládání local profile:", e);
-        }
-      }
-
-      // Načtení uživatele – BEZ Firestore, jen Auth + localStorage
+      // Načtení uživatele + profilu z Firestore
       setLoading(true);
-      let currentUserUid = null;
 
-      auth.onAuthStateChanged((user) => {
+      auth.onAuthStateChanged(async (user) => {
         if (!user) {
           window.location.href = "login.html";
           return;
         }
 
-        try {
-          const uid = user.uid;
-          currentUserUid = uid;
-          const localData = loadLocalProfile(uid);
-          applyUserUI(user, localData);
+        currentUserUid = user.uid;
 
-          // Vygenerovat URL vizitky (endpoint si případně změň dle reálné stránky)
+        try {
+          const docRef = db.collection("users").doc(user.uid);
+          const snap = await docRef.get();
+
+          if (snap.exists) {
+            currentProfileData = snap.data() || {};
+          } else {
+            // pokud profil neexistuje, vytvoříme základ
+            currentProfileData = {
+              email: user.email || null,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            await docRef.set(currentProfileData, { merge: true });
+          }
+
+          applyUserUI(user, currentProfileData);
+
+          // vygenerovat URL vizitky
           if (shareUrlInput) {
             const origin = window.location.origin || "https://kartao.cz";
-            const profileUrl = origin + "/vizitka.html?uid=" + uid;
+            const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
             shareUrlInput.value = profileUrl;
           }
+
         } catch (err) {
-          console.error("Chyba při načítání účtu (local):", err);
-          showMessage("Nepodařilo se načíst údaje účtu z tohoto zařízení.", "error");
+          console.error("Chyba při načítání profilu z Firestore:", err);
+          showMessage("Nepodařilo se načíst profil z databáze.", "error");
         } finally {
           setLoading(false);
         }
       });
 
-      // Uložení změn – jen do localStorage (na tomto zařízení)
+      // Realtime náhled inline vizitky při psaní
+      [nameInput, nicknameInput, phoneInput].forEach((el) => {
+        if (!el) return;
+        el.addEventListener("input", () => {
+          updateInlinePreviewFromInputs();
+        });
+      });
+
+      // Uložení změn – Firestore
       if (accountForm) {
         accountForm.addEventListener("submit", async (e) => {
           e.preventDefault();
@@ -582,21 +603,35 @@
             name: nameInput ? (nameInput.value.trim() || null) : null,
             nickname: nicknameInput ? (nicknameInput.value.trim() || null) : null,
             phone: phoneInput ? (phoneInput.value.trim() || null) : null,
-            updatedAt: new Date().toISOString(),
+            displayName: nameInput ? (nameInput.value.trim() || null) : null,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
 
           try {
-            saveLocalProfile(uid, payload);
+            await db.collection("users").doc(uid).set(payload, { merge: true });
+
+            // aktualizace Auth profilu (displayName) – aby se jméno propsalo všude
+            if (payload.displayName) {
+              try {
+                await user.updateProfile({ displayName: payload.displayName });
+              } catch (err) {
+                console.warn("Nepodařilo se aktualizovat displayName v Auth:", err);
+              }
+            }
+
+            // update lokální cache a náhledu vizitky
+            currentProfileData = { ...currentProfileData, ...payload };
             applyInlineCard(
               payload.name || "Uživatel Kartao",
               payload.nickname || "",
               payload.email || "",
-              (localStorage.getItem("userRole") || "influencer")
+              currentProfileData.role || "influencer"
             );
-            showMessage("Údaje byly uloženy do tohoto zařízení.");
+
+            showMessage("Údaje byly uloženy do Firestore.");
           } catch (err) {
-            console.error("Chyba při ukládání účtu (local):", err);
-            showMessage("Nepodařilo se uložit změny na tomto zařízení.", "error");
+            console.error("Chyba při ukládání profilu do Firestore:", err);
+            showMessage("Nepodařilo se uložit změny do databáze.", "error");
           } finally {
             setLoading(false);
           }
@@ -629,7 +664,7 @@
           hideMessage();
           const url = shareUrlInput.value.trim();
           if (!url) {
-            showMessage("URL vizitky ještě není připravena.", "error");
+            showMessage("URL vizitky ještě není připravená.", "error");
             return;
           }
           try {
@@ -655,10 +690,10 @@
           const uid = currentUserUid || user.uid;
           const origin = window.location.origin || "https://kartao.cz";
 
-          const name = (nameInput && nameInput.value.trim()) || "Uživatel Kartao";
-          const nickname = (nicknameInput && nicknameInput.value.trim()) || "";
-          const email = user.email || (emailInput && emailInput.value.trim()) || "";
-          const role = localStorage.getItem("userRole") || "influencer";
+          const name = (nameInput && nameInput.value.trim()) || currentProfileData.name || currentProfileData.displayName || user.displayName || "Uživatel Kartao";
+          const nickname = (nicknameInput && nicknameInput.value.trim()) || currentProfileData.nickname || "";
+          const email = user.email || (emailInput && emailInput.value.trim()) || currentProfileData.email || "";
+          const role = currentProfileData.role || "influencer";
           const shortRole = role === "firma" ? "Firma / značka" : "Influencer";
 
           const profileUrl = origin + "/vizitka.html?uid=" + uid;
