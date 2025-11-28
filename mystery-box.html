@@ -351,7 +351,7 @@
   <!-- 🔗 Kreditní systém Kartao.cz -->
   <script src="credits-system.js"></script>
 
-  <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele -->
+  <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele – Firestore master -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (!window.firebase || !firebase.auth) {
@@ -359,40 +359,42 @@
         return;
       }
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      firebase.auth().onAuthStateChanged(async function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
         }
 
-        // stejné userId jako na dashboardu / moje-karta
+        // stejné UID jako na ostatních stránkách
         window.currentUserId = user.uid;
 
-        const creditsSystem = new CreditsSystem(user.uid);
+        try {
+          let creditSysInstance;
 
-        // Globální interface pro Mystery Box
-        window.creditSys = {
-          getCredits: () => creditsSystem.getCredits(),
-          addCredits: (amount) => creditsSystem.addCredits(amount),
-          subtractCredits: (amount) => creditsSystem.subtractCredits(amount),
-          addVipDays: (days) => {
-            console.log("VIP +", days, "dnů (zatím jen log, napojíme později)");
-          },
-        };
-
-        // přepiš kredity v headeru
-        const headerCredits = document.getElementById("currentCredits");
-        if (headerCredits) {
-          try {
-            headerCredits.textContent = creditsSystem.getCredits();
-          } catch (e) {
-            console.warn("MysteryBox: chyba při čtení kreditů v onAuthStateChanged:", e);
+          // nová verze credits-system.js má async static create()
+          if (typeof CreditsSystem.create === "function") {
+            creditSysInstance = await CreditsSystem.create(user.uid);
+          } else {
+            // fallback na starší verzi – aby se nic nerozbilo
+            creditSysInstance = new CreditsSystem(user.uid);
           }
-        }
 
-        // pokud je k dispozici funkce z MysteryBox skriptu, přepočítej si UI
-        if (typeof window.updateMysteryBoxCreditsDisplay === "function") {
-          window.updateMysteryBoxCreditsDisplay();
+          window.creditSys = creditSysInstance;
+
+          const headerCredits = document.getElementById("currentCredits");
+          if (headerCredits) {
+            try {
+              headerCredits.textContent = creditSysInstance.getCredits();
+            } catch (e) {
+              console.warn("MysteryBox: chyba při čtení kreditů v onAuthStateChanged:", e);
+            }
+          }
+
+          if (typeof window.updateMysteryBoxCreditsDisplay === "function") {
+            window.updateMysteryBoxCreditsDisplay();
+          }
+        } catch (err) {
+          console.warn("MysteryBox: chyba při inicializaci kreditního systému:", err);
         }
       });
     });
