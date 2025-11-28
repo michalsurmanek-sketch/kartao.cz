@@ -79,47 +79,46 @@
     </div>
 
     <!-- Horní lišta -->
-   <header class="relative z-20 w-full">
-  <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4">
+    <header class="relative z-20 w-full">
+      <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4">
 
-    <!-- Zpět na hlavní stránku -->
-<a href="index.html"
-   class="inline-flex items-center text-sm text-slate-300 hover:text-white transition">
+        <!-- Zpět na hlavní stránku -->
+        <a href="index.html"
+           class="inline-flex items-center text-sm text-slate-300 hover:text-white transition">
 
-  <span class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 ring-1 ring-slate-700/60 px-3 py-1">
-    <span class="text-base">←</span>
-    <span>Zpět</span>
-  </span>
+          <span class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 ring-1 ring-slate-700/60 px-3 py-1">
+            <span class="text-base">←</span>
+            <span>Zpět</span>
+          </span>
 
-</a>
+        </a>
 
+        <!-- Kartao brand badge s korunkou -->
+        <div class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full
+                    bg-slate-900/80 ring-1 ring-slate-700/70
+                    shadow-lg shadow-black/40">
 
-    <!-- Kartao brand badge s korunkou -->
-    <div class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full
-                bg-slate-900/80 ring-1 ring-slate-700/70
-                shadow-lg shadow-black/40">
+          <!-- Ikona s korunkou -->
+          <div class="relative flex h-8 w-8 items-center justify-center rounded-full
+                      bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400
+                      shadow-md shadow-amber-500/40">
+            <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
+          </div>
 
-      <!-- Ikona s korunkou -->
-      <div class="relative flex h-8 w-8 items-center justify-center rounded-full
-                  bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400
-                  shadow-md shadow-amber-500/40">
-        <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
+          <!-- Textová část -->
+          <div class="flex flex-col leading-tight">
+            <span class="text-xs font-semibold tracking-wide text-slate-200">
+              Kartao.cz
+            </span>
+            <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+              Síť influencerů
+            </span>
+          </div>
+
+        </div>
+
       </div>
-
-      <!-- Textová část -->
-      <div class="flex flex-col leading-tight">
-        <span class="text-xs font-semibold tracking-wide text-slate-200">
-          Kartao.cz
-        </span>
-        <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
-          Síť influencerů
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-</header>
+    </header>
 
     <!-- Obsah -->
     <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
@@ -217,13 +216,24 @@
                   </span>
                 </div>
 
-                <div class="mt-1 flex items-center justify-between gap-3">
-                  <span class="text-[11px] text-slate-500">Ideální pro tvůrce, streamery, sportovce, osobnosti…</span>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
-                    Pokračovat jako influencer
-                    <span class="text-xs">→</span>
+                <!-- CTA influencer – UPRAVENO -->
+                <div class="mt-2 flex items-center justify-between gap-3">
+                  <span class="text-[11px] text-slate-500">
+                    Ideální pro tvůrce, streamery, sportovce, osobnosti…
                   </span>
+
+                  <a href="login.html?role=influencer"
+                     class="group inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold
+                            bg-gradient-to-r from-amber-400 via-fuchsia-400 to-sky-400
+                            text-slate-900 shadow-md shadow-amber-500/40 transition-all
+                            hover:shadow-amber-400/60 hover:shadow-lg hover:brightness-110 hover:scale-[1.03]">
+                    
+                    <span>Pokračovat jako influencer</span>
+                    <span class="group-hover:translate-x-[3px] transition-transform text-xs">→</span>
+                  </a>
                 </div>
+                <!-- /CTA influencer -->
+
               </div>
             </a>
 
@@ -270,13 +280,24 @@
                   </span>
                 </div>
 
-                <div class="mt-1 flex items-center justify-between gap-3">
-                  <span class="text-[11px] text-slate-500">Pro značky, agentury, e‑shopy, eventy, sportovní kluby…</span>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-100">
-                    Pokračovat jako firma
-                    <span class="text-xs">→</span>
+                <!-- CTA firma – UPRAVENO -->
+                <div class="mt-2 flex items-center justify-between gap-3">
+                  <span class="text-[11px] text-slate-500">
+                    Pro značky, agentury, e-shopy, eventy, sportovní kluby…
                   </span>
+
+                  <a href="login.html?role=firma"
+                     class="group inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold
+                            bg-gradient-to-r from-emerald-300 via-sky-300 to-amber-300
+                            text-slate-900 shadow-md shadow-emerald-500/40 transition-all
+                            hover:shadow-emerald-400/60 hover:shadow-lg hover:brightness-110 hover:scale-[1.03]">
+                    
+                    <span>Pokračovat jako firma</span>
+                    <span class="group-hover:translate-x-[3px] transition-transform text-xs">→</span>
+                  </a>
                 </div>
+                <!-- /CTA firma -->
+
               </div>
             </a>
           </div>
@@ -309,7 +330,7 @@
     // aktuální rok do patičky
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-    <script>
+  <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (window.lucide) {
         lucide.createIcons();
