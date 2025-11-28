@@ -79,27 +79,44 @@
     </div>
 
     <!-- Horní lišta -->
-    <header class="relative z-10 w-full">
-      <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between">
-        <a href="index.html" class="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition">
-          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 ring-1 ring-slate-700/60">
-            ←
-          </span>
-          Zpět na hlavní stránku
-        </a>
+   <header class="relative z-20 w-full">
+  <div class="mx-auto max-w-6xl px-4 pt-6 flex items-center justify-between gap-4">
 
-       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 ring-1 ring-slate-700/70 shadow-lg shadow-black/40">
-  <div class="relative flex h-8 w-8 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400 shadow-md shadow-amber-500/40">
-    <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
-  </div>
+    <!-- Zpět na hlavní stránku -->
+    <a href="index.html"
+       class="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition">
+      <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 ring-1 ring-slate-700/60">
+        ←
+      </span>
+      <span class="hidden xs:inline">Zpět na hlavní stránku</span>
+    </a>
 
-          <div class="flex flex-col leading-none">
-            <span class="text-xs font-semibold tracking-wide text-slate-200">Kartao.cz</span>
-            <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">influencer & brand hub</span>
-          </div>
-        </div>
+    <!-- Kartao brand badge s korunkou -->
+    <div class="inline-flex items-center gap-3 px-3 py-1.5 rounded-full
+                bg-slate-900/80 ring-1 ring-slate-700/70
+                shadow-lg shadow-black/40">
+
+      <!-- Ikona s korunkou -->
+      <div class="relative flex h-8 w-8 items-center justify-center rounded-full
+                  bg-gradient-to-br from-amber-400 via-fuchsia-500 to-sky-400
+                  shadow-md shadow-amber-500/40">
+        <i data-lucide="crown" class="w-4 h-4 text-black/80"></i>
       </div>
-    </header>
+
+      <!-- Textová část -->
+      <div class="flex flex-col leading-tight">
+        <span class="text-xs font-semibold tracking-wide text-slate-200">
+          Kartao.cz
+        </span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+          Síť influencerů a tvůrců
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+</header>
 
     <!-- Obsah -->
     <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
