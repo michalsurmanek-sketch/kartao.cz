@@ -199,130 +199,129 @@
         </div>
 
         <!-- OBRÁZKY KARTY ..................................................................-->
-<section class="space-y-6 mt-6">
-  <h2 class="text-sm font-semibold text-white/80">
-    Fotky karty influencera
-  </h2>
+        <section class="space-y-6 mt-6">
+          <h2 class="text-sm font-semibold text-white/80">
+            Fotky karty influencera
+          </h2>
 
-  <!-- Avatar -->
-  <div class="space-y-2">
-    <label class="label">
-      <i data-lucide="image" class="w-4 h-4"></i>
-      Profilová fotka (avatar)
-    </label>
+          <!-- Avatar -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="image" class="w-4 h-4"></i>
+              Profilová fotka (avatar)
+            </label>
 
-    <!-- Náhled avatara -->
-    <img
-      id="previewAvatar"
-      src=""
-      alt="Náhled avataru"
-      class="w-24 h-24 rounded-xl object-cover border border-white/10 hidden"
-    />
+            <!-- Náhled avatara -->
+            <img
+              id="previewAvatar"
+              src=""
+              alt="Náhled avataru"
+              class="w-24 h-24 rounded-xl object-cover border border-white/10 hidden"
+            />
 
-    <!-- Výběr souboru -->
-    <input
-      id="avatarFile"
-      type="file"
-      accept="image/*"
-      class="input"
-    />
+            <!-- Výběr souboru -->
+            <input
+              id="avatarFile"
+              type="file"
+              accept="image/*"
+              class="input"
+            />
 
-    <p class="text-[11px] text-white/50">
-      Doporučeno min. 400×400 px, čtvercový formát.
-    </p>
-  </div>
+            <p class="text-[11px] text-white/50">
+              Doporučeno min. 400×400 px, čtvercový formát.
+            </p>
+          </div>
 
-  <!-- Cover (hlavní fotka nahoře) -->
-  <div class="space-y-2">
-    <label class="label">
-      <i data-lucide="panels-top-left" class="w-4 h-4"></i>
-      Úvodní fotka (cover)
-    </label>
+          <!-- Cover (hlavní fotka nahoře) -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="panels-top-left" class="w-4 h-4"></i>
+              Úvodní fotka (cover)
+            </label>
 
-    <!-- Náhled coveru -->
-    <img
-      id="previewCover"
-      src=""
-      alt="Náhled coveru"
-      class="w-full h-32 rounded-xl object-cover border border-white/10 hidden"
-    />
+            <!-- Náhled coveru -->
+            <img
+              id="previewCover"
+              src=""
+              alt="Náhled coveru"
+              class="w-full h-32 rounded-xl object-cover border border-white/10 hidden"
+            />
 
-    <!-- Výběr souboru -->
-    <input
-      id="coverFile"
-      type="file"
-      accept="image/*"
-      class="input"
-    />
+            <!-- Výběr souboru -->
+            <input
+              id="coverFile"
+              type="file"
+              accept="image/*"
+              class="input"
+            />
 
-    <p class="text-[11px] text-white/50">
-      Doporučeno min. 1200×400 px, horizontální fotka.
-    </p>
-  </div>
+            <p class="text-[11px] text-white/50">
+              Doporučeno min. 1200×400 px, horizontální fotka.
+            </p>
+          </div>
 
-  <!-- Galerie – 3 doplňkové fotky -->
-  <div class="space-y-2">
-    <label class="label">
-      <i data-lucide="images" class="w-4 h-4"></i>
-      Galerie (3 fotky)
-    </label>
+          <!-- Galerie – 3 doplňkové fotky -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="images" class="w-4 h-4"></i>
+              Galerie (3 fotky)
+            </label>
 
-    <div class="grid grid-cols-3 gap-3">
-      <!-- 1 -->
-      <div class="space-y-1.5">
-        <img
-          id="previewGal1"
-          src=""
-          alt="Galerie 1"
-          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
-        />
-        <input
-          id="gal1File"
-          type="file"
-          accept="image/*"
-          class="input text-[11px] px-2 py-1.5"
-        />
-      </div>
+            <div class="grid grid-cols-3 gap-3">
+              <!-- 1 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal1"
+                  src=""
+                  alt="Galerie 1"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal1File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
 
-      <!-- 2 -->
-      <div class="space-y-1.5">
-        <img
-          id="previewGal2"
-          src=""
-          alt="Galerie 2"
-          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
-        />
-        <input
-          id="gal2File"
-          type="file"
-          accept="image/*"
-          class="input text-[11px] px-2 py-1.5"
-        />
-      </div>
+              <!-- 2 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal2"
+                  src=""
+                  alt="Galerie 2"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal2File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
 
-      <!-- 3 -->
-      <div class="space-y-1.5">
-        <img
-          id="previewGal3"
-          src=""
-          alt="Galerie 3"
-          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
-        />
-        <input
-          id="gal3File"
-          type="file"
-          accept="image/*"
-          class="input text-[11px] px-2 py-1.5"
-        />
-      </div>
-    </div>
+              <!-- 3 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal3"
+                  src=""
+                  alt="Galerie 3"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal3File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
+            </div>
 
-    <p class="text-[11px] text-white/50">
-      Můžou být fotky z feedu, z kampaní, portréty atd.
-    </p>
-  </div>
-</section>
-
+            <p class="text-[11px] text-white/50">
+              Můžou být fotky z feedu, z kampaní, portréty atd.
+            </p>
+          </div>
+        </section>
 
         <!-- Platformy + followers -->
         <div class="space-y-2">
@@ -432,6 +431,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <!-- Konfigurace + sjednocený INIT (stejné jako na indexu!) -->
   <script src="firebase-config.js"></script>
@@ -446,6 +446,11 @@
       "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=250&fit=crop&crop=center",
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
     ];
+
+    // proměnné pro existující URL (když už karta existuje)
+    let existingAvatarURL = null;
+    let existingCoverURL = null;
+    let existingGalleryURLs = [null, null, null];
 
     function showStatus(text, ok = true) {
       const box = document.getElementById('statusBox');
@@ -469,18 +474,56 @@
       }
     }
 
+    function setupPreview(inputId, imgId) {
+      const input = document.getElementById(inputId);
+      const img = document.getElementById(imgId);
+      if (!input || !img) return;
+
+      input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.classList.remove('hidden');
+      });
+    }
+
+    async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
+      const input = document.getElementById(fileInputId);
+      if (!input || !input.files || !input.files[0]) {
+        return defaultUrl;
+      }
+
+      const file = input.files[0];
+      if (!window.storage) {
+        console.warn('Firebase Storage není inicializováno, vracím default URL.');
+        return defaultUrl;
+      }
+
+      const ref = storage.ref().child(path);
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      return url || defaultUrl;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
       const form = document.getElementById('creatorForm');
       const cancelBtn = document.getElementById('cancelBtn');
 
+      // náhledy
+      setupPreview('avatarFile', 'previewAvatar');
+      setupPreview('coverFile', 'previewCover');
+      setupPreview('gal1File', 'previewGal1');
+      setupPreview('gal2File', 'previewGal2');
+      setupPreview('gal3File', 'previewGal3');
+
       if (!window.firebase || !firebase.auth || !window.db) {
         showStatus('Firebase není inicializovaný – zkontroluj firebase-init.js.', false);
         return;
       }
 
-      // 1) ověření přihlášení
       firebase.auth().onAuthStateChanged(async user => {
         if (!user) {
           showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
@@ -495,23 +538,54 @@
           const snap = await docRef.get();
           if (snap.exists) {
             const data = snap.data() || {};
-            // Předvyplnění
+
             if (data.name) document.getElementById('name').value = data.name;
             if (data.handle) document.getElementById('handle').value = data.handle.replace(/^@/, '');
             if (data.city) document.getElementById('city').value = data.city;
             if (data.category) document.getElementById('category').value = data.category;
             if (data.bio) document.getElementById('bio').value = data.bio;
-            if (data.avatar) document.getElementById('avatar').value = data.avatar;
-            if (data.cover) document.getElementById('cover').value = data.cover;
             if (typeof data.price === 'number') document.getElementById('price').value = data.price;
             if (typeof data.rating === 'number') document.getElementById('rating').value = data.rating;
             if (typeof data.engagement === 'number') document.getElementById('engagement').value = data.engagement;
             if (data.premium) document.getElementById('premium').checked = !!data.premium;
 
+            // obrázky – uložíme si původní URL
+            existingAvatarURL = data.avatar || DEFAULT_AVATAR;
+            existingCoverURL  = data.cover  || DEFAULT_COVER;
             const gal = Array.isArray(data.gallery) ? data.gallery : [];
-            if (gal[0]) document.getElementById('gallery1').value = gal[0];
-            if (gal[1]) document.getElementById('gallery2').value = gal[1];
-            if (gal[2]) document.getElementById('gallery3').value = gal[2];
+            existingGalleryURLs = [
+              gal[0] || DEFAULT_GALLERY[0],
+              gal[1] || DEFAULT_GALLERY[1],
+              gal[2] || DEFAULT_GALLERY[2],
+            ];
+
+            // zobrazíme náhledy
+            const prevA = document.getElementById('previewAvatar');
+            const prevC = document.getElementById('previewCover');
+            const prevG1 = document.getElementById('previewGal1');
+            const prevG2 = document.getElementById('previewGal2');
+            const prevG3 = document.getElementById('previewGal3');
+
+            if (prevA) {
+              prevA.src = existingAvatarURL;
+              prevA.classList.remove('hidden');
+            }
+            if (prevC) {
+              prevC.src = existingCoverURL;
+              prevC.classList.remove('hidden');
+            }
+            if (prevG1) {
+              prevG1.src = existingGalleryURLs[0];
+              prevG1.classList.remove('hidden');
+            }
+            if (prevG2) {
+              prevG2.src = existingGalleryURLs[1];
+              prevG2.classList.remove('hidden');
+            }
+            if (prevG3) {
+              prevG3.src = existingGalleryURLs[2];
+              prevG3.classList.remove('hidden');
+            }
 
             fillFollowers('instagram', data);
             fillFollowers('tiktok', data);
@@ -521,6 +595,37 @@
 
             showStatus('Upravuješ existující kartu. Po uložení se změny projeví v marketplace.');
           } else {
+            existingAvatarURL = DEFAULT_AVATAR;
+            existingCoverURL  = DEFAULT_COVER;
+            existingGalleryURLs = [...DEFAULT_GALLERY];
+
+            const prevA = document.getElementById('previewAvatar');
+            const prevC = document.getElementById('previewCover');
+            const prevG1 = document.getElementById('previewGal1');
+            const prevG2 = document.getElementById('previewGal2');
+            const prevG3 = document.getElementById('previewGal3');
+
+            if (prevA) {
+              prevA.src = existingAvatarURL;
+              prevA.classList.remove('hidden');
+            }
+            if (prevC) {
+              prevC.src = existingCoverURL;
+              prevC.classList.remove('hidden');
+            }
+            if (prevG1) {
+              prevG1.src = existingGalleryURLs[0];
+              prevG1.classList.remove('hidden');
+            }
+            if (prevG2) {
+              prevG2.src = existingGalleryURLs[1];
+              prevG2.classList.remove('hidden');
+            }
+            if (prevG3) {
+              prevG3.src = existingGalleryURLs[2];
+              prevG3.classList.remove('hidden');
+            }
+
             showStatus('Vytváříš svou první kartu influencera ✨');
           }
         } catch (err) {
@@ -528,7 +633,7 @@
           showStatus('Chyba při načítání karty – zkus prosím obnovit stránku.', false);
         }
 
-        // 2) odeslání formuláře
+        // odeslání formuláře
         if (form) {
           form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -539,11 +644,6 @@
               const city = document.getElementById('city').value.trim() || null;
               const category = document.getElementById('category').value || 'Lifestyle';
               const bio = document.getElementById('bio').value.trim() || '';
-              const avatar = document.getElementById('avatar').value.trim() || DEFAULT_AVATAR;
-              const cover = document.getElementById('cover').value.trim() || DEFAULT_COVER;
-              const g1 = document.getElementById('gallery1').value.trim();
-              const g2 = document.getElementById('gallery2').value.trim();
-              const g3 = document.getElementById('gallery3').value.trim();
               const priceVal = document.getElementById('price').value.trim();
               const ratingVal = document.getElementById('rating').value.trim();
               const engagementVal = document.getElementById('engagement').value.trim();
@@ -554,18 +654,47 @@
                 return;
               }
 
+              showStatus('Ukládám kartu… (může chvilku trvat při nahrávání fotek)', true);
+
               const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
-              const gallery = [];
-              if (g1) gallery.push(g1);
-              if (g2) gallery.push(g2);
-              if (g3) gallery.push(g3);
-              if (!gallery.length) gallery.push(...DEFAULT_GALLERY);
+
+              const now = Date.now();
+
+              // upload obrázků pokud jsou nové
+              const avatarUrl = await uploadImageIfNeeded(
+                'avatarFile',
+                existingAvatarURL || DEFAULT_AVATAR,
+                `creators/${uid}/avatar_${now}.jpg`
+              );
+
+              const coverUrl = await uploadImageIfNeeded(
+                'coverFile',
+                existingCoverURL || DEFAULT_COVER,
+                `creators/${uid}/cover_${now}.jpg`
+              );
+
+              const gal1Url = await uploadImageIfNeeded(
+                'gal1File',
+                existingGalleryURLs[0] || DEFAULT_GALLERY[0],
+                `creators/${uid}/gal1_${now}.jpg`
+              );
+              const gal2Url = await uploadImageIfNeeded(
+                'gal2File',
+                existingGalleryURLs[1] || DEFAULT_GALLERY[1],
+                `creators/${uid}/gal2_${now}.jpg`
+              );
+              const gal3Url = await uploadImageIfNeeded(
+                'gal3File',
+                existingGalleryURLs[2] || DEFAULT_GALLERY[2],
+                `creators/${uid}/gal3_${now}.jpg`
+              );
+
+              const gallery = [gal1Url, gal2Url, gal3Url];
 
               const platforms = [];
               const metrics = {};
-              const now = Date.now();
 
-              function addPlatform(pid, label) {
+              function addPlatform(pid) {
                 const pf = document.getElementById('pf-' + pid);
                 const followersInput = document.getElementById('followers-' + pid);
                 if (!pf || !followersInput) return;
@@ -597,18 +726,18 @@
                 city,
                 category,
                 bio,
-                avatar,
-                cover,
+                avatar: avatarUrl,
+                cover: coverUrl,
                 gallery,
                 price: priceVal ? Number(priceVal) : null,
                 rating: ratingVal ? Number(ratingVal) : null,
                 engagement: engagementVal ? Number(engagementVal) : null,
                 premium,
-                verified: true, // ať máš hezky štítek
+                verified: true,
                 platforms,
                 metrics,
-                createdAt: now,
-                updatedAt: now
+                updatedAt: now,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
               };
 
               await docRef.set(docData, { merge: true });
