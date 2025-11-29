@@ -1164,7 +1164,7 @@
            text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
     <i data-lucide="arrow-up" class="w-5 h-5"></i>
   </button>
-   <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
+     <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
   <!-- Firebase knihovny -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1199,19 +1199,20 @@
       { id: 'youtube', label: 'YouTube', icon: 'play' },
       { id: 'pinterest', label: 'Pinterest', icon: 'image' }
     ];
-    // ====== DEFAULT OBRÁZKY (fallback) ======
-const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
-const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
-const DEFAULT_GALLERY = [
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center"
-];
 
-function safeImage(url, fallback) {
-  if (!url || typeof url !== "string") return fallback;
-  return url.startsWith("http") ? url : fallback;
-}
+    // ====== DEFAULT OBRÁZKY (fallback) ======
+    const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+    const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
+    const DEFAULT_GALLERY = [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center"
+    ];
+
+    function safeImage(url, fallback) {
+      if (!url || typeof url !== "string") return fallback;
+      return url.startsWith("http") ? url : fallback;
+    }
 
     // Inicializace služeb
     let creatorService;
@@ -1441,79 +1442,80 @@ function safeImage(url, fallback) {
     }
 
     function pickFollowers(data) {
-  // vytáhneme si metrics z objektu data
-  const { metrics } = data;
+      // vytáhneme si metrics z objektu data
+      const { metrics } = data;
 
-  if (state.platform === 'all') {
-    const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
-      const m = metrics?.[pid];
-      const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
-      return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
-    });
+      if (state.platform === 'all') {
+        const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
+          const m = metrics?.[pid];
+          const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+          return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
+        });
 
-    const sum = parts.reduce((s, p) => s + p.val, 0);
-    const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
+        const sum = parts.reduce((s, p) => s + p.val, 0);
+        const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
 
-    const top = parts.reduce(
-      (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
-      { pid: null, val: 0 }
-    );
+        const top = parts.reduce(
+          (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
+          { pid: null, val: 0 }
+        );
 
-    const updatedAt = parts
-      .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
-      .reduce((a, b) => Math.max(a, b), 0);
+        const updatedAt = parts
+          .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
+          .reduce((a, b) => Math.max(a, b), 0);
 
-    const val = state.mode === 'max' ? max : sum;
-    const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
+        const val = state.mode === 'max' ? max : sum;
+        const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
 
-    return {
-      mode: state.mode,
-      parts,
-      val,
-      updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
-      topPid: top.pid,
-      topLabel
-    };
-  }
+        return {
+          mode: state.mode,
+          parts,
+          val,
+          updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
+          topPid: top.pid,
+          topLabel
+        };
+      }
 
-  // jen jedna konkrétní platforma
-  const m = metrics?.[state.platform];
-  if (m && m.connected && typeof m.followers === 'number') {
-    const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
-    return {
-      mode: 'single',
-      pid: state.platform,
-      icon,
-      val: m.followers,
-      updatedAt: m.updatedAt
-    };
-  }
+      // jen jedna konkrétní platforma
+      const m = metrics?.[state.platform];
+      if (m && m.connected && typeof m.followers === 'number') {
+        const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
+        return {
+          mode: 'single',
+          pid: state.platform,
+          icon,
+          val: m.followers,
+          updatedAt: m.updatedAt
+        };
+      }
 
-  // když nic nemáme
-  return { mode: 'none', pid: null, val: null, updatedAt: null };
-}
+      // když nic nemáme
+      return { mode: 'none', pid: null, val: null, updatedAt: null };
+    }
+
     function card(data) {
-  const el = document.createElement('div');
-  el.className = 'card overflow-hidden';
+      const el = document.createElement('div');
+      el.className = 'card overflow-hidden';
 
-  // vytáhneme pole z objektu data
-  const {
-    id,
-    name,
-    handle,
-    city,
-    category,
-    bio,
-    cover,
-    avatar,
-    gallery = [],
-    rating,
-    engagement,
-    price,
-    verified,
-    platforms = [],
-    metrics = {}
-  } = data;
+      // vytáhneme pole z objektu data
+      const {
+        id,
+        name,
+        handle,
+        city,
+        category,
+        bio,
+        cover,
+        avatar,
+        gallery = [],
+        rating,
+        engagement,
+        price,
+        verified,
+        platforms = [],
+        metrics = {}
+      } = data;
 
       const safeCover  = safeImage(cover,  DEFAULT_COVER);
       const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
@@ -1525,10 +1527,10 @@ function safeImage(url, fallback) {
           : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
 
       el.innerHTML = `
-        <div class="h-32 bg-cover bg-center" style="background-image:url('${cover}')"></div>
+        <div class="h-32 bg-cover bg-center" style="background-image:url('${safeCover}')"></div>
         <div class="p-4">
           <div class="flex items-start gap-3 -mt-10">
-            <img src="${avatar}" alt="Profil ${name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
+            <img src="${safeAvatar}" alt="Profil ${name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-lg leading-tight">${name}</h3>
@@ -1550,12 +1552,12 @@ function safeImage(url, fallback) {
                         : aggregateBadge
                     }
                     ${followersLabel}${
-                        state.mode === 'max' &&
-                        followersObj.mode !== 'single' &&
-                        followersObj.topPid
-                          ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`
-                          : ''
-                      }
+                      state.mode === 'max' &&
+                      followersObj.mode !== 'single' &&
+                      followersObj.topPid
+                        ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`
+                        : ''
+                    }
                   </span>
                 `
                     : `
@@ -1740,8 +1742,9 @@ function safeImage(url, fallback) {
       `;
     }
 
-    function platformRow(pid, label, data) {
-      const m = metrics?.[pid] || {};
+    // OPRAVA: používáme metricsObj z parametru, ne globální proměnnou
+    function platformRow(pid, label, metricsObj) {
+      const m = metricsObj?.[pid] || {};
       const val = typeof m.followers === 'number' ? fmtFollowers(m.followers) : '—';
       const connected = !!m.connected;
       const updatedAt = connected
@@ -1865,6 +1868,7 @@ function safeImage(url, fallback) {
       }
     }
 
+    // OPRAVA: openDetail si vytáhne hodnoty z data a používá safeImage
     async function openDetail(data) {
       const ov = document.getElementById('overlay');
       const body = document.getElementById('drawerBody');
@@ -1872,11 +1876,30 @@ function safeImage(url, fallback) {
 
       if (!ov || !body || !drawer) return;
 
+      const {
+        id,
+        name,
+        handle,
+        city,
+        category,
+        bio,
+        cover,
+        avatar,
+        gallery = [],
+        rating,
+        engagement,
+        verified,
+        metrics = {}
+      } = data;
+
+      const safeCover  = safeImage(cover,  DEFAULT_COVER);
+      const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
+
       body.innerHTML = `
-        <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${cover}')"></div>
+        <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${safeCover}')"></div>
         <div class="flex items-start gap-3 -mt-10 p-2">
-          <img src="${avatar}" alt="Avatar ${name }" 
-          class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
+          <img src="${safeAvatar}" alt="Avatar ${name}" 
+               class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
           <div class="flex-1">
             <div class="flex items-center gap-2">
               <h3 class="font-bold text-xl leading-tight">${name}</h3>
@@ -1896,7 +1919,7 @@ function safeImage(url, fallback) {
               ? gallery
                   .map(
                     (src, i) =>
-                      `<img src="${src}" alt="Portfolio ${name} - obrázek ${
+                      `<img src="${safeImage(src, DEFAULT_GALLERY[0])}" alt="Portfolio ${name} - obrázek ${
                         i + 1
                       }" class="rounded-lg object-cover w-full h-28"/>`
                   )
@@ -2531,7 +2554,7 @@ function safeImage(url, fallback) {
 
   // Pro pohodlí – aby šla volat z konzole
   window.createMyCreatorProfile = createMyCreatorProfile;
-</script>
+  </script>
 
 </body>
 </html>
