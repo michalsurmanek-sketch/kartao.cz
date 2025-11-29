@@ -1441,44 +1441,57 @@ function safeImage(url, fallback) {
     }
 
     function pickFollowers(data) {
-      if (state.platform === 'all') {
-        const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
-          const m = data.metrics?.[pid];
-          const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
-          return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
-        });
+  // vytáhneme si metrics z objektu data
+  const { metrics } = data;
 
-        const sum = parts.reduce((s, p) => s + p.val, 0);
-        const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
-        const top = parts.reduce(
-          (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
-          { pid: null, val: 0 }
-        );
-        const updatedAt = parts
-          .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
-          .reduce((a, b) => Math.max(a, b), 0);
-        const val = state.mode === 'max' ? max : sum;
-        const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
+  if (state.platform === 'all') {
+    const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
+      const m = metrics?.[pid];
+      const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+      return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
+    });
 
-        return {
-          mode: state.mode,
-          parts,
-          val,
-          updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
-          topPid: top.pid,
-          topLabel
-        };
-      }
+    const sum = parts.reduce((s, p) => s + p.val, 0);
+    const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
 
-      const m = data.metrics?.[state.platform];
-      if (m && m.connected && typeof m.followers === 'number') {
-        const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
-        return { mode: 'single', pid: state.platform, icon, val: m.followers, updatedAt: m.updatedAt };
-      }
+    const top = parts.reduce(
+      (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
+      { pid: null, val: 0 }
+    );
 
-      return { mode: 'none', pid: null, val: null, updatedAt: null };
-    }
+    const updatedAt = parts
+      .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
+      .reduce((a, b) => Math.max(a, b), 0);
 
+    const val = state.mode === 'max' ? max : sum;
+    const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
+
+    return {
+      mode: state.mode,
+      parts,
+      val,
+      updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
+      topPid: top.pid,
+      topLabel
+    };
+  }
+
+  // jen jedna konkrétní platforma
+  const m = metrics?.[state.platform];
+  if (m && m.connected && typeof m.followers === 'number') {
+    const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
+    return {
+      mode: 'single',
+      pid: state.platform,
+      icon,
+      val: m.followers,
+      updatedAt: m.updatedAt
+    };
+  }
+
+  // když nic nemáme
+  return { mode: 'none', pid: null, val: null, updatedAt: null };
+}
     function card(data) {
       const el = document.createElement('div');
       el.className = 'card overflow-hidden';
@@ -1841,29 +1854,28 @@ function safeImage(url, fallback) {
       body.innerHTML = `
         <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${cover}')"></div>
         <div class="flex items-start gap-3 -mt-10 p-2">
-          <img src="${avatar}" alt="Avatar ${
-        data.name
-      }" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
+          <img src="${avatar}" alt="Avatar ${name }" 
+          class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
           <div class="flex-1">
             <div class="flex items-center gap-2">
-              <h3 class="font-bold text-xl leading-tight">${data.name}</h3>
+              <h3 class="font-bold text-xl leading-tight">${name}</h3>
               ${
-                data.verified
+                verified
                   ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
                   : ''
               }
             </div>
-            <div class="text-white/60 text-sm">${data.handle} • ${data.category} • ${data.city}</div>
+            <div class="text-white/60 text-sm">${handle} • ${category} • ${city}</div>
           </div>
         </div>
-        <p class="text-white/80 text-sm mt-2">${data.bio ?? ''}</p>
+        <p class="text-white/80 text-sm mt-2">${bio ?? ''}</p>
         <div class="grid grid-cols-3 gap-2 mt-4">
           ${
-            Array.isArray(data.gallery)
-              ? data.gallery
+            Array.isArray(gallery)
+              ? gallery
                   .map(
                     (src, i) =>
-                      `<img src="${src}" alt="Portfolio ${data.name} - obrázek ${
+                      `<img src="${src}" alt="Portfolio ${name} - obrázek ${
                         i + 1
                       }" class="rounded-lg object-cover w-full h-28"/>`
                   )
@@ -1872,16 +1884,16 @@ function safeImage(url, fallback) {
           }
         </div>
         <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
-          ${stat('Hodnocení', data.rating ?? '—')}
-          ${stat('Engagement', (data.engagement ?? 0) + '%')}
-          ${stat('Město', data.city ?? '—')}
+          ${stat('Hodnocení', rating ?? '—')}
+          ${stat('Engagement', (engagement ?? 0) + '%')}
+          ${stat('Město', city ?? '—')}
         </div>
         <div class="mt-4 grid grid-cols-1 gap-3">
-          ${platformRow('facebook','Facebook followers', data)}
-          ${platformRow('instagram','Instagram followers', data)}
-          ${platformRow('youtube','YouTube subscribers', data)}
-          ${platformRow('tiktok','TikTok followers', data)}
-          ${platformRow('pinterest','Pinterest followers', data)}
+          ${platformRow('facebook','Facebook followers', metrics)}
+          ${platformRow('instagram','Instagram followers', metrics)}
+          ${platformRow('youtube','YouTube subscribers', metrics)}
+          ${platformRow('tiktok','TikTok followers', metrics)}
+          ${platformRow('pinterest','Pinterest followers', metrics)}
         </div>
         
         <div class="mt-6">
@@ -1896,10 +1908,10 @@ function safeImage(url, fallback) {
         </div>
         
         <div class="mt-6 flex items-center justify-end gap-2">
-          <button onclick="startChat('${data.id}')" class="btn btn-outline">
+          <button onclick="startChat('${id}')" class="btn btn-outline">
             <i data-lucide="message-circle" class="w-4 h-4"></i> Napsat zprávu
           </button>
-          <a href="booking.html?creator=${data.id}" class="btn btn-outline">
+          <a href="booking.html?creator=${id}" class="btn btn-outline">
             <i data-lucide="calendar" class="w-4 h-4"></i> Rezervovat termín
           </a>
           <a href="kartao-pro-firmy.html#brief" class="btn btn-primary">
@@ -1912,7 +1924,7 @@ function safeImage(url, fallback) {
       ov.classList.remove('hidden');
       setTimeout(() => drawer.classList.add('active'), 0);
 
-      loadCreatorReviews(data.id);
+      loadCreatorReviews(id);
     }
 
     function closeDetail() {
