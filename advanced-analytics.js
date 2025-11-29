@@ -1,3 +1,38 @@
+// ===============================
+// Advanced Analytics – bezpečná verze pro Firestore
+// ===============================
+
+// Pomocná funkce – vyčistí data od undefined / funkcí / NaN atd.
+function sanitizeData(input, depth = 0) {
+    if (depth > 6) return null; // ochrana proti cyklům
+
+    if (input === undefined) return null;
+    if (typeof input === 'function' || typeof input === 'symbol') return null;
+    if (Number.isNaN(input)) return null;
+
+    // Error objekt -> uložíme jen text zprávy
+    if (input instanceof Error) {
+        return input.message || String(input);
+    }
+
+    if (Array.isArray(input)) {
+        return input.map(v => sanitizeData(v, depth + 1));
+    }
+
+    if (input && typeof input === 'object') {
+        const out = {};
+        Object.keys(input).forEach(key => {
+            const v = sanitizeData(input[key], depth + 1);
+            if (v !== undefined) {
+                out[key] = v;
+            }
+        });
+        return out;
+    }
+
+    return input;
+}
+
 class AdvancedAnalyticsTracker {
     constructor() {
         this.sessionId = this.generateSessionId();
@@ -21,16 +56,13 @@ class AdvancedAnalyticsTracker {
     async init() {
         console.log('📊 Inicializace Advanced Analytics...');
         
-        // Setup event listeners
         this.setupEventListeners();
         this.setupPerformanceMonitoring();
         this.setupErrorTracking();
         this.setupUserBehaviorTracking();
         
-        // Start session tracking
         this.startSession();
         
-        // Setup Firebase Auth listener
         if (window.auth) {
             window.auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -40,7 +72,6 @@ class AdvancedAnalyticsTracker {
             });
         }
 
-        // Periodic data flush
         this.startPeriodicFlush();
         
         console.log('✅ Advanced Analytics připraven');
@@ -64,12 +95,10 @@ class AdvancedAnalyticsTracker {
             url: window.location.href
         });
 
-        // Track page view
         this.trackPageView();
     }
 
     setupEventListeners() {
-        // Page visibility changes
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.trackEvent('page_hidden', { timestamp: Date.now() });
@@ -78,12 +107,10 @@ class AdvancedAnalyticsTracker {
             }
         });
 
-        // Before unload
         window.addEventListener('beforeunload', () => {
             this.endSession();
         });
 
-        // Mouse movements for heatmap
         let mouseTrackingThrottle = false;
         document.addEventListener('mousemove', (e) => {
             if (!mouseTrackingThrottle) {
@@ -95,19 +122,16 @@ class AdvancedAnalyticsTracker {
             }
         });
 
-        // Click tracking
         document.addEventListener('click', (e) => {
             this.trackClick(e);
         });
 
-        // Form interactions
         document.addEventListener('change', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
                 this.trackFormInteraction(e);
             }
         });
 
-        // Scroll tracking
         let scrollThrottle = false;
         window.addEventListener('scroll', () => {
             if (!scrollThrottle) {
@@ -121,12 +145,13 @@ class AdvancedAnalyticsTracker {
     }
 
     setupPerformanceMonitoring() {
-        // Page load metrics
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const navigation = performance.getEntriesByType('navigation')[0];
                 const paint = performance.getEntriesByType('paint');
                 
+                if (!navigation) return;
+
                 this.performanceMetrics = {
                     page_load_time: navigation.loadEventEnd - navigation.loadEventStart,
                     dom_content_loaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
@@ -144,24 +169,23 @@ class AdvancedAnalyticsTracker {
             }, 0);
         });
 
-        // Core Web Vitals
         this.trackWebVitals();
     }
 
     async trackWebVitals() {
         try {
-            // Largest Contentful Paint
             const observer = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
                 const lcpEntry = entries[entries.length - 1];
+                if (!lcpEntry) return;
+
                 this.trackEvent('web_vital_lcp', {
                     value: lcpEntry.startTime,
-                    element: lcpEntry.element?.tagName
+                    element: lcpEntry.element?.tagName || null
                 });
             });
             observer.observe({ entryTypes: ['largest-contentful-paint'] });
 
-            // First Input Delay
             const fidObserver = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
                 entries.forEach((entry) => {
@@ -173,7 +197,6 @@ class AdvancedAnalyticsTracker {
             });
             fidObserver.observe({ entryTypes: ['first-input'] });
 
-            // Cumulative Layout Shift
             let clsValue = 0;
             const clsObserver = new PerformanceObserver((list) => {
                 for (const entry of list.getEntries()) {
@@ -191,7 +214,6 @@ class AdvancedAnalyticsTracker {
     }
 
     setupErrorTracking() {
-        // JavaScript errors
         window.addEventListener('error', (e) => {
             this.trackError({
                 type: 'javascript',
@@ -199,27 +221,25 @@ class AdvancedAnalyticsTracker {
                 filename: e.filename,
                 line: e.lineno,
                 column: e.colno,
-                stack: e.error?.stack,
+                stack: e.error?.stack || null,
                 timestamp: Date.now()
             });
         });
 
-        // Promise rejections
         window.addEventListener('unhandledrejection', (e) => {
             this.trackError({
                 type: 'promise_rejection',
-                reason: e.reason,
+                reason: e.reason?.message || String(e.reason || ''),
                 timestamp: Date.now()
             });
         });
 
-        // Resource loading errors
         document.addEventListener('error', (e) => {
             if (e.target !== window) {
                 this.trackError({
                     type: 'resource_error',
                     element: e.target.tagName,
-                    source: e.target.src || e.target.href,
+                    source: e.target.src || e.target.href || null,
                     timestamp: Date.now()
                 }, true);
             }
@@ -227,33 +247,29 @@ class AdvancedAnalyticsTracker {
     }
 
     setupUserBehaviorTracking() {
-        // Time on page tracking
         this.pageStartTime = Date.now();
-        
-        // Rage clicks detection
         this.clickSequence = [];
-        
-        // Dead clicks detection (clicks that don't lead to navigation)
-        this.deadClickThreshold = 1000; // ms
+        this.deadClickThreshold = 1000;
     }
 
     trackEvent(eventName, properties = {}) {
+        const mergedProps = {
+            ...properties,
+            session_id: this.sessionId,
+            user_id: this.userId,
+            timestamp: Date.now(),
+            url: window.location.href,
+            page_title: document.title,
+            viewport: `${window.innerWidth}x${window.innerHeight}`
+        };
+
         const event = {
             event: eventName,
-            properties: {
-                ...properties,
-                session_id: this.sessionId,
-                user_id: this.userId,
-                timestamp: Date.now(),
-                url: window.location.href,
-                page_title: document.title,
-                viewport: `${window.innerWidth}x${window.innerHeight}`
-            }
+            properties: sanitizeData(mergedProps)
         };
 
         this.events.push(event);
         
-        // Send critical events immediately
         if (this.isCriticalEvent(eventName)) {
             this.sendEventImmediately(event);
         }
@@ -274,23 +290,20 @@ class AdvancedAnalyticsTracker {
     }
 
     trackClick(event) {
-        const element = event.target;
+        const element = event.target || {};
         const clickData = {
-            element_tag: element.tagName,
-            element_id: element.id,
-            element_class: element.className,
-            element_text: element.textContent?.substring(0, 100),
+            element_tag: element.tagName || null,
+            element_id: element.id || null,
+            element_class: typeof element.className === 'string' ? element.className : null,
+            element_text: (element.textContent || '').substring(0, 100),
             x: event.clientX,
             y: event.clientY,
             timestamp: Date.now()
         };
 
         this.userBehavior.clicks.push(clickData);
-        
-        // Detect rage clicks
         this.detectRageClicks(event);
-        
-        // Track for heatmap
+
         this.heatmapData.push({
             type: 'click',
             x: event.clientX,
@@ -305,13 +318,11 @@ class AdvancedAnalyticsTracker {
         const now = Date.now();
         this.clickSequence.push({ x: event.clientX, y: event.clientY, time: now });
         
-        // Keep only recent clicks (last 2 seconds)
         this.clickSequence = this.clickSequence.filter(click => now - click.time < 2000);
         
-        // Detect rage clicks (5+ clicks in small area within 2 seconds)
         if (this.clickSequence.length >= 5) {
             const area = this.calculateClickArea(this.clickSequence);
-            if (area < 100) { // 100px² area
+            if (area < 100) {
                 this.trackEvent('rage_click', {
                     click_count: this.clickSequence.length,
                     area: area,
@@ -337,8 +348,11 @@ class AdvancedAnalyticsTracker {
     }
 
     trackScroll() {
+        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        if (maxScroll <= 0) return;
+
         const scrollPercent = Math.round(
-            (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+            (window.scrollY / maxScroll) * 100
         );
 
         this.userBehavior.scrolls.push({
@@ -346,18 +360,18 @@ class AdvancedAnalyticsTracker {
             timestamp: Date.now()
         });
 
-        // Track scroll milestones
         if ([25, 50, 75, 100].includes(scrollPercent)) {
             this.trackEvent('scroll_milestone', { percent: scrollPercent });
         }
     }
 
     trackFormInteraction(event) {
+        const target = event.target || {};
         const formData = {
-            form_id: event.target.form?.id,
-            field_name: event.target.name,
-            field_type: event.target.type,
-            field_value_length: event.target.value?.length || 0,
+            form_id: target.form?.id || null,
+            field_name: target.name || null,
+            field_type: target.type || null,
+            field_value_length: (target.value || '').length,
             timestamp: Date.now()
         };
 
@@ -366,8 +380,7 @@ class AdvancedAnalyticsTracker {
     }
 
     trackMousePosition(x, y) {
-        // Sample mouse positions for heatmap (reduce data volume)
-        if (Math.random() < 0.1) { // 10% sampling
+        if (Math.random() < 0.1) {
             this.heatmapData.push({
                 type: 'move',
                 x: x,
@@ -406,12 +419,11 @@ class AdvancedAnalyticsTracker {
             email: user.email,
             display_name: user.displayName,
             email_verified: user.emailVerified,
-            creation_time: user.metadata.creationTime,
-            last_sign_in: user.metadata.lastSignInTime
+            creation_time: user.metadata?.creationTime || null,
+            last_sign_in: user.metadata?.lastSignInTime || null
         });
     }
 
-    // A/B Testing
     trackExperiment(experimentId, variant) {
         this.trackEvent('experiment_exposure', {
             experiment_id: experimentId,
@@ -420,7 +432,6 @@ class AdvancedAnalyticsTracker {
         });
     }
 
-    // Custom metrics
     trackCustomMetric(name, value, properties = {}) {
         this.trackEvent('custom_metric', {
             metric_name: name,
@@ -440,7 +451,6 @@ class AdvancedAnalyticsTracker {
             errors: this.errorTracking.length
         });
 
-        // Send all remaining data
         this.flushData(true);
     }
 
@@ -451,11 +461,11 @@ class AdvancedAnalyticsTracker {
 
     async sendEventImmediately(event) {
         try {
+            const cleanEvent = sanitizeData(event);
             if (window.db) {
-                await window.db.collection('analytics_events').add(event);
+                await window.db.collection('analytics_events').add(cleanEvent);
             } else {
-                // Fallback to local storage if Firebase not available
-                this.storeOffline([event]);
+                this.storeOffline([cleanEvent]);
             }
         } catch (error) {
             console.error('Failed to send event immediately:', error);
@@ -464,14 +474,12 @@ class AdvancedAnalyticsTracker {
     }
 
     startPeriodicFlush() {
-        // Flush data every 30 seconds
         setInterval(() => {
             if (this.events.length > 0) {
                 this.flushData();
             }
         }, 30000);
 
-        // Flush when page becomes hidden
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && this.events.length > 0) {
                 this.flushData();
@@ -482,22 +490,24 @@ class AdvancedAnalyticsTracker {
     async flushData(force = false) {
         if (this.events.length === 0 && !force) return;
 
-        const dataToSend = {
+        const rawData = {
             events: [...this.events],
             session_id: this.sessionId,
             user_id: this.userId,
             timestamp: Date.now(),
             user_agent: navigator.userAgent,
             performance_metrics: this.performanceMetrics,
-            heatmap_sample: this.heatmapData.slice(-100), // Send last 100 points
+            heatmap_sample: this.heatmapData.slice(-100),
             page_views: this.pageViews
         };
+
+        const dataToSend = sanitizeData(rawData);
 
         try {
             if (window.db) {
                 await window.db.collection('analytics_sessions').add(dataToSend);
                 this.events = [];
-                this.heatmapData = this.heatmapData.slice(-1000); // Keep last 1000 points
+                this.heatmapData = this.heatmapData.slice(-1000);
                 console.log('📊 Analytics data flushed');
             } else {
                 this.storeOffline([dataToSend]);
@@ -512,7 +522,6 @@ class AdvancedAnalyticsTracker {
         try {
             const offline = JSON.parse(localStorage.getItem('kartao_analytics_offline') || '[]');
             offline.push(...data);
-            // Keep only last 100 items to avoid storage bloat
             localStorage.setItem('kartao_analytics_offline', JSON.stringify(offline.slice(-100)));
         } catch (error) {
             console.error('Failed to store analytics offline:', error);
@@ -528,7 +537,7 @@ class AdvancedAnalyticsTracker {
                 const batch = window.db.batch();
                 offlineData.forEach(data => {
                     const docRef = window.db.collection('analytics_sessions').doc();
-                    batch.set(docRef, data);
+                    batch.set(docRef, sanitizeData(data));
                 });
 
                 await batch.commit();
@@ -540,7 +549,7 @@ class AdvancedAnalyticsTracker {
         }
     }
 
-    // Public API methods
+    // Public API
     track(eventName, properties) {
         this.trackEvent(eventName, properties);
     }
@@ -566,7 +575,6 @@ class AdvancedAnalyticsTracker {
         this.trackCustomMetric(name, value, properties);
     }
 
-    // Analytics dashboard data
     async getDashboardData(timeRange = '7d') {
         try {
             const endDate = new Date();
@@ -592,7 +600,6 @@ class AdvancedAnalyticsTracker {
     }
 
     processAnalyticsData(sessions) {
-        // Process raw analytics data into dashboard metrics
         const metrics = {
             total_sessions: sessions.length,
             unique_users: new Set(sessions.map(s => s.user_id).filter(Boolean)).size,
@@ -604,22 +611,19 @@ class AdvancedAnalyticsTracker {
             conversion_rates: {},
             performance_summary: {}
         };
-
-        // Additional processing would go here...
         
         return metrics;
     }
 }
 
-// Auto-initialize
+// Auto-inicializace
 document.addEventListener('DOMContentLoaded', () => {
     window.analyticsTracker = new AdvancedAnalyticsTracker();
     
-    // Sync offline data when online
     window.addEventListener('online', () => {
         window.analyticsTracker.syncOfflineData();
     });
 });
 
-// Global export
+// Export do window
 window.AdvancedAnalyticsTracker = AdvancedAnalyticsTracker;
