@@ -1491,10 +1491,10 @@ function safeImage(url, fallback) {
           : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
 
       el.innerHTML = `
-        <div class="h-32 bg-cover bg-center" style="background-image:url('${data.cover}')"></div>
+        <div class="h-32 bg-cover bg-center" style="background-image:url('${cover}')"></div>
         <div class="p-4">
           <div class="flex items-start gap-3 -mt-10">
-            <img src="${data.avatar}" alt="Profil ${data.name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
+            <img src="${avatar}" alt="Profil ${data.name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-lg leading-tight">${data.name}</h3>
@@ -1839,9 +1839,9 @@ function safeImage(url, fallback) {
       if (!ov || !body || !drawer) return;
 
       body.innerHTML = `
-        <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${data.cover}')"></div>
+        <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${cover}')"></div>
         <div class="flex items-start gap-3 -mt-10 p-2">
-          <img src="${data.avatar}" alt="Avatar ${
+          <img src="${avatar}" alt="Avatar ${
         data.name
       }" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
           <div class="flex-1">
