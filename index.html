@@ -2389,5 +2389,103 @@
     });
   </script>
 
+  <script>
+  // Dočasná funkce – vytvoří první kartu tvůrce z aktuálně přihlášeného uživatele
+  async function createMyCreatorProfile() {
+    try {
+      if (!window.firebase || !firebase.auth || !window.db) {
+        alert('Firebase není inicializovaný – zkontroluj firebase-init.js');
+        return;
+      }
+
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert('Nejdřív se přihlas, pak zkus znovu.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const uid = user.uid;
+      const email = user.email || '';
+      const baseHandle =
+        (user.displayName ||
+          (email ? email.split('@')[0] : 'influencer')) // základ pro handle
+          .toLowerCase()
+          .replace(/[^a-z0-9._]/g, '');
+
+      const now = Date.now();
+
+      const docRef = db.collection('creators').doc(uid);
+
+      await docRef.set(
+        {
+          // ZÁKLADNÍ INFO
+          name: user.displayName || 'První influencer',
+          handle: '@' + baseHandle,
+          city: 'Brno',               // můžeš pak změnit v DB
+          category: 'Lifestyle',      // můžeš pak změnit v DB
+          bio: 'Zakladatel projektu Kartao.cz. Testovací profil pro ověření marketplace.',
+
+          // VZHLED KARTY
+          avatar:
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center',
+          cover:
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop&crop=center',
+          gallery: [
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&h=400&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=400&fit=crop&crop=center'
+          ],
+
+          // PARAMETRY PRO FILTRY / ŘAZENÍ
+          price: 1500,        // od kolik Kč / post – kdyžtak si upravíš
+          rating: 4.9,        // testovací rating
+          engagement: 7.5,    // v %
+          premium: true,      // aby šel filtrovat jako „premium“
+          verified: true,     // ať se ukáže štítek „Ověřeno“
+
+          // PLATFORMY
+          platforms: ['instagram', 'tiktok'],
+
+          metrics: {
+            instagram: {
+              connected: true,
+              followers: 12500,
+              updatedAt: now
+            },
+            tiktok: {
+              connected: true,
+              followers: 8700,
+              updatedAt: now
+            },
+            facebook: {
+              connected: false
+            },
+            youtube: {
+              connected: false
+            },
+            pinterest: {
+              connected: false
+            }
+          },
+
+          // ČAS
+          createdAt: now
+        },
+        { merge: true } // kdyby dokument už existoval, jen doplní/aktualizuje
+      );
+
+      alert('✅ Tvoje karta tvůrce byla vytvořena. Obnov stránku (F5), aby se načetla do marketplace.');
+      console.log('Karta tvůrce vytvořena pro UID:', uid);
+    } catch (err) {
+      console.error('Chyba při vytváření první karty:', err);
+      alert('❌ Chyba při vytváření karty – koukni do konzole (F12 → Console).');
+    }
+  }
+
+  // Pro pohodlí – aby šla volat z konzole
+  window.createMyCreatorProfile = createMyCreatorProfile;
+</script>
+
 </body>
 </html>
