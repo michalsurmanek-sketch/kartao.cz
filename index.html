@@ -1166,13 +1166,19 @@
   </button>
   <!-- JAVASCRIPT SEKCE -->
 
-  <!-- Firebase knihovny a inicializace -->
+    <!-- Firebase knihovny -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- Konfigurace + sjednocený INIT -->
+  <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+
+  <!-- Nadstavbové systémy -->
   <script src="database-init.js"></script>
   <script src="api-services.js"></script>
+
 
   <!-- Advanced Systems -->
   <script src="notification-system.js"></script>
@@ -1851,24 +1857,7 @@
     btnY?.addEventListener('click', ()=> setBilling('yearly'));
     setBilling('monthly');
   });
-  </script>
-
-    <!-- Firebase – načtení + inicializace (doplněno) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
-      authDomain: "kartao-97df7.firebaseapp.com",
-      projectId: "kartao-97df7",
-      storageBucket: "kartao-97df7.firebasestorage.app",
-      messagingSenderId: "1041236043484",
-      appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
-      measurementId: "G-77NDPH3TXM"
-    };
-
+  
     // Inicializace pouze pokud už neproběhla
     if (typeof firebase !== "undefined" && !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
