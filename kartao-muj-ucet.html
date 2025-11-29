@@ -384,7 +384,7 @@
       const db   = window.db   || firebase.firestore();
 
       if (!auth || !db) {
-        console.error("Firebase Auth nebo Firestore nejsou inicializované.");
+        console.warn("Firebase Auth nebo Firestore nejsou inicializované.");
         return;
       }
 
@@ -535,7 +535,9 @@
         applyInlineCard(name, nickname, email, role);
       }
 
-      // Načtení uživatele + profilu z Firestore
+      // ==========================
+      // Načtení uživatele + profilu
+      // ==========================
       setLoading(true);
 
       auth.onAuthStateChanged(async (user) => {
@@ -546,72 +548,43 @@
 
         currentUserUid = user.uid;
 
-        // 🔧 Přepnout Firestore ONLINE těsně před načtením profilu
-        try {
-          if (db && typeof db.enableNetwork === "function") {
-            await db.enableNetwork();
-            console.log("🌐 Firestore ONLINE – kartao-muj-ucet.html");
-          } else if (window.firebase && firebase.firestore && typeof firebase.firestore().enableNetwork === "function") {
-            await firebase.firestore().enableNetwork();
-            console.log("🌐 Firestore ONLINE (fallback) – kartao-muj-ucet.html");
-          }
-        } catch (err) {
-          console.warn("⚠️ enableNetwork selhalo (kartao-muj-ucet.html):", err);
-        }
-
-        const docRef = db.collection("users").doc(user.uid);
+        let docData = null;
 
         try {
-          // Primárně se snažíme o server
-          let snap;
-          try {
-            snap = await docRef.get({ source: "server" });
-          } catch (serverErr) {
-            console.warn("⚠️ get(...source: 'server') selhalo, zkouším cache:", serverErr);
-            try {
-              snap = await docRef.get({ source: "cache" });
-            } catch (cacheErr) {
-              console.warn("⚠️ get(...source: 'cache') taky selhalo, vytvořím profil z Auth:", cacheErr);
-              snap = null;
-            }
-          }
+          const docRef = db.collection("users").doc(user.uid);
+          const snap = await docRef.get();
 
-          if (snap && snap.exists) {
-            currentProfileData = snap.data() || {};
+          if (snap.exists) {
+            docData = snap.data() || {};
           } else {
-            // pokud profil neexistuje nebo se nepovedlo nic načíst – vytvoříme základ
-            currentProfileData = {
+            docData = {
               email: user.email || null,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
             try {
-              await docRef.set(currentProfileData, { merge: true });
+              await docRef.set(docData, { merge: true });
             } catch (setErr) {
-              console.warn("⚠️ Profil se nepodařilo uložit na server, ale jedu dál s lokálními daty:", setErr);
+              console.warn("Profil se nepodařilo uložit na server, ale jedu dál s lokálními daty:", setErr);
             }
           }
-
-          applyUserUI(user, currentProfileData);
-
-          // vygenerovat URL vizitky
-          if (shareUrlInput) {
-            const origin = window.location.origin || "https://kartao.cz";
-            const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
-            shareUrlInput.value = profileUrl;
-          }
-
-        } catch (err) {
-          console.error("Chyba při načítání profilu z Firestore (finální catch):", err);
-          showMessage("Nepodařilo se načíst profil z databáze. Používám data z přihlášení.", "error");
-
-          // fallback čistě z Auth, aby UI jelo i když Firestore úplně klekne
-          currentProfileData = {
-            email: user.email || "",
-          };
-          applyUserUI(user, currentProfileData);
-        } finally {
-          setLoading(false);
+        } catch (e) {
+          console.warn("Profil se nepodařilo načíst z Firestore (použiju data z Auth):", e);
         }
+
+        currentProfileData = docData || {
+          email: user.email || "",
+        };
+
+        applyUserUI(user, currentProfileData);
+
+        // URL vizitky
+        if (shareUrlInput) {
+          const origin = window.location.origin || "https://kartao.cz";
+          const profileUrl = origin + "/vizitka.html?uid=" + user.uid;
+          shareUrlInput.value = profileUrl;
+        }
+
+        setLoading(false);
       });
 
       // Realtime náhled inline vizitky při psaní
@@ -667,7 +640,7 @@
 
             showMessage("Údaje byly uloženy do Firestore.");
           } catch (err) {
-            console.error("Chyba při ukládání profilu do Firestore:", err);
+            console.warn("Chyba při ukládání profilu do Firestore:", err);
             showMessage("Nepodařilo se uložit změny do databáze.", "error");
           } finally {
             setLoading(false);
@@ -689,7 +662,7 @@
             await auth.sendPasswordResetEmail(user.email);
             showMessage("Odeslali jsme ti e-mail s odkazem na změnu hesla.");
           } catch (err) {
-            console.error("Chyba při resetu hesla:", err);
+            console.warn("Chyba při resetu hesla:", err);
             showMessage("Nepodařilo se odeslat e-mail pro změnu hesla.", "error");
           }
         });
@@ -708,7 +681,7 @@
             await navigator.clipboard.writeText(url);
             showMessage("Odkaz na vizitku byl zkopírován do schránky.");
           } catch (e) {
-            console.error("Chyba při kopírování URL:", e);
+            console.warn("Chyba při kopírování URL:", e);
             showMessage("Nepodařilo se zkopírovat odkaz do schránky.", "error");
           }
         });
@@ -760,7 +733,7 @@
             await navigator.clipboard.writeText(cardHtml);
             showMessage("HTML vizitky bylo zkopírováno do schránky. Stačí vložit do e-mailu nebo na web.");
           } catch (e) {
-            console.error("Chyba při kopírování HTML vizitky:", e);
+            console.warn("Chyba při kopírování HTML vizitky:", e);
             showMessage("Nepodařilo se zkopírovat HTML vizitky do schránky.", "error");
           }
         });
@@ -774,7 +747,7 @@
             await auth.signOut();
             window.location.href = "login.html";
           } catch (err) {
-            console.error("Chyba při odhlášení:", err);
+            console.warn("Chyba při odhlášení:", err);
             showMessage("Nepodařilo se odhlásit.", "error");
           }
         });
