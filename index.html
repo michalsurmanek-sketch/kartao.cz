@@ -1199,6 +1199,19 @@
       { id: 'youtube', label: 'YouTube', icon: 'play' },
       { id: 'pinterest', label: 'Pinterest', icon: 'image' }
     ];
+    // ====== DEFAULT OBRÁZKY (fallback) ======
+const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
+const DEFAULT_GALLERY = [
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center"
+];
+
+function safeImage(url, fallback) {
+  if (!url || typeof url !== "string") return fallback;
+  return url.startsWith("http") ? url : fallback;
+}
 
     // Inicializace služeb
     let creatorService;
