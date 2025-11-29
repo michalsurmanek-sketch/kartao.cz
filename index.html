@@ -1164,9 +1164,9 @@
            text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
     <i data-lucide="arrow-up" class="w-5 h-5"></i>
   </button>
-  <!-- JAVASCRIPT SEKCE ..........................................................................................................-->
+   <!-- JAVASCRIPT SEKCE ..........................................................................................................-->
 
-    <!-- Firebase knihovny -->
+  <!-- Firebase knihovny -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1179,7 +1179,6 @@
   <script src="database-init.js"></script>
   <script src="api-services.js"></script>
 
-
   <!-- Advanced Systems -->
   <script src="notification-system.js"></script>
   <!-- <script src="live-chat-system.js"></script> -->
@@ -1191,53 +1190,26 @@
   <!-- Marketplace logika -->
   <script>
     /* ==========================
-       DATUM + UTIL FUNKCE
+       KONSTANTY A POMOCNÉ FUNKCE
     ========================== */
     const PLATFORMS = [
-      {id:'facebook', label:'Facebook', icon:'facebook'},
-      {id:'instagram', label:'Instagram', icon:'camera'},
-      {id:'tiktok', label:'TikTok', icon:'music-4'},
-      {id:'youtube', label:'YouTube', icon:'play'},
-      {id:'pinterest', label:'Pinterest', icon:'image'}
+      { id: 'facebook', label: 'Facebook', icon: 'facebook' },
+      { id: 'instagram', label: 'Instagram', icon: 'camera' },
+      { id: 'tiktok', label: 'TikTok', icon: 'music-4' },
+      { id: 'youtube', label: 'YouTube', icon: 'play' },
+      { id: 'pinterest', label: 'Pinterest', icon: 'image' }
     ];
-    
+
     // Inicializace služeb
     let creatorService;
     let userService;
-    
-    // Globální cache pro výsledky
+
+    // Globální cache
     let allCreators = [];
     let isLoading = false;
-    
-    // Inicializace po načtení Firebase
-    if (typeof firebase !== "undefined" && firebase.auth) {
-      firebase.auth().onAuthStateChanged(async (user) => {
-        if (!creatorService) {
-          creatorService = new CreatorService();
-          userService = new UserService();
-          
-          await loadAllCreators();
-          render();
-        }
-      });
-    }
-    
-    function fmtFollowers(n) { 
-      return DataHelpers.formatFollowers(n);
-    }
-    
-    function platformFollowers(item, pid, mode = 'sum'){
-      if(pid === 'all'){
-        return DataHelpers.calculateTotalFollowers(item.metrics, mode);
-      }
-      const m = item.metrics?.[pid];
-      return m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
-    }
-    
-    /* ==========================
-       STAV + URL SYNC
-    ========================== */
-    const state = { 
+
+    // Stav filtrů + URL sync
+    const state = {
       q: '',
       platform: 'all',
       mode: 'sum',
@@ -1251,192 +1223,259 @@
       premiumOnly: false,
       page: 1,
       pageSize: 12,
-      infinite: false 
+      infinite: false
     };
 
-    function readQS(){
-      const qs = new URLSearchParams(location.search);
-      if(qs.get('q')) state.q = qs.get('q');
-      const pf = qs.get('platform'); if(['all','facebook','instagram','tiktok','youtube','pinterest'].includes(pf)) state.platform = pf;
-      const md = qs.get('mode'); if(['sum','max'].includes(md)) state.mode = md;
-      const cat = qs.get('category'); if(['all','Fashion','Beauty','Fitness','Lifestyle','Gaming','Tech','Food','Travel','Auto','Music'].includes(cat)) state.category = cat;
-      const city = qs.get('city'); if(['all','Praha','Brno','Ostrava','Plzeň','Olomouc','Zlín','Hradec Králové','České Budějovice'].includes(city)) state.city = city;
-      const sort = qs.get('sort'); if(['relevance','followers','priceLow','priceHigh','rating','newest'].includes(sort)) state.sort = sort;
-      if(qs.get('minPrice')!==null) state.minPrice = qs.get('minPrice')? Number(qs.get('minPrice')): null;
-      if(qs.get('maxPrice')!==null) state.maxPrice = qs.get('maxPrice')? Number(qs.get('maxPrice')): null;
-      if(qs.get('minRating')!==null) state.minRating = qs.get('minRating')? Number(qs.get('minRating')): 0;
-      if(qs.get('minFollowers')!==null) state.minFollowers = qs.get('minFollowers')? Number(qs.get('minFollowers')): null;
-      state.premiumOnly = qs.get('premium')==='1';
-      state.page = Math.max(1, parseInt(qs.get('page')||'1',10));
-      const ps = parseInt(qs.get('pageSize')||'12',10); if([12,24,48].includes(ps)) state.pageSize = ps;
-      state.infinite = qs.get('infinite')==='1';
+    function fmtFollowers(n) {
+      return DataHelpers.formatFollowers(n);
     }
 
-    function writeQS(){
+    function platformFollowers(item, pid, mode = 'sum') {
+      if (pid === 'all') {
+        return DataHelpers.calculateTotalFollowers(item.metrics, mode);
+      }
+      const m = item.metrics?.[pid];
+      return m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+    }
+
+    /* ==========================
+       ČTENÍ A ZÁPIS QUERY STRINGU
+    ========================== */
+    function readQS() {
+      const qs = new URLSearchParams(location.search);
+
+      if (qs.get('q')) state.q = qs.get('q');
+
+      const pf = qs.get('platform');
+      if (['all', 'facebook', 'instagram', 'tiktok', 'youtube', 'pinterest'].includes(pf)) {
+        state.platform = pf;
+      }
+
+      const md = qs.get('mode');
+      if (['sum', 'max'].includes(md)) state.mode = md;
+
+      const cat = qs.get('category');
+      if (['all', 'Fashion', 'Beauty', 'Fitness', 'Lifestyle', 'Gaming', 'Tech', 'Food', 'Travel', 'Auto', 'Music'].includes(cat)) {
+        state.category = cat;
+      }
+
+      const city = qs.get('city');
+      if (['all', 'Praha', 'Brno', 'Ostrava', 'Plzeň', 'Olomouc', 'Zlín', 'Hradec Králové', 'České Budějovice'].includes(city)) {
+        state.city = city;
+      }
+
+      const sort = qs.get('sort');
+      if (['relevance', 'followers', 'priceLow', 'priceHigh', 'rating', 'newest'].includes(sort)) {
+        state.sort = sort;
+      }
+
+      if (qs.get('minPrice') !== null) {
+        state.minPrice = qs.get('minPrice') ? Number(qs.get('minPrice')) : null;
+      }
+      if (qs.get('maxPrice') !== null) {
+        state.maxPrice = qs.get('maxPrice') ? Number(qs.get('maxPrice')) : null;
+      }
+      if (qs.get('minRating') !== null) {
+        state.minRating = qs.get('minRating') ? Number(qs.get('minRating')) : 0;
+      }
+      if (qs.get('minFollowers') !== null) {
+        state.minFollowers = qs.get('minFollowers') ? Number(qs.get('minFollowers')) : null;
+      }
+
+      state.premiumOnly = qs.get('premium') === '1';
+      state.page = Math.max(1, parseInt(qs.get('page') || '1', 10));
+
+      const ps = parseInt(qs.get('pageSize') || '12', 10);
+      if ([12, 24, 48].includes(ps)) state.pageSize = ps;
+
+      state.infinite = qs.get('infinite') === '1';
+    }
+
+    function writeQS() {
       const qs = new URLSearchParams();
-      if(state.q) qs.set('q', state.q);
-      if(state.platform!=='all') qs.set('platform', state.platform);
-      if(state.mode!=='sum') qs.set('mode', state.mode);
-      if(state.category!=='all') qs.set('category', state.category);
-      if(state.city!=='all') qs.set('city', state.city);
-      if(state.sort!=='relevance') qs.set('sort', state.sort);
-      if(state.minPrice!=null) qs.set('minPrice', String(state.minPrice));
-      if(state.maxPrice!=null) qs.set('maxPrice', String(state.maxPrice));
-      if(state.minRating>0) qs.set('minRating', String(state.minRating));
-      if(state.minFollowers!=null && state.platform!=='all') qs.set('minFollowers', String(state.minFollowers));
-      if(state.premiumOnly) qs.set('premium', '1');
-      if(state.page>1) qs.set('page', String(state.page));
-      if(state.pageSize!==12) qs.set('pageSize', String(state.pageSize));
-      if(state.infinite) qs.set('infinite','1');
-      const next = location.pathname + (qs.toString()? '?' + qs.toString(): '');
+
+      if (state.q) qs.set('q', state.q);
+      if (state.platform !== 'all') qs.set('platform', state.platform);
+      if (state.mode !== 'sum') qs.set('mode', state.mode);
+      if (state.category !== 'all') qs.set('category', state.category);
+      if (state.city !== 'all') qs.set('city', state.city);
+      if (state.sort !== 'relevance') qs.set('sort', state.sort);
+      if (state.minPrice != null) qs.set('minPrice', String(state.minPrice));
+      if (state.maxPrice != null) qs.set('maxPrice', String(state.maxPrice));
+      if (state.minRating > 0) qs.set('minRating', String(state.minRating));
+      if (state.minFollowers != null && state.platform !== 'all') {
+        qs.set('minFollowers', String(state.minFollowers));
+      }
+      if (state.premiumOnly) qs.set('premium', '1');
+      if (state.page > 1) qs.set('page', String(state.page));
+      if (state.pageSize !== 12) qs.set('pageSize', String(state.pageSize));
+      if (state.infinite) qs.set('infinite', '1');
+
+      const next = location.pathname + (qs.toString() ? '?' + qs.toString() : '');
       history.replaceState({}, '', next);
     }
-      /* ==========================
-   NAČTENÍ TVŮRCŮ – NATVRDO Z FIRESTORE
-========================== */
-async function loadAllCreators() {
-  if (isLoading) return;
-  isLoading = true;
 
-  try {
-    // 🔥 Jednoduchý dotaz – žádné filtry
-    const snapshot = await db.collection("creators").get();
+    /* ==========================
+       NAČTENÍ TVŮRCŮ Z FIRESTORE
+    ========================== */
+    async function loadAllCreators() {
+      if (isLoading) return;
+      if (typeof db === 'undefined') {
+        console.warn('Firestore (db) není inicializováno.');
+        allCreators = [];
+        return;
+      }
 
-    const creators = [];
-    snapshot.forEach(doc => {
-      creators.push({ id: doc.id, ...doc.data() });
-    });
+      isLoading = true;
 
-    // Pokud chceš jen jednoho:
-    // allCreators = creators.slice(0, 1);
+      try {
+        const snapshot = await db.collection('creators').get();
+        const creators = [];
 
-    // Všichni:
-    allCreators = creators;
+        snapshot.forEach(doc => {
+          creators.push({ id: doc.id, ...doc.data() });
+        });
 
-    console.log("Načteno tvůrců:", allCreators.length);
-  } catch (error) {
-    console.error("Chyba při načítání tvůrců z Firestore:", error);
-    allCreators = [];
-  } finally {
-    isLoading = false;
-  }
-}
-
-        
+        allCreators = creators;
+        console.log('Načteno tvůrců:', allCreators.length);
       } catch (error) {
-        console.error('Chyba při načítání tvůrců:', error);
+        console.error('Chyba při načítání tvůrců z Firestore:', error);
         allCreators = [];
       } finally {
         isLoading = false;
       }
     }
 
-    function applyFilters(){
+    /* ==========================
+       FILTRACE A ŘAZENÍ
+    ========================== */
+    function applyFilters() {
       if (!allCreators.length) {
         return [];
       }
-      
+
       let list = [...allCreators];
-      
+
       const searchTerm = state.q.trim().toLowerCase();
       if (searchTerm) {
-        list = list.filter(creator => 
-          creator.name.toLowerCase().includes(searchTerm) ||
-          creator.handle.toLowerCase().includes(searchTerm) ||
-          creator.city.toLowerCase().includes(searchTerm) ||
-          creator.category.toLowerCase().includes(searchTerm) ||
+        list = list.filter(creator =>
+          creator.name?.toLowerCase().includes(searchTerm) ||
+          creator.handle?.toLowerCase().includes(searchTerm) ||
+          creator.city?.toLowerCase().includes(searchTerm) ||
+          creator.category?.toLowerCase().includes(searchTerm) ||
           (creator.bio && creator.bio.toLowerCase().includes(searchTerm))
         );
       }
-      
+
+      // Další filtry (cena, rating, followers, premium)
+      if (state.minPrice != null) {
+        list = list.filter(c => typeof c.price === 'number' && c.price >= state.minPrice);
+      }
+      if (state.maxPrice != null) {
+        list = list.filter(c => typeof c.price === 'number' && c.price <= state.maxPrice);
+      }
+      if (state.minRating > 0) {
+        list = list.filter(c => typeof c.rating === 'number' && c.rating >= state.minRating);
+      }
+      if (state.premiumOnly) {
+        list = list.filter(c => c.premium === true);
+      }
+      if (state.minFollowers != null) {
+        list = list.filter(c => {
+          const total = platformFollowers(c, state.platform, state.mode);
+          return total >= state.minFollowers;
+        });
+      }
+      if (state.category !== 'all') {
+        list = list.filter(c => c.category === state.category);
+      }
+      if (state.city !== 'all') {
+        list = list.filter(c => c.city === state.city);
+      }
+
+      // Řazení
       if (state.sort === 'followers') {
-        list.sort((a,b) => {
+        list.sort((a, b) => {
           const aFollowers = DataHelpers.calculateTotalFollowers(a.metrics, state.mode);
           const bFollowers = DataHelpers.calculateTotalFollowers(b.metrics, state.mode);
           return bFollowers - aFollowers;
         });
+      } else if (state.sort === 'priceLow') {
+        list.sort((a, b) => (a.price || 0) - (b.price || 0));
+      } else if (state.sort === 'priceHigh') {
+        list.sort((a, b) => (b.price || 0) - (a.price || 0));
+      } else if (state.sort === 'rating') {
+        list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      } else if (state.sort === 'newest') {
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       }
-      
+
       return list;
     }
 
-    function render(){
-      const grid = document.getElementById('grid');
-      const empty = document.getElementById('empty');
-      const totalEl = document.getElementById('total');
-      const pagination = document.getElementById('pagination');
-      const sentinel = document.getElementById('sentinel');
-
-      const all = applyFilters();
-      totalEl.textContent = String(all.length);
-      document.getElementById('modeBadge').textContent = 'Režim: ' + (state.mode==='max' ? 'MAX' : 'Σ Součet');
-
-      const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
-      state.page = Math.min(Math.max(1, state.page), pageCount);
-      const start = (state.page-1) * state.pageSize;
-      const end = start + state.pageSize;
-      const slice = state.infinite ? all.slice(0, end) : all.slice(start, end);
-
-      grid.innerHTML = '';
-      slice.forEach(i=> grid.appendChild(card(i)));
-      empty.classList.toggle('hidden', slice.length>0);
-
-      pagination.innerHTML = '';
-      sentinel.textContent = '';
-      if(!state.infinite){
-        const left = btn('Předchozí', ()=>{ if(state.page>1){ state.page--; writeQS(); render(); } }, state.page===1);
-        left.classList.add('btn','btn-outline');
-        const right = btn('Další', ()=>{ if(state.page<pageCount){ state.page++; writeQS(); render(); } }, state.page===pageCount);
-        right.classList.add('btn','btn-outline');
-        const info = document.createElement('div');
-        info.className = 'text-sm text-white/60';
-        info.innerHTML = `Zobrazuji <span class="text-white">${Math.min(end,all.length)}</span> z <span class="text-white">${all.length}</span>`;
-        const pager = document.createElement('div'); pager.className='flex items-center gap-2';
-        pager.appendChild(left);
-        const maxButtons = Math.min(pageCount,7);
-        for(let p=1;p<=maxButtons;p++){
-          const b = btn(String(p), ()=>{ state.page=p; writeQS(); render(); });
-          if(p===state.page){ b.classList.add('btn-primary'); } else { b.classList.add('btn','btn-outline'); }
-          pager.appendChild(b);
-        }
-        if(pageCount>7){ const dots=document.createElement('span'); dots.className='px-2 text-white/60'; dots.textContent='…'; pager.appendChild(dots); }
-        pager.appendChild(right);
-        pagination.appendChild(info);
-        pagination.appendChild(pager);
-      } else {
-        sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
-      }
-
-      const pt = document.getElementById('platformTags');
-      pt.innerHTML = '';
-      PLATFORMS.forEach(p=>{
-        const s = document.createElement('span');
-        s.className = 'tag ' + (state.platform===p.id? 'ring-1 ring-fuchsia-500' : '');
-        s.innerHTML = `<i data-lucide="${p.icon}" class="w-3.5 h-3.5"></i> ${p.label}`;
-        pt.appendChild(s);
-      });
-
-      if (window.lucide?.createIcons) {
-        lucide.createIcons();
-      }
-    }
-
-    function btn(label, onClick, disabled){
+    /* ==========================
+       RENDER GRIDU A UI
+    ========================== */
+    function btn(label, onClick, disabled) {
       const b = document.createElement('button');
       b.textContent = label;
-      if(onClick) b.addEventListener('click', onClick);
-      if(disabled){ b.disabled = true; b.classList.add('opacity-50','cursor-not-allowed'); }
+      if (onClick) b.addEventListener('click', onClick);
+      if (disabled) {
+        b.disabled = true;
+        b.classList.add('opacity-50', 'cursor-not-allowed');
+      }
       return b;
     }
 
-    function card(data){
+    function pickFollowers(data) {
+      if (state.platform === 'all') {
+        const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
+          const m = data.metrics?.[pid];
+          const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+          return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
+        });
+
+        const sum = parts.reduce((s, p) => s + p.val, 0);
+        const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
+        const top = parts.reduce(
+          (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
+          { pid: null, val: 0 }
+        );
+        const updatedAt = parts
+          .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
+          .reduce((a, b) => Math.max(a, b), 0);
+        const val = state.mode === 'max' ? max : sum;
+        const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
+
+        return {
+          mode: state.mode,
+          parts,
+          val,
+          updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
+          topPid: top.pid,
+          topLabel
+        };
+      }
+
+      const m = data.metrics?.[state.platform];
+      if (m && m.connected && typeof m.followers === 'number') {
+        const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
+        return { mode: 'single', pid: state.platform, icon, val: m.followers, updatedAt: m.updatedAt };
+      }
+
+      return { mode: 'none', pid: null, val: null, updatedAt: null };
+    }
+
+    function card(data) {
       const el = document.createElement('div');
       el.className = 'card overflow-hidden';
+
       const followersObj = pickFollowers(data);
-      const followersLabel = followersObj.val!=null ? fmtFollowers(followersObj.val) : null;
-      const aggregateBadge = state.mode==='max' 
-        ? '<span class="inline-flex items-center justify-center px-1.5 h-4 text-[10px] font-bold rounded bg-white/10">MAX</span>'
-        : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
+      const followersLabel = followersObj.val != null ? fmtFollowers(followersObj.val) : null;
+      const aggregateBadge =
+        state.mode === 'max'
+          ? '<span class="inline-flex items-center justify-center px-1.5 h-4 text-[10px] font-bold rounded bg-white/10">MAX</span>'
+          : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
 
       el.innerHTML = `
         <div class="h-32 bg-cover bg-center" style="background-image:url('${data.cover}')"></div>
@@ -1446,89 +1485,383 @@ async function loadAllCreators() {
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-lg leading-tight">${data.name}</h3>
-                ${data.verified? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>':''}
+                ${
+                  data.verified
+                    ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
+                    : ''
+                }
               </div>
               <div class="text-white/60 text-sm">${data.handle} • ${data.category}</div>
               <div class="flex items-center gap-3 mt-2 text-sm text-white/70">
-                ${followersLabel ? `
+                ${
+                  followersLabel
+                    ? `
                   <span class="flex items-center gap-1">
-                    ${followersObj.mode==='single' ? `<i data-lucide="${followersObj.icon}" class="w-4 h-4"></i>` : aggregateBadge}
-                    ${followersLabel}${state.mode==='max' && followersObj.mode!=='single' && followersObj.topPid ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`:''}
+                    ${
+                      followersObj.mode === 'single'
+                        ? `<i data-lucide="${followersObj.icon}" class="w-4 h-4"></i>`
+                        : aggregateBadge
+                    }
+                    ${followersLabel}${
+                        state.mode === 'max' &&
+                        followersObj.mode !== 'single' &&
+                        followersObj.topPid
+                          ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`
+                          : ''
+                      }
                   </span>
-                ` : `
-                  <span class="tag text-white/60 cursor-pointer"><i data-lucide="plug-zap" class="w-3.5 h-3.5"></i> ${state.platform!=='all' ? (PLATFORMS.find(p=>p.id===state.platform)?.label || 'Platforma') + ' nepřipojen' : 'Účty nepřipojeny'}</span>
-                `}
-                <span class="flex items-center gap-1"><i data-lucide="star" class="w-4 h-4"></i>${data.rating}</span>
-                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4"></i>${data.city}</span>
+                `
+                    : `
+                  <span class="tag text-white/60 cursor-pointer">
+                    <i data-lucide="plug-zap" class="w-3.5 h-3.5"></i>
+                    ${
+                      state.platform !== 'all'
+                        ? (PLATFORMS.find(p => p.id === state.platform)?.label || 'Platforma') + ' nepřipojen'
+                        : 'Účty nepřipojeny'
+                    }
+                  </span>
+                `
+                }
+                <span class="flex items-center gap-1">
+                  <i data-lucide="star" class="w-4 h-4"></i>${data.rating ?? '—'}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-4 h-4"></i>${data.city ?? '—'}
+                </span>
               </div>
             </div>
           </div>
-          <p class="text-white/70 text-sm mt-3 line-clamp-2">${data.bio}</p>
+          <p class="text-white/70 text-sm mt-3 line-clamp-2">${data.bio ?? ''}</p>
           <div class="flex flex-wrap gap-2 mt-3">
-            ${data.platforms.map(p=> `<span class="tag"><i data-lucide="${PLATFORMS.find(x=>x.id===p)?.icon||'camera'}" class="w-4 h-4"></i> ${PLATFORMS.find(x=>x.id===p)?.label||p}</span>`).join('')}
+            ${
+              Array.isArray(data.platforms)
+                ? data.platforms
+                    .map(
+                      p => `
+              <span class="tag">
+                <i data-lucide="${PLATFORMS.find(x => x.id === p)?.icon || 'camera'}" class="w-4 h-4"></i>
+                ${PLATFORMS.find(x => x.id === p)?.label || p}
+              </span>
+            `
+                    )
+                    .join('')
+                : ''
+            }
           </div>
           <div class="mt-4 flex items-center justify-between">
-            <div class="text-sm text-white/70">od <span class="text-white font-semibold">${data.price.toLocaleString('cs-CZ')} Kč</span> / post</div>
+            <div class="text-sm text-white/70">
+              od <span class="text-white font-semibold">${(data.price || 0).toLocaleString('cs-CZ')} Kč</span> / post
+            </div>
             <div class="flex gap-2">
-              <button class="btn btn-light js-open">Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              <button class="btn btn-light js-open">
+                Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
               <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Chci spolupráci</a>
             </div>
           </div>
-        </div>`;
+        </div>
+      `;
 
-      el.querySelector('.js-open').addEventListener('click', ()=> openDetail(data));
+      const openBtn = el.querySelector('.js-open');
+      if (openBtn) {
+        openBtn.addEventListener('click', () => openDetail(data));
+      }
+
       return el;
     }
 
-    function pickFollowers(data){
-      if(state.platform==='all'){
-        const parts = ['facebook','instagram','youtube','tiktok','pinterest'].map(pid=>{
-          const m = data.metrics?.[pid];
-          const val = m && m.connected && typeof m.followers==='number' ? m.followers : 0;
-          return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
+    function render() {
+      const grid = document.getElementById('grid');
+      const empty = document.getElementById('empty');
+      const totalEl = document.getElementById('total');
+      const pagination = document.getElementById('pagination');
+      const sentinel = document.getElementById('sentinel');
+      const modeBadge = document.getElementById('modeBadge');
+
+      if (!grid || !empty || !totalEl || !pagination || !sentinel || !modeBadge) {
+        return;
+      }
+
+      const all = applyFilters();
+      totalEl.textContent = String(all.length);
+      modeBadge.textContent = 'Režim: ' + (state.mode === 'max' ? 'MAX' : 'Σ Součet');
+
+      const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
+      state.page = Math.min(Math.max(1, state.page), pageCount);
+      const start = (state.page - 1) * state.pageSize;
+      const end = start + state.pageSize;
+      const slice = state.infinite ? all.slice(0, end) : all.slice(start, end);
+
+      grid.innerHTML = '';
+      slice.forEach(i => grid.appendChild(card(i)));
+      empty.classList.toggle('hidden', slice.length > 0);
+
+      pagination.innerHTML = '';
+      sentinel.textContent = '';
+      if (!state.infinite) {
+        const left = btn(
+          'Předchozí',
+          () => {
+            if (state.page > 1) {
+              state.page--;
+              writeQS();
+              render();
+            }
+          },
+          state.page === 1
+        );
+        left.classList.add('btn', 'btn-outline');
+
+        const right = btn(
+          'Další',
+          () => {
+            if (state.page < pageCount) {
+              state.page++;
+              writeQS();
+              render();
+            }
+          },
+          state.page === pageCount
+        );
+        right.classList.add('btn', 'btn-outline');
+
+        const info = document.createElement('div');
+        info.className = 'text-sm text-white/60';
+        info.innerHTML = `Zobrazuji <span class="text-white">${Math.min(
+          end,
+          all.length
+        )}</span> z <span class="text-white">${all.length}</span>`;
+
+        const pager = document.createElement('div');
+        pager.className = 'flex items-center gap-2';
+        pager.appendChild(left);
+
+        const maxButtons = Math.min(pageCount, 7);
+        for (let p = 1; p <= maxButtons; p++) {
+          const b = btn(String(p), () => {
+            state.page = p;
+            writeQS();
+            render();
+          });
+          if (p === state.page) {
+            b.classList.add('btn-primary');
+          } else {
+            b.classList.add('btn', 'btn-outline');
+          }
+          pager.appendChild(b);
+        }
+
+        if (pageCount > 7) {
+          const dots = document.createElement('span');
+          dots.className = 'px-2 text-white/60';
+          dots.textContent = '…';
+          pager.appendChild(dots);
+        }
+
+        pager.appendChild(right);
+        pagination.appendChild(info);
+        pagination.appendChild(pager);
+      } else {
+        sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
+      }
+
+      const pt = document.getElementById('platformTags');
+      if (pt) {
+        pt.innerHTML = '';
+        PLATFORMS.forEach(p => {
+          const s = document.createElement('span');
+          s.className = 'tag ' + (state.platform === p.id ? 'ring-1 ring-fuchsia-500' : '');
+          s.innerHTML = `<i data-lucide="${p.icon}" class="w-3.5 h-3.5"></i> ${p.label}`;
+          pt.appendChild(s);
         });
-        const sum = parts.reduce((s,p)=>s+p.val,0);
-        const max = parts.reduce((m,p)=> Math.max(m,p.val),0);
-        const top = parts.reduce((best,p)=> p.val>best.val? {pid:p.pid,val:p.val} : best, {pid:null,val:0});
-        const updatedAt = parts.map(p=> p.updatedAt? new Date(p.updatedAt).getTime(): 0).reduce((a,b)=>Math.max(a,b),0);
-        const val = state.mode==='max'? max : sum;
-        const topLabel = PLATFORMS.find(p=>p.id===top.pid)?.label || top.pid;
-        return { mode: state.mode, parts, val, updatedAt: updatedAt? new Date(updatedAt).toISOString(): null, topPid: top.pid, topLabel };
       }
-      const m = data.metrics?.[state.platform];
-      if(m && m.connected && typeof m.followers==='number'){
-        const icon = PLATFORMS.find(p=>p.id===state.platform)?.icon || 'camera';
-        return { mode: 'single', pid: state.platform, icon, val: m.followers, updatedAt: m.updatedAt };
+
+      if (window.lucide?.createIcons) {
+        lucide.createIcons();
       }
-      return { mode: 'none', pid: null, val: null, updatedAt: null };
     }
 
     /* ==========================
        DETAIL MODAL
     ========================== */
-    async function openDetail(data){
+    function stat(label, value) {
+      return `
+        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+          <div class="text-white/60 text-xs">${label}</div>
+          <div class="font-semibold">${value}</div>
+        </div>
+      `;
+    }
+
+    function platformRow(pid, label, data) {
+      const m = data.metrics?.[pid] || {};
+      const val = typeof m.followers === 'number' ? fmtFollowers(m.followers) : '—';
+      const connected = !!m.connected;
+      const updatedAt = connected
+        ? m.updatedAt
+          ? new Date(m.updatedAt).toLocaleString('cs-CZ')
+          : '—'
+        : 'Nepřipojeno';
+      const icon = PLATFORMS.find(p => p.id === pid)?.icon || 'camera';
+
+      return `
+        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/50">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-white/70 text-xs flex items-center gap-2">
+                <i data-lucide="${icon}" class="w-4 h-4"></i> ${label}
+              </div>
+              <div class="text-lg font-bold">${val}</div>
+              <div class="text-xs text-white/50">${connected ? 'Aktualizováno: ' + updatedAt : 'Nepřipojeno'}</div>
+            </div>
+            <div class="flex gap-2">
+              ${
+                !connected
+                  ? `<span class="tag text-white/60"><i data-lucide="plug-zap" class="w-3.5 h-3.5"></i> Účet není připojen</span>`
+                  : `<span class="tag" style="background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.3);color:#86efac">
+                      <i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno
+                    </span>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadCreatorReviews(creatorId) {
+      try {
+        const reviewService = new ReviewService();
+        const reviews = await reviewService.getCreatorReviews(creatorId, 5);
+
+        const loading = document.getElementById('reviewsLoading');
+        const reviewsList = document.getElementById('reviewsList');
+        if (loading) loading.style.display = 'none';
+
+        if (!reviewsList) return;
+
+        if (!reviews.length) {
+          reviewsList.innerHTML =
+            '<div class="text-white/60 text-sm text-center py-4">Zatím žádné recenze</div>';
+          return;
+        }
+
+        reviewsList.innerHTML = reviews
+          .map(
+            review => `
+          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+            <div class="flex items-start gap-3">
+              <img src="${
+                review.companyLogo ||
+                'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=40&h=40&fit=crop&crop=center'
+              }" 
+                   alt="Logo ${review.companyName}" class="w-10 h-10 rounded-lg object-cover"/>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-semibold text-sm">${review.companyName}</div>
+                  <div class="flex items-center gap-1">
+                    ${ReviewService.renderStars(review.rating)}
+                  </div>
+                </div>
+                ${
+                  review.title
+                    ? `<div class="font-medium text-sm mb-1">${review.title}</div>`
+                    : ''
+                }
+                <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
+                <div class="flex items-center justify-between mt-2 text-xs text-white/50">
+                  <span>${ReviewService.formatDate(review.createdAt)}</span>
+                  <div class="flex items-center gap-3">
+                    ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
+                    <span>${review.helpful || 0} užitečné</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+
+        if (window.lucide?.createIcons) lucide.createIcons();
+      } catch (error) {
+        console.error('Chyba při načítání recenzí:', error);
+        const loading = document.getElementById('reviewsLoading');
+        if (loading) loading.style.display = 'none';
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList) {
+          reviewsList.innerHTML =
+            '<div class="text-red-400 text-sm text-center py-4">Chyba při načítání recenzí</div>';
+        }
+      }
+    }
+
+    async function startChat(creatorId) {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert('Pro psaní zpráv se musíte přihlásit');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const chatService = new ChatService();
+        const conversation = await chatService.getOrCreateConversation(user.uid, creatorId);
+
+        if (conversation) {
+          window.location.href = `chat.html?conversation=${conversation.id}&user=${creatorId}`;
+        } else {
+          alert('Chyba při vytváření konverzace');
+        }
+      } catch (error) {
+        console.error('Chyba při spuštění chatu:', error);
+        alert('Chyba při spuštění chatu');
+      }
+    }
+
+    async function openDetail(data) {
       const ov = document.getElementById('overlay');
       const body = document.getElementById('drawerBody');
       const drawer = document.getElementById('drawer');
-      
+
+      if (!ov || !body || !drawer) return;
+
       body.innerHTML = `
         <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${data.cover}')"></div>
         <div class="flex items-start gap-3 -mt-10 p-2">
-          <img src="${data.avatar}" alt="Avatar ${data.name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
+          <img src="${data.avatar}" alt="Avatar ${
+        data.name
+      }" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
           <div class="flex-1">
             <div class="flex items-center gap-2">
               <h3 class="font-bold text-xl leading-tight">${data.name}</h3>
-              ${data.verified? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>':''}
+              ${
+                data.verified
+                  ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
+                  : ''
+              }
             </div>
             <div class="text-white/60 text-sm">${data.handle} • ${data.category} • ${data.city}</div>
           </div>
         </div>
-        <p class="text-white/80 text-sm mt-2">${data.bio}</p>
-        <div class="grid grid-cols-3 gap-2 mt-4">${data.gallery.map((src, i)=>`<img src="${src}" alt="Portfolio ${data.name} - obrázek ${i+1}" class="rounded-lg object-cover w-full h-28"/>`).join('')}</div>
+        <p class="text-white/80 text-sm mt-2">${data.bio ?? ''}</p>
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          ${
+            Array.isArray(data.gallery)
+              ? data.gallery
+                  .map(
+                    (src, i) =>
+                      `<img src="${src}" alt="Portfolio ${data.name} - obrázek ${
+                        i + 1
+                      }" class="rounded-lg object-cover w-full h-28"/>`
+                  )
+                  .join('')
+              : ''
+          }
+        </div>
         <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
-          ${stat('Hodnocení', data.rating)}
-          ${stat('Engagement', data.engagement+'%')}
-          ${stat('Město', data.city)}
+          ${stat('Hodnocení', data.rating ?? '—')}
+          ${stat('Engagement', (data.engagement ?? 0) + '%')}
+          ${stat('Město', data.city ?? '—')}
         </div>
         <div class="mt-4 grid grid-cols-1 gap-3">
           ${platformRow('facebook','Facebook followers', data)}
@@ -1542,7 +1875,9 @@ async function loadAllCreators() {
           <h4 class="font-semibold mb-3 flex items-center gap-2">
             <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
             Recenze
-            <div id="reviewsLoading" class="animate-spin"><i data-lucide="loader-2" class="w-4 h-4"></i></div>
+            <div id="reviewsLoading" class="animate-spin">
+              <i data-lucide="loader-2" class="w-4 h-4"></i>
+            </div>
           </h4>
           <div id="reviewsList" class="space-y-3"></div>
         </div>
@@ -1559,150 +1894,69 @@ async function loadAllCreators() {
           </a>
         </div>
       `;
+
       if (window.lucide?.createIcons) lucide.createIcons();
       ov.classList.remove('hidden');
-      setTimeout(()=> drawer.classList.add('active'), 0);
-      
+      setTimeout(() => drawer.classList.add('active'), 0);
+
       loadCreatorReviews(data.id);
     }
 
-    function stat(label, value){
-      return `<div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40"><div class="text-white/60 text-xs">${label}</div><div class="font-semibold">${value}</div></div>`;
-    }
-
-    function platformRow(pid, label, data){
-      const m = data.metrics?.[pid] || {};
-      const val = typeof m.followers==='number' ? fmtFollowers(m.followers) : '—';
-      const connected = !!m.connected;
-      const updatedAt = connected ? (m.updatedAt ? new Date(m.updatedAt).toLocaleString('cs-CZ') : '—') : 'Nepřipojeno';
-      const icon = PLATFORMS.find(p=>p.id===pid)?.icon || 'camera';
-      return `
-        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/50">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-white/70 text-xs flex items-center gap-2"><i data-lucide="${icon}" class="w-4 h-4"></i> ${label}</div>
-              <div class="text-lg font-bold">${val}</div>
-              <div class="text-xs text-white/50">${connected? 'Aktualizováno: '+ updatedAt : 'Nepřipojeno'}</div>
-            </div>
-            <div class="flex gap-2">
-              ${!connected 
-                ? `<span class="tag text-white/60"><i data-lucide="plug-zap" class="w-3.5 h-3.5"></i> Účet není připojen</span>` 
-                : `<span class="tag" style="background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.3);color:#86efac"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>`}
-            </div>
-          </div>
-        </div>`;
-    }
-
-    async function loadCreatorReviews(creatorId) {
-      try {
-        const reviewService = new ReviewService();
-        const reviews = await reviewService.getCreatorReviews(creatorId, 5);
-        
-        const loading = document.getElementById('reviewsLoading');
-        const reviewsList = document.getElementById('reviewsList');
-        if (loading) loading.style.display = 'none';
-        
-        if (!reviews.length) {
-          reviewsList.innerHTML = '<div class="text-white/60 text-sm text-center py-4">Zatím žádné recenze</div>';
-          return;
-        }
-        
-        reviewsList.innerHTML = reviews.map(review => `
-          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
-            <div class="flex items-start gap-3">
-              <img src="${review.companyLogo || 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=40&h=40&fit=crop&crop=center'}" 
-                   alt="Logo ${review.companyName}" class="w-10 h-10 rounded-lg object-cover"/>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between mb-1">
-                  <div class="font-semibold text-sm">${review.companyName}</div>
-                  <div class="flex items-center gap-1">
-                    ${ReviewService.renderStars(review.rating)}
-                  </div>
-                </div>
-                ${review.title ? `<div class="font-medium text-sm mb-1">${review.title}</div>` : ''}
-                <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
-                <div class="flex items-center justify-between mt-2 text-xs text-white/50">
-                  <span>${ReviewService.formatDate(review.createdAt)}</span>
-                  <div class="flex items-center gap-3">
-                    ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
-                    <span>${review.helpful || 0} užitečné</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-        
-        if (window.lucide?.createIcons) lucide.createIcons();
-        
-      } catch (error) {
-        console.error('Chyba při načítání recenzí:', error);
-        const loading = document.getElementById('reviewsLoading');
-        if (loading) loading.style.display = 'none';
-        const reviewsList = document.getElementById('reviewsList');
-        if (reviewsList) reviewsList.innerHTML = '<div class="text-red-400 text-sm text-center py-4">Chyba při načítání recenzí</div>';
-      }
-    }
-
-    async function startChat(creatorId) {
-      const user = firebase.auth().currentUser;
-      if (!user) {
-        alert('Pro psaní zpráv se musíte přihlásit');
-        window.location.href = 'login.html';
-        return;
-      }
-      
-      try {
-        const chatService = new ChatService();
-        const conversation = await chatService.getOrCreateConversation(user.uid, creatorId);
-        
-        if (conversation) {
-          window.location.href = `chat.html?conversation=${conversation.id}&user=${creatorId}`;
-        } else {
-          alert('Chyba při vytváření konverzace');
-        }
-      } catch (error) {
-        console.error('Chyba při spuštění chatu:', error);
-        alert('Chyba při spuštění chatu');
-      }
-    }
-
-    function closeDetail(){
+    function closeDetail() {
       const ov = document.getElementById('overlay');
       const drawer = document.getElementById('drawer');
+      if (!ov || !drawer) return;
+
       drawer.classList.remove('active');
-      setTimeout(()=> ov.classList.add('hidden'), 200);
+      setTimeout(() => ov.classList.add('hidden'), 200);
     }
 
-    function syncInputsFromState(){
-      q.value = state.q; 
-      platform.value = state.platform; 
-      mode.value = state.mode; 
-      category.value = state.category; 
-      city.value = state.city; 
-      sort.value = state.sort; 
+    function syncInputsFromState() {
+      if (!window.q) return;
+
+      q.value = state.q;
+      platform.value = state.platform;
+      mode.value = state.mode;
+      category.value = state.category;
+      city.value = state.city;
+      sort.value = state.sort;
       pageSize.value = String(state.pageSize);
-      
-      document.getElementById('minPrice').value = state.minPrice || '';
-      document.getElementById('maxPrice').value = state.maxPrice || '';
-      document.getElementById('minRating').value = String(state.minRating);
-      minFollowers.value = state.minFollowers || '';
-      
-      minFollowers.disabled = (state.platform==='all');
-      document.getElementById('minFollowersHint').style.display = state.platform==='all' ? '' : 'none';
-      premiumOnly.checked = state.premiumOnly; 
-      infinite.checked = state.infinite;
+
+      const minPriceInput = document.getElementById('minPrice');
+      const maxPriceInput = document.getElementById('maxPrice');
+      const minRatingInput = document.getElementById('minRating');
+      const minFollowersInput = document.getElementById('minFollowers');
+      const premiumOnlyInput = document.getElementById('premiumOnly');
+      const infiniteInput = document.getElementById('infinite');
+      const minFollowersHint = document.getElementById('minFollowersHint');
+
+      if (minPriceInput) minPriceInput.value = state.minPrice || '';
+      if (maxPriceInput) maxPriceInput.value = state.maxPrice || '';
+      if (minRatingInput) minRatingInput.value = String(state.minRating);
+      if (minFollowersInput) {
+        minFollowersInput.value = state.minFollowers || '';
+        minFollowersInput.disabled = state.platform === 'all';
+      }
+      if (minFollowersHint) {
+        minFollowersHint.style.display = state.platform === 'all' ? '' : 'none';
+      }
+      if (premiumOnlyInput) premiumOnlyInput.checked = state.premiumOnly;
+      if (infiniteInput) infiniteInput.checked = state.infinite;
     }
 
-    async function resetPageAndRender(){ 
-      state.page = 1; 
-      writeQS(); 
+    async function resetPageAndRender() {
+      state.page = 1;
+      writeQS();
       await loadAllCreators();
-      render(); 
+      render();
     }
 
-    document.addEventListener('DOMContentLoaded', ()=>{
+    /* ==========================
+       START – DOMContentLoaded
+    ========================== */
+    document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide?.createIcons) lucide.createIcons();
+
       readQS();
 
       window.q = document.getElementById('q');
@@ -1721,318 +1975,418 @@ async function loadAllCreators() {
       writeQS();
       render();
 
-      q.addEventListener('input', async (e)=>{ state.q = e.target.value; await resetPageAndRender(); });
-      platform.addEventListener('change', async (e)=>{ state.platform = e.target.value; syncInputsFromState(); await resetPageAndRender(); });
-      mode.addEventListener('change', async (e)=>{ state.mode = e.target.value; await resetPageAndRender(); });
-      category.addEventListener('change', async (e)=>{ state.category = e.target.value; await resetPageAndRender(); });
-      city.addEventListener('change', async (e)=>{ state.city = e.target.value; await resetPageAndRender(); });
-      sort.addEventListener('change', async (e)=>{ state.sort = e.target.value; await resetPageAndRender(); });
-      pageSize.addEventListener('change', async (e)=>{ state.pageSize = Number(e.target.value); await resetPageAndRender(); });
-      
+      if (q) {
+        q.addEventListener('input', async e => {
+          state.q = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (platform) {
+        platform.addEventListener('change', async e => {
+          state.platform = e.target.value;
+          syncInputsFromState();
+          await resetPageAndRender();
+        });
+      }
+      if (mode) {
+        mode.addEventListener('change', async e => {
+          state.mode = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (category) {
+        category.addEventListener('change', async e => {
+          state.category = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (city) {
+        city.addEventListener('change', async e => {
+          state.city = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (sort) {
+        sort.addEventListener('change', async e => {
+          state.sort = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (pageSize) {
+        pageSize.addEventListener('change', async e => {
+          state.pageSize = Number(e.target.value);
+          await resetPageAndRender();
+        });
+      }
+
       const minPrice = document.getElementById('minPrice');
       const maxPrice = document.getElementById('maxPrice');
       const minRating = document.getElementById('minRating');
+      const minFollowersInput = document.getElementById('minFollowers');
+      const premiumOnlyInput = document.getElementById('premiumOnly');
+      const infiniteInput = document.getElementById('infinite');
 
-      minPrice.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.minPrice = v? Number(v) : null; await resetPageAndRender(); });
-      maxPrice.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.maxPrice = v? Number(v) : null; await resetPageAndRender(); });
-      minRating.addEventListener('change', async (e)=>{ state.minRating = Number(e.target.value); await resetPageAndRender(); });
-      minFollowers.addEventListener('input', async (e)=>{ const v = e.target.value.trim(); state.minFollowers = v? Number(v) : null; await resetPageAndRender(); });
+      if (minPrice) {
+        minPrice.addEventListener('input', async e => {
+          const v = e.target.value.trim();
+          state.minPrice = v ? Number(v) : null;
+          await resetPageAndRender();
+        });
+      }
+      if (maxPrice) {
+        maxPrice.addEventListener('input', async e => {
+          const v = e.target.value.trim();
+          state.maxPrice = v ? Number(v) : null;
+          await resetPageAndRender();
+        });
+      }
+      if (minRating) {
+        minRating.addEventListener('change', async e => {
+          state.minRating = Number(e.target.value);
+          await resetPageAndRender();
+        });
+      }
+      if (minFollowersInput) {
+        minFollowersInput.addEventListener('input', async e => {
+          const v = e.target.value.trim();
+          state.minFollowers = v ? Number(v) : null;
+          await resetPageAndRender();
+        });
+      }
+      if (premiumOnlyInput) {
+        premiumOnlyInput.addEventListener('change', async e => {
+          state.premiumOnly = e.target.checked;
+          await resetPageAndRender();
+        });
+      }
+      if (infiniteInput) {
+        infiniteInput.addEventListener('change', async e => {
+          state.infinite = e.target.checked;
+          await resetPageAndRender();
+        });
+      }
 
-      premiumOnly.addEventListener('change', async (e)=>{ state.premiumOnly = e.target.checked; await resetPageAndRender(); });
-      infinite.addEventListener('change', async (e)=>{ state.infinite = e.target.checked; await resetPageAndRender(); });
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', async () => {
+          state.q = '';
+          state.platform = 'all';
+          state.category = 'all';
+          state.city = 'all';
+          state.sort = 'relevance';
+          state.minPrice = null;
+          state.maxPrice = null;
+          state.minRating = 0;
+          state.minFollowers = null;
+          state.premiumOnly = false;
+          state.infinite = false;
+          state.pageSize = 12;
+          state.page = 1;
 
-      document.getElementById('resetFilters').addEventListener('click', async ()=>{ 
-        state.q = '';
-        state.platform = 'all';
-        state.category = 'all'; 
-        state.city = 'all';
-        state.sort = 'relevance';
-        state.minPrice = null;
-        state.maxPrice = null;
-        state.minRating = 0;
-        state.minFollowers = null;
-        state.premiumOnly = false;
-        state.infinite = false;
-        state.pageSize = 12;
-        state.page = 1;
-        
-        syncInputsFromState(); 
-        await resetPageAndRender(); 
-      });
+          syncInputsFromState();
+          await resetPageAndRender();
+        });
+      }
 
-      document.getElementById('advancedBtn').addEventListener('click', ()=>{
-        document.getElementById('maxPrice').focus();
-      });
+      const advancedBtn = document.getElementById('advancedBtn');
+      if (advancedBtn) {
+        advancedBtn.addEventListener('click', () => {
+          const mp = document.getElementById('maxPrice');
+          if (mp) mp.focus();
+        });
+      }
 
-      document.getElementById('overlayBg').addEventListener('click', closeDetail);
-      document.getElementById('closeDrawer').addEventListener('click', closeDetail);
+      const overlayBg = document.getElementById('overlayBg');
+      if (overlayBg) overlayBg.addEventListener('click', closeDetail);
+      const closeDrawerBtn = document.getElementById('closeDrawer');
+      if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDetail);
 
       const sent = document.getElementById('sentinel');
-      const io = new IntersectionObserver(entries=>{
-        if(!state.infinite) return;
-        if(entries.some(e=> e.isIntersecting)){
-          const all = applyFilters();
-          const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
-          if(state.page < pageCount){ state.page++; writeQS(); render(); }
-        }
-      }, { rootMargin: '200px' });
-      io.observe(sent);
+      if (sent) {
+        const io = new IntersectionObserver(
+          entries => {
+            if (!state.infinite) return;
+            if (entries.some(e => e.isIntersecting)) {
+              const all = applyFilters();
+              const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
+              if (state.page < pageCount) {
+                state.page++;
+                writeQS();
+                render();
+              }
+            }
+          },
+          { rootMargin: '200px' }
+        );
+        io.observe(sent);
+      }
     });
+
+    /* ==========================
+       AUTH LISTENER – TVŮRCI
+    ========================== */
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged(async user => {
+        if (!creatorService) {
+          creatorService = new CreatorService();
+          userService = new UserService();
+          await loadAllCreators();
+          render();
+        }
+      });
+    }
   </script>
 
   <!-- Tlačítko založit kartu - funkce + desktop auth blok -->
   <script>
-  function goToCreateCard() {
-    try {
-      if (window.firebase && firebase.auth) {
-        const user = firebase.auth().currentUser;
-        if (user) {
-          window.location.href = "kartao-zalozit-kartu.html";
-          return;
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    window.location.href = "login.html";
-  }
-
-  if (typeof firebase !== 'undefined' && firebase.auth) {
-    firebase.auth().onAuthStateChanged((user) => {
-      const notLoggedIn = document.getElementById('desktop-not-logged-in');
-      const loggedIn = document.getElementById('desktop-logged-in');
-      
-      if (user) {
-        if (notLoggedIn) notLoggedIn.classList.add('hidden');
-        if (loggedIn) loggedIn.classList.remove('hidden');
-        
-        const userName = document.getElementById('desktop-user-name');
-        const userEmail = document.getElementById('desktop-user-email');
-        const userAvatar = document.getElementById('desktop-user-avatar');
-        
-        if (userName) userName.textContent = user.displayName || 'Uživatel';
-        if (userEmail) userEmail.textContent = user.email || '';
-        if (userAvatar) {
-          const initial = (user.displayName || user.email || '?')[0].toUpperCase();
-          userAvatar.textContent = initial;
-        }
-      } else {
-        if (notLoggedIn) notLoggedIn.classList.remove('hidden');
-        if (loggedIn) loggedIn.classList.add('hidden');
-      }
-    });
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      const desktopLogoutBtn = document.getElementById('desktop-logout-btn');
-      if (desktopLogoutBtn) {
-        desktopLogoutBtn.addEventListener('click', async () => {
-          try {
-            await firebase.auth().signOut();
-            window.location.reload();
-          } catch (error) {
-            console.error('Chyba při odhlášení:', error);
-            alert('Chyba při odhlášení');
+    function goToCreateCard() {
+      try {
+        if (window.firebase && firebase.auth) {
+          const user = firebase.auth().currentUser;
+          if (user) {
+            window.location.href = 'kartao-zalozit-kartu.html';
+            return;
           }
-        });
+        }
+      } catch (e) {
+        console.error(e);
       }
-    });
-  }
+      window.location.href = 'login.html';
+    }
+
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged(user => {
+        const notLoggedIn = document.getElementById('desktop-not-logged-in');
+        const loggedIn = document.getElementById('desktop-logged-in');
+
+        if (user) {
+          if (notLoggedIn) notLoggedIn.classList.add('hidden');
+          if (loggedIn) loggedIn.classList.remove('hidden');
+
+          const userName = document.getElementById('desktop-user-name');
+          const userEmail = document.getElementById('desktop-user-email');
+          const userAvatar = document.getElementById('desktop-user-avatar');
+
+          if (userName) userName.textContent = user.displayName || 'Uživatel';
+          if (userEmail) userEmail.textContent = user.email || '';
+          if (userAvatar) {
+            const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+            userAvatar.textContent = initial;
+          }
+        } else {
+          if (notLoggedIn) notLoggedIn.classList.remove('hidden');
+          if (loggedIn) loggedIn.classList.add('hidden');
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const desktopLogoutBtn = document.getElementById('desktop-logout-btn');
+        if (desktopLogoutBtn) {
+          desktopLogoutBtn.addEventListener('click', async () => {
+            try {
+              await firebase.auth().signOut();
+              window.location.reload();
+            } catch (error) {
+              console.error('Chyba při odhlášení:', error);
+              alert('Chyba při odhlášení');
+            }
+          });
+        }
+      });
+    }
   </script>
 
   <!-- Pricing toggle (pokud je na stránce ceník sekce) -->
   <script>
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const billing = document.getElementById('billingToggle');
-    if(!billing) return;
-    const btnM = document.getElementById('billMonthly');
-    const btnY = document.getElementById('billYearly');
-    function setBilling(mode){
-      billing.dataset.state = mode;
-      const monthly = mode==='monthly';
-      btnM.classList.toggle('btn-light', monthly);
-      btnM.classList.toggle('btn-outline', !monthly);
-      btnY.classList.toggle('btn-light', !monthly);
-      btnY.classList.toggle('btn-outline', monthly);
-      document.querySelectorAll('.js-price').forEach(el=>{
-        const val = monthly ? el.dataset.monthly : el.dataset.yearly;
-        el.textContent = Number(val).toLocaleString('cs-CZ');
-      });
-      document.querySelectorAll('.js-period').forEach(el=>{ el.textContent = monthly ? ' / měs.' : ' / rok'; });
-    }
-    btnM?.addEventListener('click', ()=> setBilling('monthly'));
-    btnY?.addEventListener('click', ()=> setBilling('yearly'));
-    setBilling('monthly');
-  });
-  
-    // Inicializace pouze pokud už neproběhla
-    if (typeof firebase !== "undefined" && !firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const billing = document.getElementById('billingToggle');
+      if (!billing) return;
 
-    // Pro tvé ostatní skripty
-    if (typeof firebase !== "undefined") {
-      window.auth = firebase.auth();
-      window.db = firebase.firestore();
-    }
+      const btnM = document.getElementById('billMonthly');
+      const btnY = document.getElementById('billYearly');
+
+      function setBilling(mode) {
+        billing.dataset.state = mode;
+        const monthly = mode === 'monthly';
+
+        if (btnM && btnY) {
+          btnM.classList.toggle('btn-light', monthly);
+          btnM.classList.toggle('btn-outline', !monthly);
+          btnY.classList.toggle('btn-light', !monthly);
+          btnY.classList.toggle('btn-outline', monthly);
+        }
+
+        document.querySelectorAll('.js-price').forEach(el => {
+          const val = monthly ? el.dataset.monthly : el.dataset.yearly;
+          el.textContent = Number(val).toLocaleString('cs-CZ');
+        });
+        document.querySelectorAll('.js-period').forEach(el => {
+          el.textContent = monthly ? ' / měs.' : ' / rok';
+        });
+      }
+
+      btnM?.addEventListener('click', () => setBilling('monthly'));
+      btnY?.addEventListener('click', () => setBilling('yearly'));
+      setBilling('monthly');
+    });
   </script>
-
 
   <!-- ŠIPKA NAHORU + Auth pro header (TVŮJ PŮVODNÍ KÓD) -->
   <script>
-  window.addEventListener("scroll", () => {
-    const scrollBtn = document.getElementById("scrollTopBtn");
-    if (!scrollBtn) return;
-    if (window.scrollY > 200) {
-      scrollBtn.classList.remove("hidden");
-    } else {
-      scrollBtn.classList.add("hidden");
-    }
-  });
+    window.addEventListener('scroll', () => {
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if (!scrollBtn) return;
+      if (window.scrollY > 200) {
+        scrollBtn.classList.remove('hidden');
+      } else {
+        scrollBtn.classList.add('hidden');
+      }
+    });
 
-  document.getElementById("scrollTopBtn").addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if (scrollBtn) {
+        scrollBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
 
-  window.addEventListener('DOMContentLoaded',()=>{ 
-    if(window.lucide?.createIcons) window.lucide.createIcons();
-    
-    if (typeof initHamburgerMenu === 'function') {
-      initHamburgerMenu();
-    }
-    
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      firebase.auth().onAuthStateChanged((user) => {
-        const userMenu = document.getElementById('userMenu');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userName = document.getElementById('userName');
-        const userMenuMobile = document.getElementById('userMenuMobile');
-        const loginBtnMobile = document.getElementById('loginBtnMobile');
-        
-        if (user) {
-          if (userMenu) {
-            userMenu.classList.remove('hidden');
-            userMenu.classList.add('flex');
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+
+      if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+      }
+
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged(user => {
+          const userMenu = document.getElementById('userMenu');
+          const loginBtn = document.getElementById('loginBtn');
+          const logoutBtn = document.getElementById('logoutBtn');
+          const userName = document.getElementById('userName');
+          const userMenuMobile = document.getElementById('userMenuMobile');
+          const loginBtnMobile = document.getElementById('loginBtnMobile');
+
+          if (user) {
+            if (userMenu) {
+              userMenu.classList.remove('hidden');
+              userMenu.classList.add('flex');
+            }
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (userMenuMobile) {
+              userMenuMobile.classList.remove('hidden');
+              userMenuMobile.classList.add('flex');
+            }
+            if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
+
+            if (userName) {
+              if (user.displayName) userName.textContent = user.displayName;
+              else if (user.email) userName.textContent = user.email.split('@')[0];
+            }
+
+            if (logoutBtn && !logoutBtn._kartaoBound) {
+              logoutBtn._kartaoBound = true;
+              logoutBtn.addEventListener('click', async () => {
+                try {
+                  await firebase.auth().signOut();
+                  window.location.reload();
+                } catch (error) {
+                  console.error('Chyba odhlášení:', error);
+                }
+              });
+            }
+          } else {
+            if (userMenu) userMenu.classList.add('hidden');
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (userMenuMobile) userMenuMobile.classList.add('hidden');
+            if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
           }
-          if (loginBtn) loginBtn.classList.add('hidden');
-          if (userMenuMobile) {
-            userMenuMobile.classList.remove('hidden');
-            userMenuMobile.classList.add('flex');
-          }
-          if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
-          
-          if (userName) {
-            if (user.displayName) userName.textContent = user.displayName;
-            else if (user.email) userName.textContent = user.email.split('@')[0];
-          }
-          
-          if (logoutBtn && !logoutBtn._kartaoBound) {
-            logoutBtn._kartaoBound = true;
-            logoutBtn.addEventListener('click', async () => {
-              try {
-                await firebase.auth().signOut();
-                window.location.reload();
-              } catch (error) {
-                console.error('Chyba odhlášení:', error);
-              }
-            });
-          }
-        } else {
-          if (userMenu) userMenu.classList.add('hidden');
-          if (loginBtn) loginBtn.classList.remove('hidden');
-          if (userMenuMobile) userMenuMobile.classList.add('hidden');
-          if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
-        }
-      });
-    }
-  });
+        });
+      }
+    });
   </script>
-
 
   <!-- Footer collapsible (TVŮJ KÓD) -->
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('footer button[aria-controls]');
-    buttons.forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const id = btn.getAttribute('aria-controls');
-        const panel = document.getElementById(id);
-        const open = btn.getAttribute('aria-expanded') === 'true';
-        btn.setAttribute('aria-expanded', !open);
-        if (panel) panel.classList.toggle('hidden');
-        const icon = btn.querySelector('[data-lucide="chevron-down"]');
-        if(icon) icon.style.transform = open ? '' : 'rotate(180deg)';
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = document.querySelectorAll('footer button[aria-controls]');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('aria-controls');
+          const panel = document.getElementById(id);
+          const open = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!open));
+          if (panel) panel.classList.toggle('hidden');
+          const icon = btn.querySelector('[data-lucide="chevron-down"]');
+          if (icon) icon.style.transform = open ? '' : 'rotate(180deg)';
+        });
       });
     });
-  });
   </script>
-
 
   <!-- Service Worker Registration (TVŮJ KÓD) -->
   <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('✅ Service Worker registered:', registration.scope);
-        })
-        .catch((error) => {
-          console.log('❌ Service Worker registration failed:', error);
-        });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then(registration => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('❌ Service Worker registration failed:', error);
+          });
+      });
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      const installBtn = document.createElement('button');
+      installBtn.textContent = '📱 Nainstalovat aplikaci';
+      installBtn.className =
+        'fixed bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50';
+      installBtn.onclick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('Install prompt result:', outcome);
+          deferredPrompt = null;
+          installBtn.remove();
+        }
+      };
+      document.body.appendChild(installBtn);
+
+      setTimeout(() => {
+        if (installBtn.parentNode) {
+          installBtn.remove();
+        }
+      }, 10000);
     });
-  }
-
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    
-    const installBtn = document.createElement('button');
-    installBtn.textContent = '📱 Nainstalovat aplikaci';
-    installBtn.className = 'fixed bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50';
-    installBtn.onclick = async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Install prompt result:', outcome);
-        deferredPrompt = null;
-        installBtn.remove();
-      }
-    };
-    document.body.appendChild(installBtn);
-    
-    setTimeout(() => {
-      if (installBtn.parentNode) {
-        installBtn.remove();
-      }
-    }, 10000);
-  });
   </script>
-
 
   <!-- Dynamická změna podle role (TVŮJ KÓD) -->
   <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const role =
-      window.currentUserRole ||
-      localStorage.getItem("userRole") ||
-      "influencer";
+    document.addEventListener('DOMContentLoaded', () => {
+      const role =
+        window.currentUserRole || localStorage.getItem('userRole') || 'influencer';
 
-    const linkEl = document.getElementById("userCardLink");
-    const titleEl = document.getElementById("userCardTitle");
-    const subtitleEl = document.getElementById("userCardSubtitle");
-    const iconEl = document.getElementById("userCardIcon");
+      const linkEl = document.getElementById('userCardLink');
+      const titleEl = document.getElementById('userCardTitle');
+      const subtitleEl = document.getElementById('userCardSubtitle');
+      const iconEl = document.getElementById('userCardIcon');
 
-    if (!linkEl || !titleEl || !subtitleEl || !iconEl) return;
+      if (!linkEl || !titleEl || !subtitleEl || !iconEl) return;
 
-    if (role === "firma") {
-      titleEl.textContent = "Moje firma";
-      subtitleEl.textContent = "Firemní profil & správa";
-      linkEl.href = "moje-firma.html";
-      iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
-      if (window.lucide?.createIcons) window.lucide.createIcons();
-    }
-  });
+      if (role === 'firma') {
+        titleEl.textContent = 'Moje firma';
+        subtitleEl.textContent = 'Firemní profil & správa';
+        linkEl.href = 'moje-firma.html';
+        iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
+        if (window.lucide?.createIcons) window.lucide.createIcons();
+      }
+    });
   </script>
 
 </body>
