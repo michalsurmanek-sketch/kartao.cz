@@ -380,13 +380,23 @@
         try { lucide.createIcons(); } catch (e) { console.warn("Lucide ikonky nešly inicializovat:", e); }
       }
 
-      const auth = window.auth || firebase.auth();
-      const db   = window.db   || firebase.firestore();
-
-      if (!auth || !db) {
-        console.warn("Firebase Auth nebo Firestore nejsou inicializované.");
+      // ✅ Použijeme JEN globální instanci z firebase-init.js
+      if (!window.firebase || !window.auth || !window.db) {
+        console.error("❌ Firebase není správně inicializovaná na této stránce.", {
+          firebase: !!window.firebase,
+          auth: !!window.auth,
+          db: !!window.db,
+        });
         return;
       }
+
+      const auth = window.auth;
+      const db   = window.db;
+
+      console.log("✅ kartao-muj-ucet.html – Firebase OK, používám jednu instanci", {
+        authReady: !!auth,
+        dbReady: !!db,
+      });
 
       // DOM prvky
       const loader = document.getElementById("loader");
@@ -541,6 +551,8 @@
       setLoading(true);
 
       auth.onAuthStateChanged(async (user) => {
+        console.log("👤 onAuthStateChanged – kartao-muj-ucet.html", user ? { uid: user.uid, email: user.email } : null);
+
         if (!user) {
           window.location.href = "login.html";
           return;
@@ -739,12 +751,14 @@
         });
       }
 
-      // Odhlášení
+      // ✅ Odhlášení – jen jedna instance, logujeme do konzole
       if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
           hideMessage();
+          console.log("🚪 Pokus o odhlášení – kartao-muj-ucet.html");
           try {
             await auth.signOut();
+            console.log("✅ Odhlášení proběhlo, přesměrovávám na login.html");
             window.location.href = "login.html";
           } catch (err) {
             console.warn("Chyba při odhlášení:", err);
