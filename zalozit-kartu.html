@@ -198,47 +198,131 @@
           <textarea id="bio" class="input" rows="3" placeholder="O čem je tvůj obsah, co firmy získají spoluprací?"></textarea>
         </div>
 
-        <!-- Obrázky -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label class="label">
-              <i data-lucide="image" class="w-4 h-4"></i>
-              URL avataru (profilová fotka)
-            </label>
-            <input id="avatar" type="url" class="input" placeholder="https://..." />
-          </div>
-          <div class="space-y-1.5">
-            <label class="label">
-              <i data-lucide="panels-top-left" class="w-4 h-4"></i>
-              URL coveru (pozadí)
-            </label>
-            <input id="cover" type="url" class="input" placeholder="https://..." />
-          </div>
-        </div>
+        <!-- OBRÁZKY KARTY ..................................................................-->
+<section class="space-y-6 mt-6">
+  <h2 class="text-sm font-semibold text-white/80">
+    Fotky karty influencera
+  </h2>
 
-        <div class="grid md:grid-cols-3 gap-4">
-          <div class="space-y-1.5">
-            <label class="label">
-              <i data-lucide="images" class="w-4 h-4"></i>
-              Galerie 1
-            </label>
-            <input id="gallery1" type="url" class="input" placeholder="https://..." />
-          </div>
-          <div class="space-y-1.5">
-            <label class="label">
-              <i data-lucide="images" class="w-4 h-4"></i>
-              Galerie 2
-            </label>
-            <input id="gallery2" type="url" class="input" placeholder="https://..." />
-          </div>
-          <div class="space-y-1.5">
-            <label class="label">
-              <i data-lucide="images" class="w-4 h-4"></i>
-              Galerie 3
-            </label>
-            <input id="gallery3" type="url" class="input" placeholder="https://..." />
-          </div>
-        </div>
+  <!-- Avatar -->
+  <div class="space-y-2">
+    <label class="label">
+      <i data-lucide="image" class="w-4 h-4"></i>
+      Profilová fotka (avatar)
+    </label>
+
+    <!-- Náhled avatara -->
+    <img
+      id="previewAvatar"
+      src=""
+      alt="Náhled avataru"
+      class="w-24 h-24 rounded-xl object-cover border border-white/10 hidden"
+    />
+
+    <!-- Výběr souboru -->
+    <input
+      id="avatarFile"
+      type="file"
+      accept="image/*"
+      class="input"
+    />
+
+    <p class="text-[11px] text-white/50">
+      Doporučeno min. 400×400 px, čtvercový formát.
+    </p>
+  </div>
+
+  <!-- Cover (hlavní fotka nahoře) -->
+  <div class="space-y-2">
+    <label class="label">
+      <i data-lucide="panels-top-left" class="w-4 h-4"></i>
+      Úvodní fotka (cover)
+    </label>
+
+    <!-- Náhled coveru -->
+    <img
+      id="previewCover"
+      src=""
+      alt="Náhled coveru"
+      class="w-full h-32 rounded-xl object-cover border border-white/10 hidden"
+    />
+
+    <!-- Výběr souboru -->
+    <input
+      id="coverFile"
+      type="file"
+      accept="image/*"
+      class="input"
+    />
+
+    <p class="text-[11px] text-white/50">
+      Doporučeno min. 1200×400 px, horizontální fotka.
+    </p>
+  </div>
+
+  <!-- Galerie – 3 doplňkové fotky -->
+  <div class="space-y-2">
+    <label class="label">
+      <i data-lucide="images" class="w-4 h-4"></i>
+      Galerie (3 fotky)
+    </label>
+
+    <div class="grid grid-cols-3 gap-3">
+      <!-- 1 -->
+      <div class="space-y-1.5">
+        <img
+          id="previewGal1"
+          src=""
+          alt="Galerie 1"
+          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+        />
+        <input
+          id="gal1File"
+          type="file"
+          accept="image/*"
+          class="input text-[11px] px-2 py-1.5"
+        />
+      </div>
+
+      <!-- 2 -->
+      <div class="space-y-1.5">
+        <img
+          id="previewGal2"
+          src=""
+          alt="Galerie 2"
+          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+        />
+        <input
+          id="gal2File"
+          type="file"
+          accept="image/*"
+          class="input text-[11px] px-2 py-1.5"
+        />
+      </div>
+
+      <!-- 3 -->
+      <div class="space-y-1.5">
+        <img
+          id="previewGal3"
+          src=""
+          alt="Galerie 3"
+          class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+        />
+        <input
+          id="gal3File"
+          type="file"
+          accept="image/*"
+          class="input text-[11px] px-2 py-1.5"
+        />
+      </div>
+    </div>
+
+    <p class="text-[11px] text-white/50">
+      Můžou být fotky z feedu, z kampaní, portréty atd.
+    </p>
+  </div>
+</section>
+
 
         <!-- Platformy + followers -->
         <div class="space-y-2">
