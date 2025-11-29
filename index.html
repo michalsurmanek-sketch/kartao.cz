@@ -1164,7 +1164,7 @@
            text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
     <i data-lucide="arrow-up" class="w-5 h-5"></i>
   </button>
-   <!-- JAVASCRIPT SEKCE ..........................................................................................................-->
+   <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
   <!-- Firebase knihovny -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1493,10 +1493,31 @@ function safeImage(url, fallback) {
   return { mode: 'none', pid: null, val: null, updatedAt: null };
 }
     function card(data) {
-      const el = document.createElement('div');
-      el.className = 'card overflow-hidden';
+  const el = document.createElement('div');
+  el.className = 'card overflow-hidden';
 
-      const followersObj = pickFollowers(data);
+  // vytáhneme pole z objektu data
+  const {
+    id,
+    name,
+    handle,
+    city,
+    category,
+    bio,
+    cover,
+    avatar,
+    gallery = [],
+    rating,
+    engagement,
+    price,
+    verified,
+    platforms = [],
+    metrics = {}
+  } = data;
+
+      const safeCover  = safeImage(cover,  DEFAULT_COVER);
+      const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
+      const followersObj   = pickFollowers(data);
       const followersLabel = followersObj.val != null ? fmtFollowers(followersObj.val) : null;
       const aggregateBadge =
         state.mode === 'max'
