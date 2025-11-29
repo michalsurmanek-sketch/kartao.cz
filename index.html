@@ -1164,7 +1164,7 @@
            text-white shadow-lg hover:scale-110 transition flex items-center justify-center z-50">
     <i data-lucide="arrow-up" class="w-5 h-5"></i>
   </button>
-  <!-- JAVASCRIPT SEKCE -->
+  <!-- JAVASCRIPT SEKCE ..........................................................................................................-->
 
     <!-- Firebase knihovny -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1291,31 +1291,37 @@
       const next = location.pathname + (qs.toString()? '?' + qs.toString(): '');
       history.replaceState({}, '', next);
     }
+      /* ==========================
+   NAČTENÍ TVŮRCŮ – NATVRDO Z FIRESTORE
+========================== */
+async function loadAllCreators() {
+  if (isLoading) return;
+  isLoading = true;
 
-    /* ==========================
-       FILTRY + RENDERING
-    ========================== */
-    async function loadAllCreators() {
-      if (isLoading) return;
-      isLoading = true;
-      
-      try {
-        const filters = {
-          q: state.q,
-          platform: state.platform,
-          category: state.category,
-          city: state.city,
-          sort: state.sort,
-          minPrice: state.minPrice,
-          maxPrice: state.maxPrice,
-          minRating: state.minRating,
-          minFollowers: state.minFollowers,
-          premiumOnly: state.premiumOnly,
-          limit: 100 // Načteme více dat pro cache
-        };
-        
-        allCreators = await creatorService.searchCreators(filters);
-        console.log(`Načteno ${allCreators.length} tvůrců z databáze`);
+  try {
+    // 🔥 Jednoduchý dotaz – žádné filtry
+    const snapshot = await db.collection("creators").get();
+
+    const creators = [];
+    snapshot.forEach(doc => {
+      creators.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Pokud chceš jen jednoho:
+    // allCreators = creators.slice(0, 1);
+
+    // Všichni:
+    allCreators = creators;
+
+    console.log("Načteno tvůrců:", allCreators.length);
+  } catch (error) {
+    console.error("Chyba při načítání tvůrců z Firestore:", error);
+    allCreators = [];
+  } finally {
+    isLoading = false;
+  }
+}
+
         
       } catch (error) {
         console.error('Chyba při načítání tvůrců:', error);
