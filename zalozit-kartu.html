@@ -442,219 +442,222 @@
   <!-- Konfigurace + INIT default app -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script>
+  // Default obrázky
+  const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+  const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
+  const DEFAULT_GALLERY = [
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=250&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
+  ];
 
-    <script>
-    // Default obrázky
-    const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
-    const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
-    const DEFAULT_GALLERY = [
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=250&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
-    ];
+  let existingAvatarURL = DEFAULT_AVATAR;
+  let existingCoverURL  = DEFAULT_COVER;
+  let existingGalleryURLs = [...DEFAULT_GALLERY];
 
-    let existingAvatarURL = DEFAULT_AVATAR;
-    let existingCoverURL  = DEFAULT_COVER;
-    let existingGalleryURLs = [...DEFAULT_GALLERY];
+  function showStatus(text, ok = true) {
+    const box = document.getElementById('statusBox');
+    const span = document.getElementById('statusText');
+    if (!box || !span) return;
+    span.textContent = text;
+    span.style.borderColor = ok ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.8)';
+    span.style.background = ok ? 'rgba(22,163,74,0.25)' : 'rgba(127,29,29,0.35)';
+    box.classList.remove('hidden');
+  }
 
-    function showStatus(text, ok = true) {
-      const box = document.getElementById('statusBox');
-      const span = document.getElementById('statusText');
-      if (!box || !span) return;
-      span.textContent = text;
-      span.style.borderColor = ok ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.8)';
-      span.style.background = ok ? 'rgba(22,163,74,0.25)' : 'rgba(127,29,29,0.35)';
-      box.classList.remove('hidden');
+  function setupPreview(inputId, imgId) {
+    const input = document.getElementById(inputId);
+    const img = document.getElementById(imgId);
+    if (!input || !img) return;
+
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      img.src = url;
+      img.classList.remove('hidden');
+    });
+  }
+
+  async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
+    const input = document.getElementById(fileInputId);
+    if (!input || !input.files || !input.files[0]) {
+      return defaultUrl;
     }
 
-    function setupPreview(inputId, imgId) {
-      const input = document.getElementById(inputId);
-      const img = document.getElementById(imgId);
-      if (!input || !img) return;
+    const file = input.files[0];
 
-      input.addEventListener('change', () => {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        img.src = url;
-        img.classList.remove('hidden');
-      });
+    if (!window.storage) {
+      console.warn('Firebase Storage není inicializováno, vracím default URL.');
+      return defaultUrl;
     }
 
-    async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
-      const input = document.getElementById(fileInputId);
-      if (!input || !input.files || !input.files[0]) {
-        return defaultUrl;
-      }
+    try {
+      const ref = window.storage.ref().child(path);
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      return url || defaultUrl;
+    } catch (err) {
+      console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
+      showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
+      return defaultUrl;
+    }
+  }
 
-      const file = input.files[0];
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide?.createIcons) lucide.createIcons();
 
-      if (!window.storage) {
-        console.warn('Firebase Storage není inicializováno, vracím default URL.');
-        return defaultUrl;
-      }
+    const form = document.getElementById('creatorForm');
+    const cancelBtn = document.getElementById('cancelBtn');
 
-      try {
-        const ref = window.storage.ref().child(path);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-        return url || defaultUrl;
-      } catch (err) {
-        console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
-        showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
-        return defaultUrl;
-      }
+    setupPreview('avatarFile', 'previewAvatar');
+    setupPreview('coverFile', 'previewCover');
+    setupPreview('gal1File', 'previewGal1');
+    setupPreview('gal2File', 'previewGal2');
+    setupPreview('gal3File', 'previewGal3');
+
+    // Základní náhledy
+    const prevA = document.getElementById('previewAvatar');
+    const prevC = document.getElementById('previewCover');
+    const prevG1 = document.getElementById('previewGal1');
+    const prevG2 = document.getElementById('previewGal2');
+    const prevG3 = document.getElementById('previewGal3');
+
+    if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
+    if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
+    if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
+    if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
+    if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
+
+    if (!window.firebase || !firebase.auth || typeof firebaseConfig === "undefined") {
+      showStatus('Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.', false);
+      return;
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      if (window.lucide?.createIcons) lucide.createIcons();
+    const auth = firebase.auth();
 
-      const form = document.getElementById('creatorForm');
-      const cancelBtn = document.getElementById('cancelBtn');
-
-      setupPreview('avatarFile', 'previewAvatar');
-      setupPreview('coverFile', 'previewCover');
-      setupPreview('gal1File', 'previewGal1');
-      setupPreview('gal2File', 'previewGal2');
-      setupPreview('gal3File', 'previewGal3');
-
-      // Základní náhledy
-      const prevA = document.getElementById('previewAvatar');
-      const prevC = document.getElementById('previewCover');
-      const prevG1 = document.getElementById('previewGal1');
-      const prevG2 = document.getElementById('previewGal2');
-      const prevG3 = document.getElementById('previewGal3');
-
-      if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
-      if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
-      if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
-      if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
-      if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
-
-      if (!window.firebase || !firebase.auth || typeof firebaseConfig === "undefined") {
-        showStatus('Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.', false);
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
+        setTimeout(() => window.location.href = 'login.html', 1200);
         return;
       }
 
-      const auth = firebase.auth();
+      showStatus('Vytváříš svou první kartu influencera ✨');
 
-      auth.onAuthStateChanged((user) => {
-        if (!user) {
-          showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
-          setTimeout(() => window.location.href = 'login.html', 1200);
-          return;
-        }
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
 
-        showStatus('Vytváříš svou první kartu influencera ✨');
+          try {
+            const uid = user.uid;
+            const now = Date.now();
 
-        if (form) {
-          form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const handleRaw = document.getElementById('handle').value.trim();
+            const city = document.getElementById('city').value.trim() || null;
+            const category = document.getElementById('category').value || 'Lifestyle';
+            const bio = document.getElementById('bio').value.trim() || '';
+            const priceVal = document.getElementById('price').value.trim();
+            const ratingVal = document.getElementById('rating').value.trim();
+            const engagementVal = document.getElementById('engagement').value.trim();
+            const premium = document.getElementById('premium').checked;
 
-            try {
-              const uid = user.uid;
-              const now = Date.now();
-
-              const name = document.getElementById('name').value.trim();
-              const handleRaw = document.getElementById('handle').value.trim();
-              const city = document.getElementById('city').value.trim() || null;
-              const category = document.getElementById('category').value || 'Lifestyle';
-              const bio = document.getElementById('bio').value.trim() || '';
-              const priceVal = document.getElementById('price').value.trim();
-              const ratingVal = document.getElementById('rating').value.trim();
-              const engagementVal = document.getElementById('engagement').value.trim();
-              const premium = document.getElementById('premium').checked;
-
-              if (!name || !handleRaw) {
-                showStatus('Vyplň prosím jméno a handle.', false);
-                return;
-              }
-
-              showStatus('Ukládám kartu… (může chvilku trvat při nahrávání fotek)', true);
-
-              const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
-
-              const avatarUrl = await uploadImageIfNeeded(
-                'avatarFile',
-                existingAvatarURL,
-                `creators/${uid}/avatar_${now}.jpg`
-              );
-              const coverUrl = await uploadImageIfNeeded(
-                'coverFile',
-                existingCoverURL,
-                `creators/${uid}/cover_${now}.jpg`
-              );
-              const gal1Url = await uploadImageIfNeeded(
-                'gal1File',
-                existingGalleryURLs[0],
-                `creators/${uid}/gal1_${now}.jpg`
-              );
-              const gal2Url = await uploadImageIfNeeded(
-                'gal2File',
-                existingGalleryURLs[1],
-                `creators/${uid}/gal2_${now}.jpg`
-              );
-              const gal3Url = await uploadImageIfNeeded(
-                'gal3File',
-                existingGalleryURLs[2],
-                `creators/${uid}/gal3_${now}.jpg`
-              );
-
-              const gallery = [gal1Url, gal2Url, gal3Url];
-
-              // Platformy – jednoduchá verze, jen followers čísla
-              function getFollowers(pid) {
-                const inp = document.getElementById('followers-' + pid);
-                if (!inp) return 0;
-                const v = inp.value.trim();
-                return v ? Number(v) : 0;
-              }
-
-              const metrics = {
-                instagram: { followers: getFollowers('instagram') },
-                tiktok:     { followers: getFollowers('tiktok') },
-                youtube:    { followers: getFollowers('youtube') },
-                facebook:   { followers: getFollowers('facebook') },
-                pinterest:  { followers: getFollowers('pinterest') },
-              };
-
-              // Uložení přes Firestore SDK (jednodušší a spolehlivé)
-await window.db.collection('creators').doc(uid).set({
-  name,
-  handle,
-  city: city || null,
-  category,
-  bio,
-  avatar: avatarUrl,
-  cover: coverUrl,
-  gallery,
-  price: priceVal ? Number(priceVal) : null,
-  rating: ratingVal ? Number(ratingVal) : null,
-  engagement: engagementVal ? Number(engagementVal) : null,
-  premium: !!premium,
-  updatedAt: now,
-  metrics
-}, { merge: true });
-
-showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
-setTimeout(() => {
-  window.location.href = 'index.html';
-}, 1200);
-
-            } catch (err) {
-              console.error('Chyba při ukládání karty:', err);
-              showStatus('Chyba při ukládání karty – zkus to prosím znovu.', false);
+            if (!name || !handleRaw) {
+              showStatus('Vyplň prosím jméno a handle.', false);
+              return;
             }
-          });
-        }
 
-        if (cancelBtn) {
-          cancelBtn.addEventListener('click', () => {
-            window.location.href = 'index.html';
-          });
-        }
-      });
+            showStatus('Ukládám kartu… (může chvilku trvat při nahrávání fotek)', true);
+
+            const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
+
+            const avatarUrl = await uploadImageIfNeeded(
+              'avatarFile',
+              existingAvatarURL,
+              `creators/${uid}/avatar_${now}.jpg`
+            );
+            const coverUrl = await uploadImageIfNeeded(
+              'coverFile',
+              existingCoverURL,
+              `creators/${uid}/cover_${now}.jpg`
+            );
+            const gal1Url = await uploadImageIfNeeded(
+              'gal1File',
+              existingGalleryURLs[0],
+              `creators/${uid}/gal1_${now}.jpg`
+            );
+            const gal2Url = await uploadImageIfNeeded(
+              'gal2File',
+              existingGalleryURLs[1],
+              `creators/${uid}/gal2_${now}.jpg`
+            );
+            const gal3Url = await uploadImageIfNeeded(
+              'gal3File',
+              existingGalleryURLs[2],
+              `creators/${uid}/gal3_${now}.jpg`
+            );
+
+            const gallery = [gal1Url, gal2Url, gal3Url];
+
+            function getFollowers(pid) {
+              const inp = document.getElementById('followers-' + pid);
+              if (!inp) return 0;
+              const v = inp.value.trim();
+              return v ? Number(v) : 0;
+            }
+
+            const metrics = {
+              instagram: { followers: getFollowers('instagram') },
+              tiktok:     { followers: getFollowers('tiktok') },
+              youtube:    { followers: getFollowers('youtube') },
+              facebook:   { followers: getFollowers('facebook') },
+              pinterest:  { followers: getFollowers('pinterest') },
+            };
+
+            if (!window.db) {
+              showStatus('Databáze není inicializovaná (window.db chybí).', false);
+              return;
+            }
+
+            // Uložení přes Firestore SDK
+            await window.db.collection('creators').doc(uid).set({
+              name,
+              handle,
+              city: city || null,
+              category,
+              bio,
+              avatar: avatarUrl,
+              cover: coverUrl,
+              gallery,
+              price: priceVal ? Number(priceVal) : null,
+              rating: ratingVal ? Number(ratingVal) : null,
+              engagement: engagementVal ? Number(engagementVal) : null,
+              premium: !!premium,
+              updatedAt: now,
+              metrics
+            }, { merge: true });
+
+            showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 1200);
+
+          } catch (err) {
+            console.error('Chyba při ukládání karty:', err);
+            showStatus('Chyba při ukládání karty – zkus to prosím znovu.', false);
+          }
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          window.location.href = 'index.html';
+        });
+      }
     });
-  </script>
+  });
+</script>
 </body>
 </html>
