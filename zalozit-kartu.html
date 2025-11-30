@@ -443,7 +443,7 @@
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 
-  <script>
+    <script>
     // Default obrázky
     const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
     const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
@@ -453,9 +453,9 @@
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
     ];
 
-    let existingAvatarURL = null;
-    let existingCoverURL = null;
-    let existingGalleryURLs = [null, null, null];
+    let existingAvatarURL = DEFAULT_AVATAR;
+    let existingCoverURL  = DEFAULT_COVER;
+    let existingGalleryURLs = [...DEFAULT_GALLERY];
 
     function showStatus(text, ok = true) {
       const box = document.getElementById('statusBox');
@@ -465,18 +465,6 @@
       span.style.borderColor = ok ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.8)';
       span.style.background = ok ? 'rgba(22,163,74,0.25)' : 'rgba(127,29,29,0.35)';
       box.classList.remove('hidden');
-    }
-
-    function fillFollowers(pid, data) {
-      const pf = document.getElementById('pf-' + pid);
-      const inp = document.getElementById('followers-' + pid);
-      if (!inp || !pf) return;
-
-      const m = data.metrics && data.metrics[pid];
-      if (m && m.connected && typeof m.followers === 'number') {
-        pf.checked = true;
-        inp.value = m.followers;
-      }
     }
 
     function setupPreview(inputId, imgId) {
@@ -530,109 +518,43 @@
       setupPreview('gal2File', 'previewGal2');
       setupPreview('gal3File', 'previewGal3');
 
-      if (!window.firebase || !firebase.auth || !firebase.firestore || typeof firebaseConfig === "undefined") {
+      // Základní náhledy
+      const prevA = document.getElementById('previewAvatar');
+      const prevC = document.getElementById('previewCover');
+      const prevG1 = document.getElementById('previewGal1');
+      const prevG2 = document.getElementById('previewGal2');
+      const prevG3 = document.getElementById('previewGal3');
+
+      if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
+      if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
+      if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
+      if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
+      if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
+
+      if (!window.firebase || !firebase.auth || typeof firebaseConfig === "undefined") {
         showStatus('Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.', false);
         return;
       }
 
-      // 👉 VLASTNÍ FIREBASE APP POUZE PRO TUTO STRÁNKU
-      let appKarta;
-      try {
-        appKarta = firebase.app('zalozitKartuApp');
-      } catch (e) {
-        appKarta = firebase.initializeApp(firebaseConfig, 'zalozitKartuApp');
-      }
-      const dbKarta = appKarta.firestore();
       const auth = firebase.auth();
 
-      auth.onAuthStateChanged(async user => {
+      auth.onAuthStateChanged((user) => {
         if (!user) {
           showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
           setTimeout(() => window.location.href = 'login.html', 1200);
           return;
         }
 
-        const uid = user.uid;
-        const docRef = dbKarta.collection('creators').doc(uid);
+        showStatus('Vytváříš svou první kartu influencera ✨');
 
-        try {
-          const snap = await docRef.get();
-
-          if (snap.exists) {
-            const data = snap.data() || {};
-
-            if (data.name) document.getElementById('name').value = data.name;
-            if (data.handle) document.getElementById('handle').value = data.handle.replace(/^@/, '');
-            if (data.city) document.getElementById('city').value = data.city;
-            if (data.category) document.getElementById('category').value = data.category;
-            if (data.bio) document.getElementById('bio').value = data.bio;
-            if (typeof data.price === 'number') document.getElementById('price').value = data.price;
-            if (typeof data.rating === 'number') document.getElementById('rating').value = data.rating;
-            if (typeof data.engagement === 'number') document.getElementById('engagement').value = data.engagement;
-            if (data.premium) document.getElementById('premium').checked = !!data.premium;
-
-            existingAvatarURL = data.avatar || DEFAULT_AVATAR;
-            existingCoverURL  = data.cover  || DEFAULT_COVER;
-            const gal = Array.isArray(data.gallery) ? data.gallery : [];
-            existingGalleryURLs = [
-              gal[0] || DEFAULT_GALLERY[0],
-              gal[1] || DEFAULT_GALLERY[1],
-              gal[2] || DEFAULT_GALLERY[2],
-            ];
-
-            const prevA = document.getElementById('previewAvatar');
-            const prevC = document.getElementById('previewCover');
-            const prevG1 = document.getElementById('previewGal1');
-            const prevG2 = document.getElementById('previewGal2');
-            const prevG3 = document.getElementById('previewGal3');
-
-            if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
-            if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
-            if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
-            if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
-            if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
-
-            fillFollowers('instagram', data);
-            fillFollowers('tiktok', data);
-            fillFollowers('youtube', data);
-            fillFollowers('facebook', data);
-            fillFollowers('pinterest', data);
-
-            showStatus('Upravuješ existující kartu. Po uložení se změny projeví v marketplace.');
-          } else {
-            existingAvatarURL = DEFAULT_AVATAR;
-            existingCoverURL  = DEFAULT_COVER;
-            existingGalleryURLs = [...DEFAULT_GALLERY];
-
-            const prevA = document.getElementById('previewAvatar');
-            const prevC = document.getElementById('previewCover');
-            const prevG1 = document.getElementById('previewGal1');
-            const prevG2 = document.getElementById('previewGal2');
-            const prevG3 = document.getElementById('previewGal3');
-
-            if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
-            if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
-            if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
-            if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
-            if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
-
-            showStatus('Vytváříš svou první kartu influencera ✨');
-          }
-        } catch (err) {
-          console.error(err);
-          showStatus('Chyba při načítání karty – pokračuji jako by byla nová.', false);
-          // I když načtení selže, necháme uživatele kartu vytvořit.
-          existingAvatarURL = DEFAULT_AVATAR;
-          existingCoverURL  = DEFAULT_COVER;
-          existingGalleryURLs = [...DEFAULT_GALLERY];
-        }
-
-        // ODESLÁNÍ FORMULÁŘE
         if (form) {
           form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             try {
+              const uid = user.uid;
+              const now = Date.now();
+
               const name = document.getElementById('name').value.trim();
               const handleRaw = document.getElementById('handle').value.trim();
               const city = document.getElementById('city').value.trim() || null;
@@ -651,93 +573,116 @@
               showStatus('Ukládám kartu… (může chvilku trvat při nahrávání fotek)', true);
 
               const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
-              const now = Date.now();
 
               const avatarUrl = await uploadImageIfNeeded(
                 'avatarFile',
-                existingAvatarURL || DEFAULT_AVATAR,
+                existingAvatarURL,
                 `creators/${uid}/avatar_${now}.jpg`
               );
-
               const coverUrl = await uploadImageIfNeeded(
                 'coverFile',
-                existingCoverURL || DEFAULT_COVER,
+                existingCoverURL,
                 `creators/${uid}/cover_${now}.jpg`
               );
-
               const gal1Url = await uploadImageIfNeeded(
                 'gal1File',
-                existingGalleryURLs[0] || DEFAULT_GALLERY[0],
+                existingGalleryURLs[0],
                 `creators/${uid}/gal1_${now}.jpg`
               );
               const gal2Url = await uploadImageIfNeeded(
                 'gal2File',
-                existingGalleryURLs[1] || DEFAULT_GALLERY[1],
+                existingGalleryURLs[1],
                 `creators/${uid}/gal2_${now}.jpg`
               );
               const gal3Url = await uploadImageIfNeeded(
                 'gal3File',
-                existingGalleryURLs[2] || DEFAULT_GALLERY[2],
+                existingGalleryURLs[2],
                 `creators/${uid}/gal3_${now}.jpg`
               );
 
               const gallery = [gal1Url, gal2Url, gal3Url];
 
-              const platforms = [];
-              const metrics = {};
-
-              function addPlatform(pid) {
-                const pf = document.getElementById('pf-' + pid);
-                const followersInput = document.getElementById('followers-' + pid);
-                if (!pf || !followersInput) return;
-                const checked = pf.checked;
-                const followersVal = followersInput.value.trim();
-                const followers = followersVal ? Number(followersVal) : 0;
-
-                if (checked || followers > 0) {
-                  platforms.push(pid);
-                  metrics[pid] = {
-                    connected: true,
-                    followers: followers,
-                    updatedAt: now
-                  };
-                } else {
-                  metrics[pid] = { connected: false };
-                }
+              // Platformy – jednoduchá verze, jen followers čísla
+              function getFollowers(pid) {
+                const inp = document.getElementById('followers-' + pid);
+                if (!inp) return 0;
+                const v = inp.value.trim();
+                return v ? Number(v) : 0;
               }
 
-              addPlatform('instagram');
-              addPlatform('tiktok');
-              addPlatform('youtube');
-              addPlatform('facebook');
-              addPlatform('pinterest');
-
-              const docData = {
-                name,
-                handle,
-                city,
-                category,
-                bio,
-                avatar: avatarUrl,
-                cover: coverUrl,
-                gallery,
-                price: priceVal ? Number(priceVal) : null,
-                rating: ratingVal ? Number(ratingVal) : null,
-                engagement: engagementVal ? Number(engagementVal) : null,
-                premium,
-                verified: true,
-                platforms,
-                metrics,
-                updatedAt: now,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              const metrics = {
+                instagram: { followers: getFollowers('instagram') },
+                tiktok:     { followers: getFollowers('tiktok') },
+                youtube:    { followers: getFollowers('youtube') },
+                facebook:   { followers: getFollowers('facebook') },
+                pinterest:  { followers: getFollowers('pinterest') },
               };
 
-              await docRef.set(docData, { merge: true });
+              // PŘÍMÉ VOLÁNÍ FIRESTORE REST API (obcházíme SDK)
+              const token = await user.getIdToken();
+              const projectId = firebaseConfig.projectId;
+              const baseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+              const docPath = `creators/${uid}`;
+
+              const fields = {
+                name:       { stringValue: name },
+                handle:     { stringValue: handle },
+                city:       city ? { stringValue: city } : { nullValue: null },
+                category:   { stringValue: category },
+                bio:        { stringValue: bio },
+                avatar:     { stringValue: avatarUrl },
+                cover:      { stringValue: coverUrl },
+                gallery:    {
+                  arrayValue: {
+                    values: gallery.map(url => ({ stringValue: url }))
+                  }
+                },
+                price:      priceVal ? { integerValue: Number(priceVal) } : { nullValue: null },
+                rating:     ratingVal ? { doubleValue: Number(ratingVal) } : { nullValue: null },
+                engagement: engagementVal ? { doubleValue: Number(engagementVal) } : { nullValue: null },
+                premium:    { booleanValue: !!premium },
+                updatedAt:  { integerValue: now },
+                metrics: {
+                  mapValue: {
+                    fields: {
+                      instagram: { mapValue: { fields: { followers: { integerValue: metrics.instagram.followers } } } },
+                      tiktok:    { mapValue: { fields: { followers: { integerValue: metrics.tiktok.followers } } } },
+                      youtube:   { mapValue: { fields: { followers: { integerValue: metrics.youtube.followers } } } },
+                      facebook:  { mapValue: { fields: { followers: { integerValue: metrics.facebook.followers } } } },
+                      pinterest: { mapValue: { fields: { followers: { integerValue: metrics.pinterest.followers } } } },
+                    }
+                  }
+                }
+              };
+
+              const qs = new URLSearchParams();
+              // které fieldy updatujeme
+              Object.keys(fields).forEach(f => {
+                qs.append('updateMask.fieldPaths', f);
+              });
+              qs.append('allowMissing', 'true');
+
+              const resp = await fetch(`${baseUrl}/${docPath}?${qs.toString()}`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ fields })
+              });
+
+              if (!resp.ok) {
+                const errText = await resp.text();
+                console.error('Firestore REST error:', resp.status, errText);
+                showStatus('Chyba při ukládání karty (REST API) – zkus to prosím znovu.', false);
+                return;
+              }
 
               showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
               setTimeout(() => {
                 window.location.href = 'index.html';
               }, 1200);
+
             } catch (err) {
               console.error('Chyba při ukládání karty:', err);
               showStatus('Chyba při ukládání karty – zkus to prosím znovu.', false);
