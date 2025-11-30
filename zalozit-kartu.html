@@ -619,64 +619,83 @@
               };
 
               // PŘÍMÉ VOLÁNÍ FIRESTORE REST API (obcházíme SDK)
-              const token = await user.getIdToken();
-              const projectId = firebaseConfig.projectId;
-              const baseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
-              const docPath = `creators/${uid}`;
+const token = await user.getIdToken();
+const projectId = firebaseConfig.projectId;
+const baseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+const docPath = `creators/${uid}`;
 
-              const fields = {
-                name:       { stringValue: name },
-                handle:     { stringValue: handle },
-                city:       city ? { stringValue: city } : { nullValue: null },
-                category:   { stringValue: category },
-                bio:        { stringValue: bio },
-                avatar:     { stringValue: avatarUrl },
-                cover:      { stringValue: coverUrl },
-                gallery:    {
-                  arrayValue: {
-                    values: gallery.map(url => ({ stringValue: url }))
-                  }
-                },
-                price:      priceVal ? { integerValue: Number(priceVal) } : { nullValue: null },
-                rating:     ratingVal ? { doubleValue: Number(ratingVal) } : { nullValue: null },
-                engagement: engagementVal ? { doubleValue: Number(engagementVal) } : { nullValue: null },
-                premium:    { booleanValue: !!premium },
-                updatedAt:  { integerValue: now },
-                metrics: {
-                  mapValue: {
-                    fields: {
-                      instagram: { mapValue: { fields: { followers: { integerValue: metrics.instagram.followers } } } },
-                      tiktok:    { mapValue: { fields: { followers: { integerValue: metrics.tiktok.followers } } } },
-                      youtube:   { mapValue: { fields: { followers: { integerValue: metrics.youtube.followers } } } },
-                      facebook:  { mapValue: { fields: { followers: { integerValue: metrics.facebook.followers } } } },
-                      pinterest: { mapValue: { fields: { followers: { integerValue: metrics.pinterest.followers } } } },
-                    }
-                  }
-                }
-              };
+// Firestore "fields" payload
+const fields = {
+  name:       { stringValue: name },
+  handle:     { stringValue: handle },
+  city:       city ? { stringValue: city } : { nullValue: null },
+  category:   { stringValue: category },
+  bio:        { stringValue: bio },
+  avatar:     { stringValue: avatarUrl },
+  cover:      { stringValue: coverUrl },
+  gallery:    {
+    arrayValue: {
+      values: gallery.map(url => ({ stringValue: url }))
+    }
+  },
+  price:      priceVal ? { integerValue: Number(priceVal) } : { nullValue: null },
+  rating:     ratingVal ? { doubleValue: Number(ratingVal) } : { nullValue: null },
+  engagement: engagementVal ? { doubleValue: Number(engagementVal) } : { nullValue: null },
+  premium:    { booleanValue: !!premium },
+  updatedAt:  { integerValue: now },
+  metrics: {
+    mapValue: {
+      fields: {
+        instagram: { mapValue: { fields: { followers: { integerValue: metrics.instagram.followers } } } },
+        tiktok:    { mapValue: { fields: { followers: { integerValue: metrics.tiktok.followers } } } },
+        youtube:   { mapValue: { fields: { followers: { integerValue: metrics.youtube.followers } } } },
+        facebook:  { mapValue: { fields: { followers: { integerValue: metrics.facebook.followers } } } },
+        pinterest: { mapValue: { fields: { followers: { integerValue: metrics.pinterest.followers } } } },
+      }
+    }
+  }
+};
 
-              const qs = new URLSearchParams();
-              // které fieldy updatujeme
-              Object.keys(fields).forEach(f => {
-                qs.append('updateMask.fieldPaths', f);
-              });
-              qs.append('allowMissing', 'true');
+// které fieldy updatujeme (pro PATCH)
+const qs = new URLSearchParams();
+Object.keys(fields).forEach(f => {
+  qs.append('updateMask.fieldPaths', f);
+});
 
-              const resp = await fetch(`${baseUrl}/${docPath}?${qs.toString()}`, {
-                method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ fields })
-              });
+// 1) zkusíme PATCH na /creators/{uid}
+let resp = await fetch(`${baseUrl}/${docPath}?${qs.toString()}`, {
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({ fields })
+});
 
-              if (!resp.ok) {
-                const errText = await resp.text();
-                console.error('Firestore REST error:', resp.status, errText);
-                showStatus('Chyba při ukládání karty (REST API) – zkus to prosím znovu.', false);
-                return;
-              }
+// 2) když dokument ještě neexistuje, PATCH vrátí 404 → vytvoříme ho přes POST
+if (resp.status === 404) {
+  resp = await fetch(`${baseUrl}/creators?documentId=${uid}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ fields })
+  });
+}
+
+if (!resp.ok) {
+  const errText = await resp.text();
+  console.error('Firestore REST error:', resp.status, errText);
+  showStatus('Chyba při ukládání karty (REST API) – zkus to prosím znovu.', false);
+  return;
+}
+
+showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
+setTimeout(() => {
+  window.location.href = 'index.html';
+}, 1200);
+
 
               showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
               setTimeout(() => {
