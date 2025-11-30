@@ -28,45 +28,18 @@
   
   <link rel="canonical" href="https://www.kartao.cz/" />
   
+  <!-- === FIREBASE COMPAT KNIHOVNY === -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- KONFIGURACE + INIT -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
   <!-- Structured Data - Organization -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Kartao.cz",
-    "description": "Síť influencerů a tvůrců. Propojujeme značky a tvůrce.",
-    "url": "https://www.kartao.cz",
-    "logo": "https://www.kartao.cz/og-image-placeholder.svg",
-    "sameAs": [
-      "https://www.facebook.com/kartao.cz",
-      "https://www.instagram.com/kartao.cz",
-      "https://www.youtube.com/@kartao.cz",
-      "https://www.tiktok.com/@kartao.cz",
-      "https://www.pinterest.com/kartao_cz"
-    ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "customer support",
-      "email": "info@kartao.cz",
-      "availableLanguage": "Czech"
-    }
-  }
-  </script>
-  
-  <!-- Structured Data - WebSite -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Kartao.cz",
-    "url": "https://www.kartao.cz",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://www.kartao.cz/kartao-marketplace.html?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
+  <script type="application/ld+json"></script>
 
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
