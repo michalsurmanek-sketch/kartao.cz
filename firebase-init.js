@@ -1,32 +1,788 @@
-// ==========================================
-// Firebase INIT – Kartao.cz (sjednocená verze)
-// ==========================================
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Založit kartu</title>
 
-if (typeof firebase === "undefined") {
-  console.error("❌ Firebase SDK není načteno. Chybí <script src='firebase-app-compat.js'> atd.");
-} else {
-  // pro jistotu – globální reference
-  window.firebase = firebase;
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)",
+          },
+          borderRadius: {
+            "2xl": "1rem",
+          }
+        }
+      }
+    };
+  </script>
 
-  // Inicializace aplikace jen jednou
-  if (!firebase.apps || !firebase.apps.length) {
-    if (typeof firebaseConfig === "undefined") {
-      console.error("❌ firebase-config.js nebyl načten. Ujisti se, že je nad firebase-init.js.");
-    } else {
-      firebase.initializeApp(firebaseConfig);
-      console.log("🔥 Firebase inicializováno přes firebase-init.js");
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-  }
+    .card {
+      border-radius: 1rem;
+      background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.16), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.9);
+    }
+    .btn {
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border-width: 1px;
+      border-style: solid;
+      transition: all 150ms ease;
+    }
+    .btn-primary {
+      background-image: linear-gradient(to right, #fbbf24, #ec4899, #38bdf8);
+      color: #020617;
+      border-color: transparent;
+      box-shadow: 0 15px 45px rgba(236, 72, 153, 0.5);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent;
+      color: #e5e7eb;
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+    .btn-outline:hover {
+      background: rgba(148, 163, 184, 0.15);
+    }
+    .input {
+      width: 100%;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background-color: rgba(15, 23, 42, 0.85);
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      color: #e5e7eb;
+      outline: none;
+    }
+    .input:focus {
+      border-color: #ec4899;
+      box-shadow: 0 0 0 1px rgba(236, 72, 153, 0.6);
+    }
+    .label {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 0.25rem 0.65rem;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.6);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
 
-  // Globální služby
-  window.auth    = firebase.auth();
-  window.db      = firebase.firestore();
-  window.storage = firebase.storage ? firebase.storage() : null;
+  <div class="max-w-4xl mx-auto px-4 py-6 md:py-10">
+    <!-- Hlavička -->
+    <div class="flex items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-fuchsia-500/20 border border-fuchsia-500/40">
+            <i data-lucide="credit-card" class="w-4 h-4 text-fuchsia-300"></i>
+          </span>
+          Založit kartu influencera
+        </h1>
+        <p class="text-sm text-white/60 mt-1">
+          Vyplň základní informace o sobě. Kdykoliv je můžeš později upravit.
+        </p>
+      </div>
+      <a href="index.html" class="btn btn-outline">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Zpět na marketplace
+      </a>
+    </div>
 
-  console.log("✔ Firebase služby dostupné:", {
-    auth: !!window.auth,
-    db: !!window.db,
-    storage: !!window.storage,
-  });
-}
+    <!-- Info o stavu -->
+    <div id="statusBox" class="mb-4 hidden">
+      <div class="pill" id="statusText"></div>
+    </div>
 
+    <!-- KARTA S FORMULÁŘEM -->
+    <div class="card p-4 md:p-6">
+      <form id="creatorForm" class="space-y-6">
+        <!-- Základní info -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="user" class="w-4 h-4"></i>
+              Jméno / název profilu
+            </label>
+            <input id="name" type="text" class="input" placeholder="Např. Michal – obsah o businessu" required />
+          </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="at-sign" class="w-4 h-4"></i>
+              Handle (bez @)
+            </label>
+            <input id="handle" type="text" class="input" placeholder="michalsurmanek" required />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              Město
+            </label>
+            <input id="city" type="text" class="input" placeholder="Brno" />
+          </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              Kategorie
+            </label>
+            <select id="category" class="input">
+              <option value="Lifestyle">Lifestyle</option>
+              <option value="Beauty">Beauty</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Gaming">Gaming</option>
+              <option value="Tech">Tech</option>
+              <option value="Food">Food</option>
+              <option value="Travel">Travel</option>
+              <option value="Auto">Auto</option>
+              <option value="Music">Music</option>
+              <option value="Other">Jiné</option>
+            </select>
+          </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="ticket-percent" class="w-4 h-4"></i>
+              Cena od (Kč / post)
+            </label>
+            <input id="price" type="number" min="0" class="input" placeholder="1500" />
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="label">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Krátký popis / bio
+          </label>
+          <textarea id="bio" class="input" rows="3" placeholder="O čem je tvůj obsah, co firmy získají spoluprací?"></textarea>
+        </div>
+
+        <!-- OBRÁZKY KARTY ..................................................................-->
+        <section class="space-y-6 mt-6">
+          <h2 class="text-sm font-semibold text-white/80">
+            Fotky karty influencera
+          </h2>
+
+          <!-- Avatar -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="image" class="w-4 h-4"></i>
+              Profilová fotka (avatar)
+            </label>
+
+            <!-- Náhled avatara -->
+            <img
+              id="previewAvatar"
+              src=""
+              alt="Náhled avataru"
+              class="w-24 h-24 rounded-xl object-cover border border-white/10 hidden"
+            />
+
+            <!-- Výběr souboru -->
+            <input
+              id="avatarFile"
+              type="file"
+              accept="image/*"
+              class="input"
+            />
+
+            <p class="text-[11px] text-white/50">
+              Doporučeno min. 400×400 px, čtvercový formát.
+            </p>
+          </div>
+
+          <!-- Cover (hlavní fotka nahoře) -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="panels-top-left" class="w-4 h-4"></i>
+              Úvodní fotka (cover)
+            </label>
+
+            <!-- Náhled coveru -->
+            <img
+              id="previewCover"
+              src=""
+              alt="Náhled coveru"
+              class="w-full h-32 rounded-xl object-cover border border-white/10 hidden"
+            />
+
+            <!-- Výběr souboru -->
+            <input
+              id="coverFile"
+              type="file"
+              accept="image/*"
+              class="input"
+            />
+
+            <p class="text-[11px] text-white/50">
+              Doporučeno min. 1200×400 px, horizontální fotka.
+            </p>
+          </div>
+
+          <!-- Galerie – 3 doplňkové fotky -->
+          <div class="space-y-2">
+            <label class="label">
+              <i data-lucide="images" class="w-4 h-4"></i>
+              Galerie (3 fotky)
+            </label>
+
+            <div class="grid grid-cols-3 gap-3">
+              <!-- 1 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal1"
+                  src=""
+                  alt="Galerie 1"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal1File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
+
+              <!-- 2 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal2"
+                  src=""
+                  alt="Galerie 2"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal2File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
+
+              <!-- 3 -->
+              <div class="space-y-1.5">
+                <img
+                  id="previewGal3"
+                  src=""
+                  alt="Galerie 3"
+                  class="w-full h-20 rounded-lg object-cover border border-white/10 hidden"
+                />
+                <input
+                  id="gal3File"
+                  type="file"
+                  accept="image/*"
+                  class="input text-[11px] px-2 py-1.5"
+                />
+              </div>
+            </div>
+
+            <p class="text-[11px] text-white/50">
+              Můžou být fotky z feedu, z kampaní, portréty atd.
+            </p>
+          </div>
+        </section>
+
+        <!-- Platformy + followers -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <span class="label">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              Připojené platformy & followers
+            </span>
+            <span class="text-xs text-white/50">
+              Stačí vyplnit ty, které používáš.
+            </span>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-3">
+            <div class="flex items-center gap-3">
+              <label class="pill min-w-[120px]">
+                <input id="pf-instagram" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
+                <i data-lucide="camera" class="w-3.5 h-3.5 text-fuchsia-300"></i>
+                Instagram
+              </label>
+              <input id="followers-instagram" type="number" min="0" class="input" placeholder="Followers" />
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="pill min-w-[120px]">
+                <input id="pf-tiktok" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
+                <i data-lucide="music-4" class="w-3.5 h-3.5 text-sky-300"></i>
+                TikTok
+              </label>
+              <input id="followers-tiktok" type="number" min="0" class="input" placeholder="Followers" />
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="pill min-w-[120px]">
+                <input id="pf-youtube" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
+                <i data-lucide="play" class="w-3.5 h-3.5 text-red-300"></i>
+                YouTube
+              </label>
+              <input id="followers-youtube" type="number" min="0" class="input" placeholder="Subscribers" />
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="pill min-w-[120px]">
+                <input id="pf-facebook" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
+                <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-300"></i>
+                Facebook
+              </label>
+              <input id="followers-facebook" type="number" min="0" class="input" placeholder="Followers" />
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="pill min-w-[120px]">
+                <input id="pf-pinterest" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
+                <i data-lucide="image" class="w-3.5 h-3.5 text-rose-300"></i>
+                Pinterest
+              </label>
+              <input id="followers-pinterest" type="number" min="0" class="input" placeholder="Followers" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Extra parametry -->
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="star" class="w-4 h-4"></i>
+              Hodnocení (0–5, volitelné)
+            </label>
+            <input id="rating" type="number" min="0" max="5" step="0.1" class="input" placeholder="4.9" />
+          </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+              Engagement (%) – volitelné
+            </label>
+            <input id="engagement" type="number" min="0" step="0.1" class="input" placeholder="7.5" />
+          </div>
+          <div class="flex items-center gap-3 mt-6">
+            <label class="inline-flex items-center gap-2 text-sm text-white/80">
+              <input id="premium" type="checkbox" class="h-4 w-4 rounded border-slate-600 bg-slate-900" />
+              <span>Premium profil (doporučovaný)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tlačítka -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-2">
+          <div class="text-xs text-white/60">
+            Uložením vytvoříš / aktualizuješ svou kartu v marketplace.  
+            Dá se kdykoliv znovu upravit.
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="cancelBtn" class="btn btn-outline">
+              Zrušit
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              Uložit kartu
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase knihovny -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  
+  <!-- Konfigurace + sjednocený INIT (stejné jako na indexu!) -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+
+  <!-- Přepnutí Firestore do ONLINE režimu pro zalozit-kartu.html -->
+  <script>
+    if (window.firebase && firebase.firestore) {
+      firebase.firestore().enableNetwork()
+        .then(() => {
+          console.log("🌐 Firestore ONLINE (zalozit-kartu.html)");
+        })
+        .catch((err) => {
+          console.warn("⚠️ Nepodařilo se zapnout Firestore online (zalozit-kartu.html):", err);
+        });
+    } else {
+      console.warn("⚠️ Firebase/Firestore není na zalozit-kartu.html k dispozici");
+    }
+  </script>
+
+  <script>
+    // Stejné default obrázky jako na marketplace
+    const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+    const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
+    const DEFAULT_GALLERY = [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
+    ];
+
+    // proměnné pro existující URL (když už karta existuje)
+    let existingAvatarURL = null;
+    let existingCoverURL = null;
+    let existingGalleryURLs = [null, null, null];
+
+    function showStatus(text, ok = true) {
+      const box = document.getElementById('statusBox');
+      const span = document.getElementById('statusText');
+      if (!box || !span) return;
+      span.textContent = text;
+      span.style.borderColor = ok ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.8)';
+      span.style.background = ok ? 'rgba(22,163,74,0.25)' : 'rgba(127,29,29,0.35)';
+      box.classList.remove('hidden');
+    }
+
+    function fillFollowers(pid, data) {
+      const pf = document.getElementById('pf-' + pid);
+      const inp = document.getElementById('followers-' + pid);
+      if (!inp || !pf) return;
+
+      const m = data.metrics && data.metrics[pid];
+      if (m && m.connected && typeof m.followers === 'number') {
+        pf.checked = true;
+        inp.value = m.followers;
+      }
+    }
+
+    function setupPreview(inputId, imgId) {
+      const input = document.getElementById(inputId);
+      const img = document.getElementById(imgId);
+      if (!input || !img) return;
+
+      input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.classList.remove('hidden');
+      });
+    }
+
+    async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
+      const input = document.getElementById(fileInputId);
+      if (!input || !input.files || !input.files[0]) {
+        return defaultUrl;
+      }
+
+      const file = input.files[0];
+
+      // Když nemáme Storage, jen vrátíme default
+      if (!window.storage) {
+        console.warn('Firebase Storage není inicializováno, vracím default URL.');
+        return defaultUrl;
+      }
+
+      try {
+        const ref = window.storage.ref().child(path);  <!-- TADY JE ÚPRAVA -->
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        return url || defaultUrl;
+      } catch (err) {
+        console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
+        // Jen info – karta se normálně uloží, jen bez nové fotky
+        showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
+        return defaultUrl;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (window.lucide?.createIcons) lucide.createIcons();
+
+      const form = document.getElementById('creatorForm');
+      const cancelBtn = document.getElementById('cancelBtn');
+
+      // náhledy
+      setupPreview('avatarFile', 'previewAvatar');
+      setupPreview('coverFile', 'previewCover');
+      setupPreview('gal1File', 'previewGal1');
+      setupPreview('gal2File', 'previewGal2');
+      setupPreview('gal3File', 'previewGal3');
+
+      if (!window.firebase || !firebase.auth || !window.db) {
+        showStatus('Firebase není inicializovaný – zkontroluj firebase-init.js.', false);
+        return;
+      }
+
+      firebase.auth().onAuthStateChanged(async user => {
+        if (!user) {
+          showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
+          setTimeout(() => window.location.href = 'login.html', 1200);
+          return;
+        }
+
+        const uid = user.uid;
+        const docRef = db.collection('creators').doc(uid);
+
+        try {
+          const snap = await docRef.get();
+          if (snap.exists) {
+            const data = snap.data() || {};
+
+            if (data.name) document.getElementById('name').value = data.name;
+            if (data.handle) document.getElementById('handle').value = data.handle.replace(/^@/, '');
+            if (data.city) document.getElementById('city').value = data.city;
+            if (data.category) document.getElementById('category').value = data.category;
+            if (data.bio) document.getElementById('bio').value = data.bio;
+            if (typeof data.price === 'number') document.getElementById('price').value = data.price;
+            if (typeof data.rating === 'number') document.getElementById('rating').value = data.rating;
+            if (typeof data.engagement === 'number') document.getElementById('engagement').value = data.engagement;
+            if (data.premium) document.getElementById('premium').checked = !!data.premium;
+
+            // obrázky – uložíme si původní URL
+            existingAvatarURL = data.avatar || DEFAULT_AVATAR;
+            existingCoverURL  = data.cover  || DEFAULT_COVER;
+            const gal = Array.isArray(data.gallery) ? data.gallery : [];
+            existingGalleryURLs = [
+              gal[0] || DEFAULT_GALLERY[0],
+              gal[1] || DEFAULT_GALLERY[1],
+              gal[2] || DEFAULT_GALLERY[2],
+            ];
+
+            // zobrazíme náhledy
+            const prevA = document.getElementById('previewAvatar');
+            const prevC = document.getElementById('previewCover');
+            const prevG1 = document.getElementById('previewGal1');
+            const prevG2 = document.getElementById('previewGal2');
+            const prevG3 = document.getElementById('previewGal3');
+
+            if (prevA) {
+              prevA.src = existingAvatarURL;
+              prevA.classList.remove('hidden');
+            }
+            if (prevC) {
+              prevC.src = existingCoverURL;
+              prevC.classList.remove('hidden');
+            }
+            if (prevG1) {
+              prevG1.src = existingGalleryURLs[0];
+              prevG1.classList.remove('hidden');
+            }
+            if (prevG2) {
+              prevG2.src = existingGalleryURLs[1];
+              prevG2.classList.remove('hidden');
+            }
+            if (prevG3) {
+              prevG3.src = existingGalleryURLs[2];
+              prevG3.classList.remove('hidden');
+            }
+
+            fillFollowers('instagram', data);
+            fillFollowers('tiktok', data);
+            fillFollowers('youtube', data);
+            fillFollowers('facebook', data);
+            fillFollowers('pinterest', data);
+
+            showStatus('Upravuješ existující kartu. Po uložení se změny projeví v marketplace.');
+          } else {
+            existingAvatarURL = DEFAULT_AVATAR;
+            existingCoverURL  = DEFAULT_COVER;
+            existingGalleryURLs = [...DEFAULT_GALLERY];
+
+            const prevA = document.getElementById('previewAvatar');
+            const prevC = document.getElementById('previewCover');
+            const prevG1 = document.getElementById('previewGal1');
+            const prevG2 = document.getElementById('previewGal2');
+            const prevG3 = document.getElementById('previewGal3');
+
+            if (prevA) {
+              prevA.src = existingAvatarURL;
+              prevA.classList.remove('hidden');
+            }
+            if (prevC) {
+              prevC.src = existingCoverURL;
+              prevC.classList.remove('hidden');
+            }
+            if (prevG1) {
+              prevG1.src = existingGalleryURLs[0];
+              prevG1.classList.remove('hidden');
+            }
+            if (prevG2) {
+              prevG2.src = existingGalleryURLs[1];
+              prevG2.classList.remove('hidden');
+            }
+            if (prevG3) {
+              prevG3.src = existingGalleryURLs[2];
+              prevG3.classList.remove('hidden');
+            }
+
+            showStatus('Vytváříš svou první kartu influencera ✨');
+          }
+        } catch (err) {
+          console.error(err);
+          showStatus('Chyba při načítání karty – zkus prosím obnovit stránku.', false);
+        }
+
+        // odeslání formuláře
+        if (form) {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+              const name = document.getElementById('name').value.trim();
+              const handleRaw = document.getElementById('handle').value.trim();
+              const city = document.getElementById('city').value.trim() || null;
+              const category = document.getElementById('category').value || 'Lifestyle';
+              const bio = document.getElementById('bio').value.trim() || '';
+              const priceVal = document.getElementById('price').value.trim();
+              const ratingVal = document.getElementById('rating').value.trim();
+              const engagementVal = document.getElementById('engagement').value.trim();
+              const premium = document.getElementById('premium').checked;
+
+              if (!name || !handleRaw) {
+                showStatus('Vyplň prosím jméno a handle.', false);
+                return;
+              }
+
+              showStatus('Ukládám kartu… (může chvilku trvat při nahrávání fotek)', true);
+
+              const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
+              const now = Date.now();
+
+              // upload obrázků pokud jsou nové
+              const avatarUrl = await uploadImageIfNeeded(
+                'avatarFile',
+                existingAvatarURL || DEFAULT_AVATAR,
+                `creators/${uid}/avatar_${now}.jpg`
+              );
+
+              const coverUrl = await uploadImageIfNeeded(
+                'coverFile',
+                existingCoverURL || DEFAULT_COVER,
+                `creators/${uid}/cover_${now}.jpg`
+              );
+
+              const gal1Url = await uploadImageIfNeeded(
+                'gal1File',
+                existingGalleryURLs[0] || DEFAULT_GALLERY[0],
+                `creators/${uid}/gal1_${now}.jpg`
+              );
+              const gal2Url = await uploadImageIfNeeded(
+                'gal2File',
+                existingGalleryURLs[1] || DEFAULT_GALLERY[1],
+                `creators/${uid}/gal2_${now}.jpg`
+              );
+              const gal3Url = await uploadImageIfNeeded(
+                'gal3File',
+                existingGalleryURLs[2] || DEFAULT_GALLERY[2],
+                `creators/${uid}/gal3_${now}.jpg`
+              );
+
+              const gallery = [gal1Url, gal2Url, gal3Url];
+
+              const platforms = [];
+              const metrics = {};
+
+              function addPlatform(pid) {
+                const pf = document.getElementById('pf-' + pid);
+                const followersInput = document.getElementById('followers-' + pid);
+                if (!pf || !followersInput) return;
+                const checked = pf.checked;
+                const followersVal = followersInput.value.trim();
+                const followers = followersVal ? Number(followersVal) : 0;
+
+                if (checked || followers > 0) {
+                  platforms.push(pid);
+                  metrics[pid] = {
+                    connected: true,
+                    followers: followers,
+                    updatedAt: now
+                  };
+                } else {
+                  metrics[pid] = { connected: false };
+                }
+              }
+
+              addPlatform('instagram');
+              addPlatform('tiktok');
+              addPlatform('youtube');
+              addPlatform('facebook');
+              addPlatform('pinterest');
+
+              const docData = {
+                name,
+                handle,
+                city,
+                category,
+                bio,
+                avatar: avatarUrl,
+                cover: coverUrl,
+                gallery,
+                price: priceVal ? Number(priceVal) : null,
+                rating: ratingVal ? Number(ratingVal) : null,
+                engagement: engagementVal ? Number(engagementVal) : null,
+                premium,
+                verified: true,
+                platforms,
+                metrics,
+                updatedAt: now,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              };
+
+              await docRef.set(docData, { merge: true });
+
+              showStatus('Karta úspěšně uložena. Přesměrovávám zpět na marketplace…', true);
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 1200);
+            } catch (err) {
+              console.error('Chyba při ukládání karty:', err);
+              showStatus('Chyba při ukládání karty – zkus to prosím znovu.', false);
+            }
+          });
+        }
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
