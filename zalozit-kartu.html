@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+  <script>
+  // Brutální kill všech service workerů – jen pro tuto stránku
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => {
+        console.log("🔥 Odstraňuji service worker:", reg);
+        reg.unregister();
+      });
+    }).catch(err => console.error("SW error:", err));
+  }
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao.cz – Založit kartu</title>
