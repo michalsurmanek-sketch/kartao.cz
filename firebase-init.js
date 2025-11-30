@@ -28,4 +28,15 @@ if (typeof firebase === "undefined") {
     db: !!window.db,
     storage: !!window.storage,
   });
+
+  // 🔓 VŽDY ZAPNOUT ONLINE REŽIM FIRESTORE
+  if (window.db && window.db.enableNetwork) {
+    window.db.enableNetwork()
+      .then(() => {
+        console.log("🌐 Firestore ONLINE (globalně z firebase-init.js)");
+      })
+      .catch((err) => {
+        console.warn("⚠️ Nepodařilo se zapnout Firestore online:", err);
+      });
+  }
 }
