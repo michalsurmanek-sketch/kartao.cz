@@ -466,6 +466,7 @@
     let existingAvatarURL = null;
     let existingCoverURL = null;
     let existingGalleryURLs = [null, null, null];
+    let existingData = null; // pro zachování createdAt
 
     function showStatus(text, ok = true) {
       const box = document.getElementById('statusBox');
@@ -518,7 +519,7 @@
       }
 
       try {
-        const ref = window.storage.ref().child(path);  <!-- TADY JE ÚPRAVA -->
+        const ref = window.storage.ref().child(path);
         await ref.put(file);
         const url = await ref.getDownloadURL();
         return url || defaultUrl;
@@ -562,6 +563,7 @@
           const snap = await docRef.get();
           if (snap.exists) {
             const data = snap.data() || {};
+            existingData = data;
 
             if (data.name) document.getElementById('name').value = data.name;
             if (data.handle) document.getElementById('handle').value = data.handle.replace(/^@/, '');
@@ -760,7 +762,8 @@
                 platforms,
                 metrics,
                 updatedAt: now,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: existingData?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
+                ownerId: uid
               };
 
               await docRef.set(docData, { merge: true });
