@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <script>
-  // Brutální kill všech service workerů – jen pro tuto stránku
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => {
-        console.log("🔥 Odstraňuji service worker:", reg);
-        reg.unregister();
-      });
-    }).catch(err => console.error("SW error:", err));
-  }
-</script>
-
   <meta charset="UTF-8" />
+
+  <!-- BRUTÁLNÍ ZABITÍ VŠECH SERVICE WORKERŮ – jen pro jistotu -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => {
+          console.log('🔥 Odstraňuji service worker:', reg);
+          reg.unregister();
+        });
+      }).catch(err => console.error('SW error:', err));
+    }
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kartao.cz – Založit kartu</title>
 
@@ -210,7 +211,7 @@
           <textarea id="bio" class="input" rows="3" placeholder="O čem je tvůj obsah, co firmy získají spoluprací?"></textarea>
         </div>
 
-        <!-- OBRÁZKY KARTY ..................................................................-->
+        <!-- OBRÁZKY KARTY -->
         <section class="space-y-6 mt-6">
           <h2 class="text-sm font-semibold text-white/80">
             Fotky karty influencera
@@ -223,7 +224,6 @@
               Profilová fotka (avatar)
             </label>
 
-            <!-- Náhled avatara -->
             <img
               id="previewAvatar"
               src=""
@@ -231,7 +231,6 @@
               class="w-24 h-24 rounded-xl object-cover border border-white/10 hidden"
             />
 
-            <!-- Výběr souboru -->
             <input
               id="avatarFile"
               type="file"
@@ -244,14 +243,13 @@
             </p>
           </div>
 
-          <!-- Cover (hlavní fotka nahoře) -->
+          <!-- Cover -->
           <div class="space-y-2">
             <label class="label">
               <i data-lucide="panels-top-left" class="w-4 h-4"></i>
               Úvodní fotka (cover)
             </label>
 
-            <!-- Náhled coveru -->
             <img
               id="previewCover"
               src=""
@@ -259,7 +257,6 @@
               class="w-full h-32 rounded-xl object-cover border border-white/10 hidden"
             />
 
-            <!-- Výběr souboru -->
             <input
               id="coverFile"
               type="file"
@@ -272,7 +269,7 @@
             </p>
           </div>
 
-          <!-- Galerie – 3 doplňkové fotky -->
+          <!-- Galerie -->
           <div class="space-y-2">
             <label class="label">
               <i data-lucide="images" class="w-4 h-4"></i>
@@ -280,7 +277,6 @@
             </label>
 
             <div class="grid grid-cols-3 gap-3">
-              <!-- 1 -->
               <div class="space-y-1.5">
                 <img
                   id="previewGal1"
@@ -296,7 +292,6 @@
                 />
               </div>
 
-              <!-- 2 -->
               <div class="space-y-1.5">
                 <img
                   id="previewGal2"
@@ -312,7 +307,6 @@
                 />
               </div>
 
-              <!-- 3 -->
               <div class="space-y-1.5">
                 <img
                   id="previewGal3"
@@ -439,18 +433,18 @@
     </div>
   </div>
 
-  <!-- Firebase knihovny -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  
-  <!-- Konfigurace + sjednocený INIT (stejné jako na indexu!) -->
+
+  <!-- Konfigurace + INIT default app -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 
   <script>
-    // Stejné default obrázky jako na marketplace
+    // Default obrázky
     const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
     const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
     const DEFAULT_GALLERY = [
@@ -459,11 +453,9 @@
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
     ];
 
-    // proměnné pro existující URL (když už karta existuje)
     let existingAvatarURL = null;
     let existingCoverURL = null;
     let existingGalleryURLs = [null, null, null];
-    let existingData = null; // pro zachování createdAt
 
     function showStatus(text, ok = true) {
       const box = document.getElementById('statusBox');
@@ -509,7 +501,6 @@
 
       const file = input.files[0];
 
-      // Když nemáme Storage, jen vrátíme default
       if (!window.storage) {
         console.warn('Firebase Storage není inicializováno, vracím default URL.');
         return defaultUrl;
@@ -522,7 +513,6 @@
         return url || defaultUrl;
       } catch (err) {
         console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
-        // Jen info – karta se normálně uloží, jen bez nové fotky
         showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
         return defaultUrl;
       }
@@ -534,19 +524,28 @@
       const form = document.getElementById('creatorForm');
       const cancelBtn = document.getElementById('cancelBtn');
 
-      // náhledy
       setupPreview('avatarFile', 'previewAvatar');
       setupPreview('coverFile', 'previewCover');
       setupPreview('gal1File', 'previewGal1');
       setupPreview('gal2File', 'previewGal2');
       setupPreview('gal3File', 'previewGal3');
 
-      if (!window.firebase || !firebase.auth || !window.db) {
-        showStatus('Firebase není inicializovaný – zkontroluj firebase-init.js.', false);
+      if (!window.firebase || !firebase.auth || !firebase.firestore || typeof firebaseConfig === "undefined") {
+        showStatus('Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.', false);
         return;
       }
 
-      firebase.auth().onAuthStateChanged(async user => {
+      // 👉 VLASTNÍ FIREBASE APP POUZE PRO TUTO STRÁNKU
+      let appKarta;
+      try {
+        appKarta = firebase.app('zalozitKartuApp');
+      } catch (e) {
+        appKarta = firebase.initializeApp(firebaseConfig, 'zalozitKartuApp');
+      }
+      const dbKarta = appKarta.firestore();
+      const auth = firebase.auth();
+
+      auth.onAuthStateChanged(async user => {
         if (!user) {
           showStatus('Pro založení karty se musíš přihlásit. Přesměrovávám na login…', false);
           setTimeout(() => window.location.href = 'login.html', 1200);
@@ -554,13 +553,13 @@
         }
 
         const uid = user.uid;
-        const docRef = db.collection('creators').doc(uid);
+        const docRef = dbKarta.collection('creators').doc(uid);
 
         try {
           const snap = await docRef.get();
+
           if (snap.exists) {
             const data = snap.data() || {};
-            existingData = data;
 
             if (data.name) document.getElementById('name').value = data.name;
             if (data.handle) document.getElementById('handle').value = data.handle.replace(/^@/, '');
@@ -572,7 +571,6 @@
             if (typeof data.engagement === 'number') document.getElementById('engagement').value = data.engagement;
             if (data.premium) document.getElementById('premium').checked = !!data.premium;
 
-            // obrázky – uložíme si původní URL
             existingAvatarURL = data.avatar || DEFAULT_AVATAR;
             existingCoverURL  = data.cover  || DEFAULT_COVER;
             const gal = Array.isArray(data.gallery) ? data.gallery : [];
@@ -582,33 +580,17 @@
               gal[2] || DEFAULT_GALLERY[2],
             ];
 
-            // zobrazíme náhledy
             const prevA = document.getElementById('previewAvatar');
             const prevC = document.getElementById('previewCover');
             const prevG1 = document.getElementById('previewGal1');
             const prevG2 = document.getElementById('previewGal2');
             const prevG3 = document.getElementById('previewGal3');
 
-            if (prevA) {
-              prevA.src = existingAvatarURL;
-              prevA.classList.remove('hidden');
-            }
-            if (prevC) {
-              prevC.src = existingCoverURL;
-              prevC.classList.remove('hidden');
-            }
-            if (prevG1) {
-              prevG1.src = existingGalleryURLs[0];
-              prevG1.classList.remove('hidden');
-            }
-            if (prevG2) {
-              prevG2.src = existingGalleryURLs[1];
-              prevG2.classList.remove('hidden');
-            }
-            if (prevG3) {
-              prevG3.src = existingGalleryURLs[2];
-              prevG3.classList.remove('hidden');
-            }
+            if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
+            if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
+            if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
+            if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
+            if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
 
             fillFollowers('instagram', data);
             fillFollowers('tiktok', data);
@@ -628,35 +610,24 @@
             const prevG2 = document.getElementById('previewGal2');
             const prevG3 = document.getElementById('previewGal3');
 
-            if (prevA) {
-              prevA.src = existingAvatarURL;
-              prevA.classList.remove('hidden');
-            }
-            if (prevC) {
-              prevC.src = existingCoverURL;
-              prevC.classList.remove('hidden');
-            }
-            if (prevG1) {
-              prevG1.src = existingGalleryURLs[0];
-              prevG1.classList.remove('hidden');
-            }
-            if (prevG2) {
-              prevG2.src = existingGalleryURLs[1];
-              prevG2.classList.remove('hidden');
-            }
-            if (prevG3) {
-              prevG3.src = existingGalleryURLs[2];
-              prevG3.classList.remove('hidden');
-            }
+            if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove('hidden'); }
+            if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove('hidden'); }
+            if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove('hidden'); }
+            if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove('hidden'); }
+            if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove('hidden'); }
 
             showStatus('Vytváříš svou první kartu influencera ✨');
           }
         } catch (err) {
           console.error(err);
-          showStatus('Chyba při načítání karty – zkus prosím obnovit stránku.', false);
+          showStatus('Chyba při načítání karty – pokračuji jako by byla nová.', false);
+          // I když načtení selže, necháme uživatele kartu vytvořit.
+          existingAvatarURL = DEFAULT_AVATAR;
+          existingCoverURL  = DEFAULT_COVER;
+          existingGalleryURLs = [...DEFAULT_GALLERY];
         }
 
-        // odeslání formuláře
+        // ODESLÁNÍ FORMULÁŘE
         if (form) {
           form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -682,7 +653,6 @@
               const handle = '@' + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, '');
               const now = Date.now();
 
-              // upload obrázků pokud jsou nové
               const avatarUrl = await uploadImageIfNeeded(
                 'avatarFile',
                 existingAvatarURL || DEFAULT_AVATAR,
@@ -759,8 +729,7 @@
                 platforms,
                 metrics,
                 updatedAt: now,
-                createdAt: existingData?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
-                ownerId: uid
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
               };
 
               await docRef.set(docData, { merge: true });
