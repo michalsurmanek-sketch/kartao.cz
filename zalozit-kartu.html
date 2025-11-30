@@ -436,20 +436,22 @@
   <!-- Konfigurace + sjednocený INIT (stejné jako na indexu!) -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+
   <!-- Přepnutí Firestore do ONLINE režimu pro zalozit-kartu.html -->
-<script>
-  if (window.firebase && firebase.firestore) {
-    firebase.firestore().enableNetwork()
-      .then(() => {
-        console.log("🌐 Firestore ONLINE (zalozit-kartu.html)");
-      })
-      .catch((err) => {
-        console.warn("⚠️ Nepodařilo se zapnout Firestore online (zalozit-kartu.html):", err);
-      });
-  } else {
-    console.warn("⚠️ Firebase/Firestore není na zalozit-kartu.html k dispozici");
-  }
-</script>
+  <script>
+    if (window.firebase && firebase.firestore) {
+      firebase.firestore().enableNetwork()
+        .then(() => {
+          console.log("🌐 Firestore ONLINE (zalozit-kartu.html)");
+        })
+        .catch((err) => {
+          console.warn("⚠️ Nepodařilo se zapnout Firestore online (zalozit-kartu.html):", err);
+        });
+    } else {
+      console.warn("⚠️ Firebase/Firestore není na zalozit-kartu.html k dispozici");
+    }
+  </script>
+
   <script>
     // Stejné default obrázky jako na marketplace
     const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
@@ -501,31 +503,31 @@
       });
     }
 
- async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
-  const input = document.getElementById(fileInputId);
-  if (!input || !input.files || !input.files[0]) {
-    return defaultUrl;
-  }
+    async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
+      const input = document.getElementById(fileInputId);
+      if (!input || !input.files || !input.files[0]) {
+        return defaultUrl;
+      }
 
-  const file = input.files[0];
+      const file = input.files[0];
 
-  // Když nemáme Storage, jen vrátíme default
-  if (!window.storage) {
-    console.warn('Firebase Storage není inicializováno, vracím default URL.');
-    return defaultUrl;
-  }
+      // Když nemáme Storage, jen vrátíme default
+      if (!window.storage) {
+        console.warn('Firebase Storage není inicializováno, vracím default URL.');
+        return defaultUrl;
+      }
 
-  try {
-    const ref = storage.ref().child(path);
-    await ref.put(file);
-    const url = await ref.getDownloadURL();
-    return url || defaultUrl;
-  } catch (err) {
-    console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
-    // Jen info – karta se normálně uloží, jen bez nové fotky
-    showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
-    return defaultUrl;
-  }
+      try {
+        const ref = window.storage.ref().child(path);
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        return url || defaultUrl;
+      } catch (err) {
+        console.error('Upload obrázku selhal (CORS / Storage), používám fallback URL:', err);
+        // Jen info – karta se normálně uloží, jen bez nové fotky
+        showStatus('Nahrání fotky se nepovedlo, ale karta se uloží bez ní.', false);
+        return defaultUrl;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
