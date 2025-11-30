@@ -6,14 +6,15 @@
   <!-- BRUTÁLNÍ ZABITÍ VŠECH SERVICE WORKERŮ – jen pro jistotu -->
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations()
-        .then(regs => {
-          regs.forEach(reg => {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => {
+          regs.forEach((reg) => {
             console.log("🔥 Odstraňuji service worker:", reg);
             reg.unregister();
           });
         })
-        .catch(err => console.error("SW error:", err));
+        .catch((err) => console.error("SW error:", err));
     }
   </script>
 
@@ -38,9 +39,9 @@
           },
           borderRadius: {
             "2xl": "1rem",
-          }
-        }
-      }
+          },
+        },
+      },
     };
   </script>
 
@@ -49,13 +50,18 @@
 
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
     }
     .card {
       border-radius: 1rem;
-      background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.16), rgba(15, 23, 42, 0.98));
+      background: radial-gradient(
+        circle at top left,
+        rgba(236, 72, 153, 0.16),
+        rgba(15, 23, 42, 0.98)
+      );
       border: 1px solid rgba(148, 163, 184, 0.3);
-      box-shadow: 0 24px 80px rgba(15,23,42,0.9);
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.9);
     }
     .btn {
       border-radius: 999px;
@@ -71,7 +77,12 @@
       transition: all 150ms ease;
     }
     .btn-primary {
-      background-image: linear-gradient(to right, #fbbf24, #ec4899, #38bdf8);
+      background-image: linear-gradient(
+        to right,
+        #fbbf24,
+        #ec4899,
+        #38bdf8
+      );
       color: #020617;
       border-color: transparent;
       box-shadow: 0 15px 45px rgba(236, 72, 153, 0.5);
@@ -118,19 +129,27 @@
       align-items: center;
       gap: 0.3rem;
       color: #e5e7eb;
-      background: rgba(15,23,42,0.6);
+      background: rgba(15, 23, 42, 0.6);
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
-
+<body
+  class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white"
+>
   <div class="max-w-4xl mx-auto px-4 py-6 md:py-10">
     <!-- Hlavička -->
     <div class="flex items-center justify-between gap-3 mb-6">
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
-          <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-fuchsia-500/20 border border-fuchsia-500/40">
-            <i data-lucide="credit-card" class="w-4 h-4 text-fuchsia-300"></i>
+        <h1
+          class="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2"
+        >
+          <span
+            class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-fuchsia-500/20 border border-fuchsia-500/40"
+          >
+            <i
+              data-lucide="credit-card"
+              class="w-4 h-4 text-fuchsia-300"
+            ></i>
           </span>
           Založit kartu influencera
         </h1>
@@ -159,14 +178,26 @@
               <i data-lucide="user" class="w-4 h-4"></i>
               Jméno / název profilu
             </label>
-            <input id="name" type="text" class="input" placeholder="Např. Michal – obsah o businessu" required />
+            <input
+              id="name"
+              type="text"
+              class="input"
+              placeholder="Např. Michal – obsah o businessu"
+              required
+            />
           </div>
           <div class="space-y-1.5">
             <label class="label">
               <i data-lucide="at-sign" class="w-4 h-4"></i>
               Handle (bez @)
             </label>
-            <input id="handle" type="text" class="input" placeholder="michalsurmanek" required />
+            <input
+              id="handle"
+              type="text"
+              class="input"
+              placeholder="michalsurmanek"
+              required
+            />
           </div>
         </div>
 
@@ -201,7 +232,13 @@
               <i data-lucide="ticket-percent" class="w-4 h-4"></i>
               Cena od (Kč / post)
             </label>
-            <input id="price" type="number" min="0" class="input" placeholder="1500" />
+            <input
+              id="price"
+              type="number"
+              min="0"
+              class="input"
+              placeholder="1500"
+            />
           </div>
         </div>
 
@@ -210,7 +247,12 @@
             <i data-lucide="file-text" class="w-4 h-4"></i>
             Krátký popis / bio
           </label>
-          <textarea id="bio" class="input" rows="3" placeholder="O čem je tvůj obsah, co firmy získají spoluprací?"></textarea>
+          <textarea
+            id="bio"
+            class="input"
+            rows="3"
+            placeholder="O čem je tvůj obsah, co firmy získají spoluprací?"
+          ></textarea>
         </div>
 
         <!-- OBRÁZKY KARTY -->
@@ -346,47 +388,112 @@
           <div class="grid md:grid-cols-2 gap-3">
             <div class="flex items-center gap-3">
               <label class="pill min-w-[120px]">
-                <input id="pf-instagram" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
-                <i data-lucide="camera" class="w-3.5 h-3.5 text-fuchsia-300"></i>
+                <input
+                  id="pf-instagram"
+                  type="checkbox"
+                  class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+                />
+                <i
+                  data-lucide="camera"
+                  class="w-3.5 h-3.5 text-fuchsia-300"
+                ></i>
                 Instagram
               </label>
-              <input id="followers-instagram" type="number" min="0" class="input" placeholder="Followers" />
+              <input
+                id="followers-instagram"
+                type="number"
+                min="0"
+                class="input"
+                placeholder="Followers"
+              />
             </div>
 
             <div class="flex items-center gap-3">
               <label class="pill min-w-[120px]">
-                <input id="pf-tiktok" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
-                <i data-lucide="music-4" class="w-3.5 h-3.5 text-sky-300"></i>
+                <input
+                  id="pf-tiktok"
+                  type="checkbox"
+                  class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+                />
+                <i
+                  data-lucide="music-4"
+                  class="w-3.5 h-3.5 text-sky-300"
+                ></i>
                 TikTok
               </label>
-              <input id="followers-tiktok" type="number" min="0" class="input" placeholder="Followers" />
+              <input
+                id="followers-tiktok"
+                type="number"
+                min="0"
+                class="input"
+                placeholder="Followers"
+              />
             </div>
 
             <div class="flex items-center gap-3">
               <label class="pill min-w-[120px]">
-                <input id="pf-youtube" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
-                <i data-lucide="play" class="w-3.5 h-3.5 text-red-300"></i>
+                <input
+                  id="pf-youtube"
+                  type="checkbox"
+                  class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+                />
+                <i
+                  data-lucide="play"
+                  class="w-3.5 h-3.5 text-red-300"
+                ></i>
                 YouTube
               </label>
-              <input id="followers-youtube" type="number" min="0" class="input" placeholder="Subscribers" />
+              <input
+                id="followers-youtube"
+                type="number"
+                min="0"
+                class="input"
+                placeholder="Subscribers"
+              />
             </div>
 
             <div class="flex items-center gap-3">
               <label class="pill min-w-[120px]">
-                <input id="pf-facebook" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
-                <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-300"></i>
+                <input
+                  id="pf-facebook"
+                  type="checkbox"
+                  class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+                />
+                <i
+                  data-lucide="facebook"
+                  class="w-3.5 h-3.5 text-blue-300"
+                ></i>
                 Facebook
               </label>
-              <input id="followers-facebook" type="number" min="0" class="input" placeholder="Followers" />
+              <input
+                id="followers-facebook"
+                type="number"
+                min="0"
+                class="input"
+                placeholder="Followers"
+              />
             </div>
 
             <div class="flex items-center gap-3">
               <label class="pill min-w-[120px]">
-                <input id="pf-pinterest" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900" />
-                <i data-lucide="image" class="w-3.5 h-3.5 text-rose-300"></i>
+                <input
+                  id="pf-pinterest"
+                  type="checkbox"
+                  class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+                />
+                <i
+                  data-lucide="image"
+                  class="w-3.5 h-3.5 text-rose-300"
+                ></i>
                 Pinterest
               </label>
-              <input id="followers-pinterest" type="number" min="0" class="input" placeholder="Followers" />
+              <input
+                id="followers-pinterest"
+                type="number"
+                min="0"
+                class="input"
+                placeholder="Followers"
+              />
             </div>
           </div>
         </div>
@@ -398,28 +505,51 @@
               <i data-lucide="star" class="w-4 h-4"></i>
               Hodnocení (0–5, volitelné)
             </label>
-            <input id="rating" type="number" min="0" max="5" step="0.1" class="input" placeholder="4.9" />
+            <input
+              id="rating"
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              class="input"
+              placeholder="4.9"
+            />
           </div>
           <div class="space-y-1.5">
             <label class="label">
               <i data-lucide="activity" class="w-4 h-4"></i>
               Engagement (%) – volitelné
             </label>
-            <input id="engagement" type="number" min="0" step="0.1" class="input" placeholder="7.5" />
+            <input
+              id="engagement"
+              type="number"
+              min="0"
+              step="0.1"
+              class="input"
+              placeholder="7.5"
+            />
           </div>
           <div class="flex items-center gap-3 mt-6">
-            <label class="inline-flex items-center gap-2 text-sm text-white/80">
-              <input id="premium" type="checkbox" class="h-4 w-4 rounded border-slate-600 bg-slate-900" />
+            <label
+              class="inline-flex items-center gap-2 text-sm text-white/80"
+            >
+              <input
+                id="premium"
+                type="checkbox"
+                class="h-4 w-4 rounded border-slate-600 bg-slate-900"
+              />
               <span>Premium profil (doporučovaný)</span>
             </label>
           </div>
         </div>
 
         <!-- Tlačítka -->
-        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-2">
+        <div
+          class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-2"
+        >
           <div class="text-xs text-white/60">
-            Uložením vytvoříš / aktualizuješ svou kartu v marketplace.  
-            Dá se kdykoliv znovu upravit.
+            Uložením vytvoříš / aktualizuješ svou kartu v marketplace. Dá se
+            kdykoliv znovu upravit.
           </div>
           <div class="flex items-center gap-2">
             <button type="button" id="cancelBtn" class="btn btn-outline">
@@ -447,16 +577,18 @@
 
   <script>
     // Default obrázky
-    const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
-    const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
+    const DEFAULT_AVATAR =
+      "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+    const DEFAULT_COVER =
+      "https://images.unsplash.com/photo-1526481280695-3c687fd543c0?w=800&h=320&fit=crop&crop=center";
     const DEFAULT_GALLERY = [
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
       "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=250&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center"
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=250&fit=crop&crop=center",
     ];
 
     let existingAvatarURL = DEFAULT_AVATAR;
-    let existingCoverURL  = DEFAULT_COVER;
+    let existingCoverURL = DEFAULT_COVER;
     let existingGalleryURLs = [...DEFAULT_GALLERY];
 
     function showStatus(text, ok = true) {
@@ -464,8 +596,12 @@
       const span = document.getElementById("statusText");
       if (!box || !span) return;
       span.textContent = text;
-      span.style.borderColor = ok ? "rgba(52,211,153,0.7)" : "rgba(248,113,113,0.8)";
-      span.style.background = ok ? "rgba(22,163,74,0.25)" : "rgba(127,29,29,0.35)";
+      span.style.borderColor = ok
+        ? "rgba(52,211,153,0.7)"
+        : "rgba(248,113,113,0.8)";
+      span.style.background = ok
+        ? "rgba(22,163,74,0.25)"
+        : "rgba(127,29,29,0.35)";
       box.classList.remove("hidden");
     }
 
@@ -502,8 +638,14 @@
         const url = await ref.getDownloadURL();
         return url || defaultUrl;
       } catch (err) {
-        console.error("Upload obrázku selhal (CORS / Storage), používám fallback URL:", err);
-        showStatus("Nahrání fotky se nepovedlo, ale karta se uloží bez ní.", false);
+        console.error(
+          "Upload obrázku selhal (CORS / Storage), používám fallback URL:",
+          err
+        );
+        showStatus(
+          "Nahrání fotky se nepovedlo, ale karta se uloží bez ní.",
+          false
+        );
         return defaultUrl;
       }
     }
@@ -527,62 +669,95 @@
       const prevG2 = document.getElementById("previewGal2");
       const prevG3 = document.getElementById("previewGal3");
 
-      if (prevA) { prevA.src = existingAvatarURL; prevA.classList.remove("hidden"); }
-      if (prevC) { prevC.src = existingCoverURL;  prevC.classList.remove("hidden"); }
-      if (prevG1){ prevG1.src = existingGalleryURLs[0]; prevG1.classList.remove("hidden"); }
-      if (prevG2){ prevG2.src = existingGalleryURLs[1]; prevG2.classList.remove("hidden"); }
-      if (prevG3){ prevG3.src = existingGalleryURLs[2]; prevG3.classList.remove("hidden"); }
+      if (prevA) {
+        prevA.src = existingAvatarURL;
+        prevA.classList.remove("hidden");
+      }
+      if (prevC) {
+        prevC.src = existingCoverURL;
+        prevC.classList.remove("hidden");
+      }
+      if (prevG1) {
+        prevG1.src = existingGalleryURLs[0];
+        prevG1.classList.remove("hidden");
+      }
+      if (prevG2) {
+        prevG2.src = existingGalleryURLs[1];
+        prevG2.classList.remove("hidden");
+      }
+      if (prevG3) {
+        prevG3.src = existingGalleryURLs[2];
+        prevG3.classList.remove("hidden");
+      }
 
       if (!window.firebase || !firebase.auth || typeof firebaseConfig === "undefined") {
-        showStatus("Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.", false);
-        console.error("❌ Firebase není správně inicializovaný.");
+        showStatus(
+          "Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.",
+          false
+        );
+        console.error("❌ Firebase / firebaseConfig není připraven.");
         return;
       }
 
       const auth = firebase.auth();
 
       auth.onAuthStateChanged((user) => {
-        console.log("👤 Auth state changed:", user ? user.uid : "nepřihlášen");
+        console.log("Auth state changed:", user ? user.uid : null);
         if (!user) {
-          showStatus("Pro založení karty se musíš přihlásit. Přesměrovávám na login…", false);
-          setTimeout(() => window.location.href = "login.html", 1200);
+          showStatus(
+            "Pro založení karty se musíš přihlásit. Přesměrovávám na login…",
+            false
+          );
+          setTimeout(() => (window.location.href = "login.html"), 1200);
           return;
         }
 
-        showStatus("Vytváříš svou první kartu influencera ✨");
         console.log("✅ Uživatel přihlášen, id:", user.uid);
+        showStatus("Vytváříš svou první kartu influencera ✨");
 
         if (form) {
           form.addEventListener("submit", async (e) => {
             e.preventDefault();
+            console.log("[FORM] Start submit, uid =", user.uid);
 
             try {
               const uid = user.uid;
               const now = Date.now();
 
-              console.log("🟣 [FORM] Start submit, uid =", uid);
-
               const name = document.getElementById("name").value.trim();
-              const handleRaw = document.getElementById("handle").value.trim();
-              const city = document.getElementById("city").value.trim() || null;
-              const category = document.getElementById("category").value || "Lifestyle";
-              const bio = document.getElementById("bio").value.trim() || "";
-              const priceVal = document.getElementById("price").value.trim();
-              const ratingVal = document.getElementById("rating").value.trim();
-              const engagementVal = document.getElementById("engagement").value.trim();
+              const handleRaw = document
+                .getElementById("handle")
+                .value.trim();
+              const city =
+                document.getElementById("city").value.trim() || null;
+              const category =
+                document.getElementById("category").value || "Lifestyle";
+              const bio =
+                document.getElementById("bio").value.trim() || "";
+              const priceVal =
+                document.getElementById("price").value.trim();
+              const ratingVal =
+                document.getElementById("rating").value.trim();
+              const engagementVal = document
+                .getElementById("engagement")
+                .value.trim();
               const premium = document.getElementById("premium").checked;
 
               if (!name || !handleRaw) {
                 showStatus("Vyplň prosím jméno a handle.", false);
-                console.warn("⚠ [FORM] Chybí jméno nebo handle");
+                console.warn("[FORM] Chybí jméno nebo handle.");
                 return;
               }
 
-              showStatus("Ukládám kartu… (může chvilku trvat při nahrávání fotek)", true);
-              console.log("🟣 [FORM] Validace OK, pokračuji");
+              showStatus(
+                "Ukládám kartu… (může chvilku trvat při nahrávání fotek)",
+                true
+              );
+              console.log("[FORM] Validace OK, pokračuji");
 
-              const handle = "@" + handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, "");
-              console.log("🟣 [FORM] Handle:", handle);
+              const handle =
+                "@" +
+                handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, "");
 
               const avatarUrl = await uploadImageIfNeeded(
                 "avatarFile",
@@ -611,10 +786,17 @@
               );
 
               const gallery = [gal1Url, gal2Url, gal3Url];
-              console.log("🟣 [FORM] Obrázky připravené", { avatarUrl, coverUrl, gallery });
+
+              console.log("[FORM] Obrázky připravené", {
+                avatarUrl,
+                coverUrl,
+                gallery,
+              });
 
               function getFollowers(pid) {
-                const inp = document.getElementById("followers-" + pid);
+                const inp = document.getElementById(
+                  "followers-" + pid
+                );
                 if (!inp) return 0;
                 const v = inp.value.trim();
                 return v ? Number(v) : 0;
@@ -622,15 +804,18 @@
 
               const metrics = {
                 instagram: { followers: getFollowers("instagram") },
-                tiktok:     { followers: getFollowers("tiktok") },
-                youtube:    { followers: getFollowers("youtube") },
-                facebook:   { followers: getFollowers("facebook") },
-                pinterest:  { followers: getFollowers("pinterest") },
+                tiktok: { followers: getFollowers("tiktok") },
+                youtube: { followers: getFollowers("youtube") },
+                facebook: { followers: getFollowers("facebook") },
+                pinterest: { followers: getFollowers("pinterest") },
               };
 
               if (!window.db) {
-                showStatus("Databáze není inicializovaná (window.db chybí).", false);
-                console.error("❌ [FORM] window.db není k dispozici");
+                showStatus(
+                  "Databáze není inicializovaná (window.db chybí).",
+                  false
+                );
+                console.error("❌ window.db neexistuje!");
                 return;
               }
 
@@ -648,25 +833,34 @@
                 engagement: engagementVal ? Number(engagementVal) : null,
                 premium: !!premium,
                 updatedAt: now,
-                metrics
+                metrics,
               };
 
-              console.log("🟣 [FORM] Posílám do Firestore:", payload);
+              console.log("[FORM] Posílám do Firestore:", payload);
 
-              await window.db.collection("creators").doc(uid).set(payload, { merge: true });
+              // Uložení přes Firestore SDK
+              await window.db
+                .collection("creators")
+                .doc(uid)
+                .set(payload, { merge: true });
 
-              console.log("🟢 [FORM] Firestore set OK");
-              showStatus("Karta úspěšně uložena. Přesměrovávám zpět na marketplace…", true);
+              console.log(
+                "[FORM] Firestore write OK → creators/" + uid
+              );
 
+              showStatus(
+                "Karta úspěšně uložena. Přesměrovávám zpět na marketplace…",
+                true
+              );
               setTimeout(() => {
-                console.log("🔁 [FORM] Redirect na index.html");
                 window.location.href = "index.html";
               }, 1200);
-
             } catch (err) {
-              console.error("❌ Chyba při ukládání karty:", err);
-              const msg = err && err.message ? err.message : String(err);
-              showStatus("Chyba při ukládání karty: " + msg, false);
+              console.error("Chyba při ukládání karty:", err);
+              showStatus(
+                "Chyba při ukládání karty – zkus to prosím znovu.",
+                false
+              );
             }
           });
         }
