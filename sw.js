@@ -1,9 +1,9 @@
 // sw.js – service worker pro Kartao.cz
 
-const CACHE_NAME = 'kartao-v1';
+const CACHE_NAME = 'kartao-v2'; // bump verze, aby se natáhl nový SW
 
 const ASSETS_TO_CACHE = [
-  '/',
+  '/',                 // root
   '/index.html',
 
   // stránky které skutečně existují:
@@ -13,14 +13,14 @@ const ASSETS_TO_CACHE = [
   '/moje-vyhry.html',
   '/login.html',
 
-  // tvé skripty – jen ty které existují
+  // skripty – jen ty, které reálně existují v kořeni
   '/firebase-config.js',
   '/firebase-init.js',
   '/hamburger-menu.js',
-  // případně přidej další reálné soubory, ale nic navíc!
+  // případně přidej další existující soubory
 ];
 
-// Instalace service workeru
+// Instalace service workeru – přednačtení základních assetů
 self.addEventListener('install', event => {
   console.log('[SW] Installing…');
   event.waitUntil(
@@ -28,6 +28,7 @@ self.addEventListener('install', event => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
 // Aktivace + odstranění starých cache
@@ -42,11 +43,53 @@ self.addEventListener('activate', event => {
       )
     )
   );
+  self.clients.claim();
 });
 
-// Fetch — síť > fallback cache
+// Fetch — obsluhujeme JEN stejné origin, nic z cizích domén
 self.addEventListener('fetch', event => {
+  const req = event.request;
+
+  // Cacheujeme jen GET dotazy
+  if (req.method !== 'GET') {
+    return;
+  }
+
+  const url = new URL(req.url);
+
+  // Když není stejný origin (Firebase, Google, Tailwind...), vůbec se do toho nepleteme
+  if (url.origin !== self.location.origin) {
+    return; // necháme to normálně přes síť, bez respondWith
+  }
+
+  // Pro naše HTML/CSS/JS: cache-first s fallbackem na síť
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    caches.match(req).then(cacheRes => {
+      if (cacheRes) {
+        return cacheRes;
+      }
+
+      return fetch(req)
+        .then(networkRes => {
+          // Uložíme do cache pro příště (jen když je OK odpověď)
+          if (networkRes && networkRes.status === 200) {
+            const resClone = networkRes.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(req, resClone);
+            });
+          }
+          return networkRes;
+        })
+        .catch(() => {
+          // Fallback – když se nepodaří síť ani cache, zkusíme index.html
+          if (req.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+          return new Response('Offline', {
+            status: 503,
+            statusText: 'Offline'
+          });
+        });
+    })
   );
 });
