@@ -432,7 +432,20 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
+  <!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
+<script>
+  if (window.firebase && firebase.firestore) {
+    firebase.firestore().enableNetwork()
+      .then(() => {
+        console.log("🌐 Firestore ONLINE (zalozit-kartu.html)");
+      })
+      .catch((err) => {
+        console.warn("⚠️ Nepodařilo se zapnout Firestore online (zalozit-kartu.html):", err);
+      });
+  } else {
+    console.warn("⚠️ Firebase/Firestore není na zalozit-kartu.html k dispozici");
+  }
+</script>
   <!-- Konfigurace + sjednocený INIT (stejné jako na indexu!) -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
