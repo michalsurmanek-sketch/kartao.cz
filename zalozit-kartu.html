@@ -437,21 +437,6 @@
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 
-  <!-- Přepnutí Firestore do ONLINE režimu pro zalozit-kartu.html -->
-  <script>
-    if (window.firebase && firebase.firestore) {
-      firebase.firestore().enableNetwork()
-        .then(() => {
-          console.log("🌐 Firestore ONLINE (zalozit-kartu.html)");
-        })
-        .catch((err) => {
-          console.warn("⚠️ Nepodařilo se zapnout Firestore online (zalozit-kartu.html):", err);
-        });
-    } else {
-      console.warn("⚠️ Firebase/Firestore není na zalozit-kartu.html k dispozici");
-    }
-  </script>
-
   <script>
     // Stejné default obrázky jako na marketplace
     const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
