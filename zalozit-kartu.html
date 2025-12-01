@@ -432,7 +432,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
-                oninput="if(this.value > 0) document.getElementById('pf-instagram').checked = true; else document.getElementById('pf-instagram').checked = false;"
+                oninput="if(this.value > 0) document.getElementById('pf-instagram').checked = true; else document.getElementById('pf-instagram').checked = false; updatePlatformsPreview();"
               />
             </div>
 
@@ -455,7 +455,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
-                oninput="if(this.value > 0) document.getElementById('pf-tiktok').checked = true; else document.getElementById('pf-tiktok').checked = false;"
+                oninput="if(this.value > 0) document.getElementById('pf-tiktok').checked = true; else document.getElementById('pf-tiktok').checked = false; updatePlatformsPreview();"
               />
             </div>
 
@@ -478,7 +478,7 @@
                 min="0"
                 class="input"
                 placeholder="Subscribers"
-                oninput="if(this.value > 0) document.getElementById('pf-youtube').checked = true; else document.getElementById('pf-youtube').checked = false;"
+                oninput="if(this.value > 0) document.getElementById('pf-youtube').checked = true; else document.getElementById('pf-youtube').checked = false; updatePlatformsPreview();"
               />
             </div>
 
@@ -501,7 +501,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
-                oninput="if(this.value > 0) document.getElementById('pf-facebook').checked = true; else document.getElementById('pf-facebook').checked = false;"
+                oninput="if(this.value > 0) document.getElementById('pf-facebook').checked = true; else document.getElementById('pf-facebook').checked = false; updatePlatformsPreview();"
               />
             </div>
 
@@ -524,9 +524,20 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
-                oninput="if(this.value > 0) document.getElementById('pf-pinterest').checked = true; else document.getElementById('pf-pinterest').checked = false;"
+                oninput="if(this.value > 0) document.getElementById('pf-pinterest').checked = true; else document.getElementById('pf-pinterest').checked = false; updatePlatformsPreview();"
               />
             </div>
+          </div>
+        </div>
+
+        <!-- Přehled připojených platforem -->
+        <div class="rounded-2xl bg-gradient-to-br from-emerald-500/10 to-green-500/10 border border-emerald-400/30 p-4">
+          <h3 class="text-sm font-semibold text-emerald-300 mb-3 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            Tvoje připojené platformy
+          </h3>
+          <div class="flex flex-wrap gap-2" id="platformsPreview">
+            <p class="text-xs text-white/60">Zadej followers výše a platformy se zobrazí zde automaticky ↑</p>
           </div>
         </div>
 
@@ -657,6 +668,70 @@
         img.src = url;
         img.classList.remove("hidden");
       });
+    }
+
+    function updatePlatformsPreview() {
+      const platformsPreview = document.getElementById('platformsPreview');
+      if (!platformsPreview) return;
+
+      const platforms = [
+        { 
+          id: 'instagram', 
+          icon: 'camera', 
+          label: 'Instagram', 
+          color: 'from-pink-500 to-purple-500',
+          inputId: 'followers-instagram'
+        },
+        { 
+          id: 'tiktok', 
+          icon: 'music', 
+          label: 'TikTok', 
+          color: 'from-cyan-400 to-blue-500',
+          inputId: 'followers-tiktok'
+        },
+        { 
+          id: 'youtube', 
+          icon: 'play', 
+          label: 'YouTube', 
+          color: 'from-red-500 to-red-600',
+          inputId: 'followers-youtube'
+        },
+        { 
+          id: 'facebook', 
+          icon: 'facebook', 
+          label: 'Facebook', 
+          color: 'from-blue-500 to-blue-700',
+          inputId: 'followers-facebook'
+        },
+        { 
+          id: 'pinterest', 
+          icon: 'image', 
+          label: 'Pinterest', 
+          color: 'from-red-600 to-rose-600',
+          inputId: 'followers-pinterest'
+        }
+      ];
+
+      const connectedPlatforms = platforms.filter(p => {
+        const input = document.getElementById(p.inputId);
+        return input && input.value && Number(input.value) > 0;
+      });
+
+      if (connectedPlatforms.length > 0) {
+        platformsPreview.innerHTML = connectedPlatforms.map(platform => `
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r ${platform.color} bg-opacity-20 border border-white/20 text-sm">
+            <i data-lucide="${platform.icon}" class="w-3.5 h-3.5"></i>
+            <span class="font-medium">${platform.label}</span>
+          </div>
+        `).join('');
+        
+        // Reinicializuj ikony
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      } else {
+        platformsPreview.innerHTML = '<p class="text-xs text-white/60">Zadej followers výše a platformy se zobrazí zde automaticky ↑</p>';
+      }
     }
 
     async function uploadImageIfNeeded(fileInputId, defaultUrl, path) {
@@ -935,6 +1010,9 @@
               document.getElementById("followers-pinterest").value = existingCard.pinterest_followers;
               document.getElementById("pf-pinterest").checked = true;
             }
+            
+            // Aktualizuj přehled platforem
+            updatePlatformsPreview();
             
             // Obrázky - nastav preview
             if (existingCard.avatar_url) {
