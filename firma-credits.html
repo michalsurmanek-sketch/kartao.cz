@@ -63,10 +63,10 @@
             E-shop
           </a>
 
-          <a href="logout.html" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+          <button id="logout-btn" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
-          </a>
+          </button>
         </div>
       </div>
     </header>
@@ -240,8 +240,7 @@
   <script src="database-init.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth;
+    document.addEventListener("DOMContentLoaded", async function () {
       const headerCreditsEl = document.getElementById("headerCredits");
       const currentCreditsEl = document.getElementById("currentCredits");
       const packageEl = document.getElementById("summaryPackage");
@@ -251,63 +250,54 @@
 
       let selectedAmount = null;
       let selectedLabel = null;
+      let currentCreator = null;
+
+      // Supabase konfigurace
+      const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       function updateCreditsDisplay(val) {
         if (typeof val !== "number") return;
-        if (headerCreditsEl) headerCreditsEl.textContent = val;
-        if (currentCreditsEl) currentCreditsEl.textContent = val;
+        if (headerCreditsEl) headerCreditsEl.textContent = val.toLocaleString('cs-CZ');
+        if (currentCreditsEl) currentCreditsEl.textContent = val.toLocaleString('cs-CZ');
+      }
+
+      // Kontrola přihlášení a načtení dat
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
         
-        // Aktualizuj i globální zobrazení (pokud existuje)
-        if (window.updateCreditsDisplay) {
-          window.updateCreditsDisplay(val);
-        }
-      }
-
-      if (!auth) {
-        console.warn("Auth není dostupné na dobiti-kreditu.html – zkontroluj supabase-config.js a supabase-init.js");
-        return;
-      }
-
-      kartaoAuth.onAuthStateChanged(function (user) {
-        if (!user) {
-          window.location.href = "login.html";
+        if (authError || !user) {
+          console.warn('❌ Uživatel není přihlášen, přesměrování na login');
+          window.location.href = 'login.html';
           return;
         }
 
-        // Uložíme skutečného uživatele, ale K-Coins řešíme přes firemní účet
-        window.currentUserId = user.uid;
+        console.log('✅ Přihlášený uživatel:', user.email);
 
-        const firmId = localStorage.getItem("kartao_firma_id");
-        if (!firmId) {
-          console.warn("Na stránce dobíjení chybí kartao_firma_id – nejdřív musí být vybraná / založená firma.");
-          window.currentFirmId = null;
-        } else {
-          window.currentFirmId = firmId;
+        // Načtení creator dat
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (creatorError) {
+          console.error('❌ Chyba načítání creator dat:', creatorError);
+          
+          if (creatorError.code === 'PGRST116') {
+            alert('Nejprve musíš vytvořit svoji kartu!');
+            window.location.href = 'zalozit-kartu.html';
+          }
+          return;
         }
 
-        let creditsSystem;
-        try {
-          if (typeof window.CreditsSystem !== "function") {
-            throw new Error("CreditsSystem není dostupný – zkontroluj credits-system.js");
-          }
-
-          // 🔁 Kredity jsou svázané s firemním účtem
-          if (!window.currentFirmId) {
-            throw new Error("Nelze inicializovat CreditsSystem – není nastavená firmId (kartao_firma_id).");
-          }
-
-          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
-          creditsSystem = new window.CreditsSystem(window.currentFirmId, updateCreditsDisplay);
-
-          // Pro debug
-          window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
-          };
-
-          const val = creditsSystem.getCredits();
-          updateCreditsDisplay(val);
+        if (creator) {
+          currentCreator = creator;
+          console.log('📊 Creator data načtena:', { name: creator.name, credits: creator.credits });
+          
+          // Aktualizuj zobrazení kreditů
+          updateCreditsDisplay(creator.credits || 0);
 
           // Výběr balíčku
           const cards = document.querySelectorAll(".topup-card");
@@ -328,31 +318,98 @@
             });
           });
 
+          // Potvrzení dobití (DEMO režim)
           if (confirmBtn) {
-            confirmBtn.addEventListener("click", () => {
+            confirmBtn.addEventListener("click", async () => {
               if (!selectedAmount) return;
 
-              const newVal = creditsSystem.addCredits(selectedAmount);
-              updateCreditsDisplay(newVal);
+              try {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Připisujeme...';
 
-              if (messageEl) {
-                messageEl.textContent =
-                  `Připsáno ${selectedAmount.toLocaleString("cs-CZ")} K-Coins (demo). ` +
-                  `V ostré verzi se kredity připíší po zaplacení.`;
-                messageEl.style.color = "#6ee7b7"; // emerald-300
-                messageEl.classList.remove("text-emerald-300/0");
-                messageEl.style.opacity = "1";
+                // Update kreditu v databázi
+                const newCredits = (currentCreator.credits || 0) + selectedAmount;
+                
+                const { data, error } = await supabase
+                  .from('creators')
+                  .update({ 
+                    credits: newCredits,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', user.id)
+                  .select()
+                  .single();
 
-                setTimeout(() => {
-                  messageEl.style.opacity = "0";
-                }, 3500);
+                if (error) throw error;
+
+                console.log('✅ Kredity připsány:', data);
+
+                // Aktualizuj zobrazení
+                currentCreator.credits = newCredits;
+                updateCreditsDisplay(newCredits);
+
+                // Zobraz úspěšnou zprávu
+                if (messageEl) {
+                  messageEl.textContent =
+                    `✅ Připsáno ${selectedAmount.toLocaleString("cs-CZ")} K-Coins! ` +
+                    `Nový zůstatek: ${newCredits.toLocaleString('cs-CZ')} K-Coins`;
+                  messageEl.style.color = "#6ee7b7";
+                  messageEl.style.opacity = "1";
+
+                  setTimeout(() => {
+                    messageEl.style.opacity = "0";
+                  }, 4000);
+                }
+
+                // Reset výběru
+                cards.forEach((c) => c.classList.remove("ring-2", "ring-amber-400"));
+                selectedAmount = null;
+                selectedLabel = null;
+                
+                confirmBtn.textContent = 'Potvrdit dobití';
+                confirmBtn.disabled = true;
+
+              } catch (error) {
+                console.error('❌ Chyba při dobíjení:', error);
+                
+                if (messageEl) {
+                  messageEl.textContent = '❌ Chyba při dobíjení kreditů. Zkus to znovu.';
+                  messageEl.style.color = "#ef4444";
+                  messageEl.style.opacity = "1";
+                }
+                
+                confirmBtn.textContent = 'Potvrdit dobití';
+                confirmBtn.disabled = false;
               }
             });
           }
-        } catch (e) {
-          console.warn("Dobití kreditů: chyba při práci s CreditsSystem:", e);
         }
-      });
+      } catch (error) {
+        console.error('💥 Kritická chyba:', error);
+                alert('Chyba při načítání stránky. Zkus to prosím znovu.');
+      }
+
+      // Odhlášení
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            
+            console.log('👋 Uživatel odhlášen');
+            window.location.href = 'index.html';
+          } catch (error) {
+            console.error('Chyba při odhlášení:', error);
+            window.location.href = 'index.html';
+          }
+        });
+      }
+
+      // Inicializuj Lucide ikony
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
     });
   </script>
 </body>
