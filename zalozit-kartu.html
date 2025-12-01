@@ -432,6 +432,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
+                oninput="if(this.value > 0) document.getElementById('pf-instagram').checked = true; else document.getElementById('pf-instagram').checked = false;"
               />
             </div>
 
@@ -454,6 +455,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
+                oninput="if(this.value > 0) document.getElementById('pf-tiktok').checked = true; else document.getElementById('pf-tiktok').checked = false;"
               />
             </div>
 
@@ -476,6 +478,7 @@
                 min="0"
                 class="input"
                 placeholder="Subscribers"
+                oninput="if(this.value > 0) document.getElementById('pf-youtube').checked = true; else document.getElementById('pf-youtube').checked = false;"
               />
             </div>
 
@@ -498,6 +501,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
+                oninput="if(this.value > 0) document.getElementById('pf-facebook').checked = true; else document.getElementById('pf-facebook').checked = false;"
               />
             </div>
 
@@ -520,6 +524,7 @@
                 min="0"
                 class="input"
                 placeholder="Followers"
+                oninput="if(this.value > 0) document.getElementById('pf-pinterest').checked = true; else document.getElementById('pf-pinterest').checked = false;"
               />
             </div>
           </div>
@@ -909,12 +914,27 @@
             if (existingCard.engagement) document.getElementById("engagement").value = existingCard.engagement;
             if (existingCard.premium) document.getElementById("premium").checked = existingCard.premium;
             
-            // Metriky
-            if (existingCard.instagram_followers) document.getElementById("instagram-followers").value = existingCard.instagram_followers;
-            if (existingCard.tiktok_followers) document.getElementById("tiktok-followers").value = existingCard.tiktok_followers;
-            if (existingCard.youtube_followers) document.getElementById("youtube-followers").value = existingCard.youtube_followers;
-            if (existingCard.facebook_followers) document.getElementById("facebook-followers").value = existingCard.facebook_followers;
-            if (existingCard.pinterest_followers) document.getElementById("pinterest-followers").value = existingCard.pinterest_followers;
+            // Metriky + checkboxy
+            if (existingCard.instagram_followers) {
+              document.getElementById("followers-instagram").value = existingCard.instagram_followers;
+              document.getElementById("pf-instagram").checked = true;
+            }
+            if (existingCard.tiktok_followers) {
+              document.getElementById("followers-tiktok").value = existingCard.tiktok_followers;
+              document.getElementById("pf-tiktok").checked = true;
+            }
+            if (existingCard.youtube_followers) {
+              document.getElementById("followers-youtube").value = existingCard.youtube_followers;
+              document.getElementById("pf-youtube").checked = true;
+            }
+            if (existingCard.facebook_followers) {
+              document.getElementById("followers-facebook").value = existingCard.facebook_followers;
+              document.getElementById("pf-facebook").checked = true;
+            }
+            if (existingCard.pinterest_followers) {
+              document.getElementById("followers-pinterest").value = existingCard.pinterest_followers;
+              document.getElementById("pf-pinterest").checked = true;
+            }
             
             // Obrázky - nastav preview
             if (existingCard.avatar_url) {
