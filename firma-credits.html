@@ -255,6 +255,11 @@
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
+        
+        // Aktualizuj i globální zobrazení (pokud existuje)
+        if (window.updateCreditsDisplay) {
+          window.updateCreditsDisplay(val);
+        }
       }
 
       if (!auth) {
@@ -290,7 +295,8 @@
             throw new Error("Nelze inicializovat CreditsSystem – není nastavená firmId (kartao_firma_id).");
           }
 
-          creditsSystem = new window.CreditsSystem(window.currentFirmId);
+          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
+          creditsSystem = new window.CreditsSystem(window.currentFirmId, updateCreditsDisplay);
 
           // Pro debug
           window.creditSys = {

@@ -374,24 +374,24 @@
         try {
           let creditSysInstance;
 
-          // nová verze credits-system.js má async static create()
-          if (typeof CreditsSystem.create === "function") {
-            creditSysInstance = await CreditsSystem.create(user.uid);
-          } else {
-            // fallback na starší verzi – aby se nic nerozbilo
-            creditSysInstance = new CreditsSystem(user.uid);
-          }
-
-          window.creditSys = creditSysInstance;
-
-          const headerCredits = document.getElementById("currentCredits");
-          if (headerCredits) {
-            try {
-              headerCredits.textContent = creditSysInstance.getCredits();
-            } catch (e) {
-              console.warn("MysteryBox: chyba při čtení kreditů v onAuthStateChanged:", e);
+          // Funkce pro aktualizaci zobrazení kreditů
+          function updateCreditsUI() {
+            const headerCredits = document.getElementById("currentCredits");
+            if (headerCredits && creditSysInstance) {
+              try {
+                headerCredits.textContent = creditSysInstance.getCredits();
+              } catch (e) {
+                console.warn("MysteryBox: chyba při čtení kreditů:", e);
+              }
             }
           }
+
+          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
+          creditSysInstance = new CreditsSystem(user.uid, updateCreditsUI);
+          window.creditSys = creditSysInstance;
+
+          // Počáteční zobrazení
+          updateCreditsUI();
 
           if (typeof window.updateMysteryBoxCreditsDisplay === "function") {
             window.updateMysteryBoxCreditsDisplay();

@@ -255,6 +255,11 @@
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
+        
+        // Aktualizuj i globální zobrazení (pokud existuje)
+        if (window.updateCreditsDisplay) {
+          window.updateCreditsDisplay(val);
+        }
       }
 
       if (!auth) {
@@ -276,7 +281,8 @@
             throw new Error("CreditsSystem není dostupný – zkontroluj credits-system.js");
           }
 
-          creditsSystem = new window.CreditsSystem(user.uid);
+          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
+          creditsSystem = new window.CreditsSystem(user.uid, updateCreditsDisplay);
 
           // Pro debug
           window.creditSys = {
