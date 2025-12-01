@@ -670,7 +670,7 @@
         if (confettiContainer) confettiContainer.innerHTML = "";
       }
 
-      function trySubtractCredits() {
+      async function trySubtractCredits() {
         if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
           alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
           return true; // neblokovat testování UI
@@ -682,7 +682,7 @@
         }
 
         try {
-          creditSys.subtractCredits(COST);
+          await creditSys.subtractCredits(COST);
           updateCreditsDisplay();
           return true;
         } catch (e) {
@@ -711,7 +711,7 @@
         updateButtonState();
       }
 
-      function handleOpenClick() {
+      async function handleOpenClick() {
         if (isOpening) return;
         errorEl.textContent = "";
 
@@ -725,7 +725,7 @@
           return;
         }
 
-        const ok = trySubtractCredits();
+        const ok = await trySubtractCredits();
         if (!ok) return;
 
         isOpening = true;

@@ -117,18 +117,16 @@ class CreditsSystem {
   // ==============================
   // PŘIČTENÍ KREDITŮ
   // ==============================
-  addCredits(amount) {
+  async addCredits(amount) {
     const num = Number(amount) || 0;
     if (!num) return this.credits;
-
-    this.credits += num;
-    if (this.credits < 0) this.credits = 0;
 
     try {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
         const inc = window.firebase.firestore.FieldValue.increment(num);
-        ref.set({ credits: inc }, { merge: true });
+        await ref.set({ credits: inc }, { merge: true });
+        // Realtime listener automaticky aktualizuje this.credits a zavolá callback
       }
     } catch (e) {
       console.warn("CreditsSystem: addCredits error:", e);
@@ -140,12 +138,9 @@ class CreditsSystem {
   // ==============================
   // ODEČTENÍ KREDITŮ
   // ==============================
-  subtractCredits(amount) {
+  async subtractCredits(amount) {
     const num = Number(amount) || 0;
     if (!num) return this.credits;
-
-    this.credits -= num;
-    if (this.credits < 0) this.credits = 0;
 
     const delta = -Math.abs(num);
 
@@ -153,7 +148,8 @@ class CreditsSystem {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
         const inc = window.firebase.firestore.FieldValue.increment(delta);
-        ref.set({ credits: inc }, { merge: true });
+        await ref.set({ credits: inc }, { merge: true });
+        // Realtime listener automaticky aktualizuje this.credits a zavolá callback
       }
     } catch (e) {
       console.warn("CreditsSystem: subtractCredits error:", e);

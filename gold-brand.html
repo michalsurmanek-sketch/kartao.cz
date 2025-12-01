@@ -379,7 +379,7 @@
 
             try {
               // Odečteme 10 000 K-Coins (demo přes CreditsSystem)
-              cs.subtractCredits(10000);
+              await cs.subtractCredits(10000);
               const newCredits = cs.getCredits();
               if (headerCreditsEl && typeof newCredits === "number") {
                 headerCreditsEl.textContent = newCredits;

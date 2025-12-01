@@ -759,7 +759,7 @@
             window.clearInterval(adTimer);
           }
 
-          adTimer = window.setInterval(function () {
+          adTimer = window.setInterval(async function () {
             remaining -= 1;
 
             if (remaining <= 0) {
@@ -769,7 +769,7 @@
 
               const ok = creditSys.addAdWatch();
               if (ok) {
-                creditSys.addCredits(4);
+                await creditSys.addCredits(4);
                 syncCreditsDisplay();
                 syncStreakAndLevel();
               }
@@ -820,8 +820,8 @@
         }
 
         if (topupTestButton) {
-          topupTestButton.addEventListener("click", function () {
-            creditSys.addCredits(50);
+          topupTestButton.addEventListener("click", async function () {
+            await creditSys.addCredits(50);
             syncCreditsDisplay();
             syncStreakAndLevel();
             alert("Test: připsáno +50 K-Coins");
@@ -916,10 +916,10 @@
         }
 
         if (taskStatsItem && taskStatsBadge) {
-          taskStatsItem.addEventListener("click", function () {
+          taskStatsItem.addEventListener("click", async function () {
             const newlyDone = creditSys.updateDailyTask("stats");
             if (newlyDone) {
-              creditSys.addCredits(5);
+              await creditSys.addCredits(5);
               syncCreditsDisplay();
               syncStreakAndLevel();
               updateUIFromDaily();
@@ -938,11 +938,11 @@
 
         if (campaignRespondButtons && campaignRespondButtons.length) {
           campaignRespondButtons.forEach(function (btn) {
-            btn.addEventListener("click", function (e) {
+            btn.addEventListener("click", async function (e) {
               e.preventDefault();
               const newlyDone = creditSys.updateDailyTask("campaign");
               if (newlyDone) {
-                creditSys.addCredits(6);
+                await creditSys.addCredits(6);
                 syncCreditsDisplay();
                 syncStreakAndLevel();
                 updateUIFromDaily();

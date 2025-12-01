@@ -312,11 +312,11 @@
           });
 
           if (confirmBtn) {
-            confirmBtn.addEventListener("click", () => {
+            confirmBtn.addEventListener("click", async () => {
               if (!selectedAmount) return;
 
-              const newVal = creditsSystem.addCredits(selectedAmount);
-              // updateCreditsDisplayLocal(newVal); // není třeba, callback to zajistí
+              await creditsSystem.addCredits(selectedAmount);
+              // Realtime listener automaticky aktualizuje UI přes callback
 
               if (messageEl) {
                 messageEl.textContent =
