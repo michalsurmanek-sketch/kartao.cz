@@ -29,14 +29,33 @@ if (typeof firebase === "undefined") {
     storage: !!window.storage,
   });
 
-  // 🔓 VŽDY ZAPNOUT ONLINE REŽIM FIRESTORE
-  if (window.db && window.db.enableNetwork) {
-    window.db.enableNetwork()
+  // 🔓 VŽDY ZAPNOUT ONLINE REŽIM FIRESTORE + DISABLE PERSISTENCE
+  if (window.db) {
+    // Vypnout offline persistence (může způsobovat "offline" chyby)
+    window.db.settings({
+      cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+      ignoreUndefinedProperties: true,
+    });
+
+    // Force enable network
+    if (window.db.enableNetwork) {
+      window.db.enableNetwork()
+        .then(() => {
+          console.log("🌐 Firestore ONLINE (globalně z firebase-init.js)");
+        })
+        .catch((err) => {
+          console.warn("⚠️ Nepodařilo se zapnout Firestore online:", err);
+        });
+    }
+
+    // Disable offline persistence pokud je zapnutá
+    window.db.disableNetwork()
+      .then(() => window.db.enableNetwork())
       .then(() => {
-        console.log("🌐 Firestore ONLINE (globalně z firebase-init.js)");
+        console.log("🔄 Firestore network resetován na ONLINE");
       })
       .catch((err) => {
-        console.warn("⚠️ Nepodařilo se zapnout Firestore online:", err);
+        console.warn("⚠️ Network reset selhal:", err);
       });
   }
 }
