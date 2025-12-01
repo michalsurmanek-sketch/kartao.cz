@@ -571,19 +571,17 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Konfigurace + INIT default app -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
-  <script src="auth.js"></script>
+  <!-- Konfigurace + inicializace -->
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="auth-supabase.js"></script>
   <script src="auth-header.js"></script>
-  <script src="credits-system.js"></script>
+  <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
+  <script src="zalozit-kartu-supabase.js"></script>
 
   <script>
     // 🛡️ GLOBÁLNÍ PROMĚNNÉ - MUSÍ BÝT MIMO DOMContentLoaded!
@@ -903,81 +901,27 @@
 
             try {
               const uid = user.uid;
-              const now = Date.now();
 
+              // Validace
               const name = document.getElementById("name").value.trim();
-              const handleRaw = document
-                .getElementById("handle")
-                .value.trim();
-              const city =
-                document.getElementById("city").value.trim() || null;
-              const category =
-                document.getElementById("category").value || "Lifestyle";
-              const bio =
-                document.getElementById("bio").value.trim() || "";
-              const priceVal =
-                document.getElementById("price").value.trim();
-              const ratingVal =
-                document.getElementById("rating").value.trim();
-              const engagementVal = document
-                .getElementById("engagement")
-                .value.trim();
-              const premium = document.getElementById("premium").checked;
+              const handleRaw = document.getElementById("handle").value.trim();
+              const category = document.getElementById("category").value || "Lifestyle";
+              const bio = document.getElementById("bio").value.trim() || "";
+              const ratingVal = document.getElementById("rating").value.trim();
 
               if (!name || !handleRaw) {
                 showStatus("Vyplň prosím jméno a handle.", false);
                 console.warn("[FORM] Chybí jméno nebo handle.");
+                window.isSubmitting = false;
                 return;
               }
 
-              showStatus(
-                "Ukládám kartu… (může chvilku trvat při nahrávání fotek)",
-                true
-              );
+              showStatus("Ukládám kartu… (může chvilku trvat při nahrávání fotek)", true);
               console.log("[FORM] Validace OK, pokračuji");
 
-              const handle =
-                "@" +
-                handleRaw.toLowerCase().replace(/[^a-z0-9._]/g, "");
-
-              const avatarUrl = await uploadImageIfNeeded(
-                "avatarFile",
-                existingAvatarURL,
-                `creators/${uid}/avatar_${now}.jpg`
-              );
-              const coverUrl = await uploadImageIfNeeded(
-                "coverFile",
-                existingCoverURL,
-                `creators/${uid}/cover_${now}.jpg`
-              );
-              const gal1Url = await uploadImageIfNeeded(
-                "gal1File",
-                existingGalleryURLs[0],
-                `creators/${uid}/gal1_${now}.jpg`
-              );
-              const gal2Url = await uploadImageIfNeeded(
-                "gal2File",
-                existingGalleryURLs[1],
-                `creators/${uid}/gal2_${now}.jpg`
-              );
-              const gal3Url = await uploadImageIfNeeded(
-                "gal3File",
-                existingGalleryURLs[2],
-                `creators/${uid}/gal3_${now}.jpg`
-              );
-
-              const gallery = [gal1Url, gal2Url, gal3Url];
-
-              console.log("[FORM] Obrázky připravené", {
-                avatarUrl,
-                coverUrl,
-                gallery,
-              });
-
+              // Followers metrics
               function getFollowers(pid) {
-                const inp = document.getElementById(
-                  "followers-" + pid
-                );
+                const inp = document.getElementById("followers-" + pid);
                 if (!inp) return 0;
                 const v = inp.value.trim();
                 return v ? Number(v) : 0;
@@ -991,136 +935,41 @@
                 pinterest: { followers: getFollowers("pinterest") },
               };
 
-              if (!window.db) {
-                showStatus(
-                  "Databáze není inicializovaná (window.db chybí).",
-                  false
-                );
-                console.error("❌ window.db neexistuje!");
-                return;
-              }
+              // Files
+              const avatarFile = document.getElementById("avatarFile")?.files[0];
+              const coverFile = document.getElementById("coverFile")?.files[0];
+              const gal1File = document.getElementById("gal1File")?.files[0];
+              const gal2File = document.getElementById("gal2File")?.files[0];
+              const gal3File = document.getElementById("gal3File")?.files[0];
 
-              const payload = {
+              // Zavolej Supabase save funkci
+              const formData = {
                 name,
-                handle,
-                city: city || null,
-                category,
                 bio,
-                avatar: avatarUrl,
-                cover: coverUrl,
-                gallery,
-                price: priceVal ? Number(priceVal) : null,
-                rating: ratingVal ? Number(ratingVal) : null,
-                engagement: engagementVal ? Number(engagementVal) : null,
-                premium: !!premium,
-                updatedAt: now,
+                category,
+                rating: ratingVal ? Number(ratingVal) : 0,
                 metrics,
+                avatarFile,
+                coverFile,
+                gal1File,
+                gal2File,
+                gal3File,
+                existingAvatarURL,
+                existingCoverURL,
+                existingGalleryURLs
               };
 
-              console.log("[FORM] Posílám do Firestore:", payload);
+              await saveCreatorCard(formData, uid);
 
-              // 🔥 AGRESIVNÍ FORCE ONLINE REŽIM před ukládáním
-              console.log("[SAVE] Aktivuji online režim...");
-              
-              // Vícenásobné volání enableNetwork
-              for (let i = 0; i < 3; i++) {
-                try {
-                  await window.db.enableNetwork();
-                  console.log(`✅ enableNetwork() volání ${i + 1}/3 OK`);
-                } catch (err) {
-                  console.warn(`⚠️ enableNetwork() ${i + 1} selhalo:`, err.message);
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
-              }
-              
-              // Ověř že jsme opravdu online
-              console.log("[SAVE] Testuju připojení před zápisem...");
-              try {
-                await Promise.race([
-                  window.db.collection('_test').doc('ping').set({ t: Date.now() }),
-                  new Promise((_, reject) => setTimeout(() => reject(new Error("Test timeout 5s")), 5000))
-                ]);
-                console.log("✅ Test write OK - jsme ONLINE");
-              } catch (err) {
-                console.error("❌ Test write SELHAL:", err.code, err.message);
-                showStatus(`❌ Firebase je OFFLINE nebo pravidla blokují! Chyba: ${err.message}`, false);
-                window.isSubmitting = false; // Odemknout před returnem
-                console.log("[FORM] 🔓 isSubmitting=false (test write selhal)");
-                return;
-              }
-
-              // Uložení přes Firestore SDK s retry mechanikou
-              let saveSuccess = false;
-              let retryCount = 0;
-              const maxRetries = 2;
-
-              while (!saveSuccess && retryCount < maxRetries) {
-                try {
-                  console.log(`[SAVE] Pokus ${retryCount + 1}/${maxRetries} - ukládám do creators/${uid}`);
-                  console.log(`[SAVE] Payload:`, payload);
-                  
-                  await Promise.race([
-                    window.db
-                      .collection("creators")
-                      .doc(uid)
-                      .set(payload, { merge: true }),
-                    new Promise((_, reject) =>
-                      setTimeout(() => reject(new Error("Timeout po 15s")), 15000)
-                    )
-                  ]);
-                  
-                  saveSuccess = true;
-                  console.log("✅ Karta uložena!");
-                } catch (err) {
-                  retryCount++;
-                  console.error(`❌ Pokus ${retryCount}/${maxRetries} selhal:`, err.message);
-                  console.error(`❌ Error detail:`, err);
-                  console.error(`❌ Error code:`, err.code);
-                  
-                  if (retryCount >= maxRetries) {
-                    const errMsg = err.code === 'permission-denied' 
-                      ? 'Firebase pravidla blokují zápis! Zkontroluj Firestore Rules v Firebase Console.'
-                      : `Chyba: ${err.message} (code: ${err.code || 'none'})`;
-                    
-                    showStatus(
-                      `❌ Uložení selhalo po ${maxRetries} pokusech. ${errMsg}`,
-                      false
-                    );
-                    console.error("🔴 FINAL ERROR:", err);
-                    window.isSubmitting = false; // Odemknout před returnem
-                    console.log("[FORM] 🔓 isSubmitting=false (retry selhal)");
-                    return; // Nepokoušej se pokračovat
-                  }
-                  
-                  // Čekej 800ms před dalším pokusem
-                  showStatus(`⚠️ Pokus ${retryCount} selhal, zkouším znovu...`, false);
-                  await new Promise(resolve => setTimeout(resolve, 800));
-                  
-                  // Zkus znovu aktivovat network
-                  try {
-                    await window.db.enableNetwork();
-                    console.log("🔄 enableNetwork retry OK");
-                  } catch (e) {
-                    console.warn("⚠️ enableNetwork retry failed:", e.message);
-                  }
-                }
-              }
-
-              console.log(
-                "[FORM] Firestore write OK → creators/" + uid
-              );
-
-              showStatus(
-                "Karta úspěšně uložena. Přesměrovávám zpět na marketplace…",
-                true
-              );
+              showStatus("✅ Karta úspěšně uložena! Přesměrovávám...", true);
               setTimeout(() => {
-                window.location.href = "index.html";
-              }, 1200);
+                window.location.href = "creator-dashboard.html";
+              }, 1500);
+              
             } catch (err) {
-              console.error("Chyba při ukládání karty:", err);
+              console.error("❌ Chyba při ukládání karty:", err);
               showStatus(
-                "Chyba při ukládání karty – zkus to prosím znovu.",
+                `❌ Chyba: ${err.message}. Zkus to prosím znovu.`,
                 false
               );
             } finally {

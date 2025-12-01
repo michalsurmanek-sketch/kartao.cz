@@ -307,18 +307,17 @@
 
   <!-- Firebase SDK (musí být před firebase-config/init) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Konfigurace + jednotná inicializace -->
-  <script src="firebase-config.js"></script>
-  <script src="firebase-init.js"></script>
+  <!-- Konfigurace + inicializace -->
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
 
-  <!-- Jednotné auth funkce -->
-  <script src="auth.js"></script>
+  <!-- Auth a credits systém -->
+  <script src="auth-supabase.js"></script>
   <script src="auth-header.js"></script>
-  <script src="credits-system.js"></script>
+  <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
 
   <script>
