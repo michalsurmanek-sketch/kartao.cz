@@ -1,0 +1,23 @@
+// ============
+// CREATORS - NOVÁ VERZE (nahraď celou sekci)
+// ============
+match /creators/{creatorId} {
+  // Čtení: všichni (veřejné profily)
+  allow read: if true;
+  
+  // Vytvoření: přihlášený uživatel může vytvořit vlastní profil
+  allow create: if isSignedIn() && request.auth.uid == creatorId;
+  
+  // Aktualizace: vlastník (creatorId == uid) nebo admin
+  allow update: if (isSignedIn() && creatorId == request.auth.uid) || isAdmin();
+  
+  // Smazání: vlastník nebo admin
+  allow delete: if (isSignedIn() && creatorId == request.auth.uid) || isAdmin();
+}
+
+// ============
+// CONNECTION TEST (_ping) - PŘIDEJ PŘED "DEFAULT" SEKCI
+// ============
+match /_ping/{docId} {
+  allow read, write: if isSignedIn();
+}

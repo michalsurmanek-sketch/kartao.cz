@@ -56,14 +56,14 @@ service cloud.firestore {
       // Čtení: všichni (veřejné profily)
       allow read: if true;
       
-      // Vytvoření: přihlášený uživatel s role creator
-      allow create: if isCreator() && request.auth.uid == request.resource.data.userId;
+      // Vytvoření: přihlášený uživatel může vytvořit vlastní profil
+      allow create: if isSignedIn() && request.auth.uid == creatorId;
       
-      // Aktualizace: vlastník nebo admin
-      allow update: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      // Aktualizace: vlastník (creatorId == uid) nebo admin
+      allow update: if (isSignedIn() && creatorId == request.auth.uid) || isAdmin();
       
       // Smazání: vlastník nebo admin
-      allow delete: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow delete: if (isSignedIn() && creatorId == request.auth.uid) || isAdmin();
     }
     
     // ============
@@ -214,6 +214,13 @@ service cloud.firestore {
       
       // Smazání: admin pouze
       allow delete: if isAdmin();
+    }
+    
+    // ============
+    // CONNECTION TEST (_ping) - pro monitoring připojení
+    // ============
+    match /_ping/{docId} {
+      allow read, write: if isSignedIn();
     }
     
     // ============
