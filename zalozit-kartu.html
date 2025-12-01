@@ -591,22 +591,6 @@
     window.formHasData = false;
     window.authChecked = false;
     
-    // 🛡️ ZACHYTIT POKUSY O REDIRECT
-    const originalLocationSet = Object.getOwnPropertyDescriptor(window, 'location').set;
-    Object.defineProperty(window, 'location', {
-      set: function(value) {
-        console.log("🚨 POKUS O REDIRECT NA:", value);
-        if (window.PREVENT_AUTH_REDIRECT && (value.includes('login') || value === 'login.html')) {
-          console.error("🛑 BLOKOVÁN REDIRECT NA LOGIN! PREVENT_AUTH_REDIRECT=true");
-          return;
-        }
-        originalLocationSet.call(window, value);
-      },
-      get: function() {
-        return window.location;
-      }
-    });
-
     // Default obrázky
     const DEFAULT_AVATAR =
       "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
@@ -877,6 +861,14 @@
         if (!user && !window.authChecked) {
           window.authChecked = true;
           console.log("⚠️ První check: user=null, přesměrovávám na login");
+          
+          // 🛡️ Pokud je PREVENT_AUTH_REDIRECT=true, NEredirectovat!
+          if (window.PREVENT_AUTH_REDIRECT) {
+            console.error("🛑 PREVENT_AUTH_REDIRECT=true → BLOKUJI redirect na login!");
+            showStatus("⚠️ Přihlášení selhalo. Zkus reload stránky (F5).", false);
+            return;
+          }
+          
           showStatus(
             "Pro založení karty se musíš přihlásit. Přesměrovávám na login…",
             false
