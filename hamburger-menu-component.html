@@ -224,45 +224,35 @@
     // ============================================
     // AUTH STATE LISTENER - Dynamické zobrazení
     // ============================================
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      firebase.auth().onAuthStateChanged((user) => {
+    if (window.kartaoAuth && kartaoAuth.onAuthStateChanged) {
+      kartaoAuth.onAuthStateChanged((user) => {
         const notLoggedIn = document.getElementById('menu-not-logged-in');
         const loggedIn = document.getElementById('menu-logged-in');
-        
         if (user) {
-          // Přihlášen
           if (notLoggedIn) notLoggedIn.classList.add('hidden');
           if (loggedIn) loggedIn.classList.remove('hidden');
-          
-          // Nastavit údaje uživatele
           const userName = document.getElementById('menu-user-name');
           const userEmail = document.getElementById('menu-user-email');
           const userAvatar = document.getElementById('menu-user-avatar');
-          
           if (userName) userName.textContent = user.displayName || 'Uživatel';
           if (userEmail) userEmail.textContent = user.email || '';
           if (userAvatar) {
             const initial = (user.displayName || user.email || '?')[0].toUpperCase();
             userAvatar.textContent = initial;
           }
-          
-          // Znovu vytvořit ikony
           if (typeof lucide !== 'undefined') {
             lucide.createIcons();
           }
         } else {
-          // Odhlášen
           if (notLoggedIn) notLoggedIn.classList.remove('hidden');
           if (loggedIn) loggedIn.classList.add('hidden');
         }
       });
-      
-      // Odhlášení
       const logoutBtn = document.getElementById('menu-logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
           try {
-            await firebase.auth().signOut();
+            await kartaoAuth.logout();
             closeMenu();
             window.location.href = 'index.html';
           } catch (error) {
@@ -274,3 +264,5 @@
     }
   });
 </script>
+
+<script src="auth.js"></script>

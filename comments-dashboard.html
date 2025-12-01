@@ -376,7 +376,7 @@
 
     function setupAuthStateListener() {
       if (firebase?.auth) {
-        firebase.auth().onAuthStateChanged((user) => {
+        kartaoAuth.onAuthStateChanged((user) => {
           currentUserId = user?.uid || null;
           updateUIForAuthState(user);
         });

@@ -230,6 +230,7 @@
   <!-- Konfigurace + jednotná inicializace -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
 
   <!-- Credits systém + případná další logika DB -->
   <script src="credits-system.js"></script>
@@ -259,7 +260,7 @@
         return;
       }
 
-      auth.onAuthStateChanged(function (user) {
+      kartaoAuth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;

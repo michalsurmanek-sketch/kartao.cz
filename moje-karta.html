@@ -329,10 +329,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
   <!-- Konfigurace + init + databáze + kredity -->
-<script src="firebase-config.js"></script>
-<script src="firebase-init.js"></script>
-
-<!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="auth.js"></script><!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
 <script>
   if (window.firebase && firebase.firestore) {
     firebase.firestore().enableNetwork()
@@ -360,7 +359,7 @@
         return;
       }
 
-      auth.onAuthStateChanged(function (user) {
+      kartaoAuth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;

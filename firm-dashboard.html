@@ -536,11 +536,11 @@
         return;
       }
 
-      const auth = firebase.auth();
+      const auth = window.auth;
       const db = firebase.firestore();
       let currentUser = null;
 
-      auth.onAuthStateChanged(async (user) => {
+      kartaoAuth.onAuthStateChanged(async (user) => {
         if (!user) {
           console.log('⚠️ Uživatel není přihlášen, redirect na login');
           window.location.href = 'login.html';
@@ -729,7 +729,7 @@
       // Odhlášení
       document.getElementById('logout').addEventListener('click', async () => {
         try {
-          await auth.signOut();
+          await kartaoAuth.logout();
           window.location.href = 'index.html';
         } catch (error) {
           console.error('Chyba odhlášení:', error);

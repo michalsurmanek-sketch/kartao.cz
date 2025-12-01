@@ -249,6 +249,7 @@
   <!-- Konfigurace + init + databáze + kredity + API služby -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
   <script src="database-init.js"></script>
   <script src="credits-system.js"></script>
   <script src="api-services.js"></script>
@@ -278,7 +279,7 @@
 
       const headerCreditsEl = document.getElementById("headerCredits");
 
-      auth.onAuthStateChanged((user) => {
+      kartaoAuth.onAuthStateChanged((user) => {
         if (!user) {
           window.location.href = "login.html";
           return;

@@ -2,12 +2,12 @@
 // Automaticky zobrazuje/skrývá tlačítka přihlášení/odhlášení
 
 (function initAuthHeader() {
-  if (typeof firebase === 'undefined' || !firebase.auth) {
-    console.warn('Firebase Auth není dostupný');
+  if (!window.kartaoAuth || !kartaoAuth.onAuthStateChanged) {
+    console.warn('kartaoAuth není dostupný');
     return;
   }
 
-  firebase.auth().onAuthStateChanged((user) => {
+  kartaoAuth.onAuthStateChanged((user) => {
     // Desktop elementy
     const loginBtnDesktop = document.getElementById('loginBtnDesktop');
     const userMenuDesktop = document.getElementById('userMenuDesktop');
@@ -57,7 +57,7 @@
       if (logoutBtnDesktop) {
         logoutBtnDesktop.addEventListener('click', async () => {
           try {
-            await firebase.auth().signOut();
+            await kartaoAuth.logout();
             window.location.reload();
           } catch (error) {
             console.error('Chyba odhlášení:', error);
@@ -67,7 +67,7 @@
       if (mobileMenuLogoutBtn) {
         mobileMenuLogoutBtn.addEventListener('click', async () => {
           try {
-            await firebase.auth().signOut();
+            await kartaoAuth.logout();
             window.location.reload();
           } catch (error) {
             console.error('Chyba odhlášení:', error);

@@ -319,7 +319,7 @@
         return;
       }
 
-      auth.onAuthStateChanged(async function (user) {
+      kartaoAuth.onAuthStateChanged(async function (user) {
         if (!user) {
           // nikdo nepřihlášen -> na login
           window.location.href = "login.html";

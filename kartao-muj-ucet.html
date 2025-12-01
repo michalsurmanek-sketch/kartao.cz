@@ -39,6 +39,7 @@
   <!-- Konfigurace + init -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
 
   <style>
     body {
@@ -550,7 +551,7 @@
       // ==========================
       setLoading(true);
 
-      auth.onAuthStateChanged(async (user) => {
+      kartaoAuth.onAuthStateChanged(async (user) => {
         console.log("👤 onAuthStateChanged – kartao-muj-ucet.html", user ? { uid: user.uid, email: user.email } : null);
 
         if (!user) {
@@ -757,7 +758,7 @@
           hideMessage();
           console.log("🚪 Pokus o odhlášení – kartao-muj-ucet.html");
           try {
-            await auth.signOut();
+            await kartaoAuth.logout();
             console.log("✅ Odhlášení proběhlo, přesměrovávám na login.html");
             window.location.href = "login.html";
           } catch (err) {

@@ -210,7 +210,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const creatorId = urlParams.get('creator');
 
-    firebase.auth().onAuthStateChanged(async (user) => {
+    kartaoAuth.onAuthStateChanged(async (user) => {
       if (!user) {
         alert('Pro rezervaci se musíte přihlásit');
         window.location.href = 'login.html';

@@ -314,7 +314,7 @@
             lucide.createIcons();
             
             // Wait for Firebase to be ready
-            firebase.auth().onAuthStateChanged(async (user) => {
+            kartaoAuth.onAuthStateChanged(async (user) => {
                 if (user) {
                     await initializePricingSystem();
                 } else {

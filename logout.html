@@ -51,27 +51,22 @@
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 
+  <!-- Jednotné auth funkce -->
+  <script src="auth.js"></script>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const msgEl = document.getElementById("logoutMessage");
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
-
-      if (!auth) {
-        if (msgEl) msgEl.textContent = "Chyba při připojení k Firebase. Zkus to prosím znovu.";
-        return;
+      try {
+        await kartaoAuth.logout();
+        if (msgEl) msgEl.textContent = "Úspěšně odhlášeno. Přesměrovávám na přihlášení…";
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1200);
+      } catch (err) {
+        console.error("Chyba při odhlášení:", err);
+        if (msgEl) msgEl.textContent = "Odhlášení se nepovedlo. Zkus to prosím znovu nebo zavři okno.";
       }
-
-      auth.signOut()
-        .then(() => {
-          if (msgEl) msgEl.textContent = "Úspěšně odhlášeno. Přesměrovávám na přihlášení…";
-          setTimeout(() => {
-            window.location.href = "login.html";
-          }, 1200);
-        })
-        .catch((err) => {
-          console.error("Chyba při odhlášení:", err);
-          if (msgEl) msgEl.textContent = "Odhlášení se nepovedlo. Zkus to prosím znovu nebo zavři okno.";
-        });
     });
   </script>
 </body>

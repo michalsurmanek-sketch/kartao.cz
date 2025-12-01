@@ -2168,7 +2168,7 @@
        AUTH LISTENER – TVŮRCI
     ========================== */
     if (typeof firebase !== 'undefined' && firebase.auth) {
-      firebase.auth().onAuthStateChanged(async user => {
+      kartaoAuth.onAuthStateChanged(async user => {
         if (!creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();

@@ -32,7 +32,7 @@
   <script>
   // Počkej, až Firebase naběhne
   document.addEventListener("DOMContentLoaded", async () => {
-    firebase.auth().onAuthStateChanged(async (user) => {
+    kartaoAuth.onAuthStateChanged(async (user) => {
       if (!user) return; // není přihlášený → nech výběr role
 
       const uid = user.uid;
@@ -198,7 +198,7 @@
       }
 
       // Kontrola přihlášení
-      auth.onAuthStateChanged((user) => {
+      kartaoAuth.onAuthStateChanged((user) => {
         if (!user) {
           showRoleMessage("Nejste přihlášený, přesměrovávám na přihlášení…", "error");
           window.location.href = "login.html";
