@@ -590,6 +590,22 @@
     window.isSubmitting = false;
     window.formHasData = false;
     window.authChecked = false;
+    
+    // 🛡️ ZACHYTIT POKUSY O REDIRECT
+    const originalLocationSet = Object.getOwnPropertyDescriptor(window, 'location').set;
+    Object.defineProperty(window, 'location', {
+      set: function(value) {
+        console.log("🚨 POKUS O REDIRECT NA:", value);
+        if (window.PREVENT_AUTH_REDIRECT && (value.includes('login') || value === 'login.html')) {
+          console.error("🛑 BLOKOVÁN REDIRECT NA LOGIN! PREVENT_AUTH_REDIRECT=true");
+          return;
+        }
+        originalLocationSet.call(window, value);
+      },
+      get: function() {
+        return window.location;
+      }
+    });
 
     // Default obrázky
     const DEFAULT_AVATAR =
@@ -828,9 +844,19 @@
       const auth = window.auth;
       
       // Používáme GLOBÁLNÍ proměnné (window.isSubmitting, window.formHasData, window.authChecked)
+      
+      // 🔥 BLOKOVAT REDIRECT NA TÉTO STRÁNCE ÚPLNĚ
+      window.PREVENT_AUTH_REDIRECT = true;
 
       kartaoAuth.onAuthStateChanged((user) => {
         console.log("Auth state changed:", user ? user.uid : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData);
+        
+        // 🛡️ ABSOLUTNÍ OCHRANA: Na zalozit-kartu.html NIKDY nepřesměrovávat
+        if (window.PREVENT_AUTH_REDIRECT && !user) {
+          console.warn("🛡️🛡️🛡️ PREVENT_AUTH_REDIRECT je TRUE - BLOKUJI REDIRECT!");
+          showStatus("⚠️ Přihlášení se ztratilo. Prosím přihlas se znovu a zkus to znovu.", false);
+          return;
+        }
         
         // OCHRANA 1: Pokud právě ukládáme, ignoruj auth změny
         if (window.isSubmitting) {
