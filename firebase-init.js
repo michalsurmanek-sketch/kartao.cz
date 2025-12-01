@@ -20,8 +20,6 @@ if (typeof firebase === "undefined") {
 
   // Globální služby
   window.auth = firebase.auth();
-  
-  // Firestore BEZ nastavení (způsobuje problémy)
   window.db = firebase.firestore();
   window.storage = firebase.storage ? firebase.storage() : null;
 
@@ -31,14 +29,22 @@ if (typeof firebase === "undefined") {
     storage: !!window.storage,
   });
 
-  // 🌐 FORCE ONLINE REŽIM - okamžitě po inicializaci
-  if (window.db && window.db.enableNetwork) {
-    window.db.enableNetwork()
+  // 🌐 FORCE ONLINE - disable pak enable (resetuje stav)
+  if (window.db) {
+    window.db.disableNetwork()
+      .then(() => {
+        console.log("🔄 Firestore network disabled");
+        return window.db.enableNetwork();
+      })
       .then(() => {
         console.log("🌐 Firestore FORCE ONLINE aktivován");
       })
       .catch((err) => {
-        console.warn("⚠️ enableNetwork error:", err.message);
+        console.error("❌ Network toggle error:", err.message);
+        // Zkus jen enable
+        return window.db.enableNetwork()
+          .then(() => console.log("✅ enableNetwork fallback OK"))
+          .catch((e) => console.error("❌ enableNetwork fallback failed:", e.message));
       });
   }
 }

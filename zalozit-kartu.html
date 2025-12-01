@@ -962,11 +962,14 @@
               // Ověř že jsme opravdu online
               console.log("[SAVE] Testuju připojení před zápisem...");
               try {
-                await window.db.collection('_test').doc('ping').set({ t: Date.now() });
+                await Promise.race([
+                  window.db.collection('_test').doc('ping').set({ t: Date.now() }),
+                  new Promise((_, reject) => setTimeout(() => reject(new Error("Test timeout 5s")), 5000))
+                ]);
                 console.log("✅ Test write OK - jsme ONLINE");
               } catch (err) {
                 console.error("❌ Test write SELHAL:", err.code, err.message);
-                showStatus(`❌ Firebase je OFFLINE! Chyba: ${err.message}`, false);
+                showStatus(`❌ Firebase je OFFLINE nebo pravidla blokují! Chyba: ${err.message}`, false);
                 return;
               }
 
