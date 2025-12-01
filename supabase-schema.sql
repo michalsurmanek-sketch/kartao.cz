@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS creators (
   name TEXT NOT NULL,
   handle TEXT UNIQUE,
   bio TEXT,
+  phone TEXT,
   avatar_url TEXT,
   cover_url TEXT,
   gallery_urls TEXT[], -- pole URL obrázků
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS firms (
   company_name TEXT NOT NULL,
   ico TEXT,
   contact_email TEXT,
+  contact_phone TEXT,
   credits INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
