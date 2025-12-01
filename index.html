@@ -1316,12 +1316,12 @@
     }
 
     /* ==========================
-       NAČTENÍ TVŮRCŮ Z FIRESTORE
+       NAČTENÍ TVŮRCŮ ZE SUPABASE
     ========================== */
     async function loadAllCreators() {
       if (isLoading) return;
-      if (typeof db === 'undefined') {
-        console.warn('Firestore (db) není inicializováno.');
+      if (typeof window.supabaseClient === 'undefined') {
+        console.warn('Supabase není inicializováno.');
         allCreators = [];
         return;
       }
@@ -1329,17 +1329,65 @@
       isLoading = true;
 
       try {
-        const snapshot = await db.collection('creators').get();
-        const creators = [];
+        const { data, error } = await window.supabaseClient
+          .from('creators')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-        snapshot.forEach(doc => {
-          creators.push({ id: doc.id, ...doc.data() });
-        });
-
-        allCreators = creators;
-        console.log('Načteno tvůrců:', allCreators.length);
+        if (error) {
+          console.error('Chyba při načítání tvůrců ze Supabase:', error);
+          allCreators = [];
+        } else {
+          // Mapujeme Supabase strukturu na očekávaný formát
+          allCreators = (data || []).map(creator => ({
+            id: creator.id,
+            name: creator.name || '',
+            handle: creator.handle || '',
+            bio: creator.bio || '',
+            avatar: creator.avatar_url || '',
+            cover: creator.cover_url || '',
+            gallery: creator.gallery_urls || [],
+            category: creator.category || '',
+            city: creator.city || '',
+            price: creator.price || 0,
+            rating: creator.rating || 0,
+            engagement: creator.engagement || 0,
+            verified: creator.verified || false,
+            premium: creator.premium || false,
+            platforms: creator.platforms || [],
+            metrics: {
+              facebook: {
+                connected: creator.facebook_connected || false,
+                followers: creator.facebook_followers || 0,
+                updatedAt: creator.facebook_updated_at || null
+              },
+              instagram: {
+                connected: creator.instagram_connected || false,
+                followers: creator.instagram_followers || 0,
+                updatedAt: creator.instagram_updated_at || null
+              },
+              youtube: {
+                connected: creator.youtube_connected || false,
+                followers: creator.youtube_followers || 0,
+                updatedAt: creator.youtube_updated_at || null
+              },
+              tiktok: {
+                connected: creator.tiktok_connected || false,
+                followers: creator.tiktok_followers || 0,
+                updatedAt: creator.tiktok_updated_at || null
+              },
+              pinterest: {
+                connected: creator.pinterest_connected || false,
+                followers: creator.pinterest_followers || 0,
+                updatedAt: creator.pinterest_updated_at || null
+              }
+            },
+            createdAt: creator.created_at ? new Date(creator.created_at).getTime() : Date.now()
+          }));
+          console.log('Načteno tvůrců ze Supabase:', allCreators.length);
+        }
       } catch (error) {
-        console.error('Chyba při načítání tvůrců z Firestore:', error);
+        console.error('Chyba při načítání tvůrců ze Supabase:', error);
         allCreators = [];
       } finally {
         isLoading = false;
@@ -1599,7 +1647,11 @@
 
       const openBtn = el.querySelector('.js-open');
       if (openBtn) {
-        openBtn.addEventListener('click', () => openDetail(data));
+        openBtn.addEventListener('click', () => {
+          if (handle) {
+            window.location.href = `karta.html?handle=${encodeURIComponent(handle)}`;
+          }
+        });
       }
 
       return el;
@@ -2178,11 +2230,22 @@
     });
 
     /* ==========================
-       AUTH LISTENER – TVŮRCI
+       AUTH LISTENER – TVŮRCI (SUPABASE)
     ========================== */
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      kartaoAuth.onAuthStateChanged(async user => {
+    if (typeof window.supabaseClient !== 'undefined') {
+      // Inicializace při načtení stránky
+      (async () => {
         if (!creatorService) {
+          creatorService = new CreatorService();
+          userService = new UserService();
+          await loadAllCreators();
+          render();
+        }
+      })();
+
+      // Poslouchat změny auth stavu
+      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && !creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();
           await loadAllCreators();
