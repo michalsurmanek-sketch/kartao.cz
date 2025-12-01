@@ -49,12 +49,24 @@
         </div>
       </a>
       
-      <div class="flex items-center gap-2">
+      <!-- Nepřihlášený -->
+      <div id="headerGuest" class="flex items-center gap-2">
         <a href="login.html" class="px-4 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-sm">
           Přihlásit se
         </a>
         <a href="register.html" class="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:brightness-110">
           Registrace
+        </a>
+      </div>
+
+      <!-- Přihlášený -->
+      <div id="headerLoggedIn" class="hidden flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-fuchsia-500/20 border border-amber-400/30">
+          <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
+          <span id="headerCoins" class="font-semibold text-sm">0</span>
+        </div>
+        <a href="moje-karta.html" class="px-4 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-sm">
+          Můj profil
         </a>
       </div>
     </div>
@@ -89,6 +101,14 @@
       <div class="relative h-64 rounded-3xl overflow-hidden bg-gradient-to-br from-fuchsia-700/40 to-amber-700/30">
         <img id="coverImage" src="" alt="Cover" class="w-full h-full object-cover hidden">
         <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 to-transparent"></div>
+      </div>
+
+      <!-- Edit Button (jen pro vlastní profil) -->
+      <div id="editProfileBtn" class="hidden text-right px-4 -mt-4">
+        <a href="zalozit-kartu.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:brightness-110">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+          Upravit profil
+        </a>
       </div>
 
       <!-- Avatar & Info -->
@@ -237,21 +257,51 @@
       lucide.createIcons();
     }
 
+    // Supabase init
+    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null;
+    let currentUserCreator = null;
+
     // Získej handle z URL
     const urlParams = new URLSearchParams(window.location.search);
     const handle = urlParams.get('handle') || window.location.pathname.split('/').pop().replace('.html', '');
 
-    async function loadCreatorProfile() {
-      const sb = window.supabaseClient || window.sb;
-      
-      if (!sb) {
-        showError();
-        return;
+    // Check auth na začátku
+    async function checkAuth() {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (user) {
+          currentUser = user;
+          
+          // Načti creator data
+          const { data: creator } = await supabase
+            .from('creators')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+          
+          if (creator) {
+            currentUserCreator = creator;
+            
+            // Uprav header
+            document.getElementById('headerGuest').classList.add('hidden');
+            document.getElementById('headerLoggedIn').classList.remove('hidden');
+            document.getElementById('headerCoins').textContent = creator.credits || 0;
+          }
+        }
+      } catch (e) {
+        console.log('Auth check:', e);
       }
+    }
 
+    async function loadCreatorProfile() {
       try {
         // Pokus se načíst podle handle, nebo podle ID (UUID)
-        let query = sb.from('creators').select('*');
+        let query = supabase.from('creators').select('*');
         
         // Kontrola jestli je to UUID (obsahuje pomlčky a je 36 znaků dlouhé)
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(handle);
@@ -271,6 +321,11 @@
         }
 
         displayCreator(creator);
+
+        // Pokud jde o vlastní profil, zobraz tlačítko Upravit
+        if (currentUser && currentUserCreator && creator.id === currentUser.id) {
+          document.getElementById('editProfileBtn').classList.remove('hidden');
+        }
 
       } catch (error) {
         console.error('Chyba:', error);
@@ -480,7 +535,15 @@
     }
 
     // Load profile on page load
-    document.addEventListener('DOMContentLoaded', loadCreatorProfile);
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      await loadCreatorProfile();
+      
+      // Re-init icons after dynamic content
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
   </script>
 
 </body>
