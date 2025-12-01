@@ -353,51 +353,20 @@
   <script src="credits-header.js"></script>
 
   <script>
-    // Napojení na uživatele + K-Coins (stejně jednoduše jako na credits-dashboard.html)
+    // Pouze kontrola přihlášení a zobrazení jména, kredity řeší credits-header.js
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth;
-
-      if (!auth) {
-        console.warn("Auth není dostupné na moje-karta.html – zkontroluj firebase-init.js");
-        return;
-      }
-
       kartaoAuth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
         }
-
-        // stejné UID jako na credits-dashboard
-        window.currentUserId = user.uid;
-
         // jméno
         const nameEl = document.getElementById("userName");
         const initialEl = document.getElementById("userInitial");
         const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Tvoje karta na Kartao.cz");
         if (nameEl) nameEl.textContent = displayName;
         if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
-
-        // Funkce pro aktualizaci zobrazení kreditů
-        function updateCreditsDisplay() {
-          const val = window.creditSys ? window.creditSys.getCredits() : 0;
-          const headerEl   = document.getElementById("headerCredits");
-          const summaryEl  = document.getElementById("summaryCredits");
-
-          if (typeof val === "number") {
-            if (headerEl)  headerEl.textContent  = val;
-            if (summaryEl) summaryEl.textContent = val;
-          }
-        }
-
-        // kredity přes CreditsSystem s callback pro realtime update
-        try {
-          window.creditSys = new CreditsSystem(user.uid, updateCreditsDisplay);
-          updateCreditsDisplay(); // Počáteční zobrazení
-        } catch (e) {
-          console.warn("Chyba při načítání kreditů na moje-karta.html:", e);
-        }
-
+      });
     });
   </script>
 </body>
