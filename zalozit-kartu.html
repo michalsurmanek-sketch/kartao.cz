@@ -984,13 +984,23 @@
               const gal2File = document.getElementById("gal2File")?.files[0];
               const gal3File = document.getElementById("gal3File")?.files[0];
 
+              // Další pole
+              const city = document.getElementById("city")?.value.trim() || "";
+              const price = document.getElementById("price")?.value.trim();
+              const engagement = document.getElementById("engagement")?.value.trim();
+              const premium = document.getElementById("premium")?.checked || false;
+
               // Zavolej Supabase save funkci
               const formData = {
                 name,
                 handle: handleRaw,
                 bio,
                 category,
+                city,
+                price: price ? Number(price) : 0,
                 rating: ratingVal ? Number(ratingVal) : 0,
+                engagement: engagement ? Number(engagement) : 0,
+                premium,
                 metrics,
                 avatarFile,
                 coverFile,

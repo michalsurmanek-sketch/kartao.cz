@@ -10,10 +10,37 @@ CREATE TABLE IF NOT EXISTS creators (
   handle TEXT UNIQUE,
   bio TEXT,
   phone TEXT,
+  city TEXT,
+  price INT DEFAULT 0,
+  engagement DECIMAL(5,2) DEFAULT 0,
+  premium BOOLEAN DEFAULT false,
+  verified BOOLEAN DEFAULT false,
   avatar_url TEXT,
   cover_url TEXT,
   gallery_urls TEXT[], -- pole URL obrázků
   categories TEXT[],
+  platforms TEXT[], -- pole aktivních platforem ['instagram', 'tiktok', ...]
+  -- Instagram
+  instagram_followers INT DEFAULT 0,
+  instagram_connected BOOLEAN DEFAULT false,
+  instagram_updated_at TIMESTAMPTZ,
+  -- TikTok
+  tiktok_followers INT DEFAULT 0,
+  tiktok_connected BOOLEAN DEFAULT false,
+  tiktok_updated_at TIMESTAMPTZ,
+  -- YouTube
+  youtube_followers INT DEFAULT 0,
+  youtube_connected BOOLEAN DEFAULT false,
+  youtube_updated_at TIMESTAMPTZ,
+  -- Facebook
+  facebook_followers INT DEFAULT 0,
+  facebook_connected BOOLEAN DEFAULT false,
+  facebook_updated_at TIMESTAMPTZ,
+  -- Pinterest
+  pinterest_followers INT DEFAULT 0,
+  pinterest_connected BOOLEAN DEFAULT false,
+  pinterest_updated_at TIMESTAMPTZ,
+  -- Meta
   followers_count INT DEFAULT 0,
   credits INT DEFAULT 0,
   rating DECIMAL(3,2) DEFAULT 0,
