@@ -19,22 +19,23 @@ if (typeof firebase === "undefined") {
   }
 
   // Globální služby
-  window.auth    = firebase.auth();
-  window.db      = firebase.firestore();
-  window.storage = firebase.storage ? firebase.storage() : null;
-
-  // 🔓 FIRESTORE SETTINGS - MUSÍ BÝT PŘED PRVNÍM POUŽITÍM!
-  if (window.db) {
-    try {
-      window.db.settings({
-        cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-        ignoreUndefinedProperties: true,
-      });
-      console.log("⚙️ Firestore settings nastaveny");
-    } catch (err) {
-      console.warn("⚠️ Firestore settings error (možná už běží):", err.message);
-    }
+  window.auth = firebase.auth();
+  
+  // Firestore s nastavením PŘED prvním použitím
+  const db = firebase.firestore();
+  
+  // Settings musí být voláno PŘED jakýmkoliv read/write
+  try {
+    db.settings({
+      ignoreUndefinedProperties: true,
+    });
+    console.log("⚙️ Firestore settings OK");
+  } catch (err) {
+    console.warn("⚠️ Settings už nastaveny:", err.message);
   }
+  
+  window.db = db;
+  window.storage = firebase.storage ? firebase.storage() : null;
 
   console.log("✔ Firebase služby dostupné:", {
     auth: !!window.auth,
@@ -53,4 +54,4 @@ if (typeof firebase === "undefined") {
       });
   }
 }
-}
+
