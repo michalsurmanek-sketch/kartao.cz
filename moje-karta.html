@@ -414,7 +414,7 @@
             // 🔗 Share button - nastavení URL pro sdílení karty
             const shareBtn = document.getElementById('shareFirmBtn');
             if (shareBtn && creatorCard.handle) {
-              const shareUrl = `${window.location.origin}/karta/${creatorCard.handle}`;
+              const shareUrl = `${window.location.origin}/karta.html?handle=${creatorCard.handle}`;
               shareBtn.addEventListener('click', async () => {
                 if (navigator.share) {
                   try {

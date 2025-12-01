@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="pageTitle">Profil tvůrce - Kartao.cz</title>
+  
+  <!-- Meta tagy pro sdílení -->
+  <meta id="ogTitle" property="og:title" content="Profil tvůrce - Kartao.cz">
+  <meta id="ogDescription" property="og:description" content="Influencer profil na Kartao.cz">
+  <meta id="ogImage" property="og:image" content="">
+  
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            neutral: tailwind.colors.neutral,
+            emerald: tailwind.colors.emerald,
+            sky: tailwind.colors.sky,
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(15,23,42,0.85)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Ikony -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
+
+  <!-- HLAVIČKA -->
+  <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow-soft">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-semibold text-lg">Kartao.cz</span>
+          <p class="text-[11px] text-white/60">Marketplace influencerů</p>
+        </div>
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <a href="login.html" class="px-4 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-sm">
+          Přihlásit se
+        </a>
+        <a href="register.html" class="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-semibold text-sm hover:brightness-110">
+          Registrace
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HLAVNÍ OBSAH -->
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    
+    <!-- Loading state -->
+    <div id="loadingState" class="text-center py-20">
+      <div class="inline-block w-12 h-12 border-4 border-fuchsia-500/30 border-t-fuchsia-500 rounded-full animate-spin"></div>
+      <p class="mt-4 text-white/60">Načítám profil...</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="errorState" class="hidden text-center py-20">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-rose-500/20 grid place-items-center">
+        <i data-lucide="alert-circle" class="w-8 h-8 text-rose-400"></i>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">Profil nenalezen</h2>
+      <p class="text-white/60 mb-6">Tento tvůrce neexistuje nebo byla karta odstraněna.</p>
+      <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Zpět na hlavní stránku
+      </a>
+    </div>
+
+    <!-- Creator Profile -->
+    <div id="creatorProfile" class="hidden space-y-6">
+      
+      <!-- Cover Image -->
+      <div class="relative h-64 rounded-3xl overflow-hidden bg-gradient-to-br from-fuchsia-700/40 to-amber-700/30">
+        <img id="coverImage" src="" alt="Cover" class="w-full h-full object-cover hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 to-transparent"></div>
+      </div>
+
+      <!-- Avatar & Info -->
+      <div class="relative -mt-20 px-4">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+          
+          <!-- Avatar -->
+          <div class="relative">
+            <div class="w-32 h-32 rounded-3xl bg-gradient-to-tr from-fuchsia-500 via-amber-400 to-sky-400 p-[3px] shadow-[0_0_35px_rgba(236,72,153,0.6)]">
+              <div id="avatarContainer" class="w-full h-full rounded-3xl bg-neutral-950 grid place-items-center text-5xl font-bold text-amber-200">
+                ?
+              </div>
+            </div>
+            <div id="premiumBadge" class="hidden absolute -bottom-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-neutral-900 text-xs font-bold shadow-lg">
+              <i data-lucide="crown" class="w-3 h-3 inline mr-1"></i>
+              VIP
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h1 id="creatorName" class="text-3xl font-bold mb-1">Tvůrce</h1>
+                <p id="creatorHandle" class="text-lg text-white/60 mb-2">@handle</p>
+                <div class="flex flex-wrap gap-2">
+                  <span id="creatorCategory" class="px-3 py-1 rounded-full bg-fuchsia-500/20 text-fuchsia-200 border border-fuchsia-400/60 text-sm">
+                    Kategorie
+                  </span>
+                  <span id="creatorCity" class="px-3 py-1 rounded-full bg-sky-500/20 text-sky-200 border border-sky-400/60 text-sm hidden">
+                    <i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i>
+                    Město
+                  </span>
+                </div>
+              </div>
+
+              <!-- CTA Buttons -->
+              <div class="flex flex-col gap-2">
+                <button id="contactBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-bold hover:brightness-110 flex items-center gap-2">
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                  Kontaktovat
+                </button>
+                <button id="shareBtn" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 flex items-center gap-2">
+                  <i data-lucide="share-2" class="w-4 h-4"></i>
+                  Sdílet
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+              <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                <p class="text-xs text-white/60">Rating</p>
+                <p id="creatorRating" class="text-xl font-bold">-</p>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                <p class="text-xs text-white/60">Engagement</p>
+                <p id="creatorEngagement" class="text-xl font-bold">-</p>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                <p class="text-xs text-white/60">Cena/příspěvek</p>
+                <p id="creatorPrice" class="text-xl font-bold">-</p>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+                <p class="text-xs text-white/60">Instagram</p>
+                <p id="creatorInstagram" class="text-xl font-bold">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
+        <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+          <i data-lucide="user" class="w-5 h-5 text-fuchsia-400"></i>
+          O mně
+        </h2>
+        <p id="creatorBio" class="text-white/80 leading-relaxed">
+          Žádný popis zatím není k dispozici.
+        </p>
+      </div>
+
+      <!-- Social Media Stats -->
+      <div class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="trending-up" class="w-5 h-5 text-amber-400"></i>
+          Sociální sítě
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="socialStats">
+          <!-- Naplní se dynamicky -->
+        </div>
+      </div>
+
+      <!-- Gallery -->
+      <div id="gallerySection" class="hidden rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="images" class="w-5 h-5 text-sky-400"></i>
+          Galerie
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="galleryGrid">
+          <!-- Naplní se dynamicky -->
+        </div>
+      </div>
+
+      <!-- CTA Footer -->
+      <div class="rounded-3xl bg-gradient-to-r from-fuchsia-500/20 to-amber-500/20 border border-fuchsia-400/40 shadow-soft p-8 text-center">
+        <h3 class="text-2xl font-bold mb-2">Zaujal tě tento tvůrce?</h3>
+        <p class="text-white/80 mb-6">Kontaktuj ho přímo přes Kartao.cz a domluvte spolupráci!</p>
+        <button onclick="document.getElementById('contactBtn').click()" class="px-8 py-4 rounded-xl bg-gradient-to-r from-fuchsia-500 to-amber-400 text-neutral-950 font-bold text-lg hover:brightness-110">
+          Zahájit spolupráci
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 mt-12">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-white/50">
+      <p>© 2025 Kartao.cz - Marketplace pro influencery a značky</p>
+    </div>
+  </footer>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="zalozit-kartu-supabase.js"></script>
+
+  <script>
+    // Inicializace ikon
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    // Získej handle z URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const handle = urlParams.get('handle') || window.location.pathname.split('/').pop().replace('.html', '');
+
+    async function loadCreatorProfile() {
+      const sb = window.supabaseClient || window.sb;
+      
+      if (!sb) {
+        showError();
+        return;
+      }
+
+      try {
+        // Načti tvůrce podle handle
+        const { data: creator, error } = await sb
+          .from('creators')
+          .select('*')
+          .eq('handle', handle)
+          .maybeSingle();
+
+        if (error || !creator) {
+          console.error('Chyba načítání:', error);
+          showError();
+          return;
+        }
+
+        displayCreator(creator);
+
+      } catch (error) {
+        console.error('Chyba:', error);
+        showError();
+      }
+    }
+
+    function displayCreator(creator) {
+      // Skryj loading, zobraz profil
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('creatorProfile').classList.remove('hidden');
+
+      // Meta tagy
+      document.getElementById('pageTitle').textContent = `${creator.name} (@${creator.handle}) - Kartao.cz`;
+      document.getElementById('ogTitle').setAttribute('content', `${creator.name} - Influencer na Kartao.cz`);
+      document.getElementById('ogDescription').setAttribute('content', creator.bio || 'Influencer profil');
+      if (creator.avatar_url) {
+        document.getElementById('ogImage').setAttribute('content', creator.avatar_url);
+      }
+
+      // Základní info
+      document.getElementById('creatorName').textContent = creator.name;
+      document.getElementById('creatorHandle').textContent = '@' + creator.handle;
+
+      // Avatar
+      const avatarContainer = document.getElementById('avatarContainer');
+      if (creator.avatar_url) {
+        avatarContainer.innerHTML = `<img src="${creator.avatar_url}" alt="${creator.name}" class="w-full h-full object-cover rounded-3xl">`;
+      } else {
+        avatarContainer.textContent = creator.name.charAt(0).toUpperCase();
+      }
+
+      // Cover
+      if (creator.cover_url) {
+        const coverImg = document.getElementById('coverImage');
+        coverImg.src = creator.cover_url;
+        coverImg.classList.remove('hidden');
+      }
+
+      // Premium badge
+      if (creator.premium) {
+        document.getElementById('premiumBadge').classList.remove('hidden');
+      }
+
+      // Kategorie
+      if (creator.categories && creator.categories.length > 0) {
+        document.getElementById('creatorCategory').textContent = creator.categories[0];
+      }
+
+      // Město
+      if (creator.city) {
+        const cityEl = document.getElementById('creatorCity');
+        cityEl.querySelector('span') ? cityEl.querySelector('span').textContent = creator.city : cityEl.appendChild(document.createTextNode(creator.city));
+        cityEl.classList.remove('hidden');
+      }
+
+      // Stats
+      if (creator.rating) {
+        document.getElementById('creatorRating').textContent = creator.rating + ' ⭐';
+      }
+      if (creator.engagement) {
+        document.getElementById('creatorEngagement').textContent = creator.engagement + '%';
+      }
+      if (creator.price) {
+        document.getElementById('creatorPrice').textContent = creator.price.toLocaleString('cs-CZ') + ' Kč';
+      }
+      if (creator.instagram_followers) {
+        document.getElementById('creatorInstagram').textContent = formatNumber(creator.instagram_followers);
+      }
+
+      // Bio
+      if (creator.bio) {
+        document.getElementById('creatorBio').textContent = creator.bio;
+      }
+
+      // Social stats
+      const socialStats = document.getElementById('socialStats');
+      const stats = [
+        { icon: 'instagram', label: 'Instagram', value: creator.instagram_followers },
+        { icon: 'video', label: 'TikTok', value: creator.tiktok_followers },
+        { icon: 'youtube', label: 'YouTube', value: creator.youtube_followers },
+        { icon: 'facebook', label: 'Facebook', value: creator.facebook_followers },
+        { icon: 'pinterest', label: 'Pinterest', value: creator.pinterest_followers }
+      ].filter(s => s.value);
+
+      socialStats.innerHTML = stats.map(stat => `
+        <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-center">
+          <i data-lucide="${stat.icon}" class="w-6 h-6 mx-auto mb-2 text-fuchsia-400"></i>
+          <p class="text-xs text-white/60">${stat.label}</p>
+          <p class="text-lg font-bold">${formatNumber(stat.value)}</p>
+        </div>
+      `).join('');
+
+      // Gallery
+      if (creator.gallery_urls && creator.gallery_urls.length > 0) {
+        document.getElementById('gallerySection').classList.remove('hidden');
+        const galleryGrid = document.getElementById('galleryGrid');
+        galleryGrid.innerHTML = creator.gallery_urls.map(url => `
+          <div class="aspect-square rounded-2xl overflow-hidden">
+            <img src="${url}" alt="Gallery" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+          </div>
+        `).join('');
+      }
+
+      // Buttons
+      document.getElementById('contactBtn').onclick = () => {
+        alert('Kontaktování tvůrce bude dostupné po přihlášení!');
+        // TODO: Odkaz na chat nebo kontaktní formulář
+      };
+
+      document.getElementById('shareBtn').onclick = async () => {
+        const shareUrl = window.location.href;
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: `${creator.name} - Kartao.cz`,
+              text: `Podívej se na profil ${creator.name}!`,
+              url: shareUrl
+            });
+          } catch (err) {
+            console.log('Share cancelled');
+          }
+        } else {
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            alert('✅ Odkaz zkopírován do schránky!');
+          } catch (err) {
+            alert(`Odkaz: ${shareUrl}`);
+          }
+        }
+      };
+
+      // Aktualizuj ikony
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function showError() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('errorState').classList.remove('hidden');
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function formatNumber(num) {
+      if (!num) return '-';
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+      }
+      if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+      }
+      return num.toLocaleString('cs-CZ');
+    }
+
+    // Load profile on page load
+    document.addEventListener('DOMContentLoaded', loadCreatorProfile);
+  </script>
+
+</body>
+</html>
