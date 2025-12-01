@@ -1,4 +1,4 @@
-// credits-header.js
+// credits-header.js - Supabase Edition
 // Společný snippet pro zobrazení a realtime synchronizaci K-Coins v headeru
 // Automaticky aktualizuje stav kreditů na všech stránkách
 
@@ -8,13 +8,12 @@
     return;
   }
 
-  if (!window.CreditsSystem) {
-    console.warn('CreditsSystem není načtený');
+  if (!window.CreditsSystemSupabase) {
+    console.warn('CreditsSystemSupabase není načtený');
     return;
   }
 
   let creditsSystemInstance = null;
-  let creditsCheckInterval = null;
 
   // Funkce pro formátování čísla s mezerami (2350 -> 2 350)
   function formatCredits(num) {
@@ -54,13 +53,8 @@
   }
 
   // Sleduj přihlášení/odhlášení
-  kartaoAuth.onAuthStateChanged((user) => {
-    // Cleanup starého listeneru a intervalu
-    if (creditsCheckInterval) {
-      clearInterval(creditsCheckInterval);
-      creditsCheckInterval = null;
-    }
-    
+  kartaoAuth.onAuthStateChanged(async (user) => {
+    // Cleanup starého listeneru
     if (creditsSystemInstance) {
       try {
         creditsSystemInstance.destroy();
@@ -69,27 +63,25 @@
     }
 
     if (user) {
-      // Přihlášen - inicializuj CreditsSystem s callback
+      // Přihlášen - inicializuj CreditsSystemSupabase
       try {
         creditsLoading = true;
         updateCreditsUI(0, true); // Zobraz loading
-        creditsSystemInstance = new CreditsSystem(user.uid, (credits) => {
+        
+        creditsSystemInstance = new CreditsSystemSupabase(user.id, (credits) => {
           creditsLoading = false;
           updateCreditsUI(credits, false);
         });
-        // Fallback interval pro případ, že callback nefunguje
-        creditsCheckInterval = setInterval(() => {
-          if (!creditsSystemInstance) {
-            clearInterval(creditsCheckInterval);
-            return;
-          }
-          if (!creditsLoading) {
-            const currentCredits = creditsSystemInstance.getCredits();
-            updateCreditsUI(currentCredits, false);
-          }
-        }, 2000);
+        
+        // Načti počáteční hodnotu
+        const initialCredits = await creditsSystemInstance.loadCredits();
+        creditsLoading = false;
+        updateCreditsUI(initialCredits, false);
+        
       } catch (error) {
-        console.error('Chyba inicializace CreditsSystem:', error);
+        console.error('Chyba inicializace CreditsSystemSupabase:', error);
+        creditsLoading = false;
+        updateCreditsUI(0, false);
       }
     } else {
       // Nepřihlášen - skryj kredity

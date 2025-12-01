@@ -511,6 +511,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
+  <script src="supabase-compatibility.js"></script>
   <script src="auth-supabase.js"></script>
   <script src="auth-header.js"></script>
   <script src="credits-system-supabase.js"></script>
@@ -524,11 +525,10 @@
         return;
       }
 
-      const auth = window.auth;
-      const db = firebase.firestore();
+      const sb = window.supabaseClient || window.sb;
       let currentUser = null;
 
-      auth.onAuthStateChanged(async (user) => {
+      kartaoAuth.onAuthStateChanged(async (user) => {
         if (!user) {
           console.log('⚠️ Uživatel není přihlášen, redirect na login');
           window.location.href = 'login.html';
@@ -542,10 +542,10 @@
         loadProfile(user);
         
         // Načti statistiky
-        loadStats(user.uid);
+        loadStats(user.id);
         
         // Načti objednávky
-        loadOrders(user.uid);
+        loadOrders(user.id);
       });
 
       // Načtení profilu

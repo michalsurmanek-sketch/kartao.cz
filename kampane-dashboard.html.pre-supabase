@@ -54,12 +54,13 @@
 
         <!-- Pravá strana -->
         <div class="flex items-center gap-3">
+          <!-- Kredity -->
           <div class="hidden sm:flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-1.5">
             <span class="text-[11px] uppercase tracking-wide text-amber-200">K-Coins</span>
             <span id="headerCredits" class="text-sm font-semibold text-amber-100">0</span>
           </div>
 
-          <a href="firma-credits.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
+          <a href="dobit-kredity.html" class="hidden sm:inline-flex items-center gap-1.5 rounded-2xl border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
             Dobít kredity
           </a>
@@ -69,10 +70,28 @@
             Nová kampaň
           </a>
 
-          <button id="logoutBtn" type="button" class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10">
+          <!-- Odhlášení – přímo v onclick, ať to prostě maká -->
+          <a
+            href="#"
+            class="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 hover:bg-white/10"
+            onclick="(function(){
+              try {
+                if (window.firebase && firebase.auth) {
+                  kartaoAuth.logout().finally(function(){
+                    window.location.href='index.html';
+                  });
+                } else {
+                  window.location.href='index.html';
+                }
+              } catch(e) {
+                window.location.href='index.html';
+              }
+              return false;
+            })();"
+          >
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             Odhlásit
-          </button>
+          </a>
         </div>
       </div>
     </header>
@@ -86,7 +105,9 @@
           <div class="rounded-3xl bg-neutral-950/80 border border-white/10 shadow-soft p-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 class="text-xl md:text-2xl font-semibold">Přehled kampaní</h1>
-              <p class="text-xs text-white/60 mt-1 max-w-xl">Zde vidíš všechny své kampaně na Kartao.cz – od návrhu až po dokončení. Sleduj stav, rozpočet a výkon.</p>
+              <p class="text-xs text-white/60 mt-1 max-w-xl">
+                Zde vidíš všechny své kampaně na Kartao.cz – od návrhu až po dokončení. Sleduj stav, rozpočet a výkon.
+              </p>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs w-full md:w-auto">
               <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
@@ -94,7 +115,7 @@
                 <p id="statActive" class="text-sm font-semibold">3</p>
               </div>
               <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                <p class="text-white/60">Schvalování</p>
+                <p class="text-white/60">Čeká na schválení</p>
                 <p id="statPending" class="text-sm font-semibold">1</p>
               </div>
               <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
@@ -112,34 +133,34 @@
           <div class="rounded-3xl bg-neutral-950/80 border border-white/10 shadow-soft p-4 md:p-5 text-xs flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2 text-white/60">
               <i data-lucide="filter" class="w-4 h-4"></i>
-              <span>Filtr kampaní – můžeš kombinovat stav, platformu, typ a řazení.</span>
+              <span>Filtr kampaní (zatím vizuální – logiku doplníme až bude backend).</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
-              <select id="filterStatus" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option value="all">Stav: Vše</option>
-                <option value="Aktivní">Aktivní</option>
-                <option value="Návrh">Návrh</option>
-                <option value="Čeká na schválení">Schvalování</option>
-                <option value="Dokončené">Dokončené</option>
+              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option>Stav: Vše</option>
+                <option>Aktivní</option>
+                <option>Návrh</option>
+                <option>Čeká na schválení</option>
+                <option>Dokončené</option>
               </select>
-              <select id="filterPlatform" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option value="all">Platforma: Vše</option>
-                <option value="Instagram">Instagram</option>
-                <option value="TikTok">TikTok</option>
-                <option value="YouTube">YouTube</option>
-                <option value="Mix platforem">Mix platforem</option>
+              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option>Platforma: Vše</option>
+                <option>Instagram</option>
+                <option>TikTok</option>
+                <option>YouTube</option>
+                <option>Mix platforem</option>
               </select>
-              <select id="filterType" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option value="all">Typ kampaně</option>
-                <option value="Brand awareness">Brand awareness</option>
-                <option value="Výkonnostní">Výkonnostní</option>
-                <option value="Soutěž / Giveaway">Soutěž / Giveaway</option>
+              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option>Typ kampaně</option>
+                <option>Brand awareness</option>
+                <option>Výkonnostní</option>
+                <option>Soutěž / Giveaway</option>
               </select>
-              <select id="filterSort" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <option value="newest">Řazení: nejnovější</option>
-                <option value="oldest">Nejstarší</option>
-                <option value="budgetDesc">Nejvyšší rozpočet</option>
-                <option value="budgetAsc">Nejnižší rozpočet</option>
+              <select class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                <option>Řazení: nejnovější</option>
+                <option>Nejstarší</option>
+                <option>Nejvyšší rozpočet</option>
+                <option>Nejnižší rozpočet</option>
               </select>
             </div>
           </div>
@@ -173,7 +194,7 @@
                 <tbody id="campaignList" class="divide-y divide-white/5">
                   <!-- DEMO DATA -->
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Jarní launch kolekce" data-status="Aktivní" data-platform="Mix platforem" data-type="Brand awareness"
+                      data-name="Jarní launch kolekce" data-status="Aktivní" data-platform="Instagram + TikTok"
                       data-budget="5 000 K-Coins" data-spent="2 000 K-Coins" data-objective="Brand awareness · představení nové kolekce"
                       data-period="1. 3. – 31. 3." data-influencers="5 mikroinfluencerů · 2 mid-tier">
                     <td class="py-3">Jarní launch kolekce</td>
@@ -187,7 +208,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Velikonoční soutěž" data-status="Čeká na schválení" data-platform="Instagram" data-type="Soutěž / Giveaway"
+                      data-name="Velikonoční soutěž" data-status="Čeká na schválení" data-platform="Instagram"
                       data-budget="3 000 K-Coins" data-spent="0 K-Coins" data-objective="Soutěž · sběr nových sledujících"
                       data-period="10. 3. – 20. 3." data-influencers="3 influenceri">
                     <td class="py-3">Velikonoční soutěž</td>
@@ -201,7 +222,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Testovací kampaň – jaro" data-status="Návrh" data-platform="TikTok" data-type="Výkonnostní"
+                      data-name="Testovací kampaň – jaro" data-status="Návrh" data-platform="TikTok"
                       data-budget="1 000 K-Coins" data-spent="0 K-Coins" data-objective="Test · otestovat formáty a kreativu"
                       data-period="TBD" data-influencers="1–2 influenceři (návrh)">
                     <td class="py-3">Testovací kampaň – jaro</td>
@@ -215,7 +236,7 @@
                   </tr>
 
                   <tr class="hover:bg-white/5 cursor-pointer" data-campaign-row
-                      data-name="Vánoční kampaň 2024" data-status="Dokončené" data-platform="Mix platforem" data-type="Brand awareness"
+                      data-name="Vánoční kampaň 2024" data-status="Dokončené" data-platform="Mix platforem"
                       data-budget="8 000 K-Coins" data-spent="7 500 K-Coins" data-objective="Prodej · vánoční nákupy"
                       data-period="1. 12. – 24. 12. 2024" data-influencers="8 influencérů (mix)">
                     <td class="py-3">Vánoční kampaň 2024</td>
@@ -274,7 +295,7 @@
             </div>
 
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10 mt-2">
-              <button id="editCampaignBtn" class="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/60 px-3 py-1.5 text-[11px] text-emerald-100 hover:bg-emerald-500/25">
+              <button class="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/60 px-3 py-1.5 text-[11px] text-emerald-100 hover:bg-emerald-500/25">
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 Upravit kampaň
               </button>
@@ -309,155 +330,16 @@
     });
   </script>
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src=""></script>
-  <script src=""></script>
-  <script src=""></script>
+  <!-- Firebase + CreditsSystem -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- Konfigurace + init + databáze + kredity + API služby -->
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="supabase-compatibility.js"></script>
-  <script src="auth-supabase.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
   <script src="auth-header.js"></script>
   <script src="database-init.js"></script>
-  <script src="credits-system-supabase.js"></script>
-  <script src="credits-header.js"></script>
-  <script src="api-services.js"></script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const auth =
-        window.auth ||
-        window.auth;
-
-      const logoutBtn = document.getElementById("logoutBtn");
-      const headerCreditsEl = document.getElementById("headerCredits");
-      const currentCreditsEl = document.getElementById("currentCredits");
-
-      const rows = document.querySelectorAll("[data-campaign-row]");
-      const editCampaignBtn = document.getElementById("editCampaignBtn");
-
-      let selectedCampaign = null;
-      let selectedRow = null;
-      let isEditing = false;
-      const filterStatus = document.getElementById("filterStatus");
-      const filterPlatform = document.getElementById("filterPlatform");
-      const filterType = document.getElementById("filterType");
-      const filterSort = document.getElementById("filterSort");
-
-      function updateCreditsDisplay(val) {
-        if (typeof val !== "number") return;
-        if (headerCreditsEl) headerCreditsEl.textContent = val;
-        if (currentCreditsEl) currentCreditsEl.textContent = val;
-      }
-
-      function parseBudget(str) {
-        if (!str) return 0;
-        let digits = "";
-        for (let i = 0; i < str.length; i++) {
-          const ch = str[i];
-          if (ch >= "0" && ch <= "9") {
-            digits += ch;
-          }
-        }
-        if (!digits) return 0;
-        return parseInt(digits, 10) || 0;
-      }
-
-      function applyFilters() {
-        const statusVal = filterStatus ? filterStatus.value : "all";
-        const platformVal = filterPlatform ? filterPlatform.value : "all";
-        const typeVal = filterType ? filterType.value : "all";
-        const sortVal = filterSort ? filterSort.value : "newest";
-
-        const tbody = document.getElementById("campaignList");
-        if (!tbody) return;
-
-        const rowsArr = Array.from(rows);
-
-        // Filtrování viditelnosti
-        rowsArr.forEach((row) => {
-          const rowStatus = row.getAttribute("data-status") || "";
-          const rowPlatform = row.getAttribute("data-platform") || "";
-          const rowType = row.getAttribute("data-type") || "";
-
-          let visible = true;
-          if (statusVal !== "all" && rowStatus !== statusVal) visible = false;
-          if (platformVal !== "all" && rowPlatform !== platformVal) visible = false;
-          if (typeVal !== "all" && rowType !== typeVal) visible = false;
-
-          row.style.display = visible ? "" : "none";
-        });
-
-        // Řazení – jen viditelné řádky
-        let visibleRows = rowsArr.filter((r) => r.style.display !== "none");
-        let sorted = [...visibleRows];
-
-        if (sortVal === "oldest") {
-          sorted.reverse();
-        } else if (sortVal === "budgetDesc") {
-          sorted.sort(
-            (a, b) =>
-              parseBudget(b.getAttribute("data-budget")) -
-              parseBudget(a.getAttribute("data-budget"))
-          );
-        } else if (sortVal === "budgetAsc") {
-          sorted.sort(
-            (a, b) =>
-              parseBudget(a.getAttribute("data-budget")) -
-              parseBudget(b.getAttribute("data-budget"))
-          );
-        }
-        // "newest" = ponecháme původní pořadí
-
-        sorted.forEach((row) => tbody.appendChild(row));
-      }
-
-      // Reakce na změnu filtrů
-      if (filterStatus) filterStatus.addEventListener("change", applyFilters);
-      if (filterPlatform) filterPlatform.addEventListener("change", applyFilters);
-      if (filterType) filterType.addEventListener("change", applyFilters);
-      if (filterSort) filterSort.addEventListener("change", applyFilters);
-
-      // Odhlášení firmy / uživatele
-      if (logoutBtn && auth) {
-        logoutBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          auth
-            .signOut()
-            .then(function () {
-              window.location.href = "login.html";
-            })
-            .catch(function (error) {
-              console.error("Chyba při odhlašování:", error);
-            });
-        });
-      }
-
-      if (!auth) {
-        console.warn("Firebase Auth není dostupný na kampane-dashboard.html");
-        return;
-      }
-
-      kartaoAuth.onAuthStateChanged(function (user) {
-        if (!user) {
-          window.location.href = "login.html";
-          return;
-        }
-
-        window.currentUserId = user.uid;
-
-       <!-- Firebase + CreditsSystem -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src=""></script>
-  <script src=""></script>
-
-  <script src="supabase-init.js"></script>
-  <script src="supabase-compatibility.js"></script>
-  <script src="database-init.js"></script>
-  <script src="credits-system-supabase.js"></script>
+  <script src="credits-system.js"></script>
   <script src="credits-header.js"></script>
 
   <script>
