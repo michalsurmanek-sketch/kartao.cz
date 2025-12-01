@@ -20,16 +20,5 @@ if (typeof supabaseConfig === "undefined") {
   // Globální zkratky (pro kompatibilitu s Firebase kódem)
   window.sb = window.supabaseClient;
   
-  // Test připojení
-  window.supabaseClient.from('creators').select('count', { count: 'exact', head: true })
-    .then(({ count, error }) => {
-      if (error && error.code !== 'PGRST116') { // PGRST116 = empty table is OK
-        console.warn("⚠️ Supabase connection warning:", error.message);
-      } else {
-        console.log("✅ Supabase připojeno, creators tabulka:", count !== null ? `${count} záznamů` : "prázdná");
-      }
-    })
-    .catch(err => {
-      console.error("❌ Supabase connection error:", err);
-    });
+  console.log("✅ Supabase připraveno");
 }
