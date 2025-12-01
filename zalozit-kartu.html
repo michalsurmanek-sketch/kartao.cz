@@ -168,11 +168,7 @@
       <div class="pill" id="statusText"></div>
     </div>
 
-    <!-- Firebase Online/Offline indikátor -->
-    <div id="firebaseStatus" class="mb-4 flex items-center gap-2 rounded-2xl border border-slate-700/70 bg-slate-900/60 px-4 py-2.5 text-sm">
-      <span id="firebaseStatusIcon" class="h-2.5 w-2.5 rounded-full bg-yellow-400 animate-pulse"></span>
-      <span id="firebaseStatusText" class="text-slate-300">Kontrolujem Firebase připojení…</span>
-    </div>
+    <!-- Status indikátor odstraněn -->
 
     <!-- KARTA S FORMULÁŘEM -->
     <div class="card p-4 md:p-6">
@@ -641,7 +637,7 @@
       const file = input.files[0];
 
       if (!window.storage) {
-        console.warn("Firebase Storage není inicializováno, vracím default URL.");
+        console.warn("Storage není inicializováno, vracím default URL.");
         return defaultUrl;
       }
 
@@ -681,9 +677,9 @@
       }
 
       // 🔥 FIREBASE STATUS MONITOR
-      const statusEl = document.getElementById("firebaseStatus");
-      const statusIcon = document.getElementById("firebaseStatusIcon");
-      const statusText = document.getElementById("firebaseStatusText");
+      // Status odstraněn
+      
+      const form = document.getElementById("creatorForm");
 
       function updateFirebaseStatus(online) {
         if (online) {
