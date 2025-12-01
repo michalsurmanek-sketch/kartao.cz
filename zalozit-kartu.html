@@ -739,7 +739,7 @@
         window.kartaoAuth.onAuthStateChanged((user) => {
           if (user) {
             authReady = true;
-            console.log(`[Auth] Přihlášen: ${user.uid}`);
+            console.log(`[Auth] Přihlášen: ${user.id}`);
             
             // Ihned po přihlášení zkus test READ
             if (window.db) {
@@ -812,7 +812,7 @@
       window.PREVENT_AUTH_REDIRECT = true;
 
       kartaoAuth.onAuthStateChanged((user) => {
-        console.log("Auth state changed:", user ? user.uid : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData, "PREVENT:", window.PREVENT_AUTH_REDIRECT);
+        console.log("Auth state changed:", user ? user.id : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData, "PREVENT:", window.PREVENT_AUTH_REDIRECT);
         
         // 🛡️ ABSOLUTNÍ OCHRANA #1: Na zalozit-kartu.html NIKDY nepřesměrovávat pokud není user
         if (window.PREVENT_AUTH_REDIRECT && !user && window.authChecked) {
@@ -862,7 +862,7 @@
         }
         
         window.authChecked = true;
-        console.log("✅ Uživatel přihlášen, id:", user.uid);
+        console.log("✅ Uživatel přihlášen, id:", user.id);
         showStatus("Vytváříš svou první kartu influencera ✨");
 
         if (form) {
@@ -878,10 +878,10 @@
             // Zamknout auth změny během submitu
             window.isSubmitting = true;
             window.formHasData = true;
-            console.log("[FORM] Start submit, uid =", user.uid, "🔒 isSubmitting=true");
+            console.log("[FORM] Start submit, uid =", user.id, "🔒 isSubmitting=true");
 
             try {
-              const uid = user.uid;
+              const uid = user.id;
 
               // Validace
               const name = document.getElementById("name").value.trim();

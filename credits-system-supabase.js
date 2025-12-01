@@ -45,15 +45,15 @@ class CreditsSystemSupabase {
       .from('creators')
       .select('credits')
       .eq('user_id', this.currentUser)
-      .single();
+      .maybeSingle(); // místo .single() - nevrací error pokud není záznam
 
     // Pokud není v creators, zkus firms
-    if (error || !data) {
+    if (!data) {
       const firmResult = await sb
         .from('firms')
         .select('credits')
         .eq('user_id', this.currentUser)
-        .single();
+        .maybeSingle();
       
       data = firmResult.data;
       error = firmResult.error;
