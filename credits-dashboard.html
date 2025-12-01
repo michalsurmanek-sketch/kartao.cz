@@ -358,50 +358,64 @@
 
   <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL + REKLAMY -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", async function () {
       if (window.lucide) {
         window.lucide.createIcons();
       }
 
-      const auth = window.kartaoAuth;
-      const sb = window.supabaseClient || window.sb;
+      // Supabase konfigurace
+      const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      if (!auth || !sb) {
-        console.warn("Auth nebo Supabase nejsou dostupné – zkontroluj supabase-config.js a supabase-init.js");
-        return;
-      }
-
-      auth.onAuthStateChanged(function (user) {
-        if (!user) {
-          window.location.href = "login.html";
+      try {
+        // Kontrola přihlášení
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError || !user) {
+          console.warn('❌ Uživatel není přihlášen, přesměrování na login');
+          window.location.href = 'login.html';
           return;
         }
 
+        console.log('✅ Přihlášený uživatel:', user.email);
         window.currentUserId = user.id;
 
-        // Počkej, až bude dostupná globální instance CreditsSystem z credits-header.js
-        let creditSys = window.getCreditsSystem();
-        let attempts = 0;
-        const maxAttempts = 50; // 5 sekund max
-        
-        const waitForCreditsSystem = setInterval(() => {
-          creditSys = window.getCreditsSystem();
-          attempts++;
+        // Načtení creator dat
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (creatorError) {
+          console.error('❌ Chyba načítání creator dat:', creatorError);
           
-          if (creditSys || attempts >= maxAttempts) {
-            clearInterval(waitForCreditsSystem);
-            
-            if (!creditSys) {
-              console.error("CreditsSystem se nepodařilo načíst z credits-header.js");
-              return;
-            }
-            
-            // Inicializuj zbytek kódu
-            initDashboard(creditSys);
+          if (creatorError.code === 'PGRST116') {
+            alert('Nejprve musíš vytvořit svoji kartu!');
+            window.location.href = 'zalozit-kartu.html';
           }
-        }, 100);
-        
-        function initDashboard(creditSys) {
+          return;
+        }
+
+        if (creator) {
+          console.log('📊 Creator data načtena:', { name: creator.name, credits: creator.credits });
+          
+          // Aktualizuj zobrazení kreditů
+          const currentCreditsEl = document.getElementById('currentCredits');
+          if (currentCreditsEl) {
+            currentCreditsEl.textContent = (creator.credits || 0).toLocaleString('cs-CZ');
+          }
+
+          // Inicializuj dashboard s creator daty
+          await initDashboard(creator, user, supabase);
+        }
+      } catch (error) {
+        console.error('💥 Kritická chyba:', error);
+        alert('Chyba při načítání stránky. Zkus to prosím znovu.');
+      }
+
+      async function initDashboard(creator, user, supabase) {
         const streakValueEl        = document.getElementById("streakValue");
         const levelValueEl         = document.getElementById("levelValue");
 
@@ -483,65 +497,34 @@
           }
         }
 
-        // 🔐 SAFE WRAPPERY – fungují i když credits-system.js ještě nemá cooldown metody
+        // 🔐 SAFE WRAPPERY – zjednodušená verze bez cooldown
         function getCooldownMsSafe() {
-          if (!creditSys || typeof creditSys.getAdsCooldownRemainingMs !== "function") {
-            return 0;
-          }
-          try {
-            const v = creditSys.getAdsCooldownRemainingMs();
-            return Number.isFinite(v) ? v : 0;
-          } catch (e) {
-            console.warn("Cooldown selhal:", e);
-            return 0;
-          }
+          return 0; // Vypnuto pro Supabase verzi
         }
 
         function hasAdsCooldownSafe() {
-          if (!creditSys || typeof creditSys.hasAdsCooldown !== "function") {
-            return false;
-          }
-          try {
-            return !!creditSys.hasAdsCooldown();
-          } catch (e) {
-            console.warn("hasAdsCooldown selhal:", e);
-            return false;
-          }
+          return false; // Vypnuto pro Supabase verzi
         }
 
         function startCooldownTimer() {
-          if (!adCooldown) return;
-
-          stopCooldownTimer();
-
-          function tick() {
-            const ms = getCooldownMsSafe();
-            if (ms <= 0) {
-              adCooldown.classList.add("hidden");
-              stopCooldownTimer();
-              updateUIFromDaily();
-              return;
-            }
-            adCooldown.classList.remove("hidden");
-            adCooldown.textContent = "Další reklamy za " + formatMs(ms);
-          }
-
-          tick();
-          cooldownTimer = setInterval(tick, 1000);
+          // Vypnuto pro Supabase verzi
         }
 
-        // Kredity se aktualizují automaticky přes globální callback z credits-header.js
+        function stopCooldownTimer() {
+          if (cooldownTimer) {
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
+          }
+        }
 
-        // === STREAK + LEVEL – Firestore: users/{uid} ===
+        // Kredity se aktualizují automaticky přes callback
+
+        // === STREAK + LEVEL ===
         async function syncStreakAndLevel() {
           try {
-            const ref  = db.collection("users").doc(user.uid);
-            const snap = await ref.get();
-            const data = snap.exists ? (snap.data() || {}) : {};
-
             const today = todayString();
-            let streak  = Number.isFinite(data.streakDays) ? data.streakDays : 0;
-            let last    = data.lastActiveDate || null;
+            let streak = creator.streak_days || 0;
+            let last = creator.last_active_date || null;
 
             if (last === today) {
               // dnešek už započítaný
@@ -551,21 +534,29 @@
               streak = 1;
             }
 
-            // Kredity tady NEPŘEPISUJEME – bereme jen aktuální stav z CreditsSystem
-            const credits = creditSys.getCredits();
-            const level   = Math.max(1, Math.floor(credits / 100) + 1);
+            // Level podle kreditů
+            const credits = window.creditSys.getCredits();
+            const level = Math.max(1, Math.floor(credits / 100) + 1);
 
-            await ref.set(
-              {
-                streakDays: streak,
-                lastActiveDate: today,
+            // Update v Supabase
+            const { error } = await supabase
+              .from('creators')
+              .update({
+                streak_days: streak,
+                last_active_date: today,
                 level: level
-              },
-              { merge: true }
-            );
+              })
+              .eq('id', user.id);
+
+            if (error) throw error;
+
+            // Update lokálně
+            creator.streak_days = streak;
+            creator.last_active_date = today;
+            creator.level = level;
 
             if (streakValueEl) streakValueEl.textContent = String(streak);
-            if (levelValueEl)  levelValueEl.textContent  = String(level);
+            if (levelValueEl) levelValueEl.textContent = String(level);
           } catch (e) {
             console.warn("Dashboard: chyba při sync streak/level:", e);
           }
@@ -573,8 +564,71 @@
 
         syncStreakAndLevel();
 
+        // localStorage pro denní stav
         function getDaily() {
-          return creditSys.getDailyState();
+          const DAILY_KEY = `kartao_daily_${user.id}`;
+          const stored = localStorage.getItem(DAILY_KEY);
+          if (!stored) {
+            const defaultDaily = {
+              date: todayString(),
+              adsWatched: 0,
+              maxAds: 5,
+              tasks: {}
+            };
+            localStorage.setItem(DAILY_KEY, JSON.stringify(defaultDaily));
+            return defaultDaily;
+          }
+          
+          const daily = JSON.parse(stored);
+          // Reset pokud je nový den
+          if (daily.date !== todayString()) {
+            const newDaily = {
+              date: todayString(),
+              adsWatched: 0,
+              maxAds: 5,
+              tasks: {}
+            };
+            localStorage.setItem(DAILY_KEY, JSON.stringify(newDaily));
+            return newDaily;
+          }
+          
+          return daily;
+        }
+
+        function saveDaily(daily) {
+          const DAILY_KEY = `kartao_daily_${user.id}`;
+          localStorage.setItem(DAILY_KEY, JSON.stringify(daily));
+        }
+
+        function updateDailyTask(taskName) {
+          const daily = getDaily();
+          if (daily.tasks[taskName]) return false;
+          
+          daily.tasks[taskName] = true;
+          saveDaily(daily);
+          return true;
+        }
+
+        function resetDaily() {
+          const daily = {
+            date: todayString(),
+            adsWatched: 0,
+            maxAds: 5,
+            tasks: {}
+          };
+          saveDaily(daily);
+          return daily;
+        }
+
+        function addAdWatch() {
+          const daily = getDaily();
+          if (daily.adsWatched >= daily.maxAds) {
+            return false;
+          }
+          
+          daily.adsWatched++;
+          saveDaily(daily);
+          return true;
         }
 
         const videos = [
@@ -764,10 +818,9 @@
               adTimer = null;
               adInProgress = false;
 
-              const ok = creditSys.addAdWatch();
+              const ok = addAdWatch();
               if (ok) {
-                await creditSys.addCredits(4);
-                // UI se aktualizuje automaticky přes callback
+                await window.creditSys.addCredits(4);
                 syncStreakAndLevel();
               }
 
@@ -818,7 +871,7 @@
 
         if (topupTestButton) {
           topupTestButton.addEventListener("click", async function () {
-            await creditSys.addCredits(50);
+            await window.creditSys.addCredits(50);
             // UI se aktualizuje automaticky přes callback
             syncStreakAndLevel();
             alert("Test: připsáno +50 K-Coins");
@@ -904,7 +957,7 @@
 
         if (resetButton) {
           resetButton.addEventListener("click", function () {
-            creditSys.resetDaily();
+            resetDaily();
             stopCooldownTimer();
             if (adCooldown) adCooldown.classList.add("hidden");
             updateUIFromDaily();
@@ -914,10 +967,9 @@
 
         if (taskStatsItem && taskStatsBadge) {
           taskStatsItem.addEventListener("click", async function () {
-            const newlyDone = creditSys.updateDailyTask("stats");
+            const newlyDone = updateDailyTask("stats");
             if (newlyDone) {
-              await creditSys.addCredits(5);
-              // UI se aktualizuje automaticky přes callback
+              await window.creditSys.addCredits(5);
               syncStreakAndLevel();
               updateUIFromDaily();
             }
@@ -937,10 +989,9 @@
           campaignRespondButtons.forEach(function (btn) {
             btn.addEventListener("click", async function (e) {
               e.preventDefault();
-              const newlyDone = creditSys.updateDailyTask("campaign");
+              const newlyDone = updateDailyTask("campaign");
               if (newlyDone) {
-                await creditSys.addCredits(6);
-                // UI se aktualizuje automaticky přes callback
+                await window.creditSys.addCredits(6);
                 syncStreakAndLevel();
                 updateUIFromDaily();
               }
@@ -950,9 +1001,38 @@
         }
 
         // Globální přístup – používají to jiné stránky (mystery-box atd.)
-        window.creditSys = creditSys;
-        } // konec initDashboard
-      });
+        window.creditSys = {
+          getCredits: () => creator.credits || 0,
+          addCredits: async (amount) => {
+            const newCredits = (creator.credits || 0) + amount;
+            const { error } = await supabase
+              .from('creators')
+              .update({ credits: newCredits, updated_at: new Date().toISOString() })
+              .eq('id', user.id);
+            
+            if (!error) {
+              creator.credits = newCredits;
+              const el = document.getElementById('currentCredits');
+              if (el) el.textContent = newCredits.toLocaleString('cs-CZ');
+            }
+            return newCredits;
+          },
+          subtractCredits: async (amount) => {
+            const newCredits = Math.max(0, (creator.credits || 0) - amount);
+            const { error } = await supabase
+              .from('creators')
+              .update({ credits: newCredits, updated_at: new Date().toISOString() })
+              .eq('id', user.id);
+            
+            if (!error) {
+              creator.credits = newCredits;
+              const el = document.getElementById('currentCredits');
+              if (el) el.textContent = newCredits.toLocaleString('cs-CZ');
+            }
+            return newCredits;
+          }
+        };
+      } // konec initDashboard
     });
   </script>
 </body>
