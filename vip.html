@@ -131,9 +131,9 @@
             <div class="text-[11px] text-slate-300">Mozek tvého influencer profilu</div>
           </div>
         </a>
-        <span class="hidden sm:inline-flex items-center pill bg-emerald-500/10 border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-200 ml-2">
+        <span id="user-badge" class="hidden sm:inline-flex items-center pill bg-emerald-500/10 border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-200 ml-2">
           <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-          Přihlášený uživatel
+          Načítání...
         </span>
       </div>
 
@@ -151,10 +151,12 @@
       <div class="flex items-center gap-2 text-xs">
         <div class="hidden sm:flex items-center pill bg-black/60 border border-yellow-500/60 px-3 py-1.5 shadow-inner">
           <span class="text-[10px] tracking-[0.16em] text-yellow-200/80 uppercase mr-2">K-Coins</span>
-          <span class="font-semibold text-yellow-300">361&nbsp;079</span>
+          <span id="header-coins" class="font-semibold text-yellow-300">
+            <span class="inline-block w-3 h-3 border-2 border-yellow-300/30 border-t-yellow-300 rounded-full animate-spin"></span>
+          </span>
         </div>
 
-        <a href="credits-dashboard.html" class="hidden sm:inline-flex pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 transition text-[11px] font-medium">
+        <a href="firma-credits.html" class="hidden sm:inline-flex pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 transition text-[11px] font-medium">
           Kredity &amp; Mystery Box
         </a>
 
@@ -162,7 +164,7 @@
           Dobít kredity +
         </a>
 
-        <button class="pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 text-[11px] font-medium">
+        <button id="logout-btn" class="pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 text-[11px] font-medium">
           Odhlásit
         </button>
       </div>
@@ -534,16 +536,20 @@
           });
 
           // Aktualizace K-Coins v headeru
-          const coinsElement = document.querySelector('.text-yellow-300');
+          const coinsElement = document.getElementById('header-coins');
           if (coinsElement) {
             const credits = creator.credits || 0;
             coinsElement.textContent = credits.toLocaleString('cs-CZ');
           }
 
-          // Aktualizace jména uživatele
-          const userNameElement = document.querySelector('.text-emerald-200');
-          if (userNameElement && creator.name) {
-            userNameElement.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>${creator.name}`;
+          // Aktualizace jména uživatele v badge
+          const userBadge = document.getElementById('user-badge');
+          if (userBadge) {
+            if (creator.name) {
+              userBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>${creator.name}`;
+            } else {
+              userBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>Přihlášený uživatel`;
+            }
           }
 
           // Update VIP status badge v headeru
@@ -563,15 +569,17 @@
 
     // Aktualizace VIP badge v headeru
     function updateHeaderVIPBadge(isVIP) {
-      const statusBadge = document.querySelector('.bg-emerald-500\\/10');
-      if (!statusBadge) return;
+      const userBadge = document.getElementById('user-badge');
+      if (!userBadge) return;
+
+      const userName = currentCreator?.name || 'Přihlášený uživatel';
 
       if (isVIP) {
-        statusBadge.classList.remove('bg-emerald-500/10', 'border-emerald-400/40', 'text-emerald-200');
-        statusBadge.classList.add('bg-gradient-to-r', 'from-yellow-400/30', 'via-amber-400/30', 'to-orange-400/40', 'border-yellow-400/60', 'text-yellow-100');
-        statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-400 mr-1.5 animate-pulse"></span>VIP Uživatel ⭐';
+        userBadge.classList.remove('bg-emerald-500/10', 'border-emerald-400/40', 'text-emerald-200');
+        userBadge.classList.add('bg-gradient-to-r', 'from-yellow-400/30', 'via-amber-400/30', 'to-orange-400/40', 'border-yellow-400/60', 'text-yellow-100');
+        userBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-400 mr-1.5 animate-pulse"></span>VIP Uživatel ⭐';
       } else {
-        statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>Přihlášený uživatel';
+        userBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>${userName}`;
       }
     }
 
@@ -729,7 +737,7 @@
       loadUserData();
       
       // Odhlášení tlačítko
-      const logoutBtn = document.querySelector('button:last-child');
+      const logoutBtn = document.getElementById('logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
       }
