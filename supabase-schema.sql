@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS creators (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
   name TEXT NOT NULL,
+  handle TEXT UNIQUE,
   bio TEXT,
   avatar_url TEXT,
   cover_url TEXT,

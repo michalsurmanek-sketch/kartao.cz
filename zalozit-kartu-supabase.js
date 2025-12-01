@@ -94,6 +94,7 @@ async function saveCreatorCard(formData, userId) {
     const payload = {
       user_id: userId,
       name: formData.name,
+      handle: formData.handle || null,
       bio: formData.bio || "",
       avatar_url: avatarUrl,
       cover_url: coverUrl,
