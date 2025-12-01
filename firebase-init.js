@@ -36,15 +36,9 @@ if (typeof firebase === "undefined") {
     window.db.enableNetwork()
       .then(() => {
         console.log("🌐 Firestore FORCE ONLINE aktivován");
-        
-        // Dvojitá kontrola - zakázat persistence
-        return window.db.clearPersistence();
-      })
-      .then(() => {
-        console.log("🗑️ Firestore persistence vymazána");
       })
       .catch((err) => {
-        console.warn("⚠️ Force online warning:", err.message);
+        console.warn("⚠️ enableNetwork error:", err.message);
       });
   }
 }
