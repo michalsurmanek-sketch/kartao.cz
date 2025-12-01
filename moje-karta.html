@@ -124,23 +124,25 @@
                   </button>
                 </div>
                 </div>
-                <p class="text-sm text-white/70 max-w-xl">
+                <p class="text-sm text-white/60" id="userHandle">@handle</p>
+                <p class="text-xs uppercase tracking-wide text-white/50" id="userCategory">Kategorie</p>
+                <p class="text-sm text-white/70 max-w-xl" id="userBio">
                   Tohle je centrální mozek tvého profilu. Odtud spravuješ kartu, kredity, odměny, VIP stav i napojení na kampaně.
                 </p>
 
-                <!-- Rychlé statistiky (placeholder / později z API) -->
+                <!-- Rychlé statistiky -->
                 <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
                   <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                    <p class="text-white/60">Sledující</p>
-                    <p class="text-sm font-semibold">–––</p>
+                    <p class="text-white/60">Instagram</p>
+                    <p class="text-sm font-semibold" id="instagramFollowers">–––</p>
                   </div>
                   <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                    <p class="text-white/60">Prům. reach</p>
-                    <p class="text-sm font-semibold">–––</p>
+                    <p class="text-white/60">Rating</p>
+                    <p class="text-sm font-semibold" id="userRating">–––</p>
                   </div>
                   <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
                     <p class="text-white/60">VIP status</p>
-                    <p class="text-sm font-semibold text-amber-300">zatím OFF</p>
+                    <p class="text-sm font-semibold text-amber-300" id="vipStatus">zatím OFF</p>
                   </div>
                 </div>
               </div>
@@ -158,7 +160,7 @@
                 <div class="text-right">
                   <p class="text-[11px] text-white/60">Tvoje kredity</p>
                   <p class="text-lg font-semibold text-amber-200">
-                    <span id="summaryCredits">0</span> K-Coins
+                    <span id="userCredits">0</span> K-Coins
                   </p>
                 </div>
               </div>
@@ -322,33 +324,13 @@
     });
   </script>
 
-  <!-- Firebase + CreditsSystem (stejné jako na credits-dashboard) -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src=""></script>
-  <script src=""></script>
-  <script src=""></script>
-
-  <!-- Konfigurace + init + databáze + kredity -->
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
   <script src="auth-supabase.js"></script>
   <script src="auth-header.js"></script>
-<!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
-<script>
-  if (window.firebase && firebase.firestore) {
-    firebase.firestore().enableNetwork()
-      .then(() => {
-        console.log("🌐 Firestore ONLINE (moje-karta.html)");
-      })
-      .catch((err) => {
-        console.warn("⚠️ Nepodařilo se zapnout Firestore online (moje-karta.html):", err);
-      });
-  } else {
-    console.warn("⚠️ Firebase/Firestore není na moje-karta.html k dispozici");
-  }
-</script>
-
-<script src="database-init.js"></script>
+  <script src="database-init.js"></script>
 <script src="credits-system-supabase.js"></script>
 <script src="zalozit-kartu-supabase.js"></script>
   <script src="credits-header.js"></script>
@@ -380,27 +362,80 @@
             if (initialEl && creatorCard.name) initialEl.textContent = creatorCard.name.charAt(0).toUpperCase();
             
             // Avatar
-            const avatarImg = document.querySelector('.w-24.h-24 img, .rounded-3xl img');
-            if (avatarImg && creatorCard.avatar_url) {
-              avatarImg.src = creatorCard.avatar_url;
+            const avatarDiv = document.querySelector('.w-24.h-24.rounded-3xl .w-full.h-full.rounded-3xl');
+            if (avatarDiv && creatorCard.avatar_url) {
+              avatarDiv.innerHTML = `<img src="${creatorCard.avatar_url}" alt="Avatar" class="w-full h-full object-cover rounded-3xl">`;
             }
             
             // Handle
-            const handleEl = document.querySelector('.text-sm.text-white\\/60');
+            const handleEl = document.getElementById('userHandle');
             if (handleEl && creatorCard.handle) {
               handleEl.textContent = '@' + creatorCard.handle;
             }
             
             // Kategorie
-            const categoryEl = document.querySelector('.text-xs.uppercase');
+            const categoryEl = document.getElementById('userCategory');
             if (categoryEl && creatorCard.categories && creatorCard.categories.length > 0) {
               categoryEl.textContent = creatorCard.categories[0];
+            }
+            
+            // Bio
+            const bioEl = document.getElementById('userBio');
+            if (bioEl && creatorCard.bio) {
+              bioEl.textContent = creatorCard.bio;
             }
             
             // Kredity
             const creditsEl = document.getElementById('userCredits');
             if (creditsEl && creatorCard.credits !== undefined) {
               creditsEl.textContent = creatorCard.credits;
+            }
+            
+            // Instagram followers
+            const instagramEl = document.getElementById('instagramFollowers');
+            if (instagramEl && creatorCard.instagram_followers) {
+              instagramEl.textContent = creatorCard.instagram_followers.toLocaleString('cs-CZ');
+            }
+            
+            // Rating
+            const ratingEl = document.getElementById('userRating');
+            if (ratingEl && creatorCard.rating) {
+              ratingEl.textContent = creatorCard.rating + ' ⭐';
+            }
+            
+            // VIP status
+            const vipEl = document.getElementById('vipStatus');
+            if (vipEl && creatorCard.premium) {
+              vipEl.textContent = 'VIP ACTIVE';
+              vipEl.className = 'text-sm font-semibold text-yellow-300';
+            }
+            
+            // 🔗 Share button - nastavení URL pro sdílení karty
+            const shareBtn = document.getElementById('shareFirmBtn');
+            if (shareBtn && creatorCard.handle) {
+              const shareUrl = `${window.location.origin}/karta/${creatorCard.handle}`;
+              shareBtn.addEventListener('click', async () => {
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: `${creatorCard.name} - Kartao.cz`,
+                      text: `Podívej se na můj influencer profil!`,
+                      url: shareUrl
+                    });
+                    console.log('✅ Sdílení úspěšné');
+                  } catch (err) {
+                    console.log('ℹ️ Sdílení zrušeno:', err);
+                  }
+                } else {
+                  // Fallback - kopírování do schránky
+                  try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    alert(`✅ URL zkopírováno do schránky:\n${shareUrl}`);
+                  } catch (err) {
+                    alert(`Tvůj profil URL:\n${shareUrl}`);
+                  }
+                }
+              });
             }
           } else {
             console.log("ℹ️ Žádná creator karta - uživatel ještě nevytvořil kartu");
