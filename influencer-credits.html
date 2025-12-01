@@ -251,15 +251,10 @@
       let selectedAmount = null;
       let selectedLabel = null;
 
-      function updateCreditsDisplay(val) {
+      function updateCreditsDisplayLocal(val) {
         if (typeof val !== "number") return;
         if (headerCreditsEl) headerCreditsEl.textContent = val;
         if (currentCreditsEl) currentCreditsEl.textContent = val;
-        
-        // Aktualizuj i globální zobrazení (pokud existuje)
-        if (window.updateCreditsDisplay) {
-          window.updateCreditsDisplay(val);
-        }
       }
 
       if (!auth) {
@@ -282,7 +277,10 @@
           }
 
           // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
-          creditsSystem = new window.CreditsSystem(user.uid, updateCreditsDisplay);
+          creditsSystem = new window.CreditsSystem(user.uid, function(val) {
+            updateCreditsDisplayLocal(val);
+            if (window.updateCreditsDisplay) window.updateCreditsDisplay(val);
+          });
 
           // Pro debug
           window.creditSys = {
@@ -292,7 +290,7 @@
           };
 
           const val = creditsSystem.getCredits();
-          updateCreditsDisplay(val);
+          updateCreditsDisplayLocal(val);
 
           // Výběr balíčku
           const cards = document.querySelectorAll(".topup-card");
@@ -318,7 +316,7 @@
               if (!selectedAmount) return;
 
               const newVal = creditsSystem.addCredits(selectedAmount);
-              updateCreditsDisplay(newVal);
+              // updateCreditsDisplayLocal(newVal); // není třeba, callback to zajistí
 
               if (messageEl) {
                 messageEl.textContent =
