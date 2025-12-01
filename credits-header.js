@@ -32,7 +32,8 @@
       document.getElementById('kCoinsDisplay'),
       document.getElementById('creditsDisplayValue'),
       document.getElementById('headerCredits'),
-      document.getElementById('summaryCredits')
+      document.getElementById('summaryCredits'),
+      document.getElementById('currentCredits')
     ];
 
     creditsElements.forEach(el => {

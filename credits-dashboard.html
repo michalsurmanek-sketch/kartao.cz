@@ -378,22 +378,12 @@
 
         window.currentUserId = user.uid;
 
-        // DOM prvky
-        const creditsValueEl       = document.getElementById("creditsValue");      // univerzální ID (jiné stránky)
-        const creditsValueHeroEl   = document.getElementById("creditsValueHero");  // box v hero
-        const currentCreditsEl     = document.getElementById("currentCredits");    // číslo v hlavičce
-
-        // aktualizace zobrazení kreditů – volá se z callback
-        function syncCreditsDisplay() {
-          const credits = creditSys.getCredits();
-          const formatted = formatNumber(credits);
-          if (creditsValueEl)     creditsValueEl.textContent     = formatted;
-          if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
-          if (currentCreditsEl)   currentCreditsEl.textContent   = formatted;
+        // Použij globální CreditsSystem z credits-header.js
+        const creditSys = window.getCreditsSystem();
+        if (!creditSys) {
+          console.warn("CreditsSystem není dostupný z credits-header.js");
+          return;
         }
-
-        // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
-        const creditSys = new CreditsSystem(user.uid, syncCreditsDisplay);
 
         const streakValueEl        = document.getElementById("streakValue");
         const levelValueEl         = document.getElementById("levelValue");
@@ -523,17 +513,7 @@
           cooldownTimer = setInterval(tick, 1000);
         }
 
-        // aktualizace zobrazení kreditů – jen čte ze CreditsSystem
-        function syncCreditsDisplay() {
-          const credits = creditSys.getCredits();
-          const formatted = formatNumber(credits);
-          if (creditsValueEl)     creditsValueEl.textContent     = formatted;
-          if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
-          if (currentCreditsEl)   currentCreditsEl.textContent   = formatted;
-        }
-
-        // Počáteční zobrazení (callback se volá automaticky při změně)
-        syncCreditsDisplay();
+        // Kredity se aktualizují automaticky přes globální callback z credits-header.js
 
         // === STREAK + LEVEL – Firestore: users/{uid} ===
         async function syncStreakAndLevel() {
@@ -770,7 +750,7 @@
               const ok = creditSys.addAdWatch();
               if (ok) {
                 await creditSys.addCredits(4);
-                syncCreditsDisplay();
+                // UI se aktualizuje automaticky přes callback
                 syncStreakAndLevel();
               }
 
@@ -822,7 +802,7 @@
         if (topupTestButton) {
           topupTestButton.addEventListener("click", async function () {
             await creditSys.addCredits(50);
-            syncCreditsDisplay();
+            // UI se aktualizuje automaticky přes callback
             syncStreakAndLevel();
             alert("Test: připsáno +50 K-Coins");
           });
@@ -920,7 +900,7 @@
             const newlyDone = creditSys.updateDailyTask("stats");
             if (newlyDone) {
               await creditSys.addCredits(5);
-              syncCreditsDisplay();
+              // UI se aktualizuje automaticky přes callback
               syncStreakAndLevel();
               updateUIFromDaily();
             }
@@ -943,7 +923,7 @@
               const newlyDone = creditSys.updateDailyTask("campaign");
               if (newlyDone) {
                 await creditSys.addCredits(6);
-                syncCreditsDisplay();
+                // UI se aktualizuje automaticky přes callback
                 syncStreakAndLevel();
                 updateUIFromDaily();
               }
