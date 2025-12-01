@@ -35,7 +35,7 @@ class CreditsSystem {
     if (!this.db) console.warn("CreditsSystem: Firestore není připraveno.");
     if (!this.userId) console.warn("CreditsSystem vytvořen bez userId.");
 
-    this.credits = 0;
+    this.credits = null; // null = ještě nenačteno
 
     // localStorage klíče
     this.dailyKey = this.userId
@@ -59,16 +59,15 @@ class CreditsSystem {
     if (!Number.isFinite(value)) value = 0;
     if (value < 0) value = 0;
     this.credits = value;
-    
     // Zavolej callback pro UI update
     if (typeof this.onCreditsChange === 'function') {
       try {
-        this.onCreditsChange(this.credits);
+        // Pokud credits je null, předáme loading=true
+        this.onCreditsChange(this.credits, this.credits === null);
       } catch (e) {
         console.warn('CreditsSystem: callback error:', e);
       }
     }
-    
     return this.credits;
   }
 

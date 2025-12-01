@@ -22,7 +22,8 @@
   }
 
   // Funkce pro aktualizaci UI
-  function updateCreditsUI(credits) {
+  let creditsLoading = true;
+  function updateCreditsUI(credits, loading = false) {
     // Najdi všechny elementy pro zobrazení kreditů
     const creditsElements = [
       document.getElementById('userCredits'),
@@ -36,13 +37,17 @@
 
     creditsElements.forEach(el => {
       if (el) {
-        el.textContent = formatCredits(credits);
+        if (loading) {
+          el.textContent = 'Načítám...';
+        } else {
+          el.textContent = formatCredits(credits);
+        }
       }
     });
 
     // Zobraz credits display pokud je skrytý
     const creditsDisplay = document.getElementById('creditsDisplay');
-    if (creditsDisplay && credits >= 0) {
+    if (creditsDisplay && !loading && credits >= 0) {
       creditsDisplay.classList.remove('hidden');
     }
   }
@@ -65,25 +70,23 @@
     if (user) {
       // Přihlášen - inicializuj CreditsSystem s callback
       try {
-        // Callback pro okamžitou aktualizaci UI při změně kreditů
+        creditsLoading = true;
+        updateCreditsUI(0, true); // Zobraz loading
         creditsSystemInstance = new CreditsSystem(user.uid, (credits) => {
-          updateCreditsUI(credits);
+          creditsLoading = false;
+          updateCreditsUI(credits, false);
         });
-        
-        // Okamžitá počáteční aktualizace
-        const initialCredits = creditsSystemInstance.getCredits();
-        updateCreditsUI(initialCredits);
-
         // Fallback interval pro případ, že callback nefunguje
         creditsCheckInterval = setInterval(() => {
           if (!creditsSystemInstance) {
             clearInterval(creditsCheckInterval);
             return;
           }
-          const currentCredits = creditsSystemInstance.getCredits();
-          updateCreditsUI(currentCredits);
+          if (!creditsLoading) {
+            const currentCredits = creditsSystemInstance.getCredits();
+            updateCreditsUI(currentCredits, false);
+          }
         }, 2000);
-
       } catch (error) {
         console.error('Chyba inicializace CreditsSystem:', error);
       }
@@ -93,13 +96,13 @@
       if (creditsDisplay) {
         creditsDisplay.classList.add('hidden');
       }
-      updateCreditsUI(0);
+      updateCreditsUI(0, false);
     }
   });
 
   // Zpřístupníme globálně pro manuální aktualizaci
   window.updateCreditsDisplay = function(credits) {
-    updateCreditsUI(credits);
+    updateCreditsUI(credits, false);
   };
 
   // Zpřístupníme globálně pro získání instance
