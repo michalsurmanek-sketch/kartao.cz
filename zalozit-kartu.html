@@ -683,51 +683,56 @@
         }
       }
 
-      // Kontrola připojení každých 3s
+      // Kontrola připojení
       let isOnline = false;
-      setInterval(async () => {
+      
+      async function checkFirebaseConnection() {
         if (!window.db) {
+          console.warn("⚠️ window.db není dostupné");
           updateFirebaseStatus(false);
-          return;
+          return false;
         }
         
         try {
-          // Test write do Firestore
-          const testRef = window.db.collection("_connection_test").doc("test");
-          await Promise.race([
-            testRef.set({ ping: Date.now() }, { merge: true }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000))
-          ]);
+          // Jednoduchý test - přečíst .info/connected (neexistuje v Firestore, ale test připojení)
+          const testRef = window.db.collection("_ping").doc("test");
+          await testRef.set({ t: Date.now() }, { merge: true });
           
           if (!isOnline) {
             isOnline = true;
             updateFirebaseStatus(true);
-            console.log("✅ Firebase connection restored");
+            console.log("✅ Firebase ONLINE");
           }
+          return true;
         } catch (err) {
-          if (isOnline) {
+          if (isOnline || isOnline === false) {
             isOnline = false;
             updateFirebaseStatus(false);
-            console.error("❌ Firebase connection lost:", err);
+            console.error("❌ Firebase OFFLINE:", err.message);
           }
+          return false;
         }
-      }, 3000);
+      }
 
-      // První kontrola hned
-      setTimeout(() => {
+      // Opakovaná kontrola každé 2s
+      setInterval(checkFirebaseConnection, 2000);
+
+      // První kontrola ihned po načtení (s čekáním na Firebase init)
+      let initAttempts = 0;
+      const waitForFirebase = setInterval(async () => {
+        initAttempts++;
+        console.log(`[Firebase check] Pokus ${initAttempts}/10`);
+        
         if (window.db) {
-          window.db.collection("_connection_test").doc("test")
-            .set({ ping: Date.now() }, { merge: true })
-            .then(() => {
-              isOnline = true;
-              updateFirebaseStatus(true);
-            })
-            .catch(() => {
-              isOnline = false;
-              updateFirebaseStatus(false);
-            });
+          clearInterval(waitForFirebase);
+          console.log("✅ window.db připraveno, spouštím test připojení");
+          await checkFirebaseConnection();
+        } else if (initAttempts >= 10) {
+          clearInterval(waitForFirebase);
+          console.error("❌ window.db se nenačetlo ani po 10 pokusech");
+          updateFirebaseStatus(false);
         }
-      }, 1000);
+      }, 200);
 
       const form = document.getElementById("creatorForm");
       const cancelBtn = document.getElementById("cancelBtn");
