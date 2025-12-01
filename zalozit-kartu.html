@@ -203,7 +203,7 @@
           </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-4">
+        <div class="grid md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="label">
               <i data-lucide="map-pin" class="w-4 h-4"></i>
@@ -211,6 +211,16 @@
             </label>
             <input id="city" type="text" class="input" placeholder="Brno" />
           </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="phone" class="w-4 h-4"></i>
+              Telefon
+            </label>
+            <input id="phone" type="tel" class="input" placeholder="+420 123 456 789" />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
           <div class="space-y-1.5">
             <label class="label">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -240,6 +250,21 @@
               min="0"
               class="input"
               placeholder="1500"
+            />
+          </div>
+          <div class="space-y-1.5">
+            <label class="label">
+              <i data-lucide="trending-up" class="w-4 h-4"></i>
+              Engagement %
+            </label>
+            <input
+              id="engagement"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              class="input"
+              placeholder="3.5"
             />
           </div>
         </div>
@@ -873,6 +898,7 @@
             // Vyplň formulář
             if (existingCard.name) document.getElementById("name").value = existingCard.name;
             if (existingCard.handle) document.getElementById("handle").value = existingCard.handle;
+            if (existingCard.phone) document.getElementById("phone").value = existingCard.phone;
             if (existingCard.bio) document.getElementById("bio").value = existingCard.bio;
             if (existingCard.categories && existingCard.categories.length > 0) {
               document.getElementById("category").value = existingCard.categories[0];
@@ -986,6 +1012,7 @@
 
               // Další pole
               const city = document.getElementById("city")?.value.trim() || "";
+              const phone = document.getElementById("phone")?.value.trim() || "";
               const price = document.getElementById("price")?.value.trim();
               const engagement = document.getElementById("engagement")?.value.trim();
               const premium = document.getElementById("premium")?.checked || false;
@@ -997,6 +1024,7 @@
                 bio,
                 category,
                 city,
+                phone,
                 price: price ? Number(price) : 0,
                 rating: ratingVal ? Number(ratingVal) : 0,
                 engagement: engagement ? Number(engagement) : 0,

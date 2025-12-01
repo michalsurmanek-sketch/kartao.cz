@@ -145,6 +145,10 @@
                     <p class="text-sm font-semibold" id="userCity">–––</p>
                   </div>
                   <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
+                    <p class="text-white/60">Telefon</p>
+                    <p class="text-sm font-semibold" id="userPhone">–––</p>
+                  </div>
+                  <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
                     <p class="text-white/60">Cena/post</p>
                     <p class="text-sm font-semibold" id="userPrice">–––</p>
                   </div>
@@ -436,10 +440,16 @@
             const engagementEl = document.getElementById('userEngagement');
             if (engagementEl) {
               if (creatorCard.engagement) {
-                engagementEl.textContent = creatorCard.engagement + ' %';
+                engagementEl.textContent = Number(creatorCard.engagement).toFixed(1) + ' %';
               } else {
                 engagementEl.textContent = '–––';
               }
+            }
+            
+            // Telefon
+            const phoneEl = document.getElementById('userPhone');
+            if (phoneEl) {
+              phoneEl.textContent = creatorCard.phone || '–––';
             }
             
             // VIP status

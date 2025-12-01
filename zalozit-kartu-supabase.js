@@ -95,6 +95,7 @@ async function saveCreatorCard(formData, userId) {
       user_id: userId,
       name: formData.name,
       handle: formData.handle || null,
+      phone: formData.phone || null,
       bio: formData.bio || "",
       city: formData.city || null,
       price: formData.price || 0,

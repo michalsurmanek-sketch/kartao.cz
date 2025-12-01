@@ -85,7 +85,7 @@ DROP POLICY IF EXISTS "Enable read for own transactions" ON transactions;
 
 -- Nové RLS policies pro transactions
 CREATE POLICY "Enable read for own transactions" ON transactions
-    FOR SELECT USING (auth.uid() = user_id OR auth.uid() = receiver_id);
+    FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert transactions" ON transactions
     FOR INSERT WITH CHECK (auth.uid() = user_id);
