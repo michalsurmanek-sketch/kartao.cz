@@ -329,13 +329,50 @@
                 </a>
               </div>
               <div class="flex gap-3 overflow-x-auto pb-1">
-                <!-- Story: Přidat -->
-                <a href="zalozit-kartu.html" class="flex flex-col items-center gap-1 min-w-[58px]">
-                  <div class="h-12 w-12 rounded-full bg-slate-900 border border-dashed border-slate-600 flex items-center justify-center">
-                    <i data-lucide="plus" class="w-4 h-4 text-slate-300"></i>
+                <!-- Story: Přidat s dropdown menu -->
+                <div class="relative group">
+                  <button class="flex flex-col items-center gap-1 min-w-[58px]">
+                    <div class="h-12 w-12 rounded-full bg-slate-900 border border-dashed border-slate-600 flex items-center justify-center hover:border-sky-500 hover:bg-slate-900/50 transition-all">
+                      <i data-lucide="plus" class="w-4 h-4 text-slate-300 group-hover:text-sky-400 transition-colors"></i>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Tvoje</span>
+                  </button>
+
+                  <!-- Dropdown menu - vyjedou kruhy -->
+                  <div class="absolute left-0 top-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex gap-2 pl-16 pointer-events-none group-hover:pointer-events-auto">
+                    <!-- Story -->
+                    <a href="zalozit-kartu.html" class="flex flex-col items-center gap-1 min-w-[58px] transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300">
+                      <div class="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <i data-lucide="image" class="w-5 h-5 text-white"></i>
+                      </div>
+                      <span class="text-[11px] text-slate-300">Story</span>
+                    </a>
+
+                    <!-- Video -->
+                    <a href="zalozit-kartu.html" class="flex flex-col items-center gap-1 min-w-[58px] transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300 delay-75">
+                      <div class="h-12 w-12 rounded-full bg-gradient-to-br from-sky-500 to-blue-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <i data-lucide="video" class="w-5 h-5 text-white"></i>
+                      </div>
+                      <span class="text-[11px] text-slate-300">Video</span>
+                    </a>
+
+                    <!-- Live -->
+                    <a href="zalozit-kartu.html" class="flex flex-col items-center gap-1 min-w-[58px] transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300 delay-150">
+                      <div class="h-12 w-12 rounded-full bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <i data-lucide="radio" class="w-5 h-5 text-white"></i>
+                      </div>
+                      <span class="text-[11px] text-slate-300">Live</span>
+                    </a>
+
+                    <!-- Post -->
+                    <a href="#postTextarea" class="flex flex-col items-center gap-1 min-w-[58px] transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300 delay-[225ms]">
+                      <div class="h-12 w-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <i data-lucide="pen-line" class="w-5 h-5 text-white"></i>
+                      </div>
+                      <span class="text-[11px] text-slate-300">Post</span>
+                    </a>
                   </div>
-                  <span class="text-[11px] text-slate-400">Tvoje</span>
-                </a>
+                </div>
 
                 <!-- Story ukázky - dynamicky se načtou -->
                 <div id="storiesContainer" class="flex items-center gap-3">
