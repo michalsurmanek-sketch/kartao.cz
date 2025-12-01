@@ -392,5 +392,84 @@
       </div>
     </section>
   </main>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    // Supabase konfigurace
+    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Načtení dat uživatele
+    async function loadUserData() {
+      try {
+        // Kontrola přihlášení
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError || !user) {
+          console.warn('Uživatel není přihlášen, přesměrování na login');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        console.log('Přihlášený uživatel:', user.email);
+
+        // Načtení dat z creators tabulky
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (creatorError) {
+          console.error('Chyba načítání creator dat:', creatorError);
+          return;
+        }
+
+        if (creator) {
+          // Aktualizace K-Coins v headeru
+          const coinsElement = document.querySelector('.text-yellow-300');
+          if (coinsElement && creator.credits !== null) {
+            coinsElement.textContent = creator.credits.toLocaleString('cs-CZ');
+          }
+
+          // Aktualizace jména uživatele (pokud existuje)
+          const userNameElement = document.querySelector('.text-emerald-200');
+          if (userNameElement && creator.name) {
+            userNameElement.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>${creator.name}`;
+          }
+
+          // Zkontroluj VIP status a zobraz badge
+          if (creator.vip_status) {
+            const statusBadge = document.querySelector('.bg-emerald-500\\/10');
+            if (statusBadge) {
+              statusBadge.classList.remove('bg-emerald-500/10', 'border-emerald-400/40', 'text-emerald-200');
+              statusBadge.classList.add('bg-gradient-to-r', 'from-yellow-400/30', 'via-amber-400/30', 'to-orange-400/40', 'border-yellow-400/60', 'text-yellow-100');
+              statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-400 mr-1.5 animate-pulse"></span>VIP Uživatel ⭐';
+            }
+          }
+
+          console.log('Data načtena:', { 
+            name: creator.name, 
+            credits: creator.credits,
+            vip: creator.vip_status 
+          });
+        }
+      } catch (error) {
+        console.error('Chyba při načítání dat:', error);
+      }
+    }
+
+    // Odhlášení
+    document.querySelector('button:last-child').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    // Načti data při načtení stránky
+    document.addEventListener('DOMContentLoaded', loadUserData);
+  </script>
 </body>
 </html>
