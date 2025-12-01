@@ -2408,6 +2408,18 @@
     });
   </script>
 
+  <!-- Admin login tlačítko -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+      if (adminLoginBtn) {
+        adminLoginBtn.addEventListener('click', () => {
+          window.location.href = 'login.html';
+        });
+      }
+    });
+  </script>
+
   <!-- Dynamická změna podle role (TVŮJ KÓD) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
