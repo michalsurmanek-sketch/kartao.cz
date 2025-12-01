@@ -717,28 +717,45 @@
       // Opakovaná kontrola každé 2s
       setInterval(checkFirebaseConnection, 2000);
 
-      // První kontrola ihned po načtení (s čekáním na Firebase init)
+      // První kontrola ihned po načtení (s čekáním na Firebase init a auth)
       let initAttempts = 0;
+      let authReady = false;
+      
+      // Posluchač na auth změnu
+      if (window.kartaoAuth) {
+        window.kartaoAuth.onAuthStateChanged((user) => {
+          if (user) {
+            authReady = true;
+            console.log(`[Auth] Přihlášen: ${user.uid}`);
+            
+            // Ihned po přihlášení zkus test READ
+            if (window.db) {
+              window.db.collection('creators').doc(user.uid).get()
+                .then((doc) => {
+                  console.log(`✅ Test READ creators/${user.uid}:`, doc.exists ? 'existuje' : 'neexistuje (OK)');
+                })
+                .catch((err) => {
+                  console.error(`❌ Test READ SELHAL:`, err.code, err.message);
+                  if (err.code === 'permission-denied') {
+                    console.error(`🔴🔴🔴 FIRESTORE RULES BLOKUJÍ ČTENÍ! Musíš nasadit nová pravidla!`);
+                  }
+                });
+            }
+          }
+        });
+      }
+      
       const waitForFirebase = setInterval(async () => {
         initAttempts++;
         console.log(`[Firebase check] Pokus ${initAttempts}/10`);
         
-        if (window.db && window.auth && window.auth.currentUser) {
+        if (window.db) {
           clearInterval(waitForFirebase);
           console.log("✅ window.db připraveno, spouštím test připojení");
-          
-          // Test pravidel - zkus přečíst creators kolekci
-          try {
-            const testDoc = await window.db.collection('creators').doc(window.auth.currentUser.uid).get();
-            console.log(`✅ Test READ creators/${window.auth.currentUser.uid}:`, testDoc.exists ? 'dokument existuje' : 'dokument neexistuje (to je OK)');
-          } catch (err) {
-            console.error(`❌ Test READ selhal:`, err.code, err.message);
-          }
-          
           await checkFirebaseConnection();
         } else if (initAttempts >= 10) {
           clearInterval(waitForFirebase);
-          console.error("❌ window.db nebo auth se nenačetlo ani po 10 pokusech");
+          console.error("❌ window.db se nenačetlo ani po 10 pokusech");
           updateFirebaseStatus(false);
         }
       }, 200);
