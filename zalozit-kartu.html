@@ -413,7 +413,7 @@
           </div>
 
           <div class="grid md:grid-cols-2 gap-3">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <label class="pill min-w-[120px]">
                 <input
                   id="pf-instagram"
@@ -430,13 +430,22 @@
                 id="followers-instagram"
                 type="number"
                 min="0"
-                class="input"
+                class="input flex-1"
                 placeholder="Followers"
                 oninput="if(this.value > 0) document.getElementById('pf-instagram').checked = true; else document.getElementById('pf-instagram').checked = false; updatePlatformsPreview();"
               />
+              <button
+                type="button"
+                data-connect="instagram"
+                onclick="connectPlatform('instagram')"
+                class="px-3 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xs font-medium transition flex items-center gap-1.5"
+              >
+                <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                Připojit
+              </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <label class="pill min-w-[120px]">
                 <input
                   id="pf-tiktok"
@@ -453,13 +462,22 @@
                 id="followers-tiktok"
                 type="number"
                 min="0"
-                class="input"
+                class="input flex-1"
                 placeholder="Followers"
                 oninput="if(this.value > 0) document.getElementById('pf-tiktok').checked = true; else document.getElementById('pf-tiktok').checked = false; updatePlatformsPreview();"
               />
+              <button
+                type="button"
+                data-connect="tiktok"
+                onclick="connectPlatform('tiktok')"
+                class="px-3 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white text-xs font-medium transition flex items-center gap-1.5"
+              >
+                <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                Připojit
+              </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <label class="pill min-w-[120px]">
                 <input
                   id="pf-youtube"
@@ -476,13 +494,22 @@
                 id="followers-youtube"
                 type="number"
                 min="0"
-                class="input"
+                class="input flex-1"
                 placeholder="Subscribers"
                 oninput="if(this.value > 0) document.getElementById('pf-youtube').checked = true; else document.getElementById('pf-youtube').checked = false; updatePlatformsPreview();"
               />
+              <button
+                type="button"
+                data-connect="youtube"
+                onclick="connectPlatform('youtube')"
+                class="px-3 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-medium transition flex items-center gap-1.5"
+              >
+                <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                Připojit
+              </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <label class="pill min-w-[120px]">
                 <input
                   id="pf-facebook"
@@ -499,13 +526,22 @@
                 id="followers-facebook"
                 type="number"
                 min="0"
-                class="input"
+                class="input flex-1"
                 placeholder="Followers"
                 oninput="if(this.value > 0) document.getElementById('pf-facebook').checked = true; else document.getElementById('pf-facebook').checked = false; updatePlatformsPreview();"
               />
+              <button
+                type="button"
+                onclick="connectPlatform('facebook')"
+                data-connect="facebook"
+                class="px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
+              >
+                <i data-lucide="link" class="w-4 h-4"></i>
+                Připojit
+              </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <label class="pill min-w-[120px]">
                 <input
                   id="pf-pinterest"
@@ -522,10 +558,19 @@
                 id="followers-pinterest"
                 type="number"
                 min="0"
-                class="input"
+                class="input flex-1"
                 placeholder="Followers"
                 oninput="if(this.value > 0) document.getElementById('pf-pinterest').checked = true; else document.getElementById('pf-pinterest').checked = false; updatePlatformsPreview();"
               />
+              <button
+                type="button"
+                onclick="connectPlatform('pinterest')"
+                data-connect="pinterest"
+                class="px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
+              >
+                <i data-lucide="link" class="w-4 h-4"></i>
+                Připojit
+              </button>
             </div>
           </div>
         </div>
@@ -1167,5 +1212,8 @@
       });
     });
   </script>
+
+  <!-- OAuth Social Media Integration -->
+  <script src="social-connect.js"></script>
 </body>
 </html>

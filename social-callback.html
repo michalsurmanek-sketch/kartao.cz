@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propojování sociálních sítí...</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h1>Připojuji účet...</h1>
+    <p>Okno se automaticky zavře.</p>
+  </div>
+
+  <script>
+    // Zachyť OAuth callback parametry
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
+    const state = urlParams.get('state');
+
+    if (error) {
+      // Chyba při autorizaci
+      if (window.opener) {
+        window.opener.postMessage({
+          type: 'auth-error',
+          error: error,
+          error_description: urlParams.get('error_description')
+        }, '*');
+      }
+      setTimeout(() => window.close(), 2000);
+    } else if (code) {
+      // Úspěšná autorizace - detekuj platformu podle URL
+      let platform = 'unknown';
+      const hostname = window.location.hostname;
+      
+      if (document.referrer.includes('instagram')) {
+        platform = 'instagram';
+      } else if (document.referrer.includes('tiktok')) {
+        platform = 'tiktok';
+      } else if (document.referrer.includes('google') || document.referrer.includes('youtube')) {
+        platform = 'youtube';
+      } else if (document.referrer.includes('facebook')) {
+        platform = 'facebook';
+      }
+
+      // Pošli code zpět do parent window
+      if (window.opener) {
+        window.opener.postMessage({
+          type: `${platform}-auth`,
+          code: code,
+          state: state
+        }, '*');
+      }
+      
+      // Zavři okno
+      setTimeout(() => window.close(), 1000);
+    }
+  </script>
+</body>
+</html>
