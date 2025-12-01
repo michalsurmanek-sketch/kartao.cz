@@ -320,6 +320,21 @@
             </a>
           </div>
         </section>
+
+        <!-- Připojené platformy -->
+        <section class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
+          <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <i data-lucide="share-2" class="w-5 h-5 text-emerald-400"></i>
+            Tvoje připojené platformy
+          </h2>
+          <div class="flex flex-wrap gap-3" id="connectedPlatforms">
+            <!-- Naplní se dynamicky -->
+          </div>
+          <p class="text-xs text-white/60 mt-4">
+            <i data-lucide="info" class="w-3 h-3 inline"></i>
+            Upravit platformy můžeš na stránce <a href="zalozit-kartu.html" class="text-fuchsia-400 hover:underline">Upravit kartu</a>
+          </p>
+        </section>
       </div>
     </main>
 
@@ -457,6 +472,63 @@
             if (vipEl && creatorCard.premium) {
               vipEl.textContent = 'VIP ACTIVE';
               vipEl.className = 'text-sm font-semibold text-yellow-300';
+            }
+
+            // Připojené platformy
+            const connectedPlatforms = document.getElementById('connectedPlatforms');
+            const platforms = [
+              { 
+                id: 'instagram', 
+                icon: 'camera', 
+                label: 'Instagram', 
+                color: 'from-pink-500 to-purple-500',
+                connected: creatorCard.instagram_connected || creatorCard.instagram_followers > 0 
+              },
+              { 
+                id: 'tiktok', 
+                icon: 'music', 
+                label: 'TikTok', 
+                color: 'from-cyan-400 to-blue-500',
+                connected: creatorCard.tiktok_connected || creatorCard.tiktok_followers > 0 
+              },
+              { 
+                id: 'youtube', 
+                icon: 'play', 
+                label: 'YouTube', 
+                color: 'from-red-500 to-red-600',
+                connected: creatorCard.youtube_connected || creatorCard.youtube_followers > 0 
+              },
+              { 
+                id: 'facebook', 
+                icon: 'facebook', 
+                label: 'Facebook', 
+                color: 'from-blue-500 to-blue-700',
+                connected: creatorCard.facebook_connected || creatorCard.facebook_followers > 0 
+              },
+              { 
+                id: 'pinterest', 
+                icon: 'image', 
+                label: 'Pinterest', 
+                color: 'from-red-600 to-rose-600',
+                connected: creatorCard.pinterest_connected || creatorCard.pinterest_followers > 0 
+              }
+            ].filter(p => p.connected);
+
+            if (connectedPlatforms) {
+              if (platforms.length > 0) {
+                connectedPlatforms.innerHTML = platforms.map(platform => `
+                  <div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r ${platform.color} bg-opacity-20 border border-white/20">
+                    <i data-lucide="${platform.icon}" class="w-4 h-4"></i>
+                    <span class="text-sm font-medium">${platform.label}</span>
+                  </div>
+                `).join('');
+              } else {
+                connectedPlatforms.innerHTML = '<p class="text-white/60 text-sm">Žádné platformy zatím nejsou připojené. Přidej je na stránce <a href="zalozit-kartu.html" class="text-fuchsia-400 hover:underline">Upravit kartu</a>.</p>';
+              }
+              // Reinicializuj ikony
+              if (window.lucide) {
+                lucide.createIcons();
+              }
             }
             
             // 🔗 Share button - nastavení URL pro sdílení karty

@@ -172,11 +172,22 @@
         </p>
       </div>
 
+      <!-- Připojené platformy -->
+      <div class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="share-2" class="w-5 h-5 text-emerald-400"></i>
+          Připojené platformy
+        </h2>
+        <div class="flex flex-wrap gap-3" id="connectedPlatforms">
+          <!-- Naplní se dynamicky -->
+        </div>
+      </div>
+
       <!-- Social Media Stats -->
       <div class="rounded-3xl bg-neutral-950/60 border border-white/10 shadow-soft p-6">
         <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
           <i data-lucide="trending-up" class="w-5 h-5 text-amber-400"></i>
-          Sociální sítě
+          Statistiky sledujících
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="socialStats">
           <!-- Naplní se dynamicky -->
@@ -333,6 +344,57 @@
       // Bio
       if (creator.bio) {
         document.getElementById('creatorBio').textContent = creator.bio;
+      }
+
+      // Připojené platformy
+      const connectedPlatforms = document.getElementById('connectedPlatforms');
+      const platforms = [
+        { 
+          id: 'instagram', 
+          icon: 'camera', 
+          label: 'Instagram', 
+          color: 'from-pink-500 to-purple-500',
+          connected: creator.instagram_connected || creator.instagram_followers > 0 
+        },
+        { 
+          id: 'tiktok', 
+          icon: 'music', 
+          label: 'TikTok', 
+          color: 'from-cyan-400 to-blue-500',
+          connected: creator.tiktok_connected || creator.tiktok_followers > 0 
+        },
+        { 
+          id: 'youtube', 
+          icon: 'play', 
+          label: 'YouTube', 
+          color: 'from-red-500 to-red-600',
+          connected: creator.youtube_connected || creator.youtube_followers > 0 
+        },
+        { 
+          id: 'facebook', 
+          icon: 'facebook', 
+          label: 'Facebook', 
+          color: 'from-blue-500 to-blue-700',
+          connected: creator.facebook_connected || creator.facebook_followers > 0 
+        },
+        { 
+          id: 'pinterest', 
+          icon: 'image', 
+          label: 'Pinterest', 
+          color: 'from-red-600 to-rose-600',
+          connected: creator.pinterest_connected || creator.pinterest_followers > 0 
+        }
+      ].filter(p => p.connected);
+
+      if (platforms.length > 0) {
+        connectedPlatforms.innerHTML = platforms.map(platform => `
+          <div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r ${platform.color} bg-opacity-20 border border-white/20">
+            <i data-lucide="${platform.icon}" class="w-4 h-4"></i>
+            <span class="text-sm font-medium">${platform.label}</span>
+          </div>
+        `).join('');
+      } else {
+        connectedPlatforms.innerHTML = '<p class="text-white/60 text-sm">Žádné platformy zatím nejsou připojené.</p>';
       }
 
       // Social stats
