@@ -920,21 +920,22 @@
               console.log("[FORM] Posílám do Firestore:", payload);
 
               // 🔥 FORCE ONLINE REŽIM před ukládáním
+              console.log("[SAVE] Aktivuji online režim...");
               try {
                 await window.db.enableNetwork();
-                console.log("🌐 Firestore ONLINE režim aktivován");
+                console.log("✅ enableNetwork() OK");
               } catch (err) {
-                console.warn("⚠️ enableNetwork() selhalo:", err);
+                console.warn("⚠️ enableNetwork() selhalo:", err.message);
               }
 
               // Uložení přes Firestore SDK s retry mechanikou
               let saveSuccess = false;
               let retryCount = 0;
-              const maxRetries = 3;
+              const maxRetries = 2;
 
               while (!saveSuccess && retryCount < maxRetries) {
                 try {
-                  console.log(`[SAVE] Pokus ${retryCount + 1}/${maxRetries}`);
+                  console.log(`[SAVE] Pokus ${retryCount + 1}/${maxRetries} - ukládám do creators/${uid}`);
                   
                   await Promise.race([
                     window.db
@@ -942,32 +943,35 @@
                       .doc(uid)
                       .set(payload, { merge: true }),
                     new Promise((_, reject) =>
-                      setTimeout(() => reject(new Error("Timeout")), 10000)
+                      setTimeout(() => reject(new Error("Timeout po 5s")), 5000)
                     )
                   ]);
                   
                   saveSuccess = true;
-                  console.log("✔ Karta uložena do Firestore!");
+                  console.log("✅ Karta uložena!");
                 } catch (err) {
                   retryCount++;
-                  console.error(`❌ Pokus ${retryCount} selhal:`, err);
+                  console.error(`❌ Pokus ${retryCount}/${maxRetries} selhal:`, err.message);
                   
                   if (retryCount >= maxRetries) {
                     showStatus(
-                      "❌ Nepodařilo se uložit kartu. Firebase je offline nebo nemáš připojení. Zkus to prosím znovu.",
+                      `❌ Uložení selhalo po ${maxRetries} pokusech. Chyba: ${err.message}. Zkontroluj Firebase připojení (červený indikátor nahoře).`,
                       false
                     );
-                    throw new Error("Firestore save failed after " + maxRetries + " attempts: " + err.message);
+                    console.error("🔴 FINAL ERROR:", err);
+                    return; // Nepokoušej se pokračovat
                   }
                   
-                  // Čekej 1s před dalším pokusem
-                  await new Promise(resolve => setTimeout(resolve, 1000));
+                  // Čekej 800ms před dalším pokusem
+                  showStatus(`⚠️ Pokus ${retryCount} selhal, zkouším znovu...`, false);
+                  await new Promise(resolve => setTimeout(resolve, 800));
                   
                   // Zkus znovu aktivovat network
                   try {
                     await window.db.enableNetwork();
+                    console.log("🔄 enableNetwork retry OK");
                   } catch (e) {
-                    console.warn("⚠️ enableNetwork retry failed:", e);
+                    console.warn("⚠️ enableNetwork retry failed:", e.message);
                   }
                 }
               }
