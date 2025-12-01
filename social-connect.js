@@ -4,11 +4,32 @@
 
 /**
  * Připojení Instagram účtu a stažení počtu sledujících
+ * FALLBACK: Pokud není nastavený App ID, nabídne manuální zadání
  */
 async function connectInstagram() {
+  const clientId = 'YOUR_INSTAGRAM_APP_ID'; // TODO: Nastavit v Meta Developers
+  
+  // Pokud není nakonfigurovaný Instagram App ID, použij manuální zadání
+  if (clientId === 'YOUR_INSTAGRAM_APP_ID') {
+    console.warn('⚠️ Instagram App ID není nakonfigurován - používám manuální zadání');
+    
+    const followers = prompt('Instagram OAuth není nakonfigurován.\n\nZadej prosím počet followers manuálně (najdeš ve svém profilu):');
+    
+    if (followers && !isNaN(followers) && parseInt(followers) >= 0) {
+      return {
+        platform: 'instagram',
+        username: '',
+        followers: parseInt(followers),
+        connected: true,
+        manual: true
+      };
+    }
+    
+    throw new Error('Neplatný počet sledujících');
+  }
+  
+  // Plné OAuth flow
   try {
-    // Instagram Basic Display API - vyžaduje Facebook App
-    const clientId = 'YOUR_INSTAGRAM_APP_ID'; // TODO: Nastavit v Meta Developers
     const redirectUri = encodeURIComponent(window.location.origin + '/social-callback.html');
     const scope = 'user_profile,user_media';
     
@@ -57,10 +78,32 @@ async function connectInstagram() {
 
 /**
  * Připojení TikTok účtu
+ * FALLBACK: Pokud není nastavený Client Key, nabídne manuální zadání
  */
 async function connectTikTok() {
+  const clientKey = 'YOUR_TIKTOK_CLIENT_KEY'; // TODO: Nastavit v TikTok Developers
+  
+  // Pokud není nakonfigurovaný TikTok Client Key, použij manuální zadání
+  if (clientKey === 'YOUR_TIKTOK_CLIENT_KEY') {
+    console.warn('⚠️ TikTok Client Key není nakonfigurován - používám manuální zadání');
+    
+    const followers = prompt('TikTok OAuth není nakonfigurován.\n\nZadej prosím počet followers manuálně:');
+    
+    if (followers && !isNaN(followers) && parseInt(followers) >= 0) {
+      return {
+        platform: 'tiktok',
+        username: '',
+        followers: parseInt(followers),
+        connected: true,
+        manual: true
+      };
+    }
+    
+    throw new Error('Neplatný počet sledujících');
+  }
+  
+  // Plné OAuth flow
   try {
-    const clientKey = 'YOUR_TIKTOK_CLIENT_KEY'; // TODO: Nastavit v TikTok Developers
     const redirectUri = encodeURIComponent(window.location.origin + '/social-callback.html');
     const scope = 'user.info.basic,video.list';
     
@@ -107,10 +150,32 @@ async function connectTikTok() {
 
 /**
  * Připojení YouTube účtu
+ * FALLBACK: Pokud není nastavený Client ID, nabídne manuální zadání
  */
 async function connectYouTube() {
+  const clientId = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // TODO: Google Cloud Console
+  
+  // Pokud není nakonfigurovaný YouTube Client ID, použij manuální zadání
+  if (clientId.startsWith('YOUR_')) {
+    console.warn('⚠️ YouTube Client ID není nakonfigurován - používám manuální zadání');
+    
+    const followers = prompt('YouTube OAuth není nakonfigurován.\n\nZadej prosím počet subscribers manuálně:');
+    
+    if (followers && !isNaN(followers) && parseInt(followers) >= 0) {
+      return {
+        platform: 'youtube',
+        username: '',
+        followers: parseInt(followers),
+        connected: true,
+        manual: true
+      };
+    }
+    
+    throw new Error('Neplatný počet sledujících');
+  }
+  
+  // Plné OAuth flow
   try {
-    const clientId = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // TODO: Google Cloud Console
     const redirectUri = encodeURIComponent(window.location.origin + '/social-callback.html');
     const scope = 'https://www.googleapis.com/auth/youtube.readonly';
     
@@ -158,10 +223,32 @@ async function connectYouTube() {
 
 /**
  * Připojení Facebook účtu
+ * FALLBACK: Pokud není nastavený App ID, nabídne manuální zadání
  */
 async function connectFacebook() {
+  const appId = 'YOUR_FACEBOOK_APP_ID'; // TODO: Nastav na developers.facebook.com
+  
+  // Pokud není nakonfigurovaný Facebook App ID, použij manuální zadání
+  if (appId === 'YOUR_FACEBOOK_APP_ID') {
+    console.warn('⚠️ Facebook App ID není nakonfigurován - používám manuální zadání');
+    
+    const followers = prompt('Facebook OAuth není nakonfigurován.\n\nZadej prosím počet followers manuálně (najdeš na své stránce):');
+    
+    if (followers && !isNaN(followers) && parseInt(followers) >= 0) {
+      return {
+        platform: 'facebook',
+        username: '',
+        followers: parseInt(followers),
+        connected: true,
+        manual: true
+      };
+    }
+    
+    throw new Error('Neplatný počet sledujících');
+  }
+  
+  // Plné OAuth flow (vyžaduje backend endpoint)
   try {
-    const appId = 'YOUR_FACEBOOK_APP_ID'; // TODO: Meta Developers
     const redirectUri = encodeURIComponent(window.location.origin + '/social-callback.html');
     const scope = 'public_profile,pages_read_engagement';
     
@@ -170,35 +257,50 @@ async function connectFacebook() {
     window.open(authUrl, 'Facebook Auth', 'width=600,height=700');
     
     return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Facebook autorizace vypršela'));
+      }, 120000); // 2 minuty timeout
+      
       window.addEventListener('message', async (event) => {
         if (event.data.type === 'facebook-auth') {
+          clearTimeout(timeout);
           const code = event.data.code;
           
-          // Vyměň code za access token
-          const tokenResponse = await fetch('/api/facebook-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code })
-          });
-          
-          const { access_token } = await tokenResponse.json();
-          
-          // Získej page followers
-          const pageResponse = await fetch(`https://graph.facebook.com/v18.0/me/accounts?access_token=${access_token}`);
-          const pageData = await pageResponse.json();
-          
-          if (pageData.data && pageData.data.length > 0) {
-            const pageId = pageData.data[0].id;
-            const statsResponse = await fetch(`https://graph.facebook.com/v18.0/${pageId}?fields=followers_count,name&access_token=${access_token}`);
-            const stats = await statsResponse.json();
-            
-            resolve({
-              platform: 'facebook',
-              username: stats.name,
-              followers: stats.followers_count,
-              connected: true,
-              access_token
+          try {
+            // Vyměň code za access token (vyžaduje backend)
+            const tokenResponse = await fetch('/api/facebook-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code })
             });
+            
+            if (!tokenResponse.ok) {
+              throw new Error('Token exchange selhal');
+            }
+            
+            const { access_token } = await tokenResponse.json();
+            
+            // Získej page followers
+            const pageResponse = await fetch(`https://graph.facebook.com/v18.0/me/accounts?access_token=${access_token}`);
+            const pageData = await pageResponse.json();
+            
+            if (pageData.data && pageData.data.length > 0) {
+              const pageId = pageData.data[0].id;
+              const statsResponse = await fetch(`https://graph.facebook.com/v18.0/${pageId}?fields=followers_count,name&access_token=${access_token}`);
+              const stats = await statsResponse.json();
+              
+              resolve({
+                platform: 'facebook',
+                username: stats.name,
+                followers: stats.followers_count,
+                connected: true,
+                access_token
+              });
+            } else {
+              reject(new Error('Nenalezena Facebook stránka'));
+            }
+          } catch (error) {
+            reject(error);
           }
         }
       });
