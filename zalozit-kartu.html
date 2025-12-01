@@ -586,6 +586,11 @@
   <script src="credits-header.js"></script>
 
   <script>
+    // 🛡️ GLOBÁLNÍ PROMĚNNÉ - MUSÍ BÝT MIMO DOMContentLoaded!
+    window.isSubmitting = false;
+    window.formHasData = false;
+    window.authChecked = false;
+
     // Default obrázky
     const DEFAULT_AVATAR =
       "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
@@ -822,28 +827,26 @@
 
       const auth = window.auth;
       
-      let authChecked = false;
-      let isSubmitting = false; // Ochrana proti redirectu během ukládání
-      let formHasData = false; // Ochrana pokud je formulář vyplněný
+      // Používáme GLOBÁLNÍ proměnné (window.isSubmitting, window.formHasData, window.authChecked)
 
       kartaoAuth.onAuthStateChanged((user) => {
-        console.log("Auth state changed:", user ? user.uid : null, "isSubmitting:", isSubmitting, "formHasData:", formHasData);
+        console.log("Auth state changed:", user ? user.uid : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData);
         
         // OCHRANA 1: Pokud právě ukládáme, ignoruj auth změny
-        if (isSubmitting) {
+        if (window.isSubmitting) {
           console.log("🛡️ Auth change během submitu - IGNORUJI (isSubmitting=true)");
           return;
         }
         
         // OCHRANA 2: Pokud je formulář vyplněný, neodhlašuj
-        if (!user && formHasData) {
+        if (!user && window.formHasData) {
           console.warn("🛡️ Auth change to null ale formulář má data - IGNORUJI");
           showStatus("⚠️ Ztraceno připojení, ale zůstáváš přihlášen. Zkus odeslat znovu.", false);
           return;
         }
         
-        if (!user && !authChecked) {
-          authChecked = true;
+        if (!user && !window.authChecked) {
+          window.authChecked = true;
           showStatus(
             "Pro založení karty se musíš přihlásit. Přesměrovávám na login…",
             false
@@ -852,27 +855,28 @@
           return;
         }
         
-        if (!user && authChecked) {
+        if (!user && window.authChecked) {
           console.warn("⚠️ Auth state changed to null - možná logout nebo error");
           return;
         }
         
-        authChecked = true;
+        window.authChecked = true;
         console.log("✅ Uživatel přihlášen, id:", user.uid);
         showStatus("Vytváříš svou první kartu influencera ✨");
 
         if (form) {
           // Sleduj změny ve formuláři
           form.addEventListener("input", () => {
-            formHasData = true;
+            window.formHasData = true;
+            console.log("📝 Formulář má data - formHasData=true");
           });
           
           form.addEventListener("submit", async (e) => {
             e.preventDefault();
             
             // Zamknout auth změny během submitu
-            isSubmitting = true;
-            formHasData = true;
+            window.isSubmitting = true;
+            window.formHasData = true;
             console.log("[FORM] Start submit, uid =", user.uid, "🔒 isSubmitting=true");
 
             try {
@@ -1018,7 +1022,7 @@
               } catch (err) {
                 console.error("❌ Test write SELHAL:", err.code, err.message);
                 showStatus(`❌ Firebase je OFFLINE nebo pravidla blokují! Chyba: ${err.message}`, false);
-                isSubmitting = false; // Odemknout před returnem
+                window.isSubmitting = false; // Odemknout před returnem
                 console.log("[FORM] 🔓 isSubmitting=false (test write selhal)");
                 return;
               }
@@ -1061,7 +1065,7 @@
                       false
                     );
                     console.error("🔴 FINAL ERROR:", err);
-                    isSubmitting = false; // Odemknout před returnem
+                    window.isSubmitting = false; // Odemknout před returnem
                     console.log("[FORM] 🔓 isSubmitting=false (retry selhal)");
                     return; // Nepokoušej se pokračovat
                   }
@@ -1099,7 +1103,7 @@
               );
             } finally {
               // Odemknout auth změny
-              isSubmitting = false;
+              window.isSubmitting = false;
               console.log("[FORM] 🔓 isSubmitting=false (finally)");
             }
           });
