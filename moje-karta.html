@@ -350,22 +350,64 @@
 
 <script src="database-init.js"></script>
 <script src="credits-system-supabase.js"></script>
+<script src="zalozit-kartu-supabase.js"></script>
   <script src="credits-header.js"></script>
 
   <script>
     // Pouze kontrola přihlášení a zobrazení jména, kredity řeší credits-header.js
     document.addEventListener("DOMContentLoaded", function () {
-      kartaoAuth.onAuthStateChanged(function (user) {
+      kartaoAuth.onAuthStateChanged(async function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;
         }
+        
         // jméno
         const nameEl = document.getElementById("userName");
         const initialEl = document.getElementById("userInitial");
         const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Tvoje karta na Kartao.cz");
         if (nameEl) nameEl.textContent = displayName;
         if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
+        
+        // 🔥 Načti creator kartu
+        try {
+          const creatorCard = await loadCreatorCard(user.id);
+          if (creatorCard) {
+            console.log("📋 Creator karta načtena:", creatorCard);
+            
+            // Aktualizuj UI s daty z karty
+            if (nameEl && creatorCard.name) nameEl.textContent = creatorCard.name;
+            if (initialEl && creatorCard.name) initialEl.textContent = creatorCard.name.charAt(0).toUpperCase();
+            
+            // Avatar
+            const avatarImg = document.querySelector('.w-24.h-24 img, .rounded-3xl img');
+            if (avatarImg && creatorCard.avatar_url) {
+              avatarImg.src = creatorCard.avatar_url;
+            }
+            
+            // Handle
+            const handleEl = document.querySelector('.text-sm.text-white\\/60');
+            if (handleEl && creatorCard.handle) {
+              handleEl.textContent = '@' + creatorCard.handle;
+            }
+            
+            // Kategorie
+            const categoryEl = document.querySelector('.text-xs.uppercase');
+            if (categoryEl && creatorCard.categories && creatorCard.categories.length > 0) {
+              categoryEl.textContent = creatorCard.categories[0];
+            }
+            
+            // Kredity
+            const creditsEl = document.getElementById('userCredits');
+            if (creditsEl && creatorCard.credits !== undefined) {
+              creditsEl.textContent = creatorCard.credits;
+            }
+          } else {
+            console.log("ℹ️ Žádná creator karta - uživatel ještě nevytvořil kartu");
+          }
+        } catch (error) {
+          console.error("❌ Chyba při načítání creator karty:", error);
+        }
       });
     });
   </script>

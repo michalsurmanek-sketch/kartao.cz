@@ -809,7 +809,7 @@
       // 🔥 BLOKOVAT REDIRECT NA TÉTO STRÁNCE ÚPLNĚ
       window.PREVENT_AUTH_REDIRECT = true;
 
-      kartaoAuth.onAuthStateChanged((user) => {
+      kartaoAuth.onAuthStateChanged(async (user) => {
         console.log("Auth state changed:", user ? user.id : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData, "PREVENT:", window.PREVENT_AUTH_REDIRECT);
         
         // 🛡️ ABSOLUTNÍ OCHRANA #1: Na zalozit-kartu.html NIKDY nepřesměrovávat pokud není user
