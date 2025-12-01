@@ -1819,7 +1819,7 @@
     }
 
     async function startChat(creatorId) {
-      const user = firebase.auth().currentUser;
+      const user = window.auth.currentUser;
       if (!user) {
         alert('Pro psaní zpráv se musíte přihlásit');
         window.location.href = 'login.html';
@@ -2197,7 +2197,7 @@
     }
 
     if (typeof firebase !== 'undefined' && firebase.auth) {
-      firebase.auth().onAuthStateChanged(user => {
+      kartaoAuth.onAuthStateChanged(user => {
         const notLoggedIn = document.getElementById('desktop-not-logged-in');
         const loggedIn = document.getElementById('desktop-logged-in');
 
@@ -2226,7 +2226,7 @@
         if (desktopLogoutBtn) {
           desktopLogoutBtn.addEventListener('click', async () => {
             try {
-              await firebase.auth().signOut();
+              await kartaoAuth.logout();
               window.location.reload();
             } catch (error) {
               console.error('Chyba při odhlášení:', error);
@@ -2440,7 +2440,7 @@
         return;
       }
 
-      const user = firebase.auth().currentUser;
+      const user = window.auth.currentUser;
       if (!user) {
         alert('Nejdřív se přihlas, pak zkus znovu.');
         window.location.href = 'login.html';

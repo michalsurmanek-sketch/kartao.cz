@@ -238,7 +238,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth = window.auth;
       const headerCreditsEl = document.getElementById("headerCredits");
       const currentCreditsEl = document.getElementById("currentCredits");
       const packageEl = document.getElementById("summaryPackage");

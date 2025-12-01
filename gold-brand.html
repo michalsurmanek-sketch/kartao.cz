@@ -272,7 +272,7 @@
 
       const auth =
         window.auth ||
-        (window.firebase && firebase.auth && firebase.auth());
+        window.auth;
       const db =
         window.db ||
         (window.firebase && firebase.firestore && firebase.firestore());

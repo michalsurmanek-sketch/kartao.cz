@@ -202,7 +202,7 @@
   <script>
     // Přihlášení + kredity v hlavičce + jednoduchý DEMO submit
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth = window.auth;
       if (!auth) {
         console.warn("Firebase Auth není dostupný na vytvorit-kampan.html");
         return;

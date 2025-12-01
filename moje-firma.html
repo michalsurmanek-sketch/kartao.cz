@@ -303,7 +303,7 @@
     // Napojení na uživatele + K-Coins (firemní účet) + KONTROLA ROLE = FIRMA
     document.addEventListener("DOMContentLoaded", function () {
       const auth =
-        window.auth || (window.firebase && firebase.auth && firebase.auth());
+        window.auth;
       const db =
         window.db ||
         (window.firebase &&

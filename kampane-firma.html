@@ -327,7 +327,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       const auth =
         window.auth ||
-        (window.firebase && firebase.auth && firebase.auth());
+        window.auth;
 
       const logoutBtn = document.getElementById("logoutBtn");
       const headerCreditsEl = document.getElementById("headerCredits");

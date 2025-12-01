@@ -352,7 +352,7 @@
   <script>
     // Napojení na uživatele + K-Coins (stejně jednoduše jako na credits-dashboard.html)
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth = window.auth;
 
       if (!auth) {
         console.warn("Auth není dostupné na moje-karta.html – zkontroluj firebase-init.js");
