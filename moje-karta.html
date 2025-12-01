@@ -141,6 +141,18 @@
                     <p class="text-sm font-semibold" id="userRating">–––</p>
                   </div>
                   <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
+                    <p class="text-white/60">Město</p>
+                    <p class="text-sm font-semibold" id="userCity">–––</p>
+                  </div>
+                  <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
+                    <p class="text-white/60">Cena/post</p>
+                    <p class="text-sm font-semibold" id="userPrice">–––</p>
+                  </div>
+                  <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
+                    <p class="text-white/60">Engagement</p>
+                    <p class="text-sm font-semibold" id="userEngagement">–––</p>
+                  </div>
+                  <div class="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
                     <p class="text-white/60">VIP status</p>
                     <p class="text-sm font-semibold text-amber-300" id="vipStatus">zatím OFF</p>
                   </div>
@@ -402,6 +414,32 @@
             const ratingEl = document.getElementById('userRating');
             if (ratingEl && creatorCard.rating) {
               ratingEl.textContent = creatorCard.rating + ' ⭐';
+            }
+            
+            // Město
+            const cityEl = document.getElementById('userCity');
+            if (cityEl) {
+              cityEl.textContent = creatorCard.city || '–––';
+            }
+            
+            // Cena
+            const priceEl = document.getElementById('userPrice');
+            if (priceEl) {
+              if (creatorCard.price) {
+                priceEl.textContent = creatorCard.price.toLocaleString('cs-CZ') + ' Kč';
+              } else {
+                priceEl.textContent = '–––';
+              }
+            }
+            
+            // Engagement
+            const engagementEl = document.getElementById('userEngagement');
+            if (engagementEl) {
+              if (creatorCard.engagement) {
+                engagementEl.textContent = creatorCard.engagement + ' %';
+              } else {
+                engagementEl.textContent = '–––';
+              }
             }
             
             // VIP status
