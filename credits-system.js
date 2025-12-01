@@ -83,8 +83,8 @@ class CreditsSystem {
       this._creditsUnsub = ref.onSnapshot(
         (snap) => {
           if (!snap.exists) {
+            // Dokument neexistuje - zobraz 0, ale NEUKLADEJ do databáze
             this.setCredits(0);
-            ref.set({ credits: 0 }, { merge: true });
             return;
           }
 
@@ -124,8 +124,18 @@ class CreditsSystem {
     try {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
-        const inc = window.firebase.firestore.FieldValue.increment(num);
-        await ref.set({ credits: inc }, { merge: true });
+        
+        // Nejdřív zkontroluj, jestli dokument existuje
+        const snap = await ref.get();
+        if (!snap.exists || typeof snap.data()?.credits !== 'number') {
+          // Dokument neexistuje nebo nemá pole credits - vytvoř ho s aktuální hodnotou
+          const currentVal = this.credits || 0;
+          await ref.set({ credits: currentVal + num }, { merge: true });
+        } else {
+          // Dokument existuje - použij increment
+          const inc = window.firebase.firestore.FieldValue.increment(num);
+          await ref.set({ credits: inc }, { merge: true });
+        }
         // Realtime listener automaticky aktualizuje this.credits a zavolá callback
       }
     } catch (e) {
@@ -147,8 +157,19 @@ class CreditsSystem {
     try {
       if (this.db && this.userId) {
         const ref = this.db.collection("users").doc(this.userId);
-        const inc = window.firebase.firestore.FieldValue.increment(delta);
-        await ref.set({ credits: inc }, { merge: true });
+        
+        // Nejdřív zkontroluj, jestli dokument existuje
+        const snap = await ref.get();
+        if (!snap.exists || typeof snap.data()?.credits !== 'number') {
+          // Dokument neexistuje nebo nemá pole credits - vytvoř ho s aktuální hodnotou
+          const currentVal = this.credits || 0;
+          const newVal = Math.max(0, currentVal + delta);
+          await ref.set({ credits: newVal }, { merge: true });
+        } else {
+          // Dokument existuje - použij increment
+          const inc = window.firebase.firestore.FieldValue.increment(delta);
+          await ref.set({ credits: inc }, { merge: true });
+        }
         // Realtime listener automaticky aktualizuje this.credits a zavolá callback
       }
     } catch (e) {

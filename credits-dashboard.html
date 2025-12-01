@@ -378,13 +378,29 @@
 
         window.currentUserId = user.uid;
 
-        // Použij globální CreditsSystem z credits-header.js
-        const creditSys = window.getCreditsSystem();
-        if (!creditSys) {
-          console.warn("CreditsSystem není dostupný z credits-header.js");
-          return;
-        }
-
+        // Počkej, až bude dostupná globální instance CreditsSystem z credits-header.js
+        let creditSys = window.getCreditsSystem();
+        let attempts = 0;
+        const maxAttempts = 50; // 5 sekund max
+        
+        const waitForCreditsSystem = setInterval(() => {
+          creditSys = window.getCreditsSystem();
+          attempts++;
+          
+          if (creditSys || attempts >= maxAttempts) {
+            clearInterval(waitForCreditsSystem);
+            
+            if (!creditSys) {
+              console.error("CreditsSystem se nepodařilo načíst z credits-header.js");
+              return;
+            }
+            
+            // Inicializuj zbytek kódu
+            initDashboard(creditSys);
+          }
+        }, 100);
+        
+        function initDashboard(creditSys) {
         const streakValueEl        = document.getElementById("streakValue");
         const levelValueEl         = document.getElementById("levelValue");
 
@@ -934,6 +950,7 @@
 
         // Globální přístup – používají to jiné stránky (mystery-box atd.)
         window.creditSys = creditSys;
+        } // konec initDashboard
       });
     });
   </script>
