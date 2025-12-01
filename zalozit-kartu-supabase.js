@@ -3,6 +3,27 @@
 // ==========================================
 
 /**
+ * Načte existující creator kartu z Supabase
+ */
+async function loadCreatorCard(userId) {
+  const sb = window.supabaseClient || window.sb;
+  
+  try {
+    const { data, error } = await sb
+      .from('creators')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data; // může být null pokud karta neexistuje
+  } catch (error) {
+    console.error("❌ Load creator card error:", error);
+    throw error;
+  }
+}
+
+/**
  * Upload obrázku do Supabase Storage
  */
 async function uploadImageToSupabase(file, path) {

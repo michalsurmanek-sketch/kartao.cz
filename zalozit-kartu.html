@@ -861,7 +861,69 @@
         
         window.authChecked = true;
         console.log("✅ Uživatel přihlášen, id:", user.id);
-        showStatus("Vytváříš svou první kartu influencera ✨");
+
+        // 🔥 NAČTI existující kartu (pokud existuje)
+        try {
+          const existingCard = await loadCreatorCard(user.id);
+          if (existingCard) {
+            console.log("📋 Načtena existující karta:", existingCard);
+            showStatus("Načítám tvou kartu...");
+            
+            // Vyplň formulář
+            if (existingCard.name) document.getElementById("name").value = existingCard.name;
+            if (existingCard.handle) document.getElementById("handle").value = existingCard.handle;
+            if (existingCard.bio) document.getElementById("bio").value = existingCard.bio;
+            if (existingCard.categories && existingCard.categories.length > 0) {
+              document.getElementById("category").value = existingCard.categories[0];
+            }
+            if (existingCard.city) document.getElementById("city").value = existingCard.city;
+            if (existingCard.price) document.getElementById("price").value = existingCard.price;
+            if (existingCard.rating) document.getElementById("rating").value = existingCard.rating;
+            if (existingCard.engagement) document.getElementById("engagement").value = existingCard.engagement;
+            if (existingCard.premium) document.getElementById("premium").checked = existingCard.premium;
+            
+            // Metriky
+            if (existingCard.instagram_followers) document.getElementById("instagram-followers").value = existingCard.instagram_followers;
+            if (existingCard.tiktok_followers) document.getElementById("tiktok-followers").value = existingCard.tiktok_followers;
+            if (existingCard.youtube_followers) document.getElementById("youtube-followers").value = existingCard.youtube_followers;
+            if (existingCard.facebook_followers) document.getElementById("facebook-followers").value = existingCard.facebook_followers;
+            if (existingCard.pinterest_followers) document.getElementById("pinterest-followers").value = existingCard.pinterest_followers;
+            
+            // Obrázky - nastav preview
+            if (existingCard.avatar_url) {
+              const avatarPreview = document.getElementById("avatar-preview");
+              if (avatarPreview) {
+                avatarPreview.src = existingCard.avatar_url;
+                avatarPreview.style.display = "block";
+              }
+            }
+            if (existingCard.cover_url) {
+              const coverPreview = document.getElementById("cover-preview");
+              if (coverPreview) {
+                coverPreview.src = existingCard.cover_url;
+                coverPreview.style.display = "block";
+              }
+            }
+            if (existingCard.gallery_urls && Array.isArray(existingCard.gallery_urls)) {
+              existingCard.gallery_urls.forEach((url, index) => {
+                const preview = document.getElementById(`gallery-preview-${index}`);
+                if (preview && url) {
+                  preview.src = url;
+                  preview.style.display = "block";
+                }
+              });
+            }
+            
+            showStatus("✅ Karta načtena - můžeš ji upravit a uložit");
+            window.formHasData = true;
+          } else {
+            console.log("ℹ️ Žádná existující karta - vytváříš novou");
+            showStatus("Vytváříš svou první kartu influencera ✨");
+          }
+        } catch (error) {
+          console.error("❌ Chyba při načítání karty:", error);
+          showStatus("⚠️ Nepodařilo se načíst existující kartu");
+        }
 
         if (form) {
           // Sleduj změny ve formuláři
