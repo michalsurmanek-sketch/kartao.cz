@@ -327,7 +327,7 @@ class CreatorService {
 class UserService {
   constructor() {
     this.db = firebase.firestore();
-    this.auth = firebase.auth();
+    this.auth = window.auth;
   }
 
   // Získání profilu uživatele

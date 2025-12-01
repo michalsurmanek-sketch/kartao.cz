@@ -219,12 +219,12 @@
   </script>
   <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  if (!firebase.auth().currentUser) {
+  if (!window.auth.currentUser) {
     // uživatel není přihlášen → nic nedělej
     return;
   }
 
-  const uid = firebase.auth().currentUser.uid;
+  const uid = window.auth.currentUser.uid;
   const doc = await firebase.firestore().collection("users").doc(uid).get();
 
   if (doc.exists) {

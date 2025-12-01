@@ -4,11 +4,9 @@
  */
 
 class AIPricingSystem {
-  constructor() {
-    this.db = firebase.firestore();
-    this.auth = firebase.auth();
-    
-    // Váhy pro různé faktory při výpočtu ceny
+    constructor() {
+        this.db = firebase.firestore();
+        this.auth = window.auth;    // Váhy pro různé faktory při výpočtu ceny
     this.pricingFactors = {
       followers: {
         weight: 0.30,

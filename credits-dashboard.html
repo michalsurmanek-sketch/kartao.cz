@@ -345,6 +345,7 @@
   <!-- Konfigurace + jednotná inicializace -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
 
   <!-- Další inicializace (pokud máš) -->
   <script src="database-init.js"></script>
@@ -359,7 +360,7 @@
         window.lucide.createIcons();
       }
 
-      const auth = window.auth || (window.firebase && firebase.auth && firebase.auth());
+      const auth = window.auth;
       const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
 
       if (!auth || !db) {

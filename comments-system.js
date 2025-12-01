@@ -4,7 +4,7 @@
 class CommentsSystem {
     constructor() {
         this.db = firebase.firestore();
-        this.auth = firebase.auth();
+        this.auth = window.auth;
         this.currentUser = null;
         this.commentCache = new Map();
         this.moderationEnabled = true;

@@ -2184,7 +2184,7 @@
     function goToCreateCard() {
       try {
         if (window.firebase && firebase.auth) {
-          const user = firebase.auth().currentUser;
+          const user = window.auth.currentUser;
           if (user) {
             window.location.href = 'kartao-zalozit-kartu.html';
             return;
@@ -2300,7 +2300,7 @@
       }
 
       if (typeof firebase !== 'undefined' && firebase.auth) {
-        firebase.auth().onAuthStateChanged(user => {
+        kartaoAuth.onAuthStateChanged(user => {
           const userMenu = document.getElementById('userMenu');
           const loginBtn = document.getElementById('loginBtn');
           const logoutBtn = document.getElementById('logoutBtn');
@@ -2329,7 +2329,7 @@
               logoutBtn._kartaoBound = true;
               logoutBtn.addEventListener('click', async () => {
                 try {
-                  await firebase.auth().signOut();
+                  await kartaoAuth.logout();
                   window.location.reload();
                 } catch (error) {
                   console.error('Chyba odhlášení:', error);

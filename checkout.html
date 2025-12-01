@@ -214,7 +214,7 @@
     const amount = parseInt(urlParams.get('amount')) || 0;
 
     // Firebase auth check
-    firebase.auth().onAuthStateChanged(async (user) => {
+    kartaoAuth.onAuthStateChanged(async (user) => {
       if (!user) {
         showError('Pro dokončení objednávky se musíte přihlásit');
         setTimeout(() => {

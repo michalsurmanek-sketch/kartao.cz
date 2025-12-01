@@ -521,7 +521,7 @@
         return;
       }
 
-      const auth = firebase.auth();
+      const auth = window.auth;
       const db = firebase.firestore();
       let currentUser = null;
 

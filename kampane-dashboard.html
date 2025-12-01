@@ -77,7 +77,7 @@
             onclick="(function(){
               try {
                 if (window.firebase && firebase.auth) {
-                  firebase.auth().signOut().finally(function(){
+                  kartaoAuth.logout().finally(function(){
                     window.location.href='index.html';
                   });
                 } else {
@@ -357,7 +357,7 @@
         if (currentCreditsEl) currentCreditsEl.textContent = num;
       }
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      kartaoAuth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;

@@ -144,7 +144,7 @@
       resultEl.innerHTML = '<div class="text-amber-400">Přihlašuji...</div>';
       
       try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const cred = await kartaoAuth.loginWithEmail(email, password);
         resultEl.innerHTML = `<div class="text-emerald-400">✅ Úspěšně přihlášen jako ${cred.user.email}</div>`;
       } catch (error) {
         resultEl.innerHTML = `<div class="text-red-400">❌ Chyba: ${error.code}<br>${error.message}</div>`;
@@ -294,7 +294,7 @@
     // Odhlášení
     logoutBtn.addEventListener('click', async () => {
       try {
-        await auth.signOut();
+        await kartaoAuth.logout();
         resultEl.innerHTML = '<div class="text-emerald-400">✅ Odhlášeno</div>';
       } catch (error) {
         resultEl.innerHTML = `<div class="text-red-400">❌ Chyba při odhlášení: ${error.message}</div>`;

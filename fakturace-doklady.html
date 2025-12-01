@@ -296,7 +296,7 @@
       if (filterTypeEl) filterTypeEl.addEventListener("change", renderInvoices);
       if (filterStatusEl) filterStatusEl.addEventListener("change", renderInvoices);
 
-      firebase.auth().onAuthStateChanged(function (user) {
+      kartaoAuth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;

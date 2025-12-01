@@ -217,7 +217,7 @@
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    const auth = firebase.auth();
+    const auth = window.auth;
 
     // rok v patičce
     document.getElementById('year').textContent = new Date().getFullYear();

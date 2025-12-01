@@ -6,7 +6,7 @@
 class RewardsFollowersSystem {
   constructor() {
     this.db = firebase.firestore();
-    this.auth = firebase.auth();
+    this.auth = window.auth;
     this.currentUser = null;
     
     // Typy interakcí a jejich odměny

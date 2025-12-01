@@ -4,7 +4,7 @@
 class IntelligentRecommendationSystem {
     constructor() {
         this.db = firebase.firestore();
-        this.auth = firebase.auth();
+        this.auth = window.auth;
         this.currentUser = null;
         this.userBehaviorData = new Map();
         this.recommendationCache = new Map();

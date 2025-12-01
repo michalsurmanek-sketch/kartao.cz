@@ -346,6 +346,7 @@
 
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
   <script src="database-init.js"></script>
 
   <!-- 🔗 Kreditní systém Kartao.cz -->
@@ -359,7 +360,7 @@
         return;
       }
 
-      firebase.auth().onAuthStateChanged(async function (user) {
+      kartaoAuth.onAuthStateChanged(async function (user) {
         if (!user) {
           window.location.href = "login.html";
           return;

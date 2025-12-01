@@ -4,7 +4,7 @@
 class CompanyMiniWebsiteSystem {
     constructor() {
         this.db = firebase.firestore();
-        this.auth = firebase.auth();
+        this.auth = window.auth;
         this.storage = firebase.storage();
         this.currentUser = null;
         this.websiteCache = new Map();

@@ -4,7 +4,7 @@
 class AIPriceNegotiationSystem {
     constructor() {
         this.db = firebase.firestore();
-        this.auth = firebase.auth();
+        this.auth = window.auth;
         this.currentUser = null;
         this.negotiationCache = new Map();
         this.aiModels = new Map();

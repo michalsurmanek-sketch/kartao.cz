@@ -182,7 +182,7 @@
       console.log('📝 Pokus o registraci:', email);
 
       try {
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        const cred = await kartaoAuth.registerWithEmail(email, password, 'influencer');
         console.log('✅ Účet vytvořen:', cred.user.email);
         
         // Send verification email
@@ -283,7 +283,7 @@
     // Logout
     document.getElementById('logout-btn').addEventListener('click', async () => {
       try {
-        await auth.signOut();
+        await kartaoAuth.logout();
         console.log('👋 Odhlášeno');
         
         resultEl.className = 'mt-4 p-4 rounded-lg bg-blue-500/20 border border-blue-500/50 text-blue-300';

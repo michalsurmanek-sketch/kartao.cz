@@ -4,7 +4,7 @@
 class WorldClassStatistics {
     constructor() {
         this.db = firebase.firestore();
-        this.auth = firebase.auth();
+        this.auth = window.auth;
         this.currentUser = null;
         this.metricsCache = new Map();
         this.realTimeListeners = new Map();
