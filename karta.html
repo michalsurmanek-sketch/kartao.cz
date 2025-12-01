@@ -247,9 +247,6 @@
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="zalozit-kartu-supabase.js"></script>
 
   <script>
     // Inicializace ikon
@@ -257,7 +254,7 @@
       lucide.createIcons();
     }
 
-    // Supabase init
+    // Supabase init - INLINE pro spolehlivost
     const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -269,29 +266,53 @@
     const urlParams = new URLSearchParams(window.location.search);
     const handle = urlParams.get('handle') || window.location.pathname.split('/').pop().replace('.html', '');
 
+    // Auth state listener - synchronizuje přihlášení v reálném čase
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        await updateAuthState(session.user);
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        currentUserCreator = null;
+        document.getElementById('headerGuest').classList.remove('hidden');
+        document.getElementById('headerLoggedIn').classList.add('hidden');
+        document.getElementById('editProfileBtn')?.classList.add('hidden');
+      }
+    });
+
+    // Aktualizace auth stavu
+    async function updateAuthState(user) {
+      currentUser = user;
+      
+      // Načti creator data
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (creator) {
+        currentUserCreator = creator;
+        
+        // Uprav header
+        document.getElementById('headerGuest').classList.add('hidden');
+        document.getElementById('headerLoggedIn').classList.remove('hidden');
+        document.getElementById('headerCoins').textContent = creator.credits || 0;
+        
+        // Zkontroluj jestli je to vlastní profil
+        const currentCreator = window.currentDisplayedCreator;
+        if (currentCreator && currentCreator.id === user.id) {
+          document.getElementById('editProfileBtn')?.classList.remove('hidden');
+        }
+      }
+    }
+
     // Check auth na začátku
     async function checkAuth() {
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
         
         if (user) {
-          currentUser = user;
-          
-          // Načti creator data
-          const { data: creator } = await supabase
-            .from('creators')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-          
-          if (creator) {
-            currentUserCreator = creator;
-            
-            // Uprav header
-            document.getElementById('headerGuest').classList.add('hidden');
-            document.getElementById('headerLoggedIn').classList.remove('hidden');
-            document.getElementById('headerCoins').textContent = creator.credits || 0;
-          }
+          await updateAuthState(user);
         }
       } catch (e) {
         console.log('Auth check:', e);
@@ -327,6 +348,11 @@
           document.getElementById('editProfileBtn').classList.remove('hidden');
         }
 
+        // Re-init icons po zobrazení profilu
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+
       } catch (error) {
         console.error('Chyba:', error);
         showError();
@@ -334,6 +360,9 @@
     }
 
     function displayCreator(creator) {
+      // Ulož do globální proměnné pro kontrolu vlastnictví
+      window.currentDisplayedCreator = creator;
+      
       // Skryj loading, zobraz profil
       document.getElementById('loadingState').classList.add('hidden');
       document.getElementById('creatorProfile').classList.remove('hidden');
