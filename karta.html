@@ -239,12 +239,19 @@
       }
 
       try {
-        // Načti tvůrce podle handle
-        const { data: creator, error } = await sb
-          .from('creators')
-          .select('*')
-          .eq('handle', handle)
-          .maybeSingle();
+        // Pokus se načíst podle handle, nebo podle ID (UUID)
+        let query = sb.from('creators').select('*');
+        
+        // Kontrola jestli je to UUID (obsahuje pomlčky a je 36 znaků dlouhé)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(handle);
+        
+        if (isUUID) {
+          query = query.eq('id', handle);
+        } else {
+          query = query.eq('handle', handle);
+        }
+        
+        const { data: creator, error } = await query.maybeSingle();
 
         if (error || !creator) {
           console.error('Chyba načítání:', error);
@@ -275,7 +282,7 @@
 
       // Základní info
       document.getElementById('creatorName').textContent = creator.name;
-      document.getElementById('creatorHandle').textContent = '@' + creator.handle;
+      document.getElementById('creatorHandle').textContent = '@' + (creator.handle || 'bez-handle');
 
       // Avatar
       const avatarContainer = document.getElementById('avatarContainer');

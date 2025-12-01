@@ -1648,8 +1648,12 @@
       const openBtn = el.querySelector('.js-open');
       if (openBtn) {
         openBtn.addEventListener('click', () => {
-          if (handle) {
-            window.location.href = `karta.html?handle=${encodeURIComponent(handle)}`;
+          // Pokud existuje handle, použij ho, jinak použij ID
+          const identifier = handle || id;
+          if (identifier) {
+            window.location.href = `karta.html?handle=${encodeURIComponent(identifier)}`;
+          } else {
+            console.warn('Chybí handle i ID pro kartu:', data);
           }
         });
       }
