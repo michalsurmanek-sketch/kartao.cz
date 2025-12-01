@@ -1,3 +1,4 @@
+
 // auth.js – Jednotné přihlášení, registrace a odhlášení pro Kartao.cz
 
 // Inicializace Firebase Auth (předpokládá načtení firebase-init.js)
