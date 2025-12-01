@@ -762,21 +762,7 @@
         });
       }
       
-      const waitForFirebase = setInterval(async () => {
-        initAttempts++;
-        console.log(`[Firebase check] Pokus ${initAttempts}/10`);
-        
-        if (window.db) {
-          clearInterval(waitForFirebase);
-          console.log("✅ window.db připraveno, spouštím test připojení");
-          await checkFirebaseConnection();
-        } else if (initAttempts >= 10) {
-          clearInterval(waitForFirebase);
-          console.error("❌ window.db se nenačetlo ani po 10 pokusech");
-          updateFirebaseStatus(false);
-        }
-      }, 200);
-
+      
       const form = document.getElementById("creatorForm");
       const cancelBtn = document.getElementById("cancelBtn");
 
@@ -814,16 +800,15 @@
         prevG3.classList.remove("hidden");
       }
 
-      if (!window.firebase || !firebase.auth || typeof firebaseConfig === "undefined") {
+      // Zkontroluj Supabase client
+      if (!window.supabaseClient && !window.sb) {
         showStatus(
-          "Firebase není správně inicializovaný – zkontroluj firebase-config.js a firebase-init.js.",
+          "Supabase není inicializovaný – zkontroluj supabase-config.js a supabase-init.js.",
           false
         );
-        console.error("❌ Firebase / firebaseConfig není připraven.");
+        console.error("❌ Supabase client není připraven.");
         return;
       }
-
-      const auth = window.auth;
       
       // Používáme GLOBÁLNÍ proměnné (window.isSubmitting, window.formHasData, window.authChecked)
       

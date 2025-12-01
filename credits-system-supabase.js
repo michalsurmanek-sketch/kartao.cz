@@ -2,8 +2,6 @@
 // CREDITS SYSTEM – Supabase Edition – Kartao.cz
 // ==========================================
 
-const sb = window.supabaseClient || window.sb;
-
 class CreditsSystemSupabase {
   constructor() {
     this.currentUser = null;
@@ -40,6 +38,8 @@ class CreditsSystemSupabase {
    * Načti kredity z DB
    */
   async loadCredits() {
+    const sb = window.supabaseClient || window.sb;
+    
     // Zkus creators tabulku
     let { data, error } = await sb
       .from('creators')
@@ -75,6 +75,8 @@ class CreditsSystemSupabase {
    * Real-time listener pro změny kreditů
    */
   setupRealtimeListener() {
+    const sb = window.supabaseClient || window.sb;
+    
     // Zruš předchozí subscription
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -122,8 +124,10 @@ class CreditsSystemSupabase {
   }
 
   /**
-   * Přidej kredity (např. po zhlédnutí reklamy)
-   */
+  async addCredits(amount, reason = "Manual add") {
+    const sb = window.supabaseClient || window.sb;
+    
+    if (!this.currentUser) {
   async addCredits(amount, reason = "Manual add") {
     if (!this.currentUser) {
       throw new Error("User není přihlášen");

@@ -2,12 +2,11 @@
 // ZALOZIT KARTU LOGIC – Supabase Edition
 // ==========================================
 
-const sb = window.supabaseClient || window.sb;
-
 /**
  * Upload obrázku do Supabase Storage
  */
 async function uploadImageToSupabase(file, path) {
+  const sb = window.supabaseClient || window.sb;
   if (!file) return null;
 
   try {
@@ -36,6 +35,8 @@ async function uploadImageToSupabase(file, path) {
  * Uloží creator kartu do Supabase
  */
 async function saveCreatorCard(formData, userId) {
+  const sb = window.supabaseClient || window.sb;
+  
   try {
     const now = Date.now();
 
