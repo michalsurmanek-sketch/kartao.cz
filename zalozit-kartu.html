@@ -663,6 +663,20 @@
     document.addEventListener("DOMContentLoaded", () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
+      // 🔥 VYČISTIT FIRESTORE PERSISTENCE CACHE
+      if (window.indexedDB) {
+        try {
+          const dbDeleteRequest = indexedDB.deleteDatabase('firestore/kartao-97df7/[DEFAULT]');
+          dbDeleteRequest.onsuccess = () => console.log("🗑️ Firestore IndexedDB cache vymazána");
+          dbDeleteRequest.onerror = () => console.warn("⚠️ Nepodařilo se vymazat IndexedDB");
+          
+          // Další možné databáze
+          indexedDB.deleteDatabase('firebaseLocalStorageDb');
+        } catch (e) {
+          console.warn("⚠️ IndexedDB delete error:", e.message);
+        }
+      }
+
       // 🔥 FIREBASE STATUS MONITOR
       const statusEl = document.getElementById("firebaseStatus");
       const statusIcon = document.getElementById("firebaseStatusIcon");
