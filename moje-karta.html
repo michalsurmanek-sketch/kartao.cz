@@ -331,7 +331,9 @@
   <!-- Konfigurace + init + databáze + kredity -->
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
-  <script src="auth.js"></script><!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
+  <script src="auth.js"></script>
+  <script src="auth-header.js"></script>
+<!-- Přepnutí Firestore do ONLINE režimu pro moje-karta.html -->
 <script>
   if (window.firebase && firebase.firestore) {
     firebase.firestore().enableNetwork()
