@@ -378,15 +378,13 @@
     </div>
   </footer>
 
-  <!-- LOGIKA ÚČTU (Auth + Firestore + inline vizitka) -->
+  <!-- LOGIKA ÚČTU (Auth + Supabase + inline vizitka) -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       if (window.lucide) {
         try { lucide.createIcons(); } catch (e) { console.warn("Lucide ikonky nešly inicializovat:", e); }
       }
 
-      // ✅ Použijeme JEN globální instanci z supabase-init.js
-      if (!window.firebase || !window.auth || !window.db) {
       // Kontrola Supabase inicializace
       if (!window.supabaseClient) {
         console.error("❌ Supabase není inicializováno", {
@@ -552,107 +550,109 @@
       // ==========================
       // Načtení uživatele + profilu ze SUPABASE
       // ==========================
-      setLoading(true);
+      async function loadUserProfile() {
+        setLoading(true);
 
-      // Počkej na Supabase inicializaci
-      if (!window.supabaseClient) {
-        console.error('Supabase není inicializováno');
-        window.location.href = "login.html";
-        return;
-      }
+        try {
+          // Načti aktuálního uživatele
+          const { data: { user }, error: authError } = await sb.auth.getUser();
 
-      const sb = window.supabaseClient;
+          if (authError || !user) {
+            console.log('Není přihlášený uživatel, přesměrování na login');
+            window.location.href = "login.html";
+            return;
+          }
 
-      // Načti aktuálního uživatele
-      const { data: { user }, error: authError } = await sb.auth.getUser();
+          currentUserUid = user.id;
+          console.log("👤 Přihlášený uživatel:", { uid: user.id, email: user.email });
 
-      if (authError || !user) {
-        console.log('Není přihlášený uživatel, přesměrování na login');
-        window.location.href = "login.html";
-        return;
-      }
+          // Načti profil z creators nebo firms
+          let docData = null;
+          let role = "influencer";
 
-      currentUserUid = user.id;
-      console.log("👤 Přihlášený uživatel:", { uid: user.id, email: user.email });
+          try {
+            // Zkus načíst z creators
+            const { data: creatorData, error: creatorError } = await sb
+              .from('creators')
+              .select('*')
+              .eq('user_id', user.id)
+              .maybeSingle();
 
-      // Načti profil z creators nebo firms
-      let docData = null;
-      let role = "influencer";
+            if (!creatorError && creatorData) {
+              docData = {
+                email: user.email,
+                name: creatorData.name || '',
+                nickname: creatorData.handle || '',
+                phone: creatorData.phone || '',
+                displayName: creatorData.name || '',
+                role: 'influencer'
+              };
+              role = 'influencer';
+              console.log('✅ Načten profil z creators:', docData);
+            } else {
+              // Zkus načíst z firms
+              const { data: firmData, error: firmError } = await sb
+                .from('firms')
+                .select('*')
+                .eq('user_id', user.id)
+                .maybeSingle();
 
-      try {
-        // Zkus načíst z creators
-        const { data: creatorData, error: creatorError } = await sb
-          .from('creators')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (!creatorError && creatorData) {
-          docData = {
-            email: user.email,
-            name: creatorData.name || '',
-            nickname: creatorData.handle || '',
-            phone: creatorData.phone || '',
-            displayName: creatorData.name || '',
-            role: 'influencer'
-          };
-          role = 'influencer';
-          console.log('✅ Načten profil z creators:', docData);
-        } else {
-          // Zkus načíst z firms
-          const { data: firmData, error: firmError } = await sb
-            .from('firms')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
-
-          if (!firmError && firmData) {
-            docData = {
-              email: user.email,
-              name: firmData.company_name || '',
-              nickname: firmData.ico || '',
-              phone: firmData.contact_phone || '',
-              displayName: firmData.company_name || '',
-              role: 'firma'
-            };
-            role = 'firma';
-            console.log('✅ Načten profil z firms:', docData);
-          } else {
-            // Žádný profil nenalezen - vytvoř základní data
+              if (!firmError && firmData) {
+                docData = {
+                  email: user.email,
+                  name: firmData.company_name || '',
+                  nickname: firmData.ico || '',
+                  phone: firmData.contact_phone || '',
+                  displayName: firmData.company_name || '',
+                  role: 'firma'
+                };
+                role = 'firma';
+                console.log('✅ Načten profil z firms:', docData);
+              } else {
+                // Žádný profil nenalezen - vytvoř základní data
+                docData = {
+                  email: user.email || '',
+                  name: user.user_metadata?.name || '',
+                  nickname: '',
+                  phone: '',
+                  displayName: user.user_metadata?.name || '',
+                  role: 'influencer'
+                };
+                console.log('⚠️ Profil nenalezen, použita výchozí data');
+              }
+            }
+          } catch (e) {
+            console.warn("Profil se nepodařilo načíst ze Supabase:", e);
             docData = {
               email: user.email || '',
-              name: user.user_metadata?.name || '',
+              name: '',
               nickname: '',
               phone: '',
-              displayName: user.user_metadata?.name || '',
               role: 'influencer'
             };
-            console.log('⚠️ Profil nenalezen, použita výchozí data');
           }
+
+          currentProfileData = docData;
+          applyUserUI(user, currentProfileData);
+
+          // URL vizitky
+          if (shareUrlInput) {
+            const origin = window.location.origin || "https://kartao.cz";
+            const handle = currentProfileData.nickname || user.id;
+            const profileUrl = origin + "/karta.html?handle=" + encodeURIComponent(handle);
+            shareUrlInput.value = profileUrl;
+          }
+
+          setLoading(false);
+        } catch (error) {
+          console.error('Chyba při načítání profilu:', error);
+          setLoading(false);
+          showMessage('Chyba při načítání profilu: ' + error.message, 'error');
         }
-      } catch (e) {
-        console.warn("Profil se nepodařilo načíst ze Supabase:", e);
-        docData = {
-          email: user.email || '',
-          name: '',
-          nickname: '',
-          phone: '',
-          role: 'influencer'
-        };
       }
 
-      currentProfileData = docData;
-      applyUserUI(user, currentProfileData);
-
-      // URL vizitky
-      if (shareUrlInput) {
-        const origin = window.location.origin || "https://kartao.cz";
-        const handle = currentProfileData.nickname || user.id;
-        const profileUrl = origin + "/karta.html?handle=" + encodeURIComponent(handle);
-        shareUrlInput.value = profileUrl;
-      }
-
-      setLoading(false);
+      // Spusť načtení profilu
+      loadUserProfile();
 
       // Realtime náhled inline vizitky při psaní
       [nameInput, nicknameInput, phoneInput].forEach((el) => {
@@ -787,22 +787,23 @@
       if (copyShareCardBtn) {
         copyShareCardBtn.addEventListener("click", async () => {
           hideMessage();
-          const user = auth.currentUser;
+          const { data: { user } } = await sb.auth.getUser();
           if (!user) {
             showMessage("U vizitky je potřeba být přihlášený.", "error");
             return;
           }
 
-          const uid = currentUserUid || user.uid;
+          const uid = currentUserUid || user.id;
           const origin = window.location.origin || "https://kartao.cz";
 
-          const name = (nameInput && nameInput.value.trim()) || currentProfileData.name || currentProfileData.displayName || user.displayName || "Uživatel Kartao";
+          const name = (nameInput && nameInput.value.trim()) || currentProfileData.name || currentProfileData.displayName || user.user_metadata?.name || "Uživatel Kartao";
           const nickname = (nicknameInput && nicknameInput.value.trim()) || currentProfileData.nickname || "";
           const email = user.email || (emailInput && emailInput.value.trim()) || currentProfileData.email || "";
           const role = currentProfileData.role || "influencer";
           const shortRole = role === "firma" ? "Firma / značka" : "Influencer";
 
-          const profileUrl = origin + "/vizitka.html?uid=" + uid;
+          const handle = nickname || uid;
+          const profileUrl = origin + "/karta.html?handle=" + encodeURIComponent(handle);
 
           const cardHtml =
 `<div class="kartao-inline-card" style="font-family:-apple-system,BlinkMacSystemFont,system-ui,Segoe UI,sans-serif;font-size:13px;color:#e5e7eb;background:linear-gradient(135deg,#020617,#020617);border-radius:14px;border:1px solid rgba(148,163,184,0.7);padding:10px 12px;display:flex;align-items:center;gap:10px;max-width:420px;">
@@ -835,13 +836,14 @@
         });
       }
 
-      // ✅ Odhlášení – jen jedna instance, logujeme do konzole
+      // Odhlášení – Supabase
       if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
           hideMessage();
           console.log("🚪 Pokus o odhlášení – kartao-muj-ucet.html");
           try {
-            await kartaoAuth.logout();
+            const { error } = await sb.auth.signOut();
+            if (error) throw error;
             console.log("✅ Odhlášení proběhlo, přesměrovávám na login.html");
             window.location.href = "login.html";
           } catch (err) {
