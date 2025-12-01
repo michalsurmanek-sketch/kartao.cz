@@ -363,11 +363,11 @@
         window.lucide.createIcons();
       }
 
-      const auth = window.auth;
-      const db   = window.db   || (window.firebase && firebase.firestore && firebase.firestore());
+      const auth = window.kartaoAuth;
+      const sb = window.supabaseClient || window.sb;
 
-      if (!auth || !db) {
-        console.warn("Auth nebo DB nejsou dostupné – zkontroluj supabase-config.js a supabase-init.js");
+      if (!auth || !sb) {
+        console.warn("Auth nebo Supabase nejsou dostupné – zkontroluj supabase-config.js a supabase-init.js");
         return;
       }
 
@@ -377,7 +377,7 @@
           return;
         }
 
-        window.currentUserId = user.uid;
+        window.currentUserId = user.id;
 
         // Počkej, až bude dostupná globální instance CreditsSystem z credits-header.js
         let creditSys = window.getCreditsSystem();

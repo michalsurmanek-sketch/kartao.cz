@@ -299,23 +299,23 @@
     </footer>
   </div>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="supabase-compatibility.js"></script>
+  <script src="auth-supabase.js"></script>
+  <script src="auth-header.js"></script>
+  <script src="credits-system-supabase.js"></script>
+  <script src="credits-header.js"></script>
+
    <script>
     // Napojení na uživatele + K-Coins (firemní účet) + KONTROLA ROLE = FIRMA
-    document.addEventListener("DOMContentLoaded", function () {
-      const auth =
-        window.auth;
-      const db =
-        window.db ||
-        (window.firebase &&
-          firebase.firestore &&
-          firebase.firestore());
+    document.addEventListener("DOMContentLoaded", async function () {
+      const sb = window.supabaseClient || window.sb;
 
-      if (!auth) {
-        console.warn("Firebase Auth není dostupný na moje-firma.html");
-        return;
-      }
-      if (!db) {
-        console.warn("Firestore (db) není dostupný na moje-firma.html");
+      if (!sb) {
+        console.warn("Supabase není dostupný na moje-firma.html");
         return;
       }
 
@@ -327,54 +327,48 @@
         }
 
         try {
-          // načteme uživatele z kolekce users
-          const userDoc = await db.collection("users").doc(user.uid).get();
-          const data = userDoc.data() || {};
+          // načteme firmu z kolekce firms
+          const { data: firmData, error } = await sb
+            .from('firms')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
 
-          // role můžeme číst z `role` nebo z `activerole` (pro jistotu oboje)
-          const role = data.role || data.activerole || "influencer";
-
-          // ❌ NENÍ FIRMA -> na influencer část
-          if (role !== "firma") {
-            console.warn("Uživatel nemá firemní roli, přesměrovávám na moje-karta.html");
-            window.location.href = "moje-karta.html";
-            return;
+          if (error && error.code !== 'PGRST116') {
+            console.error('Chyba načítání firmy:', error);
           }
 
-          // ✅ SEM SE DOSTANE JEN UŽIVATEL S ROLE = "firma"
-          window.currentUserId = user.uid;
+          // Pokud není firma, zkusíme creators (může být influencer)
+          if (!firmData) {
+            const { data: creatorData } = await sb
+              .from('creators')
+              .select('*')
+              .eq('user_id', user.id)
+              .maybeSingle();
+            
+            if (creatorData) {
+              console.warn("Uživatel nemá firemní profil, přesměrovávám na moje-karta.html");
+              window.location.href = "moje-karta.html";
+              return;
+            }
+          }
 
-          // Název firmy (zatím displayName)
+          // ✅ SEM SE DOSTANE JEN UŽIVATEL S FIREMNÍM PROFILEM
+          window.currentUserId = user.id;
+
+          // Název firmy
           const nameEl = document.getElementById("userName");
           const initialEl = document.getElementById("userInitial");
-          const displayName =
-            user.displayName || data.displayName || "Tvoje firma na Kartao.cz";
+          const displayName = firmData?.company || user.user_metadata?.name || user.email?.split('@')[0] || "Tvoje firma";
 
           if (nameEl) nameEl.textContent = displayName;
           if (initialEl && displayName)
             initialEl.textContent = displayName.charAt(0).toUpperCase();
 
-          // Kredity přes CreditsSystem – nově přes Firestore master
-CreditsSystem.create(user.uid)
-  .then((creditSys) => {
-    window.creditSys = creditSys;
-
-    const val = creditSys.getCredits();
-    const h1 = document.getElementById("headerCredits");
-    const s1 = document.getElementById("summaryCredits");
-
-    if (typeof val === "number") {
-      if (h1) h1.textContent = val;
-      if (s1) s1.textContent = val;
-    }
-  })
-  .catch((e) => {
-    console.warn("Firemní účet: chyba při načítání kreditů:", e);
-  });
+          // Kredity se načtou automaticky přes credits-header.js
 
         } catch (err) {
           console.error("Chyba při ověřování firemní role:", err);
-          // když se něco posere, raději pryč z firemní sekce
           window.location.href = "moje-karta.html";
         }
       });

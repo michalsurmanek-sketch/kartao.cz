@@ -535,16 +535,17 @@
   <script>
     // Auth check a načtení dat
     window.addEventListener('load', function() {
-      if (typeof firebase === 'undefined' || !firebase.auth) {
-        console.error('❌ Firebase není načtený!');
+      const auth = window.kartaoAuth;
+      const sb = window.supabaseClient || window.sb;
+      
+      if (!auth || !sb) {
+        console.error('❌ Supabase není načtený!');
         return;
       }
 
-      const auth = window.auth;
-      const db = firebase.firestore();
       let currentUser = null;
 
-      kartaoAuth.onAuthStateChanged(async (user) => {
+      auth.onAuthStateChanged(async (user) => {
         if (!user) {
           console.log('⚠️ Uživatel není přihlášen, redirect na login');
           window.location.href = 'login.html';
@@ -558,34 +559,39 @@
         loadCompanyProfile(user);
         
         // Načti statistiky
-        loadStats(user.uid);
+        loadStats(user.id);
         
         // Načti kampaně
-        loadCampaigns(user.uid);
+        loadCampaigns(user.id);
       });
 
       // Načtení profilu firmy
       async function loadCompanyProfile(user) {
         try {
-          const doc = await db.collection('firms').doc(user.uid).get();
-          if (doc.exists) {
-            const data = doc.data();
-            document.getElementById('companyName').textContent = data.company || 'Firma';
+          const { data: doc, error } = await sb.from('firms').select('*').eq('user_id', user.id).maybeSingle();
+          
+          if (error) {
+            console.error('Chyba načítání profilu:', error);
+            return;
+          }
+          
+          if (doc) {
+            document.getElementById('companyName').textContent = doc.company || 'Firma';
             
             // Pre-fill form s uloženými daty
-            if (data.company) {
-              document.querySelector('[name="company"]').value = data.company;
+            if (doc.company) {
+              document.querySelector('[name="company"]').value = doc.company;
             }
-            if (data.contact) {
-              document.querySelector('[name="contact"]').value = data.contact;
+            if (doc.contact) {
+              document.querySelector('[name="contact"]').value = doc.contact;
             }
-            if (data.email) {
-              document.querySelector('[name="email"]').value = data.email;
+            if (doc.email) {
+              document.querySelector('[name="email"]').value = doc.email;
             }
           } else {
             // Nový uživatel
             document.querySelector('[name="email"]').value = user.email;
-            document.getElementById('companyName').textContent = user.displayName || 'Firma';
+            document.getElementById('companyName').textContent = user.user_metadata?.name || 'Firma';
           }
         } catch (error) {
           console.error('Chyba načítání profilu:', error);
@@ -604,8 +610,8 @@
           .map(cb => cb.value);
 
         const campaignData = {
-          userId: currentUser.uid,
-          campaignName: formData.get('campaignName'),
+          user_id: currentUser.id,
+          campaign_name: formData.get('campaignName'),
           company: formData.get('company'),
           contact: formData.get('contact'),
           email: formData.get('email'),
@@ -615,27 +621,28 @@
           deadline: formData.get('deadline'),
           description: formData.get('description'),
           categories: categories,
-          status: 'draft',
-          createdAt: new Date().toISOString()
+          status: 'draft'
         };
 
         try {
-          const docRef = await db.collection('campaigns').add(campaignData);
+          const { data, error } = await sb.from('campaigns').insert([campaignData]).select();
+          
+          if (error) throw error;
           
           // Ulož i profil firmy (pokud ještě není)
-          await db.collection('firms').doc(currentUser.uid).set({
+          await sb.from('firms').upsert({
+            user_id: currentUser.id,
             company: campaignData.company,
             contact: campaignData.contact,
             email: campaignData.email,
-            role: 'firma',
-            updatedAt: new Date().toISOString()
-          }, { merge: true });
+            role: 'firma'
+          });
 
-          alert('✅ Kampaň vytvořena! ID: ' + docRef.id);
+          alert('✅ Kampaň vytvořena!');
           e.target.reset();
           
           // Reload kampaní
-          await loadCampaigns(currentUser.uid);
+          await loadCampaigns(currentUser.id);
         } catch (error) {
           console.error('Chyba vytváření kampaně:', error);
           alert('❌ Chyba při vytváření kampaně');
@@ -662,13 +669,15 @@
         const container = document.getElementById('activeCampaignsWidget');
         
         try {
-          const snapshot = await db.collection('campaigns')
-            .where('userId', '==', userId)
-            .orderBy('createdAt', 'desc')
-            .limit(5)
-            .get();
+          const { data: campaigns, error } = await sb.from('campaigns')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(5);
 
-          if (snapshot.empty) {
+          if (error) throw error;
+
+          if (!campaigns || campaigns.length === 0) {
             container.innerHTML = `
               <div class="text-center py-6 text-white/40 text-sm">
                 <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
@@ -679,15 +688,10 @@
             return;
           }
 
-          const campaigns = [];
-          snapshot.forEach(doc => {
-            campaigns.push({ id: doc.id, ...doc.data() });
-          });
-
           container.innerHTML = campaigns.map(campaign => `
             <div class="campaign-card p-3 rounded-xl bg-neutral-900/60 border border-white/10">
               <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold text-sm">${campaign.campaignName || 'Bez názvu'}</div>
+                <div class="font-semibold text-sm">${campaign.campaign_name || 'Bez názvu'}</div>
                 <span class="status-badge badge-${campaign.status || 'draft'}">
                   ${getStatusLabel(campaign.status)}
                 </span>
