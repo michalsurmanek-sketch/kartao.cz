@@ -723,13 +723,22 @@
         initAttempts++;
         console.log(`[Firebase check] Pokus ${initAttempts}/10`);
         
-        if (window.db) {
+        if (window.db && window.auth && window.auth.currentUser) {
           clearInterval(waitForFirebase);
           console.log("✅ window.db připraveno, spouštím test připojení");
+          
+          // Test pravidel - zkus přečíst creators kolekci
+          try {
+            const testDoc = await window.db.collection('creators').doc(window.auth.currentUser.uid).get();
+            console.log(`✅ Test READ creators/${window.auth.currentUser.uid}:`, testDoc.exists ? 'dokument existuje' : 'dokument neexistuje (to je OK)');
+          } catch (err) {
+            console.error(`❌ Test READ selhal:`, err.code, err.message);
+          }
+          
           await checkFirebaseConnection();
         } else if (initAttempts >= 10) {
           clearInterval(waitForFirebase);
-          console.error("❌ window.db se nenačetlo ani po 10 pokusech");
+          console.error("❌ window.db nebo auth se nenačetlo ani po 10 pokusech");
           updateFirebaseStatus(false);
         }
       }, 200);
@@ -936,6 +945,7 @@
               while (!saveSuccess && retryCount < maxRetries) {
                 try {
                   console.log(`[SAVE] Pokus ${retryCount + 1}/${maxRetries} - ukládám do creators/${uid}`);
+                  console.log(`[SAVE] Payload:`, payload);
                   
                   await Promise.race([
                     window.db
@@ -943,7 +953,7 @@
                       .doc(uid)
                       .set(payload, { merge: true }),
                     new Promise((_, reject) =>
-                      setTimeout(() => reject(new Error("Timeout po 5s")), 5000)
+                      setTimeout(() => reject(new Error("Timeout po 15s")), 15000)
                     )
                   ]);
                   
@@ -952,10 +962,16 @@
                 } catch (err) {
                   retryCount++;
                   console.error(`❌ Pokus ${retryCount}/${maxRetries} selhal:`, err.message);
+                  console.error(`❌ Error detail:`, err);
+                  console.error(`❌ Error code:`, err.code);
                   
                   if (retryCount >= maxRetries) {
+                    const errMsg = err.code === 'permission-denied' 
+                      ? 'Firebase pravidla blokují zápis! Zkontroluj Firestore Rules v Firebase Console.'
+                      : `Chyba: ${err.message} (code: ${err.code || 'none'})`;
+                    
                     showStatus(
-                      `❌ Uložení selhalo po ${maxRetries} pokusech. Chyba: ${err.message}. Zkontroluj Firebase připojení (červený indikátor nahoře).`,
+                      `❌ Uložení selhalo po ${maxRetries} pokusech. ${errMsg}`,
                       false
                     );
                     console.error("🔴 FINAL ERROR:", err);
