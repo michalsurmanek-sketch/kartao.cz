@@ -551,11 +551,51 @@ class IntelligentRecommendationSystemComplete {
     
     // Pokud už na podobné tvůrce klikal, zvýšit score
     if (viewedCreators.length > 0) {
-      // TODO: Implement similarity check with viewed creators
-      interactionScore = 0.7; // Simplified
+      // Check if creator has similar attributes to previously viewed ones
+      const similarityScores = await Promise.all(
+        viewedCreators.slice(0, 10).map(async (viewedId) => {
+          try {
+            const viewedDoc = await this.db.collection('creators').doc(viewedId).get();
+            if (!viewedDoc.exists) return 0;
+            
+            const viewedCreator = viewedDoc.data();
+            return this.calculateCreatorSimilarity(creator, viewedCreator);
+          } catch (error) {
+            return 0;
+          }
+        })
+      );
+      
+      const avgSimilarity = similarityScores.reduce((sum, s) => sum + s, 0) / similarityScores.length;
+      interactionScore = avgSimilarity;
     }
     
     return interactionScore;
+  }
+  
+  calculateCreatorSimilarity(creator1, creator2) {
+    let similarity = 0;
+    
+    // Category overlap
+    const categoryOverlap = this.calculateCategoryMatch(
+      creator1.categories || [], 
+      creator2.categories || []
+    );
+    similarity += categoryOverlap * 0.4;
+    
+    // Follower range similarity
+    const followerSimilarity = Math.max(0, 1 - Math.abs(
+      (creator1.followers || 0) - (creator2.followers || 0)
+    ) / Math.max(creator1.followers || 1, creator2.followers || 1));
+    similarity += followerSimilarity * 0.3;
+    
+    // Platform overlap
+    const platformOverlap = (creator1.platforms || []).filter(p => 
+      (creator2.platforms || []).includes(p)
+    ).length / Math.max((creator1.platforms || []).length, 1);
+    similarity += platformOverlap * 0.3;
+    
+    return similarity;
   }
 
   calculateNoveltyScore(creatorId, viewedCreators) {
@@ -988,17 +1028,78 @@ class IntelligentRecommendationSystemComplete {
     }
   }
 
-  // Placeholder methods pro další implementaci
+  // Advanced ML Methods Implementation
   calculateClusterScore(userFeatures, cluster) {
-    return Math.random(); // Simplified
+    // Calculate cosine similarity between user features and cluster centroid
+    if (!userFeatures || !cluster.centroid) return 0.5;
+    
+    const similarity = this.cosineSimilarity(
+      this.normalizeVector(userFeatures),
+      this.normalizeVector(cluster.centroid)
+    );
+    return similarity;
   }
 
-  async findSimilarUsers(userId, limit) {
-    return []; // TODO: Implement user similarity
+  async findSimilarUsers(userId, limit = 10) {
+    try {
+      const userDoc = await this.db.collection('users').doc(userId).get();
+      if (!userDoc.exists) return [];
+      
+      const currentUserProfile = userDoc.data();
+      const usersSnapshot = await this.db.collection('users')
+        .where('accountType', '==', currentUserProfile.accountType)
+        .limit(100)
+        .get();
+      
+      const similarities = [];
+      for (const doc of usersSnapshot.docs) {
+        if (doc.id === userId) continue;
+        
+        const otherUser = doc.data();
+        const similarity = this.calculateUserSimilarity(currentUserProfile, otherUser);
+        similarities.push({ userId: doc.id, similarity, profile: otherUser });
+      }
+      
+      return similarities
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error finding similar users:', error);
+      return [];
+    }
   }
 
-  async getRecommendationsFromSimilarUsers(users, itemType, limit) {
-    return []; // TODO: Implement collaborative filtering
+  async getRecommendationsFromSimilarUsers(users, itemType, limit = 5) {
+    try {
+      const recommendedItems = new Map();
+      
+      for (const user of users) {
+        const interactionsSnapshot = await this.db.collection('user_interactions')
+          .where('userId', '==', user.userId)
+          .where('type', '==', itemType)
+          .where('action', 'in', ['click', 'like', 'save'])
+          .limit(20)
+          .get();
+        
+        interactionsSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          const itemId = data.itemId;
+          const weight = user.similarity * (data.action === 'like' ? 1.5 : 1.0);
+          
+          recommendedItems.set(itemId, (recommendedItems.get(itemId) || 0) + weight);
+        });
+      }
+      
+      const sortedItems = Array.from(recommendedItems.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([itemId]) => itemId);
+      
+      return sortedItems;
+    } catch (error) {
+      console.error('Error getting collaborative recommendations:', error);
+      return [];
+    }
   }
 
   getElementType(url) {
@@ -1019,8 +1120,14 @@ class IntelligentRecommendationSystemComplete {
   }
 
   calculateGenderOverlap(split1, split2) {
-    // Simplified gender overlap calculation
-    return 0.8; // Placeholder
+    if (!split1 || !split2) return 0.5;
+    
+    const total = Object.keys(split1).reduce((sum, key) => {
+      const overlap = Math.min(split1[key] || 0, split2[key] || 0);
+      return sum + overlap;
+    }, 0);
+    
+    return total / 100; // Normalize to 0-1
   }
 
   calculateInterestOverlap(interests1, interests2) {
@@ -1034,8 +1141,17 @@ class IntelligentRecommendationSystemComplete {
   }
 
   calculateCollaborationHistory(brandId, userProfile) {
-    // Check previous collaborations
-    return 0.5; // Placeholder
+    if (!userProfile.previousCollaborations) return 0.0;
+    
+    const collaborations = userProfile.previousCollaborations.filter(
+      collab => collab.brandId === brandId
+    );
+    
+    if (collaborations.length === 0) return 0.0;
+    
+    // Calculate average success score from previous collaborations
+    const avgSuccess = collaborations.reduce((sum, c) => sum + (c.rating || 0), 0) / collaborations.length;
+    return avgSuccess / 5; // Normalize to 0-1
   }
 
   calculateBrandBudgetScore(brandBudget, userRate) {
@@ -1044,18 +1160,60 @@ class IntelligentRecommendationSystemComplete {
   }
 
   calculateReadingBehaviorMatch(contentType, behaviorData) {
-    // Analyze reading patterns
-    return 0.6; // Placeholder
+    if (!behaviorData || !behaviorData.contentPreferences) return 0.5;
+    
+    const preferences = behaviorData.contentPreferences[contentType] || {};
+    const avgReadTime = preferences.avgReadTime || 0;
+    const completionRate = preferences.completionRate || 0;
+    
+    // High engagement = good match
+    return (completionRate * 0.6) + (Math.min(avgReadTime / 300, 1) * 0.4);
   }
 
-  async getTrendingItems(userId, limit) {
-    // Get trending content
-    return []; // Placeholder
+  async getTrendingItems(userId, limit = 5) {
+    try {
+      const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      
+      // Get most engaged items from last 24h
+      const trendingSnapshot = await this.db.collection('trending_items')
+        .where('timestamp', '>=', last24h)
+        .orderBy('timestamp', 'desc')
+        .orderBy('engagementScore', 'desc')
+        .limit(limit * 2)
+        .get();
+      
+      const items = trendingSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        mixType: 'trending',
+        recommendationScore: 0.85
+      }));
+      
+      return items.slice(0, limit);
+    } catch (error) {
+      console.log('Trending items fallback to popular');
+      return [];
+    }
   }
 
   isSimilarToClicked(item, clickData) {
-    // Check similarity to clicked item
-    return Math.random() > 0.5; // Placeholder
+    if (!clickData || !item) return false;
+    
+    // Check category overlap
+    const categoryMatch = item.categories?.some(cat => 
+      clickData.categories?.includes(cat)
+    ) || false;
+    
+    // Check tag overlap
+    const tagMatch = item.tags?.some(tag => 
+      clickData.tags?.includes(tag)
+    ) || false;
+    
+    // Check price range similarity (for products)
+    const priceMatch = item.price && clickData.price ?
+      Math.abs(item.price - clickData.price) / clickData.price < 0.3 : false;
+    
+    return categoryMatch || tagMatch || priceMatch;
   }
 
   generateCreatorReasoning(creator, userProfile) {

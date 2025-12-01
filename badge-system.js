@@ -574,9 +574,22 @@ class BadgeSystem {
   }
 
   async checkRisingStarsRequirements(userId, requirements) {
-    // Zkontrolujeme, zda je uživatel v seznamu rising stars
-    // V reálné aplikaci by se načetl aktuální seznam
-    return false; // Placeholder
+    try {
+      // Zkontrolujeme, zda je uživatel na aktuálním seznamu "Rising Stars"
+      const risingStarsDoc = await this.db.collection('trending')
+        .doc('rising_stars')
+        .get();
+        
+      if (!risingStarsDoc.exists) return false;
+      
+      const risingStars = risingStarsDoc.data();
+      const list = risingStars[requirements.duration] || [];
+      
+      return list.includes(userId);
+    } catch (error) {
+      console.error('Error checking rising stars:', error);
+      return false;
+    }
   }
 
   async awardBadge(userId, badgeId) {

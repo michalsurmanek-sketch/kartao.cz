@@ -4,18 +4,14 @@
 
 /**
  * Google Analytics 4 Setup
- * 
- * Instrukce:
- * 1. Vytvořte GA4 property v Google Analytics
- * 2. Zkopírujte Measurement ID (G-XXXXXXXXXX)
- * 3. Nahraďte 'G-XXXXXXXXXX' níže
+ * Nakonfigurováno a připraveno k použití
  */
 
 // Google Analytics 4
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-XXXXXXXXXX', {
+gtag('config', 'G-77NDPH3TXM', {
   'send_page_view': true,
   'anonymize_ip': true, // GDPR compliance
   'cookie_flags': 'SameSite=None;Secure'
@@ -129,11 +125,14 @@ class AnalyticsTracker {
 /**
  * Facebook Pixel (Meta Pixel)
  * 
- * Instrukce:
+ * Pro aktivaci:
  * 1. Vytvořte Facebook Pixel v Meta Business Manager
  * 2. Zkopírujte Pixel ID
- * 3. Nahraďte 'XXXXXXXXXX' níže
+ * 3. Odkomentujte níže a nahraďte 'YOUR_PIXEL_ID'
  */
+
+// Facebook Pixel - Deaktivováno (odkomentujte po nastavení)
+/*
 !function(f,b,e,v,n,t,s) {
   if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -144,25 +143,30 @@ class AnalyticsTracker {
 }(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 
-fbq('init', 'XXXXXXXXXX'); // Nahraďte vaším Pixel ID
+fbq('init', 'YOUR_PIXEL_ID');
 fbq('track', 'PageView');
+*/
 
 /**
  * Hotjar - Heatmaps & Session Recording
  * 
- * Instrukce:
+ * Pro aktivaci:
  * 1. Vytvořte účet na Hotjar.com
  * 2. Zkopírujte Site ID
- * 3. Nahraďte 'XXXXXXX' níže
+ * 3. Odkomentujte níže a nahraďte 'YOUR_SITE_ID'
  */
+
+// Hotjar - Deaktivováno (odkomentujte po nastavení)
+/*
 (function(h,o,t,j,a,r){
   h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-  h._hjSettings={hjid:XXXXXXX,hjsv:6}; // Nahraďte vaším Site ID
+  h._hjSettings={hjid:YOUR_SITE_ID,hjsv:6};
   a=o.getElementsByTagName('head')[0];
   r=o.createElement('script');r.async=1;
   r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
   a.appendChild(r);
 })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+*/
 
 /**
  * Cookie Consent Management
