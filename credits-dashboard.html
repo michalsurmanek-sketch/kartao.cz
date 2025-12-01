@@ -378,12 +378,22 @@
 
         window.currentUserId = user.uid;
 
-        const creditSys = new CreditsSystem(user.uid);
-
         // DOM prvky
         const creditsValueEl       = document.getElementById("creditsValue");      // univerzální ID (jiné stránky)
         const creditsValueHeroEl   = document.getElementById("creditsValueHero");  // box v hero
         const currentCreditsEl     = document.getElementById("currentCredits");    // číslo v hlavičce
+
+        // aktualizace zobrazení kreditů – volá se z callback
+        function syncCreditsDisplay() {
+          const credits = creditSys.getCredits();
+          const formatted = formatNumber(credits);
+          if (creditsValueEl)     creditsValueEl.textContent     = formatted;
+          if (creditsValueHeroEl) creditsValueHeroEl.textContent = formatted;
+          if (currentCreditsEl)   currentCreditsEl.textContent   = formatted;
+        }
+
+        // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
+        const creditSys = new CreditsSystem(user.uid, syncCreditsDisplay);
 
         const streakValueEl        = document.getElementById("streakValue");
         const levelValueEl         = document.getElementById("levelValue");
@@ -522,6 +532,7 @@
           if (currentCreditsEl)   currentCreditsEl.textContent   = formatted;
         }
 
+        // Počáteční zobrazení (callback se volá automaticky při změně)
         syncCreditsDisplay();
 
         // === STREAK + LEVEL – Firestore: users/{uid} ===

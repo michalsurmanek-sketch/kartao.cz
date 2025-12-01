@@ -378,23 +378,25 @@
         if (nameEl) nameEl.textContent = displayName;
         if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
 
-        // kredity přes CreditsSystem – nově se nejdřív načtou z Firestore OPRAVENO
-CreditsSystem.create(user.uid)
-  .then((creditSys) => {
-    window.creditSys = creditSys;
+        // Funkce pro aktualizaci zobrazení kreditů
+        function updateCreditsDisplay() {
+          const val = window.creditSys ? window.creditSys.getCredits() : 0;
+          const headerEl   = document.getElementById("headerCredits");
+          const summaryEl  = document.getElementById("summaryCredits");
 
-    const val = creditSys.getCredits();
-    const headerEl   = document.getElementById("headerCredits");
-    const summaryEl  = document.getElementById("summaryCredits");
+          if (typeof val === "number") {
+            if (headerEl)  headerEl.textContent  = val;
+            if (summaryEl) summaryEl.textContent = val;
+          }
+        }
 
-    if (typeof val === "number") {
-      if (headerEl)  headerEl.textContent  = val;
-      if (summaryEl) summaryEl.textContent = val;
-    }
-  })
-  .catch((e) => {
-    console.warn("Chyba při načítání kreditů na moje-karta.html:", e);
-  });
+        // kredity přes CreditsSystem s callback pro realtime update
+        try {
+          window.creditSys = new CreditsSystem(user.uid, updateCreditsDisplay);
+          updateCreditsDisplay(); // Počáteční zobrazení
+        } catch (e) {
+          console.warn("Chyba při načítání kreditů na moje-karta.html:", e);
+        }
 
     });
   </script>

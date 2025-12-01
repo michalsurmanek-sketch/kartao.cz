@@ -14,6 +14,7 @@
   }
 
   let creditsSystemInstance = null;
+  let creditsCheckInterval = null;
 
   // Funkce pro formátování čísla s mezerami (2350 -> 2 350)
   function formatCredits(num) {
@@ -48,7 +49,12 @@
 
   // Sleduj přihlášení/odhlášení
   kartaoAuth.onAuthStateChanged((user) => {
-    // Cleanup starého listeneru
+    // Cleanup starého listeneru a intervalu
+    if (creditsCheckInterval) {
+      clearInterval(creditsCheckInterval);
+      creditsCheckInterval = null;
+    }
+    
     if (creditsSystemInstance) {
       try {
         creditsSystemInstance.destroy();
@@ -57,31 +63,26 @@
     }
 
     if (user) {
-      // Přihlášen - inicializuj CreditsSystem
+      // Přihlášen - inicializuj CreditsSystem s callback
       try {
-        creditsSystemInstance = new CreditsSystem(user.uid);
+        // Callback pro okamžitou aktualizaci UI při změně kreditů
+        creditsSystemInstance = new CreditsSystem(user.uid, (credits) => {
+          updateCreditsUI(credits);
+        });
         
-        // Nastav počáteční hodnotu
+        // Okamžitá počáteční aktualizace
         const initialCredits = creditsSystemInstance.getCredits();
         updateCreditsUI(initialCredits);
 
-        // Poslouchej změny kreditů (realtime)
-        // CreditsSystem má vlastní Firestore listener, který automaticky updatuje this.credits
-        // Použijeme interval pro kontrolu změn
-        const creditsCheckInterval = setInterval(() => {
+        // Fallback interval pro případ, že callback nefunguje
+        creditsCheckInterval = setInterval(() => {
           if (!creditsSystemInstance) {
             clearInterval(creditsCheckInterval);
             return;
           }
-          
           const currentCredits = creditsSystemInstance.getCredits();
           updateCreditsUI(currentCredits);
-        }, 1000); // Kontrola každou sekundu
-
-        // Cleanup při odhlášení
-        window.addEventListener('beforeunload', () => {
-          clearInterval(creditsCheckInterval);
-        });
+        }, 2000);
 
       } catch (error) {
         console.error('Chyba inicializace CreditsSystem:', error);

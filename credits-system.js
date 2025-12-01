@@ -21,8 +21,9 @@
 */
 
 class CreditsSystem {
-  constructor(userId) {
+  constructor(userId, onCreditsChange) {
     this.userId = userId || null;
+    this.onCreditsChange = onCreditsChange || null; // callback pro UI update
 
     // 🔥 jediná správná cesta – používá globální Firebase instanci z firebase-init.js
     this.db =
@@ -58,6 +59,16 @@ class CreditsSystem {
     if (!Number.isFinite(value)) value = 0;
     if (value < 0) value = 0;
     this.credits = value;
+    
+    // Zavolej callback pro UI update
+    if (typeof this.onCreditsChange === 'function') {
+      try {
+        this.onCreditsChange(this.credits);
+      } catch (e) {
+        console.warn('CreditsSystem: callback error:', e);
+      }
+    }
+    
     return this.credits;
   }
 
