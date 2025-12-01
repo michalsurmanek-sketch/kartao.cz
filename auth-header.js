@@ -8,11 +8,11 @@
   }
 
   kartaoAuth.onAuthStateChanged((user) => {
-    // Desktop elementy
-    const loginBtnDesktop = document.getElementById('loginBtnDesktop');
-    const userMenuDesktop = document.getElementById('userMenuDesktop');
-    const userNameDesktop = document.getElementById('userNameDesktop');
-    const logoutBtnDesktop = document.getElementById('logoutBtnDesktop');
+    // Desktop elementy (podporuje obě varianty ID)
+    const loginBtnDesktop = document.getElementById('loginBtnDesktop') || document.getElementById('loginBtn');
+    const userMenuDesktop = document.getElementById('userMenuDesktop') || document.getElementById('userMenu');
+    const userNameDesktop = document.getElementById('userNameDesktop') || document.getElementById('userName');
+    const logoutBtnDesktop = document.getElementById('logoutBtnDesktop') || document.getElementById('logoutBtn');
     
     // Mobile elementy
     const loginBtnMobile = document.getElementById('loginBtnMobile');
