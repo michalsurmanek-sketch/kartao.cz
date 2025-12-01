@@ -824,13 +824,21 @@
       
       let authChecked = false;
       let isSubmitting = false; // Ochrana proti redirectu během ukládání
+      let formHasData = false; // Ochrana pokud je formulář vyplněný
 
       kartaoAuth.onAuthStateChanged((user) => {
-        console.log("Auth state changed:", user ? user.uid : null);
+        console.log("Auth state changed:", user ? user.uid : null, "isSubmitting:", isSubmitting, "formHasData:", formHasData);
         
-        // OCHRANA: Pokud právě ukládáme, ignoruj auth změny
+        // OCHRANA 1: Pokud právě ukládáme, ignoruj auth změny
         if (isSubmitting) {
-          console.log("⚠️ Auth change během submitu - ignoruji");
+          console.log("🛡️ Auth change během submitu - IGNORUJI (isSubmitting=true)");
+          return;
+        }
+        
+        // OCHRANA 2: Pokud je formulář vyplněný, neodhlašuj
+        if (!user && formHasData) {
+          console.warn("🛡️ Auth change to null ale formulář má data - IGNORUJI");
+          showStatus("⚠️ Ztraceno připojení, ale zůstáváš přihlášen. Zkus odeslat znovu.", false);
           return;
         }
         
@@ -854,12 +862,18 @@
         showStatus("Vytváříš svou první kartu influencera ✨");
 
         if (form) {
+          // Sleduj změny ve formuláři
+          form.addEventListener("input", () => {
+            formHasData = true;
+          });
+          
           form.addEventListener("submit", async (e) => {
             e.preventDefault();
             
             // Zamknout auth změny během submitu
             isSubmitting = true;
-            console.log("[FORM] Start submit, uid =", user.uid);
+            formHasData = true;
+            console.log("[FORM] Start submit, uid =", user.uid, "🔒 isSubmitting=true");
 
             try {
               const uid = user.uid;
@@ -1005,6 +1019,7 @@
                 console.error("❌ Test write SELHAL:", err.code, err.message);
                 showStatus(`❌ Firebase je OFFLINE nebo pravidla blokují! Chyba: ${err.message}`, false);
                 isSubmitting = false; // Odemknout před returnem
+                console.log("[FORM] 🔓 isSubmitting=false (test write selhal)");
                 return;
               }
 
@@ -1047,6 +1062,7 @@
                     );
                     console.error("🔴 FINAL ERROR:", err);
                     isSubmitting = false; // Odemknout před returnem
+                    console.log("[FORM] 🔓 isSubmitting=false (retry selhal)");
                     return; // Nepokoušej se pokračovat
                   }
                   
@@ -1084,6 +1100,7 @@
             } finally {
               // Odemknout auth změny
               isSubmitting = false;
+              console.log("[FORM] 🔓 isSubmitting=false (finally)");
             }
           });
         }
