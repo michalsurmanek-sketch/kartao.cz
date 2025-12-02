@@ -2319,10 +2319,6 @@
         if (!creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();
-          
-          // Načteme tvůrce okamžitě
-          await loadAllCreators();
-          render();
         }
       })();
 
@@ -2331,8 +2327,6 @@
         if (event === 'SIGNED_IN' && !creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();
-          await loadAllCreators();
-          render();
         }
       });
     }
