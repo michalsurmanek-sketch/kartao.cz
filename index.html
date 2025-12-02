@@ -893,19 +893,22 @@
           <span id="modeBadge" class="ml-2 inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
         </div>
         <div class="hidden md:flex items-center gap-2 text-xs">
-          <span class="tag">
+          <span class="tag" data-platform="all">
+            <i data-lucide="layers" class="w-3.5 h-3.5"></i> Vše
+          </span>
+          <span class="tag" data-platform="facebook">
             <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Facebook
           </span>
-          <span class="tag">
+          <span class="tag" data-platform="instagram">
             <i data-lucide="instagram" class="w-3.5 h-3.5"></i> Instagram
           </span>
-          <span class="tag">
+          <span class="tag" data-platform="tiktok">
             <i data-lucide="video" class="w-3.5 h-3.5"></i> TikTok
           </span>
-          <span class="tag">
+          <span class="tag" data-platform="youtube">
             <i data-lucide="youtube" class="w-3.5 h-3.5"></i> YouTube
           </span>
-          <span class="tag">
+          <span class="tag" data-platform="pinterest">
             <i data-lucide="pin" class="w-3.5 h-3.5"></i> Pinterest
           </span>
         </div>
@@ -1844,6 +1847,16 @@
       } else {
         sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
       }
+
+      // Aktualizuj zvýraznění platform tagů
+      document.querySelectorAll('[data-platform]').forEach(tag => {
+        const platform = tag.getAttribute('data-platform');
+        if (platform === state.platform) {
+          tag.classList.add('ring-2', 'ring-fuchsia-500');
+        } else {
+          tag.classList.remove('ring-2', 'ring-fuchsia-500');
+        }
+      });
 
       if (window.lucide?.createIcons) {
         lucide.createIcons();
