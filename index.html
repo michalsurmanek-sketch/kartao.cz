@@ -31,10 +31,13 @@
   <!-- === SUPABASE === -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- KONFIGURACE (loaded early, but init is at the bottom!) -->
+  <!-- KONFIGURACE -->
   <script src="supabase-config.js"></script>
-  <script src="supabase-compatibility.js"></script>
-  <script src="auth-header.js"></script>
+  <script src="supabase-init.js"></script>
+  
+  <!-- UNIFIED AUTH - JEDINÝ AUTH SYSTÉM -->
+  <script src="auth-unified.js"></script>
+  
   <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
 
@@ -2625,22 +2628,19 @@
   </script>
 
   <!-- ==========================================
-       KARTAO CORE - CORRECT LOADING ORDER
+       CORE SCRIPTS - SPRÁVNÉ POŘADÍ
        ========================================== -->
   
-  <!-- 1. Supabase Init (must be first!) -->
+  <!-- 1. Supabase -->
   <script src="supabase-init.js"></script>
   
-  <!-- 2. Auth Setup -->
-  <script src="auth-supabase.js"></script>
+  <!-- 2. Auth Unified - JEDINÝ AUTH SYSTÉM -->
+  <script src="auth-unified.js"></script>
   
-  <!-- 3. Hamburger Menu Generator -->
+  <!-- 3. Hamburger Menu -->
   <script src="hamburger-menu.js"></script>
   
-  <!-- 4. Core Loader - orchestrates everything -->
-  <script src="kartao-core-loader.js"></script>
-  
-  <!-- 5. Initialize Lucide Icons -->
+  <!-- 4. Lucide Icons -->
   <script>
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
