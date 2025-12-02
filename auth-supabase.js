@@ -130,11 +130,34 @@ function onAuthStateChanged(callback) {
   (async () => {
     const { data: { user } } = await sb.auth.getUser();
     callback(user);
+    
+    // Dispatch event pro ostatní komponenty
+    if (user) {
+      window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: { user } }));
+    }
   })();
   
   // Poslouchej změny
-  const { data: authListener } = sb.auth.onAuthStateChange((event, session) => {
-    callback(session?.user || null);
+  const { data: authListener } = sb.auth.onAuthStateChange(async (event, session) => {
+    const user = session?.user || null;
+    callback(user);
+    
+    // Dispatch event
+    if (event === 'SIGNED_IN' && user) {
+      window.dispatchEvent(new CustomEvent('supabase-auth-ready', { detail: { user } }));
+      
+      // Pokusit se načíst profil
+      try {
+        const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+        if (profile) {
+          window.dispatchEvent(new CustomEvent('user-profile-loaded', { detail: { user, profile } }));
+        }
+      } catch (err) {
+        console.warn('Could not load profile:', err);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      window.dispatchEvent(new CustomEvent('supabase-auth-signout'));
+    }
   });
   
   // Vrať funkci pro unsubscribe
