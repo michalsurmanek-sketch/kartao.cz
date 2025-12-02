@@ -132,8 +132,46 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     return;
   }
 
-  // Generovat obsah menu podle typu uživatele
-  generateMenuContent(userType, userData);
+  /**
+   * Získání CSS třídy pro barvu ikony
+   */
+  function getColorClass(color) {
+    const colorMap = {
+      sky: 'group-hover:text-sky-400',
+      emerald: 'group-hover:text-emerald-400',
+      fuchsia: 'group-hover:text-fuchsia-400',
+      blue: 'group-hover:text-blue-400',
+      violet: 'group-hover:text-violet-400',
+      cyan: 'group-hover:text-cyan-400',
+      amber: 'group-hover:text-amber-400',
+      green: 'group-hover:text-green-400',
+      purple: 'group-hover:text-purple-400',
+      indigo: 'group-hover:text-indigo-400',
+      orange: 'group-hover:text-orange-400',
+      red: 'group-hover:text-red-400',
+      gray: 'group-hover:text-gray-400',
+      slate: 'group-hover:text-slate-400'
+    };
+    return colorMap[color] || 'group-hover:text-white';
+  }
+
+  /**
+   * Zpracování akcí z menu
+   */
+  function handleMenuAction(action) {
+    if (action === 'logout') {
+      closeMenu();
+      // Logout logika
+      if (typeof handleLogout === 'function') {
+        handleLogout();
+      } else {
+        // Fallback - přesměrování
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 300);
+      }
+    }
+  }
 
   /**
    * Generování obsahu menu
@@ -224,48 +262,6 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
       lucide.createIcons();
     }
   }
-
-  /**
-   * Získání CSS třídy pro barvu ikony
-   */
-  function getColorClass(color) {
-    const colorMap = {
-      sky: 'group-hover:text-sky-400',
-      emerald: 'group-hover:text-emerald-400',
-      fuchsia: 'group-hover:text-fuchsia-400',
-      blue: 'group-hover:text-blue-400',
-      violet: 'group-hover:text-violet-400',
-      cyan: 'group-hover:text-cyan-400',
-      amber: 'group-hover:text-amber-400',
-      green: 'group-hover:text-green-400',
-      purple: 'group-hover:text-purple-400',
-      indigo: 'group-hover:text-indigo-400',
-      orange: 'group-hover:text-orange-400',
-      red: 'group-hover:text-red-400',
-      gray: 'group-hover:text-gray-400',
-      slate: 'group-hover:text-slate-400'
-    };
-    return colorMap[color] || 'group-hover:text-white';
-  }
-
-  /**
-   * Zpracování akcí z menu
-   */
-  function handleMenuAction(action) {
-    if (action === 'logout') {
-      closeMenu();
-      // Logout logika
-      if (typeof handleLogout === 'function') {
-        handleLogout();
-      } else {
-        // Fallback - přesměrování
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 300);
-      }
-    }
-  }
-
 
   /**
    * Otevření menu
@@ -380,14 +376,19 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     }
   });
 
-  // Auto-close při kliknutí na odkaz
-  const mobileNavLinks = mobileMenu.querySelectorAll('a');
-  mobileNavLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      // Zavřít s malým zpožděním pro lepší UX
-      setTimeout(closeMenu, 150);
+  // Auto-close při kliknutí na odkaz - delegace na menuContent
+  if (mobileMenu) {
+    mobileMenu.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (link && link.getAttribute('href')) {
+        // Zavřít s malým zpožděním pro lepší UX
+        setTimeout(closeMenu, 150);
+      }
     });
-  });
+  }
+
+  // Generovat obsah menu podle typu uživatele
+  generateMenuContent(userType, userData);
 
   // Export funkcí pro případné ruční použití
   return {

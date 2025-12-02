@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test Hamburger Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-950 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur-lg bg-neutral-950/70 border-b border-white/10">
+    <div class="mx-auto max-w-7xl px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-bold">Test Menu</div>
+        <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" 
+                class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-4">🍔 Test Hamburger Menu</h1>
+    <p class="text-white/70 mb-8">Klikněte na tlačítko pro změnu typu menu, pak otevřete hamburger ikonu v pravém horním rohu.</p>
+    
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <button onclick="testGuest()" class="p-6 bg-gray-700/50 hover:bg-gray-600/50 rounded-xl transition border border-gray-600 hover:border-gray-500">
+        <div class="text-4xl mb-2">👤</div>
+        <div class="font-bold">Guest Menu</div>
+        <div class="text-sm text-white/60 mt-1">Nepřihlášený uživatel</div>
+      </button>
+      
+      <button onclick="testCreator()" class="p-6 bg-fuchsia-700/50 hover:bg-fuchsia-600/50 rounded-xl transition border border-fuchsia-600 hover:border-fuchsia-500">
+        <div class="text-4xl mb-2">✨</div>
+        <div class="font-bold">Creator Menu</div>
+        <div class="text-sm text-white/60 mt-1">Menu pro tvůrce</div>
+      </button>
+      
+      <button onclick="testCompany()" class="p-6 bg-blue-700/50 hover:bg-blue-600/50 rounded-xl transition border border-blue-600 hover:border-blue-500">
+        <div class="text-4xl mb-2">🏢</div>
+        <div class="font-bold">Company Menu</div>
+        <div class="text-sm text-white/60 mt-1">Menu pro firmy</div>
+      </button>
+    </div>
+
+    <div id="status" class="p-6 bg-emerald-900/20 border border-emerald-500/30 rounded-xl">
+      <h2 class="font-bold mb-2 flex items-center gap-2">
+        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+        Status:
+      </h2>
+      <div id="statusContent" class="text-sm text-white/90">Klikněte na tlačítko pro test...</div>
+    </div>
+    
+    <div class="mt-8 p-6 bg-white/5 rounded-xl border border-white/10">
+      <h2 class="font-bold mb-3">📋 Kontrolní seznam:</h2>
+      <ul class="space-y-2 text-sm text-white/70">
+        <li id="check1" class="flex items-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 rounded"></span>
+          Hamburger ikona se rotuje při otevření
+        </li>
+        <li id="check2" class="flex items-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 rounded"></span>
+          Menu panel vyjedečkuje zleva
+        </li>
+        <li id="check3" class="flex items-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 rounded"></span>
+          Položky menu se postupně objevují
+        </li>
+        <li id="check4" class="flex items-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 rounded"></span>
+          Ikony mají správné barvy při hoveru
+        </li>
+        <li id="check5" class="flex items-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 rounded"></span>
+          U Creator/Company je zobrazena user sekce
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Mobilní menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out"></div>
+    <div class="relative h-full flex flex-col items-stretch">
+      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-2xl -translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">
+        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
+          <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-extrabold">Kartao.cz</div>
+              <div class="text-xs text-white/60 -mt-0.5">Test</div>
+            </div>
+          </a>
+          <button id="menuClose" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-red-500/20 hover:border-red-500/50 hover:scale-110 active:scale-95 flex items-center justify-center transition-all duration-200">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Dynamický obsah menu -->
+        <div id="menuContent">
+          <!-- Menu bude vygenerováno JavaScriptem -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="hamburger-menu.js"></script>
+  
+  <script>
+    function updateStatus(message) {
+      document.getElementById('statusContent').textContent = message;
+    }
+
+    function testGuest() {
+      updateStatus('Inicializace Guest menu...');
+      try {
+        window.HamburgerMenu.init('guest');
+        updateStatus('✓ Guest menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
+        lucide.createIcons();
+      } catch (error) {
+        updateStatus('✗ Chyba: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    function testCreator() {
+      updateStatus('Inicializace Creator menu...');
+      try {
+        window.HamburgerMenu.init('creator', {
+          name: 'Jan Novák',
+          handle: 'jannovak',
+          avatar_url: 'https://i.pravatar.cc/150?img=12'
+        });
+        updateStatus('✓ Creator menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
+        lucide.createIcons();
+      } catch (error) {
+        updateStatus('✗ Chyba: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    function testCompany() {
+      updateStatus('Inicializace Company menu...');
+      try {
+        window.HamburgerMenu.init('company', {
+          name: 'ACME Corp',
+          handle: 'acmecorp',
+          avatar_url: 'https://i.pravatar.cc/150?img=5'
+        });
+        updateStatus('✓ Company menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
+        lucide.createIcons();
+      } catch (error) {
+        updateStatus('✗ Chyba: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    // Auto init s guest
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStatus('Inicializace defaultního menu...');
+      testGuest();
+    });
+  </script>
+</body>
+</html>
