@@ -759,7 +759,16 @@
 
         <select id="category" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
           <option value="all">Vše</option>
-          <!-- Kategorie se načtou dynamicky z databáze -->
+          <option>Fashion</option>
+          <option>Beauty</option>
+          <option>Fitness</option>
+          <option>Lifestyle</option>
+          <option>Gaming</option>
+          <option>Tech</option>
+          <option>Food</option>
+          <option>Travel</option>
+          <option>Auto</option>
+          <option>Music</option>
         </select>
 
         <select id="city" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
@@ -1263,8 +1272,7 @@
       if (['sum', 'max'].includes(md)) state.mode = md;
 
       const cat = qs.get('category');
-      // Akceptujeme jakoukoli kategorii z URL (budou načteny dynamicky z DB)
-      if (cat) {
+      if (['all', 'Fashion', 'Beauty', 'Fitness', 'Lifestyle', 'Gaming', 'Tech', 'Food', 'Travel', 'Auto', 'Music'].includes(cat)) {
         state.category = cat;
       }
 
@@ -1329,61 +1337,46 @@
        NAČTENÍ TVŮRCŮ ZE SUPABASE
     ========================== */
     /* ==========================
-       DYNAMICKÉ NAČÍTÁNÍ MĚST A KATEGORIÍ (OPTIMALIZOVÁNO)
+       DYNAMICKÉ NAČÍTÁNÍ MĚST (OPTIMALIZOVÁNO)
     ========================== */
-    let filtersCache = { cities: null, categories: null };
+    let citiesCache = null;
 
-    async function loadFiltersData() {
-      if (!window.supabaseClient) return { cities: [], categories: [] };
+    async function loadCitiesData() {
+      if (!window.supabaseClient) return [];
 
       try {
-        // Paralelní načtení měst a kategorií - RYCHLEJŠÍ!
-        const [citiesResult, categoriesResult] = await Promise.all([
-          window.supabaseClient
-            .from('creators')
-            .select('city')
-            .not('city', 'is', null)
-            .order('city', { ascending: true }),
-          window.supabaseClient
-            .from('creators')
-            .select('category')
-            .not('category', 'is', null)
-            .order('category', { ascending: true })
-        ]);
+        // Načtení měst z databáze
+        const { data, error } = await window.supabaseClient
+          .from('creators')
+          .select('city')
+          .not('city', 'is', null)
+          .order('city', { ascending: true });
+
+        if (error) throw error;
 
         const cities = [...new Set(
-          (citiesResult.data || [])
+          (data || [])
             .map(item => item.city)
             .filter(city => city && city.trim())
         )].sort((a, b) => a.localeCompare(b, 'cs'));
 
-        const categories = [...new Set(
-          (categoriesResult.data || [])
-            .map(item => item.category)
-            .filter(cat => cat && cat.trim())
-        )].sort((a, b) => a.localeCompare(b, 'cs'));
-
         // Uložíme do cache
-        filtersCache = { cities, categories };
+        citiesCache = cities;
         
-        console.log('✅ Načteno filtrů:', cities.length, 'měst,', categories.length, 'kategorií');
-        return { cities, categories };
+        console.log('✅ Načteno měst:', cities.length);
+        return cities;
       } catch (error) {
-        console.error('Chyba při načítání filtrů:', error);
-        return { cities: [], categories: [] };
+        console.error('Chyba při načítání měst:', error);
+        return [];
       }
     }
 
-    async function populateFilters() {
+    async function populateCities() {
       const citySelect = document.getElementById('city');
-      const categorySelect = document.getElementById('category');
-      
-      if (!citySelect || !categorySelect) return;
+      if (!citySelect) return;
 
       // Použij cache nebo načti znovu
-      const { cities, categories } = filtersCache.cities 
-        ? filtersCache 
-        : await loadFiltersData();
+      const cities = citiesCache || await loadCitiesData();
 
       // Naplň města
       const currentCity = citySelect.value;
@@ -1396,19 +1389,6 @@
       });
       if (currentCity && cities.includes(currentCity)) {
         citySelect.value = currentCity;
-      }
-
-      // Naplň kategorie
-      const currentCategory = categorySelect.value;
-      categorySelect.innerHTML = '<option value="all">Vše</option>';
-      categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categorySelect.appendChild(option);
-      });
-      if (currentCategory && categories.includes(currentCategory)) {
-        categorySelect.value = currentCategory;
       }
     }
 
@@ -2191,8 +2171,8 @@
       syncInputsFromState();
       writeQS();
       
-      // RYCHLE načteme filtry (města a kategorie) - jen lehký dotaz
-      await populateFilters();
+      // RYCHLE načteme města z databáze - jen lehký dotaz
+      await populateCities();
       
       // Zobrazíme prázdný grid zatím
       render();
