@@ -238,16 +238,5 @@ class CreditsSystemSupabase {
 // ==========================================
 // GLOBÁLNÍ INSTANCE
 // ==========================================
-
-window.creditsSystem = new CreditsSystemSupabase();
-
-// Auto-init po přihlášení
-if (window.kartaoAuth) {
-  window.kartaoAuth.onAuthStateChanged((user) => {
-    if (user) {
-      window.creditsSystem.init(user.id);
-    } else {
-      window.creditsSystem.destroy();
-    }
-  });
-}
+// Inicializace se provádí v auth-unified.js po načtení profilu
+// window.kreditsSystem = new CreditsSystemSupabase();

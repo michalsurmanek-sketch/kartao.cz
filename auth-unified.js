@@ -69,17 +69,30 @@
     
     window.kartaoAuth.user = user;
     
-    // Načíst profil z DB
+    // Načíst profil z DB (zkusit creators, pak firms)
     try {
-      const { data: profile, error } = await window.supabaseClient
-        .from('profiles')
+      // Nejprve zkusit creators
+      let { data: profile, error } = await window.supabaseClient
+        .from('creators')
         .select('*')
-        .eq('id', user.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
       
-      if (!error && profile) {
+      // Pokud není v creators, zkusit firms
+      if (!profile) {
+        const firmResult = await window.supabaseClient
+          .from('firms')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        profile = firmResult.data;
+        error = firmResult.error;
+      }
+      
+      if (profile) {
         window.kartaoAuth.profile = profile;
-        console.log('🔐 Auth Unified: Profile loaded:', profile.handle || profile.email);
+        console.log('🔐 Auth Unified: Profile loaded:', profile.handle || profile.email || profile.name);
         
         // Inicializovat Credits System
         if (typeof CreditsSystemSupabase !== 'undefined') {
@@ -110,8 +123,9 @@
           }
         }
       } else {
-        console.warn('🔐 Auth Unified: No profile found, creating...');
-        await createProfile(user);
+        console.warn('🔐 Auth Unified: No profile found in creators or firms');
+        // Není potřeba vytvářet profil - uživatel si ho vytvoří sám přes registraci
+        window.kartaoAuth.profile = null;
       }
     } catch (err) {
       console.error('🔐 Auth Unified: Profile load error:', err);
@@ -122,30 +136,13 @@
   }
 
   // ==========================================
-  // CREATE PROFILE - vytvořit profil pokud neexistuje
+  // CREATE PROFILE - není potřeba, uživatel se registruje přes formulář
   // ==========================================
   
   async function createProfile(user) {
-    const handle = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
-    
-    const { data, error } = await window.supabaseClient
-      .from('profiles')
-      .insert({
-        id: user.id,
-        email: user.email,
-        handle: handle,
-        is_company: false,
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-    
-    if (!error && data) {
-      window.kartaoAuth.profile = data;
-      console.log('🔐 Auth Unified: Profile created');
-    } else {
-      console.error('🔐 Auth Unified: Profile creation failed:', error);
-    }
+    // Tato funkce už není potřeba - profily se vytváří při registraci
+    console.warn('🔐 Auth Unified: createProfile() je deprecated - uživatel nemá profil v DB');
+    window.kartaoAuth.profile = null;
   }
 
   // ==========================================
@@ -201,7 +198,7 @@
   // ==========================================
   
   function updateUI(user, profile) {
-    console.log('🔐 Auth Unified: Updating UI');
+    console.log('🔐 Auth Unified: Updating UI, user:', user ? user.email : 'none', 'profile:', !!profile);
     
     // 1. HEADER BUTTONS
     const loginBtn = document.getElementById('loginBtn');
@@ -210,8 +207,8 @@
     const userMenuMobile = document.getElementById('userMenuMobile');
     const userName = document.getElementById('userName');
     
-    if (user && profile) {
-      // Přihlášen
+    if (user) {
+      // Přihlášen (i bez profilu)
       if (loginBtn) loginBtn.classList.add('hidden');
       if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
       if (userMenu) {
@@ -223,7 +220,8 @@
         userMenuMobile.classList.add('flex');
       }
       if (userName) {
-        userName.textContent = profile.name || profile.display_name || user.email.split('@')[0];
+        const displayName = profile?.name || profile?.display_name || user.email.split('@')[0];
+        userName.textContent = displayName;
       }
     } else {
       // Odhlášen
@@ -245,6 +243,10 @@
           };
           console.log('🔐 Auth Unified: Initializing hamburger menu as', userType);
           window.HamburgerMenu.init(userType, userData);
+        } else if (user) {
+          // Uživatel přihlášen, ale nemá profil - zobrazit jako guest
+          console.log('🔐 Auth Unified: User without profile, showing as guest');
+          window.HamburgerMenu.init('guest');
         } else {
           console.log('🔐 Auth Unified: Initializing hamburger menu as guest');
           window.HamburgerMenu.init('guest');
