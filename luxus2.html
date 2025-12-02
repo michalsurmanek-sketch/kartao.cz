@@ -22,6 +22,7 @@
           },
           boxShadow: {
             'ao-soft': "0 18px 45px rgba(15,23,42,0.85)",
+            'soft': "0 8px 30px rgb(0 0 0 / 0.25)",
           },
           borderRadius: {
             '3xl': "1.75rem",
@@ -595,6 +596,44 @@
     </main>
   </div>
 
+  <!-- VIDEO OVERLAY PRO REKLAMY -->
+  <div id="adOverlay" class="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 gap-4 hidden">
+    <div class="w-full max-w-5xl">
+      <div class="relative w-full rounded-2xl overflow-hidden bg-black shadow-soft border border-white/10">
+        <video id="adVideo" class="w-full h-auto max-h-[90vh] object-contain" muted playsinline>
+          <source id="adSrc" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+        </video>
+
+        <!-- Odpočet -->
+        <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-950/80 border border-amber-300/70 shadow-soft text-xs">
+          <div class="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin"></div>
+          <div class="text-right">
+            <p class="font-medium text-white/90">Reklama běží…</p>
+            <p class="text-[11px] text-white/70">Zbývá <span id="adCountdown">5</span>s</p>
+          </div>
+        </div>
+
+        <!-- Zavřít po dokončení -->
+        <button id="closeAdButton" class="hidden absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500 text-neutral-900 text-sm font-semibold shadow-lg hover:brightness-110 transition">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>Zavřít (+4 K-Coins)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- OVLÁDACÍ PANEL VIDEA -->
+    <div id="adControlPanel" class="flex items-center gap-3 mt-2">
+      <button id="adMuteToggle" class="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white flex items-center gap-1 hover:bg-white/20 transition">
+        <i data-lucide="volume-2" class="w-4 h-4"></i>
+        Zvuk
+      </button>
+      <button id="adSkipButton" class="px-3 py-1.5 rounded-full bg-red-500/80 text-white text-xs flex items-center gap-1 hover:bg-red-500 transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+        Přeskočit (bez odměny)
+      </button>
+    </div>
+  </div>
+
   <!-- INIT IKON + jednoduchý JS pro mobil menu -->
   <script>
     // Supabase init
@@ -967,9 +1006,16 @@
         });
       }
 
-      // Watch Ad Button - spustí automaticky reklamu
+      // Watch Ad Button - spustí video overlay s reklamou
       const watchAdBtn = document.getElementById("watchAdBtn");
-      if (watchAdBtn) {
+      const adOverlay = document.getElementById("adOverlay");
+      const adVideo = document.getElementById("adVideo");
+      const adCountdown = document.getElementById("adCountdown");
+      const closeAdButton = document.getElementById("closeAdButton");
+      const adMuteToggle = document.getElementById("adMuteToggle");
+      const adSkipButton = document.getElementById("adSkipButton");
+      
+      if (watchAdBtn && adOverlay && adVideo) {
         watchAdBtn.addEventListener("click", async () => {
           // Zkontroluj denní limit
           const daily = JSON.parse(localStorage.getItem('kartao_daily_tasks') || '{}');
@@ -986,24 +1032,31 @@
             return;
           }
 
-          // Simulace reklamy
+          // Zobraz overlay a spusť video
+          adOverlay.classList.remove("hidden");
+          closeAdButton.classList.add("hidden");
+          
+          // Reset video a spusť
+          adVideo.currentTime = 0;
+          adVideo.muted = true;
+          adVideo.play();
+
+          // Odpočet
           const adDuration = 5; // 5 sekund
           let countdown = adDuration;
+          adCountdown.textContent = countdown;
           
-          watchAdBtn.disabled = true;
-          watchAdBtn.innerHTML = `Sleduj reklamu... ${countdown}s`;
-
           const interval = setInterval(() => {
             countdown--;
             if (countdown > 0) {
-              watchAdBtn.innerHTML = `Sleduj reklamu... ${countdown}s`;
+              adCountdown.textContent = countdown;
             } else {
               clearInterval(interval);
               
               // Přičti odměnu
               const reward = 4; // 4 K-Coins za reklamu
               
-              if (window.creditSys && currentCreator) {
+              if (currentCreator) {
                 // Update v Supabase
                 const newCredits = (currentCreator.credits || 0) + reward;
                 supabase.from('creators').update({ credits: newCredits }).eq('id', currentUser.id).then(() => {
@@ -1022,13 +1075,46 @@
               }
               localStorage.setItem('kartao_daily_tasks', JSON.stringify(updatedDaily));
 
-              watchAdBtn.disabled = false;
-              watchAdBtn.innerHTML = 'Reklamní odměny';
-              
-              alert(`Gratulujeme! 🎉\n\nZískáváš ${reward} K-Coins za zhlédnutí reklamy!\n\nDnes shlédnuto: ${updatedDaily.adsWatched}/${maxAds}`);
+              // Zobraz tlačítko zavřít
+              closeAdButton.classList.remove("hidden");
+              adVideo.pause();
             }
           }, 1000);
         });
+
+        // Zvuk toggle
+        if (adMuteToggle) {
+          adMuteToggle.addEventListener("click", () => {
+            adVideo.muted = !adVideo.muted;
+            const icon = adMuteToggle.querySelector('[data-lucide]');
+            if (icon) {
+              icon.setAttribute('data-lucide', adVideo.muted ? 'volume-x' : 'volume-2');
+              lucide.createIcons();
+            }
+          });
+        }
+
+        // Zavřít s odměnou
+        if (closeAdButton) {
+          closeAdButton.addEventListener("click", () => {
+            adOverlay.classList.add("hidden");
+            adVideo.pause();
+            
+            const daily = JSON.parse(localStorage.getItem('kartao_daily_tasks') || '{}');
+            const today = new Date().toISOString().split('T')[0];
+            const watched = (daily.date === today) ? (daily.adsWatched || 0) : 0;
+            
+            alert(`Gratulujeme! 🎉\n\nZískáváš 4 K-Coins za zhlédnutí reklamy!\n\nDnes shlédnuto: ${watched}/5`);
+          });
+        }
+
+        // Přeskočit bez odměny
+        if (adSkipButton) {
+          adSkipButton.addEventListener("click", () => {
+            adOverlay.classList.add("hidden");
+            adVideo.pause();
+          });
+        }
       }
 
       // Check auth

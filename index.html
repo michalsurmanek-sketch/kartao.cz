@@ -28,11 +28,8 @@
   
   <link rel="canonical" href="https://www.kartao.cz/" />
   
-  <!-- === FIREBASE COMPAT KNIHOVNY === -->
+  <!-- === SUPABASE === -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src=""></script>
-  <script src=""></script>
-  <script src=""></script>
 
   <!-- KONFIGURACE + INIT -->
   <script src="supabase-config.js"></script>
@@ -48,8 +45,7 @@
 
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
-  <link rel="dns-prefetch" href="https://www.gstatic.com" />
-  <link rel="dns-prefetch" href="https://firebaseapp.com" />
+  <link rel="dns-prefetch" href="https://hrmrgudiindtnfaaiyyg.supabase.co" />
   
   <!-- Preload kritických zdrojů -->
   <link rel="preload" href="https://cdn.tailwindcss.com" as="script" />
@@ -1171,10 +1167,8 @@
   </button>
      <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
-  <!-- Firebase knihovny -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src=""></script>
-  <script src=""></script>
 
   <!-- Konfigurace + sjednocený INIT -->
   <script src="supabase-config.js"></script>
@@ -2281,10 +2275,10 @@
 
   <!-- Tlačítko založit kartu - funkce + desktop auth blok -->
   <script>
-    function goToCreateCard() {
+    async function goToCreateCard() {
       try {
-        if (window.firebase && firebase.auth) {
-          const user = window.auth.currentUser;
+        if (window.supabaseClient) {
+          const { data: { user } } = await window.supabaseClient.auth.getUser();
           if (user) {
             window.location.href = 'zalozit-kartu.html';
             return;
@@ -2296,10 +2290,12 @@
       window.location.href = 'login.html';
     }
 
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      kartaoAuth.onAuthStateChanged(user => {
+    if (window.supabaseClient) {
+      // Auth state listener
+      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
         const notLoggedIn = document.getElementById('desktop-not-logged-in');
         const loggedIn = document.getElementById('desktop-logged-in');
+        const user = session?.user;
 
         if (user) {
           if (notLoggedIn) notLoggedIn.classList.add('hidden');
@@ -2309,10 +2305,17 @@
           const userEmail = document.getElementById('desktop-user-email');
           const userAvatar = document.getElementById('desktop-user-avatar');
 
-          if (userName) userName.textContent = user.displayName || 'Uživatel';
+          // Načti creator data pro jméno
+          const { data: creator } = await window.supabaseClient
+            .from('creators')
+            .select('name')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (userName) userName.textContent = creator?.name || user.email?.split('@')[0] || 'Uživatel';
           if (userEmail) userEmail.textContent = user.email || '';
           if (userAvatar) {
-            const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+            const initial = (creator?.name || user.email || '?')[0].toUpperCase();
             userAvatar.textContent = initial;
           }
         } else {
@@ -2326,7 +2329,7 @@
         if (desktopLogoutBtn) {
           desktopLogoutBtn.addEventListener('click', async () => {
             try {
-              await kartaoAuth.logout();
+              await window.supabaseClient.auth.signOut();
               window.location.reload();
             } catch (error) {
               console.error('Chyba při odhlášení:', error);
@@ -2547,29 +2550,38 @@
   // Dočasná funkce – vytvoří první kartu tvůrce z aktuálně přihlášeného uživatele
   async function createMyCreatorProfile() {
     try {
-      if (!window.firebase || !firebase.auth || !window.db) {
-        alert('Firebase není inicializovaný – zkontroluj supabase-init.js');
+      if (!window.supabaseClient) {
+        alert('Supabase není inicializovaný – zkontroluj supabase-init.js');
         return;
       }
 
-      const user = window.auth.currentUser;
-      if (!user) {
+      const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+      
+      if (authError || !user) {
         alert('Nejdřív se přihlas, pak zkus znovu.');
         window.location.href = 'login.html';
         return;
       }
 
-      const uid = user.uid;
       const email = user.email || '';
-      const baseHandle =
-        (user.displayName ||
-          (email ? email.split('@')[0] : 'influencer')) // základ pro handle
-          .toLowerCase()
-          .replace(/[^a-z0-9._]/g, '');
+      const baseHandle = (email ? email.split('@')[0] : 'influencer')
+        .toLowerCase()
+        .replace(/[^a-z0-9._]/g, '');
 
-      const now = Date.now();
+      // Zkontroluj, jestli už profil existuje
+      const { data: existing } = await window.supabaseClient
+        .from('creators')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
 
-      const docRef = db.collection('creators').doc(uid);
+      if (existing) {
+        alert('✅ Tvoje karta už existuje!');
+        window.location.reload();
+        return;
+      }
+
+      const now = new Date().toISOString();
 
       await docRef.set(
         {
@@ -2630,7 +2642,10 @@
       );
 
       alert('✅ Tvoje karta tvůrce byla vytvořena. Obnov stránku (F5), aby se načetla do marketplace.');
-      console.log('Karta tvůrce vytvořena pro UID:', uid);
+      console.log('Karta tvůrce vytvořena pro ID:', user.id);
+      
+      setTimeout(() => window.location.reload(), 1000);
+      
     } catch (err) {
       console.error('Chyba při vytváření první karty:', err);
       alert('❌ Chyba při vytváření karty – koukni do konzole (F12 → Console).');
