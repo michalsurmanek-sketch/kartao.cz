@@ -1278,7 +1278,150 @@
     ========================== */
     // Města jsou přímo v HTML - žádné načítání z DB potřeba!
 
-    async function loadAllCreators() {
+    /* ==========================
+       DATA HELPERS - Utility funkce
+    ========================== */
+    const DataHelpers = {
+      formatFollowers(n) {
+        if (typeof n !== 'number') return '0';
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+        return n.toString();
+      },
+      
+      calculateTotalFollowers(metrics, mode = 'sum') {
+        if (!metrics || typeof metrics !== 'object') return 0;
+        
+        const values = Object.values(metrics)
+          .filter(m => m && m.connected && typeof m.followers === 'number')
+          .map(m => m.followers);
+        
+        if (values.length === 0) return 0;
+        
+        if (mode === 'max') {
+          return Math.max(...values);
+        } else {
+          // sum
+          return values.reduce((sum, val) => sum + val, 0);
+        }
+      }
+    };
+
+    /* ==========================
+       INLINE SERVICES PRO SUPABASE
+       (Náhrada za Firebase verze z api-services.js)
+    ========================== */
+    
+    // ReviewService - Supabase verze
+    const ReviewServiceSupabase = {
+      async getCreatorReviews(creatorId, limit = 10) {
+        if (!window.supabaseClient) {
+          console.warn('Supabase není inicializováno');
+          return [];
+        }
+        
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .select('*')
+            .eq('creator_id', creatorId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+          
+          if (error) {
+            console.error('Chyba při načítání recenzí:', error);
+            return [];
+          }
+          
+          return (data || []).map(review => ({
+            id: review.id,
+            companyName: review.company_name || 'Anonymní firma',
+            companyLogo: review.company_logo || null,
+            rating: review.rating || 0,
+            title: review.title || '',
+            comment: review.comment || '',
+            verified: review.verified || false,
+            helpful: review.helpful_count || 0,
+            createdAt: review.created_at
+          }));
+        } catch (err) {
+          console.error('Neočekávaná chyba při načítání recenzí:', err);
+          return [];
+        }
+      },
+      
+      renderStars(rating) {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+          if (i <= rating) {
+            stars.push('<i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>');
+          } else {
+            stars.push('<i data-lucide="star" class="w-3 h-3 text-white/20"></i>');
+          }
+        }
+        return stars.join('');
+      },
+      
+      formatDate(dateString) {
+        if (!dateString) return '—';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('cs-CZ', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+    };
+    
+    // ChatService - Supabase verze
+    const ChatServiceSupabase = {
+      async getOrCreateConversation(userId, creatorId) {
+        if (!window.supabaseClient) {
+          console.warn('Supabase není inicializováno');
+          return null;
+        }
+        
+        try {
+          // Zkusit najít existující konverzaci
+          const { data: existing, error: findError } = await window.supabaseClient
+            .from('conversations')
+            .select('*')
+            .or(`and(user1_id.eq.${userId},user2_id.eq.${creatorId}),and(user1_id.eq.${creatorId},user2_id.eq.${userId})`)
+            .maybeSingle();
+          
+          if (existing) {
+            return existing;
+          }
+          
+          // Vytvořit novou konverzaci
+          const { data: newConv, error: createError } = await window.supabaseClient
+            .from('conversations')
+            .insert({
+              user1_id: userId,
+              user2_id: creatorId,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          
+          if (createError) {
+            console.error('Chyba při vytváření konverzace:', createError);
+            return null;
+          }
+          
+          return newConv;
+        } catch (err) {
+          console.error('Neočekávaná chyba při práci s konverzací:', err);
+          return null;
+        }
+      }
+    };
+
+    async function loadAllCreators(retryCount = 0) {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 1000;
+      
       if (isLoading) {
         console.log('⏳ Už načítám, přeskakuji...');
         return;
@@ -1286,16 +1429,46 @@
       
       console.log('🔍 Kontrola Supabase:', typeof window.supabaseClient);
       
+      // Čekání na Supabase client s timeoutem
       if (typeof window.supabaseClient === 'undefined') {
-        console.error('❌ Supabase není inicializováno!');
-        allCreators = [];
-        return;
+        if (retryCount < MAX_RETRIES) {
+          console.log(`⏳ Supabase ještě není připraven, čekám... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return loadAllCreators(retryCount + 1);
+        } else {
+          console.error('❌ Supabase se nepodařilo inicializovat po', MAX_RETRIES, 'pokusech');
+          allCreators = [];
+          isLoading = false;
+          
+          // Zobrazit chybovou hlášku uživateli
+          const grid = document.getElementById('grid');
+          const loading = document.getElementById('loading');
+          if (loading) loading.classList.add('hidden');
+          if (grid) {
+            grid.innerHTML = `
+              <div class="col-span-full p-8 text-center border border-red-500/20 rounded-xl bg-red-500/10">
+                <i data-lucide="alert-circle" class="w-12 h-12 mx-auto mb-3 text-red-400"></i>
+                <h3 class="text-lg font-bold mb-2">Nepodařilo se načíst databázi</h3>
+                <p class="text-white/70 mb-4">Zkuste prosím obnovit stránku</p>
+                <button onclick="location.reload()" class="btn btn-primary">
+                  <i data-lucide="refresh-cw" class="w-4 h-4"></i> Obnovit stránku
+                </button>
+              </div>
+            `;
+            if (window.lucide?.createIcons) lucide.createIcons();
+          }
+          return;
+        }
       }
 
       isLoading = true;
       const startTime = performance.now();
       
       console.log('📥 Načítám tvůrce z databáze...');
+      
+      // Zobrazit loading indikátor
+      const loading = document.getElementById('loading');
+      if (loading) loading.classList.remove('hidden');
 
       try {
         console.log('📡 Dotaz do Supabase...');
@@ -1309,6 +1482,15 @@
 
         if (error) {
           console.error('❌ Chyba při načítání tvůrců ze Supabase:', error);
+          
+          // Retry při síťové chybě
+          if (retryCount < MAX_RETRIES && (error.code === 'PGRST301' || error.message.includes('network'))) {
+            console.log(`🔄 Opakuji dotaz... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+            isLoading = false;
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return loadAllCreators(retryCount + 1);
+          }
+          
           allCreators = [];
         } else {
           // Mapujeme Supabase strukturu na očekávaný formát
@@ -1360,13 +1542,57 @@
           console.log('✅ Načteno tvůrců ze Supabase:', allCreators.length);
           const loadTime = (performance.now() - startTime).toFixed(2);
           console.log(`⚡ Rychlost načítání: ${loadTime}ms`);
+          
+          // Pokud databáze je prázdná, zobrazit varování
+          if (allCreators.length === 0) {
+            console.warn('⚠️ Databáze neobsahuje žádné tvůrce');
+            const grid = document.getElementById('grid');
+            if (grid) {
+              grid.innerHTML = `
+                <div class="col-span-full p-8 text-center border border-amber-500/20 rounded-xl bg-amber-500/10">
+                  <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 text-amber-400"></i>
+                  <h3 class="text-lg font-bold mb-2">Databáze je prázdná</h3>
+                  <p class="text-white/70 mb-4">Momentálně nemáme žádné tvůrce v databázi.</p>
+                  <p class="text-white/60 text-sm">Zkuste to prosím později.</p>
+                </div>
+              `;
+              if (window.lucide?.createIcons) lucide.createIcons();
+            }
+          }
         }
       } catch (error) {
-        console.error('Chyba při načítání tvůrců ze Supabase:', error);
+        console.error('💥 Neočekávaná chyba při načítání tvůrců:', error);
+        
+        // Retry při neočekávané chybě
+        if (retryCount < MAX_RETRIES) {
+          console.log(`🔄 Opakuji po neočekávané chybě... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+          isLoading = false;
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return loadAllCreators(retryCount + 1);
+        }
+        
         allCreators = [];
+        
+        // Zobrazit error uživateli
+        const grid = document.getElementById('grid');
+        if (grid) {
+          grid.innerHTML = `
+            <div class="col-span-full p-8 text-center border border-red-500/20 rounded-xl bg-red-500/10">
+              <i data-lucide="x-circle" class="w-12 h-12 mx-auto mb-3 text-red-400"></i>
+              <h3 class="text-lg font-bold mb-2">Chyba při načítání dat</h3>
+              <p class="text-white/70 mb-4">${error.message || 'Neznámá chyba'}</p>
+              <button onclick="location.reload()" class="btn btn-primary">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Zkusit znovu
+              </button>
+            </div>
+          `;
+          if (window.lucide?.createIcons) lucide.createIcons();
+        }
       } finally {
         isLoading = false;
-        console.log('✅ Načítání dokončeno, volám render()');
+        const loading = document.getElementById('loading');
+        if (loading) loading.classList.add('hidden');
+        console.log('✅ Načítání dokončeno');
       }
     }
 
@@ -1800,8 +2026,7 @@
 
     async function loadCreatorReviews(creatorId) {
       try {
-        const reviewService = new ReviewService();
-        const reviews = await reviewService.getCreatorReviews(creatorId, 5);
+        const reviews = await ReviewServiceSupabase.getCreatorReviews(creatorId, 5);
 
         const loading = document.getElementById('reviewsLoading');
         const reviewsList = document.getElementById('reviewsList');
@@ -1829,7 +2054,7 @@
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-semibold text-sm">${review.companyName}</div>
                   <div class="flex items-center gap-1">
-                    ${ReviewService.renderStars(review.rating)}
+                    ${ReviewServiceSupabase.renderStars(review.rating)}
                   </div>
                 </div>
                 ${
@@ -1839,7 +2064,7 @@
                 }
                 <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
                 <div class="flex items-center justify-between mt-2 text-xs text-white/50">
-                  <span>${ReviewService.formatDate(review.createdAt)}</span>
+                  <span>${ReviewServiceSupabase.formatDate(review.createdAt)}</span>
                   <div class="flex items-center gap-3">
                     ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
                     <span>${review.helpful || 0} užitečné</span>
@@ -1866,7 +2091,14 @@
     }
 
     async function startChat(creatorId) {
-      const user = window.auth.currentUser;
+      // Zkontrolovat přihlášení přes Supabase
+      if (!window.supabaseClient) {
+        alert('Systém není připraven, zkuste to prosím později');
+        return;
+      }
+      
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      
       if (!user) {
         alert('Pro psaní zpráv se musíte přihlásit');
         window.location.href = 'login.html';
@@ -1874,8 +2106,7 @@
       }
 
       try {
-        const chatService = new ChatService();
-        const conversation = await chatService.getOrCreateConversation(user.uid, creatorId);
+        const conversation = await ChatServiceSupabase.getOrCreateConversation(user.id, creatorId);
 
         if (conversation) {
           window.location.href = `chat.html?conversation=${conversation.id}&user=${creatorId}`;
@@ -2128,10 +2359,32 @@
         });
       }
       if (minFollowersInput) {
+        // Validace - pouze kladná čísla
         minFollowersInput.addEventListener('input', async e => {
           const v = e.target.value.trim();
-          state.minFollowers = v ? Number(v) : null;
+          let numValue = v ? Number(v) : null;
+          
+          // Validace
+          if (numValue !== null) {
+            if (numValue < 0) {
+              numValue = 0;
+              e.target.value = '0';
+            } else if (numValue > 100000000) {
+              // Max 100M
+              numValue = 100000000;
+              e.target.value = '100000000';
+            }
+          }
+          
+          state.minFollowers = numValue;
           await resetPageAndRender();
+        });
+        
+        // Zabránit nečíselným znakům
+        minFollowersInput.addEventListener('keypress', (e) => {
+          if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+            e.preventDefault();
+          }
         });
       }
       if (premiumOnlyInput) {
@@ -2220,15 +2473,7 @@
     /* ==========================
        AUTH LISTENER – TVŮRCI (SUPABASE)
     ========================== */
-    if (typeof window.supabaseClient !== 'undefined') {
-      // OKAMŽITÉ NAČTENÍ - maximální rychlost
-      (async () => {
-        if (!creatorService) {
-          creatorService = new CreatorService();
-          userService = new UserService();
-        }
-      })();
-    }
+    // Služby se načítají inline, není potřeba externe inicializace
   </script>
 
   <!-- Tlačítko založit kartu - funkce + desktop auth blok -->

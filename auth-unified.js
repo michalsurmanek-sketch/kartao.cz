@@ -80,6 +80,35 @@
       if (!error && profile) {
         window.kartaoAuth.profile = profile;
         console.log('🔐 Auth Unified: Profile loaded:', profile.handle || profile.email);
+        
+        // Inicializovat Credits System
+        if (typeof CreditsSystemSupabase !== 'undefined') {
+          try {
+            if (!window.kreditsSystem) {
+              window.kreditsSystem = new CreditsSystemSupabase();
+            }
+            await window.kreditsSystem.init(user.id);
+            
+            // Nastavit callback pro update UI
+            window.kreditsSystem.onChange((credits) => {
+              const creditsEl = document.getElementById('userCredits');
+              if (creditsEl) {
+                creditsEl.textContent = credits.toLocaleString('cs-CZ');
+              }
+            });
+            
+            // První update
+            const currentCredits = window.kreditsSystem.getCredits();
+            const creditsEl = document.getElementById('userCredits');
+            if (creditsEl) {
+              creditsEl.textContent = currentCredits.toLocaleString('cs-CZ');
+            }
+            
+            console.log('💰 Credits System inicializován, kredity:', currentCredits);
+          } catch (creditsErr) {
+            console.error('⚠️ Chyba při inicializaci kredity systému:', creditsErr);
+          }
+        }
       } else {
         console.warn('🔐 Auth Unified: No profile found, creating...');
         await createProfile(user);
@@ -125,6 +154,24 @@
   
   function clearUser() {
     console.log('🔐 Auth Unified: Clearing user');
+    
+    // Cleanup Credits System
+    if (window.kreditsSystem) {
+      try {
+        window.kreditsSystem.destroy();
+        window.kreditsSystem = null;
+        console.log('💰 Credits System cleanup completed');
+      } catch (err) {
+        console.error('⚠️ Chyba při cleanup kredity systému:', err);
+      }
+    }
+    
+    // Reset kredity v UI
+    const creditsEl = document.getElementById('userCredits');
+    if (creditsEl) {
+      creditsEl.textContent = '0';
+    }
+    
     window.kartaoAuth.user = null;
     window.kartaoAuth.profile = null;
     window.kartaoAuth.isReady = true;
@@ -188,19 +235,25 @@
     
     // 2. HAMBURGER MENU
     if (typeof window.HamburgerMenu !== 'undefined') {
-      if (user && profile) {
-        const userType = profile.is_company ? 'company' : 'creator';
-        const userData = {
-          name: profile.name || profile.display_name || user.email.split('@')[0],
-          handle: profile.handle,
-          avatar_url: profile.avatar_url
-        };
-        console.log('🔐 Auth Unified: Initializing hamburger menu as', userType);
-        window.HamburgerMenu.init(userType, userData);
-      } else {
-        console.log('🔐 Auth Unified: Initializing hamburger menu as guest');
-        window.HamburgerMenu.init('guest');
+      try {
+        if (user && profile) {
+          const userType = profile.is_company ? 'company' : 'creator';
+          const userData = {
+            name: profile.name || profile.display_name || user.email.split('@')[0],
+            handle: profile.handle,
+            avatar_url: profile.avatar_url
+          };
+          console.log('🔐 Auth Unified: Initializing hamburger menu as', userType);
+          window.HamburgerMenu.init(userType, userData);
+        } else {
+          console.log('🔐 Auth Unified: Initializing hamburger menu as guest');
+          window.HamburgerMenu.init('guest');
+        }
+      } catch (err) {
+        console.error('🔐 Auth Unified: Chyba při inicializaci hamburger menu:', err);
       }
+    } else {
+      console.warn('🔐 Auth Unified: HamburgerMenu není k dispozici');
     }
     
     // 3. LUCIDE ICONS
