@@ -915,26 +915,11 @@
     });
   </script>
   
-  <!-- Hamburger Menu -->
-  <script src="hamburger-menu.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-<script src="auth-header.js"></script>
-  <script src="credits-system.js"></script>
-  <script src="credits-header.js"></script>
-
-  <!-- ==========================================
-       KARTAO CORE - CORRECT LOADING ORDER
-       ========================================== -->
-  
-  <!-- 1. Supabase Init (must be first!) -->
+  <!-- Supabase + Unified Auth -->
   <script src="supabase-init.js"></script>
-  
-  <!-- 2. Auth Setup -->
-  <script src="auth-supabase.js"></script>
-  
-  <!-- 3. Hamburger Menu Generator -->
+  <script src="auth-unified.js"></script>
+  <script src="hamburger-menu.js"></script>
+  <script src="credits-system-supabase.js"></script>
   <script src="hamburger-menu.js"></script>
   
   <!-- 4. Core Loader - orchestrates everything -->

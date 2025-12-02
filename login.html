@@ -145,7 +145,7 @@
             <li class="flex items-start gap-2">
               <span class="mt-0.5 text-emerald-400">●</span>
               <div>
-                <span class="font-semibold text-slate-50">Bezpečné přihlášení</span> – hesla se ukládají v Firebase, Kartao.cz je nikdy nevidí.
+                <span class="font-semibold text-slate-50">Bezpečné přihlášení</span> – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.
               </div>
             </li>
             <li class="flex items-start gap-2">
@@ -165,7 +165,7 @@
           <div class="mt-auto flex flex-wrap items-center gap-3 pt-2">
             <div class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400 ring-1 ring-slate-700/80">
               <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400/10 text-[11px]">🔒</span>
-              Firebase Authentication
+              Supabase Authentication
             </div>
             <span class="text-[11px] text-slate-500">
               Po přihlášení tě přesměrujeme na správný dashboard podle role.
@@ -297,7 +297,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <span class="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2.5 py-1 ring-1 ring-slate-700/80">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-            <span>Bezpečné přihlášení přes Firebase</span>
+            <span>Bezpečné přihlášení přes Supabase</span>
           </span>
           <a href="#" class="hover:text-slate-300">Podmínky použití</a>
         </div>
@@ -305,8 +305,6 @@
     </footer>
   </div>
 
-  <!-- Firebase SDK (musí být před firebase-config/init) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 

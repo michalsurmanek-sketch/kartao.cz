@@ -434,7 +434,7 @@
       </nav>
 
       <div class="hidden md:flex items-center gap-3">
-  <!-- Přihlášen - zobrazí se po načtení Firebase -->
+  <!-- Přihlášen - zobrazí se po načtení auth -->
   <div id="userMenu" data-auth="in" class="hidden items-center gap-3">
     <!-- K-Coins zobrazení -->
     <a href="credits-dashboard.html" id="creditsDisplay" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition">
@@ -2373,51 +2373,7 @@
         initHamburgerMenu();
       }
 
-      if (typeof firebase !== 'undefined' && firebase.auth) {
-        kartaoAuth.onAuthStateChanged(user => {
-          const userMenu = document.getElementById('userMenu');
-          const loginBtn = document.getElementById('loginBtn');
-          const logoutBtn = document.getElementById('logoutBtn');
-          const userName = document.getElementById('userName');
-          const userMenuMobile = document.getElementById('userMenuMobile');
-          const loginBtnMobile = document.getElementById('loginBtnMobile');
-
-          if (user) {
-            if (userMenu) {
-              userMenu.classList.remove('hidden');
-              userMenu.classList.add('flex');
-            }
-            if (loginBtn) loginBtn.classList.add('hidden');
-            if (userMenuMobile) {
-              userMenuMobile.classList.remove('hidden');
-              userMenuMobile.classList.add('flex');
-            }
-            if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
-
-            if (userName) {
-              if (user.displayName) userName.textContent = user.displayName;
-              else if (user.email) userName.textContent = user.email.split('@')[0];
-            }
-
-            if (logoutBtn && !logoutBtn._kartaoBound) {
-              logoutBtn._kartaoBound = true;
-              logoutBtn.addEventListener('click', async () => {
-                try {
-                  await kartaoAuth.logout();
-                  window.location.reload();
-                } catch (error) {
-                  console.error('Chyba odhlášení:', error);
-                }
-              });
-            }
-          } else {
-            if (userMenu) userMenu.classList.add('hidden');
-            if (loginBtn) loginBtn.classList.remove('hidden');
-            if (userMenuMobile) userMenuMobile.classList.add('hidden');
-            if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
-          }
-        });
-      }
+      // Auth is now handled by auth-unified.js
     });
   </script>
 
