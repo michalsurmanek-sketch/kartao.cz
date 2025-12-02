@@ -2331,17 +2331,33 @@
         }
       };
 
-      // Pokud je Lucide připravené, běž hned, jinak počkej
-      if (window.lucide) {
-        initApp();
-      } else {
-        const checkLucide = setInterval(() => {
-          if (window.lucide) {
-            clearInterval(checkLucide);
+      // Počkej na Lucide i Supabase před inicializací
+      const waitForDependencies = () => {
+        if (window.lucide && window.supabaseClient) {
+          initApp();
+        } else {
+          const checkDeps = setInterval(() => {
+            if (window.lucide && window.supabaseClient) {
+              clearInterval(checkDeps);
+              initApp();
+            }
+          }, 50);
+          // Timeout po 5 sekundách
+          setTimeout(() => {
+            clearInterval(checkDeps);
+            if (!window.supabaseClient) {
+              console.error('⚠️ Supabase se nepodařilo načíst');
+            }
+            if (!window.lucide) {
+              console.error('⚠️ Lucide se nepodařilo načíst');
+            }
+            // Spusť i tak (může fungovat bez Supabase v demo režimu)
             initApp();
-          }
-        }, 50);
-      }
+          }, 5000);
+        }
+      };
+
+      waitForDependencies();
     });
 
     /* ==========================
