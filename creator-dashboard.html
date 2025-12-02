@@ -511,64 +511,56 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
-  <script src="supabase-compatibility.js"></script>
-  <script src="auth-supabase.js"></script>
-  <script src="auth-header.js"></script>
+  <script src="auth-unified.js"></script>
+  <script src="hamburger-menu.js"></script>
   <script src="credits-system-supabase.js"></script>
-  <script src="credits-header.js"></script>
 
   <script>
     // Auth check a načtení dat
     window.addEventListener('load', function() {
-      if (!window.supabaseClient && !window.sb) {
-        console.error('❌ Supabase není načtený!');
-        return;
-      }
+      // Počkat na auth-unified init
+      const checkAuth = () => {
+        if (!window.kartaoAuth.isReady) {
+          setTimeout(checkAuth, 100);
+          return;
+        }
 
-      const sb = window.supabaseClient || window.sb;
-      let currentUser = null;
-
-      kartaoAuth.onAuthStateChanged(async (user) => {
-        if (!user) {
+        if (!window.kartaoAuth.user) {
           console.log('⚠️ Uživatel není přihlášen, redirect na login');
           window.location.href = 'login.html';
           return;
         }
 
-        currentUser = user;
-        console.log('✅ Přihlášen jako:', user.email);
+        const currentUser = window.kartaoAuth.user;
+        const profile = window.kartaoAuth.profile;
+        console.log('✅ Přihlášen jako:', currentUser.email);
 
         // Načti profil
-        loadProfile(user);
+        loadProfile(currentUser, profile);
         
         // Načti statistiky
-        loadStats(user.id);
+        loadStats(currentUser.id);
         
         // Načti objednávky
-        loadOrders(user.id);
-      });
+        loadOrders(currentUser.id);
+      };
+      
+      checkAuth();
 
       // Načtení profilu
-      async function loadProfile(user) {
+      async function loadProfile(user, profile) {
         try {
-          const doc = await db.collection('creators').doc(user.uid).get();
-          if (doc.exists) {
-            const data = doc.data();
-            document.querySelector('[name="name"]').value = data.name || '';
-            document.querySelector('[name="email"]').value = data.email || user.email;
-            document.querySelector('[name="city"]').value = data.city || '';
-            document.querySelector('[name="category"]').value = data.category || '';
-            document.querySelector('[name="bio"]').value = data.bio || '';
-            document.getElementById('userName').textContent = data.name || 'Tvůrče';
-
-            // Načti metriky
-            if (data.metrics) {
-              updateSocialMetrics(data.metrics);
-            }
+          if (profile) {
+            document.querySelector('[name="name"]').value = profile.full_name || '';
+            document.querySelector('[name="email"]').value = profile.email || user.email;
+            document.querySelector('[name="city"]').value = profile.city || '';
+            document.querySelector('[name="category"]').value = profile.category || '';
+            document.querySelector('[name="bio"]').value = profile.bio || '';
+            document.getElementById('userName').textContent = profile.full_name || profile.handle || 'Tvůrče';
           } else {
             // Nový uživatel
             document.querySelector('[name="email"]').value = user.email;
-            document.getElementById('userName').textContent = user.displayName || 'Tvůrče';
+            document.getElementById('userName').textContent = user.email.split('@')[0];
           }
         } catch (error) {
           console.error('Chyba načítání profilu:', error);

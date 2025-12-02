@@ -38,6 +38,9 @@
   <!-- UNIFIED AUTH - JEDINÝ AUTH SYSTÉM -->
   <script src="auth-unified.js"></script>
   
+  <!-- HAMBURGER MENU -->
+  <script src="hamburger-menu.js"></script>
+  
   <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
 
@@ -447,13 +450,12 @@
       <i data-lucide="user" class="w-4 h-4"></i>
       <span id="userName">Můj účet</span>
     </a>
-    <!-- Odhlášení přes logout.html -->
-    <a id="logoutBtn"
-       href="logout.html"
-       class="btn btn-outline text-sm hover:bg-white/5 transition">
+    <!-- Odhlášení přes auth-unified -->
+    <button id="logoutBtn"
+       class="btn btn-outline text-sm hover:bg-white/5 transition flex items-center gap-2">
       <i data-lucide="log-out" class="w-4 h-4"></i>
       Odhlásit
-    </a>
+    </button>
   </div>
 
   <!-- Nepřihlášen -->
@@ -2295,20 +2297,7 @@
         }
       });
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const desktopLogoutBtn = document.getElementById('desktop-logout-btn');
-        if (desktopLogoutBtn) {
-          desktopLogoutBtn.addEventListener('click', async () => {
-            try {
-              await window.supabaseClient.auth.signOut();
-              window.location.reload();
-            } catch (error) {
-              console.error('Chyba při odhlášení:', error);
-              alert('Chyba při odhlášení');
-            }
-          });
-        }
-      });
+      // Auth is now handled by auth-unified.js
     }
   </script>
 
@@ -2584,24 +2573,8 @@
   </script>
 
   <!-- ==========================================
-       CORE SCRIPTS - SPRÁVNÉ POŘADÍ
+       CORE SCRIPTS - LOADED IN HEAD
        ========================================== -->
-  
-  <!-- 1. Supabase -->
-  <script src="supabase-init.js"></script>
-  
-  <!-- 2. Auth Unified - JEDINÝ AUTH SYSTÉM -->
-  <script src="auth-unified.js"></script>
-  
-  <!-- 3. Hamburger Menu -->
-  <script src="hamburger-menu.js"></script>
-  
-  <!-- 4. Lucide Icons -->
-  <script>
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-  </script>
 
 </body>
 </html>

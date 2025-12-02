@@ -526,33 +526,28 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
-  <script src="supabase-compatibility.js"></script>
-  <script src="auth-supabase.js"></script>
-  <script src="auth-header.js"></script>
+  <script src="auth-unified.js"></script>
+  <script src="hamburger-menu.js"></script>
   <script src="credits-system-supabase.js"></script>
-  <script src="credits-header.js"></script>
 
   <script>
     // Auth check a načtení dat
     window.addEventListener('load', function() {
-      const auth = window.kartaoAuth;
-      const sb = window.supabaseClient || window.sb;
-      
-      if (!auth || !sb) {
-        console.error('❌ Supabase není načtený!');
-        return;
-      }
+      // Počkat na auth-unified init
+      const checkAuth = () => {
+        if (!window.kartaoAuth.isReady) {
+          setTimeout(checkAuth, 100);
+          return;
+        }
 
-      let currentUser = null;
-
-      auth.onAuthStateChanged(async (user) => {
-        if (!user) {
+        if (!window.kartaoAuth.user) {
           console.log('⚠️ Uživatel není přihlášen, redirect na login');
           window.location.href = 'login.html';
           return;
         }
 
-        currentUser = user;
+        const currentUser = window.kartaoAuth.user;
+        const profile = window.kartaoAuth.profile;
         console.log('✅ Přihlášen jako:', user.email);
 
         // Načti profil

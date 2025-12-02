@@ -256,20 +256,27 @@
   };
 
   window.kartaoAuth.setupLogoutButtons = function() {
-    // Desktop logout
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn && !logoutBtn.dataset.listenerSet) {
-      logoutBtn.dataset.listenerSet = 'true';
-      logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-          await window.kartaoAuth.logout();
-          window.location.reload();
-        } catch (err) {
-          console.error('Logout error:', err);
-        }
-      });
-    }
+    // Desktop logout - různé ID
+    const logoutBtns = [
+      document.getElementById('logoutBtn'),
+      document.getElementById('logoutBtnDesktop'),
+      document.getElementById('desktop-logout-btn')
+    ].filter(Boolean);
+    
+    logoutBtns.forEach(logoutBtn => {
+      if (!logoutBtn.dataset.listenerSet) {
+        logoutBtn.dataset.listenerSet = 'true';
+        logoutBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          try {
+            await window.kartaoAuth.logout();
+            window.location.reload();
+          } catch (err) {
+            console.error('Logout error:', err);
+          }
+        });
+      }
+    });
     
     // Mobile logout (v menu)
     document.querySelectorAll('[data-action="logout"]').forEach(btn => {
