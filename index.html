@@ -1348,93 +1348,9 @@
        NAČTENÍ TVŮRCŮ ZE SUPABASE
     ========================== */
     /* ==========================
-       DYNAMICKÉ NAČÍTÁNÍ MĚST (OPTIMALIZOVÁNO)
+       MĚSTA - HARDCODED (MAXIMÁLNÍ RYCHLOST)
     ========================== */
-    let citiesCache = null;
-
-    async function loadCitiesData() {
-      if (!window.supabaseClient) return [];
-
-      try {
-        // Načtení měst z databáze
-        const { data, error } = await window.supabaseClient
-          .from('creators')
-          .select('city')
-          .not('city', 'is', null)
-          .order('city', { ascending: true });
-
-        if (error) throw error;
-
-        const cities = [...new Set(
-          (data || [])
-            .map(item => item.city)
-            .filter(city => city && city.trim())
-        )].sort((a, b) => a.localeCompare(b, 'cs'));
-
-        // Uložíme do cache
-        citiesCache = cities;
-        
-        console.log('✅ Načteno měst:', cities.length);
-        return cities;
-      } catch (error) {
-        console.error('Chyba při načítání měst:', error);
-        return [];
-      }
-    }
-
-    async function populateCities() {
-      const citySelect = document.getElementById('city');
-      if (!citySelect) {
-        console.warn('⚠️ City select element nenalezen');
-        return;
-      }
-
-      // Získáme města, která už jsou v selectu (hardcoded)
-      const existingCities = Array.from(citySelect.options)
-        .map(opt => opt.value)
-        .filter(val => val !== 'all');
-
-      console.log('📍 Hardcoded měst:', existingCities.length, existingCities);
-
-      // Načteme všechna města z databáze
-      const allCities = citiesCache || await loadCitiesData();
-
-      if (!allCities || allCities.length === 0) {
-        console.log('ℹ️ Zatím žádná další města v databázi');
-        return;
-      }
-
-      // Najdeme nová města, která ještě nejsou v selectu
-      const newCities = allCities.filter(city => !existingCities.includes(city));
-
-      // Uložíme aktuální výběr
-      const currentCity = citySelect.value;
-
-      // Přidáme nová města na konec (za hardcoded města)
-      if (newCities.length > 0) {
-        // Přidáme oddělovač pokud jsou nová města
-        const separator = document.createElement('option');
-        separator.disabled = true;
-        separator.textContent = '─── Další města ───';
-        citySelect.appendChild(separator);
-
-        newCities.forEach(city => {
-          const option = document.createElement('option');
-          option.value = city;
-          option.textContent = city;
-          citySelect.appendChild(option);
-        });
-
-        console.log('✅ Přidáno', newCities.length, 'nových měst k', existingCities.length, 'hlavním městům');
-      } else {
-        console.log('ℹ️ Všechna města z DB už jsou v selectu');
-      }
-
-      // Obnovíme předchozí výběr
-      if (currentCity && (existingCities.includes(currentCity) || allCities.includes(currentCity))) {
-        citySelect.value = currentCity;
-      }
-    }
+    // Města jsou přímo v HTML - žádné načítání z DB potřeba!
 
     async function loadAllCreators() {
       if (isLoading) return;
@@ -1445,11 +1361,21 @@
       }
 
       isLoading = true;
+      const startTime = performance.now();
 
       try {
         const { data, error } = await window.supabaseClient
           .from('creators')
-          .select('*')
+          .select(`
+            id, name, handle, bio, avatar_url, cover_url, gallery_urls,
+            category, city, price, rating, engagement, verified, premium, platforms,
+            facebook_connected, facebook_followers, facebook_updated_at,
+            instagram_connected, instagram_followers, instagram_updated_at,
+            youtube_connected, youtube_followers, youtube_updated_at,
+            tiktok_connected, tiktok_followers, tiktok_updated_at,
+            pinterest_connected, pinterest_followers, pinterest_updated_at,
+            created_at
+          `)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -1503,6 +1429,8 @@
             createdAt: creator.created_at ? new Date(creator.created_at).getTime() : Date.now()
           }));
           console.log('✅ Načteno tvůrců ze Supabase:', allCreators.length);
+          const loadTime = (performance.now() - startTime).toFixed(2);
+          console.log(`⚡ Rychlost načítání: ${loadTime}ms`);
         }
       } catch (error) {
         console.error('Chyba při načítání tvůrců ze Supabase:', error);
@@ -1788,20 +1716,18 @@
       const sentinel = document.getElementById('sentinel');
       const modeBadge = document.getElementById('modeBadge');
 
-      if (!grid || !empty || !loading || !totalEl || !pagination || !sentinel || !modeBadge) {
-        return;
-      }
+      if (!grid || !totalEl) return; // Minimální kontrola
 
       // Pokud se ještě načítají tvůrci, zobraz loading
-      if (isLoading) {
+      if (isLoading && loading) {
         loading.classList.remove('hidden');
-        empty.classList.add('hidden');
+        if (empty) empty.classList.add('hidden');
         grid.innerHTML = '';
         if (window.lucide?.createIcons) lucide.createIcons();
         return;
       }
       
-      loading.classList.add('hidden');
+      if (loading) loading.classList.add('hidden');
 
       const all = applyFilters();
       totalEl.textContent = String(all.length);
@@ -2195,7 +2121,7 @@
     /* ==========================
        START – DOMContentLoaded
     ========================== */
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
       readQS();
@@ -2214,11 +2140,6 @@
 
       syncInputsFromState();
       writeQS();
-      
-      // RYCHLE načteme města z databáze - jen lehký dotaz
-      await populateCities();
-      
-      // Zobrazíme prázdný grid zatím
       render();
 
       if (q) {
@@ -2372,16 +2293,13 @@
        AUTH LISTENER – TVŮRCI (SUPABASE)
     ========================== */
     if (typeof window.supabaseClient !== 'undefined') {
-      // LAZY LOADING - načte tvůrce až když je uživatel potřebuje
+      // OKAMŽITÉ NAČTENÍ - maximální rychlost
       (async () => {
-        // Počkáme chvilku, aby se stránka rychle načetla
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         if (!creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();
           
-          // Načteme tvůrce na pozadí
+          // Načteme tvůrce okamžitě
           await loadAllCreators();
           render();
         }
