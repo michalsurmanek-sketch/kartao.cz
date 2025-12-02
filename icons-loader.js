@@ -8,6 +8,9 @@
 
   console.log('🎨 Icons Loader: Starting...');
 
+  let retryCount = 0;
+  const MAX_RETRIES = 50; // Maximum 5 sekund (50 * 100ms)
+
   // Čekat na Lucide library
   function initIcons() {
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
@@ -41,8 +44,13 @@
 
       console.log('🎨 Icons Loader: Observer set up for dynamic icons');
     } else {
-      console.warn('🎨 Icons Loader: Lucide not loaded yet, retrying...');
-      setTimeout(initIcons, 100);
+      retryCount++;
+      if (retryCount < MAX_RETRIES) {
+        console.warn(`🎨 Icons Loader: Lucide not loaded yet, retrying (${retryCount}/${MAX_RETRIES})...`);
+        setTimeout(initIcons, 100);
+      } else {
+        console.error('🎨 Icons Loader: FAILED - Lucide library not loaded after 5 seconds');
+      }
     }
   }
 
