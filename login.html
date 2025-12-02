@@ -418,77 +418,186 @@
       loader.classList.toggle("hidden", !isLoading);
     }
 
-    // --- Jednotné auth funkce ---
-    function routeUser(user) {
+    // --- Jednotné auth funkce (Supabase) ---
+    async function routeUser(user) {
       if (!user) return;
-      // Role detekce zůstává stejná
+      
+      console.log('🔐 Login: Routing user after login...', user.email);
+      
+      // Přesměrování na index
       window.location.href = "index.html";
     }
 
-    kartaoAuth.onAuthStateChanged((user) => {
-      if (user) {
-        routeUser(user);
-      }
-    });
+    // Check pokud už je přihlášen
+    if (window.supabaseClient) {
+      window.supabaseClient.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          console.log('🔐 Login: User already logged in, redirecting...');
+          routeUser(user);
+        }
+      });
+    }
 
+    // LOGIN FORM
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMessage();
       setLoading(true);
+      
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
+      
+      if (!window.supabaseClient) {
+        showMessage("Supabase není inicializovaný. Zkus obnovit stránku.");
+        setLoading(false);
+        return;
+      }
+      
       try {
-        const cred = await kartaoAuth.loginWithEmail(email, password);
-        routeUser(cred.user);
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (error) throw error;
+        
+        console.log('🔐 Login: Sign in successful', data.user.email);
+        
+        // Dispatch event pro synchronizaci
+        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { 
+          detail: { user: data.user } 
+        }));
+        
+        showMessage("Přihlášení úspěšné! Přesměrování...", "success");
+        
+        setTimeout(() => {
+          routeUser(data.user);
+        }, 500);
+        
       } catch (err) {
+        console.error('🔐 Login error:', err);
+        
         let msg = "Přihlášení se nezdařilo. Zkontroluj e-mail a heslo.";
-        if (err.code === "auth/user-not-found") msg = "Účet s tímto e-mailem neexistuje.";
-        if (err.code === "auth/wrong-password") msg = "Špatné heslo.";
-        if (err.code === "auth/invalid-email") msg = "Neplatný formát e-mailu.";
-        if (err.code === "auth/unauthorized-domain") msg = "Doména není povolena ve Firebase (Authorized domains).";
-        showMessage(msg + " (" + err.code + ")");
+        
+        if (err.message?.includes("Invalid login credentials")) {
+          msg = "Neplatný e-mail nebo heslo.";
+        } else if (err.message?.includes("Email not confirmed")) {
+          msg = "E-mail nebyl potvrzen. Zkontroluj svou e-mailovou schránku.";
+        } else if (err.message?.includes("Invalid email")) {
+          msg = "Neplatný formát e-mailu.";
+        }
+        
+        showMessage(msg);
       } finally {
         setLoading(false);
       }
     });
 
+    // REGISTER FORM
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMessage();
       setLoading(true);
+      
       const email = document.getElementById("registerEmail").value.trim();
       const password = document.getElementById("registerPassword").value;
       const role = window.kartaoRole || "influencer";
+      
+      if (!window.supabaseClient) {
+        showMessage("Supabase není inicializovaný. Zkus obnovit stránku.");
+        setLoading(false);
+        return;
+      }
+      
       try {
-        const cred = await kartaoAuth.registerWithEmail(email, password, role);
-        showMessage("Účet byl úspěšně vytvořen. Probíhá přihlášení…", "success");
-        routeUser(cred.user);
+        // 1. Registrace uživatele
+        const { data, error } = await window.supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              role: role,
+              is_company: role === "firma"
+            }
+          }
+        });
+        
+        if (error) throw error;
+        
+        console.log('🔐 Register: Sign up successful', data.user?.email);
+        
+        // 2. Vytvoření profilu v databázi
+        if (data.user) {
+          const { error: profileError } = await window.supabaseClient
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              email: data.user.email,
+              is_company: role === "firma",
+              handle: email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_'),
+              created_at: new Date().toISOString()
+            });
+          
+          if (profileError) {
+            console.warn('🔐 Register: Profile creation warning:', profileError);
+          }
+        }
+        
+        showMessage("Účet byl úspěšně vytvořen! Zkontroluj e-mail pro potvrzení.", "success");
+        
+        // Přepnutí na login tab
+        setTimeout(() => {
+          document.getElementById("tabLogin").click();
+          document.getElementById("loginEmail").value = email;
+          hideMessage();
+        }, 3000);
+        
       } catch (err) {
+        console.error('🔐 Register error:', err);
+        
         let msg = "Registrace se nezdařila. Zkontroluj e-mail a heslo (min. 6 znaků).";
-        if (err.code === "auth/email-already-in-use") msg = "Tento e-mail už má vytvořený účet. Přejdi na záložku Přihlášení a zkus se přihlásit.";
-        if (err.code === "auth/weak-password") msg = "Heslo je příliš slabé. Použij alespoň 6 znaků.";
-        if (err.code === "auth/invalid-email") msg = "Neplatný formát e-mailu.";
-        if (err.code === "auth/operation-not-allowed") msg = "V Firebase není povolené přihlášení pomocí e-mailu/hesla (zapni v Sign-in method).";
-        if (err.code === "auth/unauthorized-domain") msg = "Doména kartao.cz není povolená v Firebase (přidej ji do Authorized domains).";
-        showMessage(msg + " (" + err.code + ")");
+        
+        if (err.message?.includes("User already registered")) {
+          msg = "Tento e-mail už má vytvořený účet. Přejdi na záložku Přihlášení.";
+        } else if (err.message?.includes("Password should be at least 6 characters")) {
+          msg = "Heslo musí mít alespoň 6 znaků.";
+        } else if (err.message?.includes("Invalid email")) {
+          msg = "Neplatný formát e-mailu.";
+        }
+        
+        showMessage(msg);
       } finally {
         setLoading(false);
       }
     });
 
+    // GOOGLE LOGIN
     const googleBtn = document.getElementById("googleLogin");
     googleBtn.addEventListener("click", async () => {
       hideMessage();
       setLoading(true);
-      const role = window.kartaoRole || "influencer";
+      
+      if (!window.supabaseClient) {
+        showMessage("Supabase není inicializovaný. Zkus obnovit stránku.");
+        setLoading(false);
+        return;
+      }
+      
       try {
-        const result = await kartaoAuth.loginWithGoogle(role);
-        routeUser(result.user);
+        const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/index.html'
+          }
+        });
+        
+        if (error) throw error;
+        
+        console.log('🔐 Google login initiated');
+        
       } catch (err) {
-        let msg = "Přihlášení přes Google se nezdařilo. Zkus to prosím znovu.";
-        if (err.code === "auth/unauthorized-domain") msg = "Doména kartao.cz není povolená v Firebase (přidej ji do Authorized domains).";
-        showMessage(msg + " (" + err.code + ")");
-      } finally {
+        console.error('🔐 Google login error:', err);
+        showMessage("Přihlášení přes Google se nezdařilo. Zkus to prosím znovu.");
         setLoading(false);
       }
     });
