@@ -1157,37 +1157,32 @@
       return url.startsWith("http") ? url : fallback;
     }
 
-    // DATA HELPERS - ochrana proti duplicitní deklaraci
-    if (!window.DataHelpers) {
-      window.DataHelpers = {
-        formatFollowers(n) {
-          if (typeof n !== 'number') return '0';
-          if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
-          if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
-          return n.toString();
-        },
+    // DATA HELPERS - musí být před použitím!
+    const DataHelpers = {
+      formatFollowers(n) {
+        if (typeof n !== 'number') return '0';
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+        return n.toString();
+      },
+      
+      calculateTotalFollowers(metrics, mode = 'sum') {
+        if (!metrics || typeof metrics !== 'object') return 0;
         
-        calculateTotalFollowers(metrics, mode = 'sum') {
-          if (!metrics || typeof metrics !== 'object') return 0;
-          
-          const values = Object.values(metrics)
-            .filter(m => m && m.connected && typeof m.followers === 'number')
-            .map(m => m.followers);
-          
-          if (values.length === 0) return 0;
-          
-          if (mode === 'max') {
-            return Math.max(...values);
-          } else {
-            // sum
-            return values.reduce((sum, val) => sum + val, 0);
-          }
+        const values = Object.values(metrics)
+          .filter(m => m && m.connected && typeof m.followers === 'number')
+          .map(m => m.followers);
+        
+        if (values.length === 0) return 0;
+        
+        if (mode === 'max') {
+          return Math.max(...values);
+        } else {
+          // sum
+          return values.reduce((sum, val) => sum + val, 0);
         }
-      };
-    }
-    
-    // Alias pro snadnější použití
-    const DataHelpers = window.DataHelpers;
+      }
+    };
 
     // Inicializace služeb
     let creatorService;
@@ -2294,10 +2289,10 @@
       syncInputsFromState();
       writeQS();
       
-      // Načteme tvůrce
-      await loadAllCreators();
-      // Zobrazíme je
-      render();
+      // ==========================================
+      // DŮLEŽITÉ: Event listeners MUSÍ být PŘED await loadAllCreators()
+      // Jinak se nespustí pokud načítání dat trvá dlouho nebo selže!
+      // ==========================================
 
       if (q) {
         q.addEventListener('input', async e => {
@@ -2495,6 +2490,13 @@
         );
         io.observe(sent);
       }
+
+      // ==========================================
+      // NAČTENÍ DAT - až po inicializaci všech listenerů
+      // ==========================================
+      console.log('🚀 UI inicializováno, načítám tvůrce...');
+      await loadAllCreators();
+      render();
     });
 
     /* ==========================
@@ -2657,65 +2659,6 @@
     });
   </script>
 
-  <!-- Service Worker Registration - PWA Support -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/sw.js')
-          .then(registration => {
-            console.log('✅ Service Worker registered:', registration.scope);
-            
-            // Kontrola updatů každých 60 sekund
-            setInterval(() => {
-              registration.update();
-            }, 60000);
-            
-            // Notification při novém SW
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('🆕 Nová verze Service Workeru je k dispozici');
-                  // Můžeš zobrazit notifikaci uživateli o dostupném updatu
-                }
-              });
-            });
-          })
-          .catch(error => {
-            console.warn('⚠️ Service Worker registration failed:', error);
-          });
-      });
-    } else {
-      console.log('ℹ️ Service Worker není podporován v tomto prohlížeči');
-    }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-
-      const installBtn = document.createElement('button');
-      installBtn.textContent = '📱 Nainstalovat aplikaci';
-      installBtn.className =
-        'fixed bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50';
-      installBtn.onclick = async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log('Install prompt result:', outcome);
-          deferredPrompt = null;
-          installBtn.remove();
-        }
-      };
-      document.body.appendChild(installBtn);
-
-      setTimeout(() => {
-        if (installBtn.parentNode) {
-          installBtn.remove();
-        }
-      }, 10000);
-    });
   </script>
 
   <!-- Admin login tlačítko -->
