@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test: Kartao Core Loader</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Header s Hamburger Menu -->
+  <header class="bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition">
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+            <span class="text-2xl font-bold text-purple-600">K</span>
+          </div>
+          <span class="text-xl font-bold">KARTAO.CZ</span>
+        </a>
+        
+        <!-- Hamburger Button -->
+        <button id="menuToggle" 
+                class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
+                aria-label="Otevřít menu"
+                aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div id="menuBackdrop" 
+         class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+    </div>
+    
+    <!-- Menu Panel -->
+    <div id="menuPanel" 
+         class="absolute top-0 left-0 h-full w-80 max-w-[85vw] bg-gradient-to-br from-purple-900 to-blue-900 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out overflow-y-auto">
+      
+      <!-- Menu Header -->
+      <div class="flex items-center justify-between px-4 py-4 border-b border-white/10">
+        <h2 class="text-lg font-bold text-white">Menu</h2>
+        <button id="menuClose" 
+                class="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                aria-label="Zavřít menu">
+          <i data-lucide="x" class="w-5 h-5 text-white"></i>
+        </button>
+      </div>
+      
+      <!-- Dynamic Menu Content -->
+      <div id="menuContent"></div>
+      
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-8">
+      
+      <h1 class="text-4xl font-bold text-gray-800 mb-6">
+        🧪 Test: Kartao Core Loader
+      </h1>
+      
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-600 mb-6">
+          Tato stránka testuje nový centralizovaný systém načítání všech závislostí ve SPRÁVNÉM pořadí.
+        </p>
+        
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+          <h3 class="text-lg font-semibold text-blue-800 mb-2">✅ Správné pořadí skriptů:</h3>
+          <ol class="text-sm text-blue-700 space-y-1">
+            <li>1️⃣ <code>supabase-init.js</code> - inicializuje Supabase klienta</li>
+            <li>2️⃣ <code>auth-supabase.js</code> - nastaví auth listener</li>
+            <li>3️⃣ <code>hamburger-menu.js</code> - definuje menu generator</li>
+            <li>4️⃣ <code>kartao-core-loader.js</code> - řídí celou inicializaci</li>
+          </ol>
+        </div>
+        
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+          <h3 class="text-lg font-semibold text-green-800 mb-2">🎯 Co Core Loader dělá:</h3>
+          <ul class="text-sm text-green-700 space-y-1">
+            <li>✅ Čeká na inicializaci Supabase (max 10s)</li>
+            <li>✅ Načte auth stav uživatele</li>
+            <li>✅ Načte profil z databáze</li>
+            <li>✅ Inicializuje hamburger menu s CORRECT user type</li>
+            <li>✅ Poslouchá auth změny a automaticky reinicializuje menu</li>
+            <li>✅ Vytváří unified event systém pro celou aplikaci</li>
+          </ul>
+        </div>
+        
+        <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">🔍 Live Console</h2>
+        <div id="console" class="bg-gray-900 text-green-400 font-mono text-xs p-4 rounded-lg h-96 overflow-y-auto">
+          <div class="text-gray-500">Waiting for events...</div>
+        </div>
+        
+        <div class="mt-6 flex gap-4">
+          <button onclick="location.reload()" 
+                  class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            🔄 Reload Page
+          </button>
+          <a href="kartao-prihlaseni.html" 
+             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition inline-block">
+            🔐 Přihlásit se
+          </a>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+
+  <!-- ==========================================
+       SCRIPTS - CORRECT LOADING ORDER
+       ========================================== -->
+  
+  <!-- 1. Supabase Init (must be first!) -->
+  <script src="supabase-init.js"></script>
+  
+  <!-- 2. Auth Setup -->
+  <script src="auth-supabase.js"></script>
+  
+  <!-- 3. Hamburger Menu Generator -->
+  <script src="hamburger-menu.js"></script>
+  
+  <!-- 4. Core Loader - orchestrates everything -->
+  <script src="kartao-core-loader.js"></script>
+  
+  <!-- Initialize Lucide Icons -->
+  <script>
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
+  
+  <!-- Live Console Logger -->
+  <script>
+    const consoleDiv = document.getElementById('console');
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    function addToConsole(message, type = 'log') {
+      const colorMap = {
+        log: 'text-green-400',
+        warn: 'text-yellow-400',
+        error: 'text-red-400'
+      };
+      
+      const timestamp = new Date().toLocaleTimeString('cs-CZ');
+      const div = document.createElement('div');
+      div.className = `${colorMap[type]} mb-1`;
+      div.textContent = `[${timestamp}] ${message}`;
+      consoleDiv.appendChild(div);
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+      
+      // Clear "Waiting..." message
+      if (consoleDiv.children.length > 1) {
+        const first = consoleDiv.children[0];
+        if (first.textContent.includes('Waiting')) {
+          first.remove();
+        }
+      }
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addToConsole(args.join(' '), 'log');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addToConsole('⚠️ ' + args.join(' '), 'warn');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addToConsole('❌ ' + args.join(' '), 'error');
+    };
+    
+    // Listen to all custom events
+    [
+      'supabase-initialized',
+      'kartao-supabase-ready', 
+      'kartao-auth-ready',
+      'kartao-menu-ready',
+      'kartao-ready',
+      'supabase-auth-ready',
+      'user-profile-loaded',
+      'supabase-auth-signout'
+    ].forEach(eventName => {
+      window.addEventListener(eventName, (e) => {
+        console.log(`📡 Event: ${eventName}`, e.detail || '');
+      });
+    });
+  </script>
+
+</body>
+</html>

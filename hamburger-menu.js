@@ -1,6 +1,10 @@
 // ===============================================
 // KARTAO.CZ - Univerzální Hamburger Menu
+// POUZE generování HTML - inicializace v kartao-core-loader.js
 // ===============================================
+
+(function() {
+  'use strict';
 
 /**
  * Definice menu podle typu uživatele
@@ -398,124 +402,12 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
   };
 }
 
-// Export pro případné použití jako modul
+// Export pro globální použití
 if (typeof window !== 'undefined') {
   window.HamburgerMenu = { 
     init: initHamburgerMenu,
-    configs: MENU_CONFIGS,
-    refresh: autoInitHamburgerMenu  // Přidáno pro manuální refresh
+    configs: MENU_CONFIGS
   };
 }
 
-/**
- * Auto-detekce typu uživatele a inicializace
- */
-async function autoInitHamburgerMenu() {
-  console.log('🍔 autoInitHamburgerMenu: Start detekce...');
-  
-  try {
-    // Zkusit získat data z Supabase
-    if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
-      console.log('🍔 autoInitHamburgerMenu: Supabase client nalezen');
-      
-      const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
-      
-      if (userError) {
-        console.warn('🍔 autoInitHamburgerMenu: Chyba při získání uživatele:', userError);
-      }
-      
-      if (user) {
-        console.log('🍔 autoInitHamburgerMenu: User nalezen:', user.email);
-        
-        // Získat metadata uživatele
-        const { data: profile, error } = await window.supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (error) {
-          console.warn('🍔 autoInitHamburgerMenu: Chyba při načítání profilu:', error);
-        }
-        
-        if (profile && !error) {
-          const userType = profile.is_company ? 'company' : 'creator';
-          const userData = {
-            name: profile.name || profile.display_name,
-            handle: profile.handle,
-            avatar_url: profile.avatar_url
-          };
-          
-          console.log('🍔 Hamburger Menu: Inicializace pro', userType, userData);
-          initHamburgerMenu(userType, userData);
-          return;
-        } else {
-          console.log('🍔 autoInitHamburgerMenu: Profil nenalezen, používám guest menu');
-        }
-      } else {
-        console.log('🍔 autoInitHamburgerMenu: Žádný přihlášený uživatel');
-      }
-    } else {
-      console.log('🍔 autoInitHamburgerMenu: Supabase client není dostupný');
-    }
-    
-    // Fallback - nepřihlášený uživatel
-    console.log('🍔 Hamburger Menu: Inicializace pro guest');
-    initHamburgerMenu('guest');
-    
-  } catch (error) {
-    console.warn('🍔 Hamburger Menu: Error detecting user type:', error);
-    initHamburgerMenu('guest');
-  }
-}
-
-// Posluchač na auth změny
-if (typeof window !== 'undefined') {
-  window.addEventListener('supabase-initialized', () => {
-    console.log('🍔 Hamburger Menu: Supabase inicializován, spouštím detekci...');
-    setTimeout(() => autoInitHamburgerMenu(), 100);
-  });
-  
-  window.addEventListener('supabase-auth-ready', () => {
-    console.log('🍔 Hamburger Menu: Supabase auth ready, reinicializace...');
-    autoInitHamburgerMenu();
-  });
-  
-  window.addEventListener('user-profile-loaded', (event) => {
-    console.log('🍔 Hamburger Menu: User profile loaded, reinicializace...');
-    autoInitHamburgerMenu();
-  });
-  
-  window.addEventListener('supabase-auth-signout', () => {
-    console.log('🍔 Hamburger Menu: User signed out, zobrazení guest menu');
-    initHamburgerMenu('guest');
-  });
-}
-
-// Auto-init při načtení stránky (pokud existují menu elementy)
-// Primárně spoléháme na event systém, ale jako fallback inicializujeme guest menu
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      if (document.getElementById('menuToggle') && document.getElementById('mobileMenu')) {
-        // Fallback - pokud po 2s nejsou žádné eventy, zobraz guest menu
-        setTimeout(() => {
-          if (!document.getElementById('menuContent').innerHTML) {
-            console.log('🍔 Hamburger Menu: Fallback init (guest)');
-            initHamburgerMenu('guest');
-          }
-        }, 2000);
-      }
-    });
-  } else {
-    if (document.getElementById('menuToggle') && document.getElementById('mobileMenu')) {
-      // Fallback
-      setTimeout(() => {
-        if (!document.getElementById('menuContent').innerHTML) {
-          console.log('🍔 Hamburger Menu: Fallback init (guest)');
-          initHamburgerMenu('guest');
-        }
-      }, 2000);
-    }
-  }
-}
+})(); // Konec IIFE

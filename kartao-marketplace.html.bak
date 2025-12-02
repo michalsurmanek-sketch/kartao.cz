@@ -1463,30 +1463,6 @@
 <script src="auth-header.js"></script>
 <script src="credits-system-supabase.js"></script>
 <script src="credits-header.js"></script>
-
-  <!-- ==========================================
-       KARTAO CORE - CORRECT LOADING ORDER
-       ========================================== -->
-  
-  <!-- 1. Supabase Init (must be first!) -->
-  <script src="supabase-init.js"></script>
-  
-  <!-- 2. Auth Setup -->
-  <script src="auth-supabase.js"></script>
-  
-  <!-- 3. Hamburger Menu Generator -->
-  <script src="hamburger-menu.js"></script>
-  
-  <!-- 4. Core Loader - orchestrates everything -->
-  <script src="kartao-core-loader.js"></script>
-  
-  <!-- 5. Initialize Lucide Icons -->
-  <script>
-    if (typeof lucide !== "undefined") {
-      lucide.createIcons();
-    }
-  </script>
-
 </body>
 </html>
 

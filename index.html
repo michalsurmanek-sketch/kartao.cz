@@ -31,11 +31,9 @@
   <!-- === SUPABASE === -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- KONFIGURACE + INIT -->
+  <!-- KONFIGURACE (loaded early, but init is at the bottom!) -->
   <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
   <script src="supabase-compatibility.js"></script>
-  <script src="auth-supabase.js"></script>
   <script src="auth-header.js"></script>
   <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
@@ -1114,12 +1112,7 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Konfigurace + sjednocený INIT -->
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="supabase-compatibility.js"></script>
-
-  <!-- Nadstavbové systémy -->
+  <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
   <script src="database-init.js"></script>
   <script src="api-services.js"></script>
 
@@ -1129,7 +1122,6 @@
   <script src="advanced-analytics.js"></script>
   <script src="security-manager.js"></script>
   <script src="internationalization-system.js"></script>
-  <script src="hamburger-menu.js"></script>
 
   <!-- Marketplace logika -->
   <script>
@@ -2630,6 +2622,29 @@
 
   // Pro pohodlí – aby šla volat z konzole
   window.createMyCreatorProfile = createMyCreatorProfile;
+  </script>
+
+  <!-- ==========================================
+       KARTAO CORE - CORRECT LOADING ORDER
+       ========================================== -->
+  
+  <!-- 1. Supabase Init (must be first!) -->
+  <script src="supabase-init.js"></script>
+  
+  <!-- 2. Auth Setup -->
+  <script src="auth-supabase.js"></script>
+  
+  <!-- 3. Hamburger Menu Generator -->
+  <script src="hamburger-menu.js"></script>
+  
+  <!-- 4. Core Loader - orchestrates everything -->
+  <script src="kartao-core-loader.js"></script>
+  
+  <!-- 5. Initialize Lucide Icons -->
+  <script>
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   </script>
 
 </body>
