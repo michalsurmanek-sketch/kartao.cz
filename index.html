@@ -2426,9 +2426,26 @@
 
       const advancedBtn = document.getElementById('advancedBtn');
       const advancedWrap = document.getElementById('advancedWrap');
+      
+      console.log('🔍 Pokročilé filtry - inicializace:', { 
+        btnExists: !!advancedBtn, 
+        wrapExists: !!advancedWrap,
+        btnElement: advancedBtn,
+        wrapElement: advancedWrap
+      });
+      
       if (advancedBtn && advancedWrap) {
-        advancedBtn.addEventListener('click', () => {
+        console.log('✅ Pokročilé filtry - přidávám event listener');
+        
+        advancedBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('🎯 Pokročilé filtry - kliknuto!');
+          
           const isHidden = advancedWrap.classList.contains('hidden');
+          console.log('📊 Pokročilé filtry - stav:', { isHidden });
+          
           advancedWrap.classList.toggle('hidden');
           
           // Změna textu a ikony tlačítka
@@ -2444,6 +2461,13 @@
             const priceRange = document.getElementById('priceRange');
             if (priceRange) setTimeout(() => priceRange.focus(), 100);
           }
+        });
+      } else {
+        console.error('❌ Pokročilé filtry - elementy nenalezeny!', {
+          advancedBtn,
+          advancedWrap,
+          allButtons: document.querySelectorAll('button'),
+          allDivs: document.querySelectorAll('div[id]')
         });
       }
 
