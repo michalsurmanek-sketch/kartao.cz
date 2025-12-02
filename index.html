@@ -1761,16 +1761,7 @@
       const sentinel = document.getElementById('sentinel');
       const modeBadge = document.getElementById('modeBadge');
 
-      if (!grid || !totalEl) return; // Minimální kontrola
-
-      // Pokud se ještě načítají tvůrci, zobraz loading
-      if (isLoading && loading) {
-        loading.classList.remove('hidden');
-        if (empty) empty.classList.add('hidden');
-        grid.innerHTML = '';
-        if (window.lucide?.createIcons) lucide.createIcons();
-        return;
-      }
+      if (!grid || !totalEl) return;
       
       if (loading) loading.classList.add('hidden');
 
@@ -2162,7 +2153,7 @@
     /* ==========================
        START – DOMContentLoaded
     ========================== */
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
       readQS();
@@ -2182,10 +2173,10 @@
       syncInputsFromState();
       writeQS();
       
-      // Načteme tvůrce a zobrazíme
-      loadAllCreators().then(() => {
-        render();
-      });
+      // Načteme tvůrce
+      await loadAllCreators();
+      // Zobrazíme je
+      render();
 
       if (q) {
         q.addEventListener('input', async e => {
