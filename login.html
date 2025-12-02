@@ -414,22 +414,35 @@
       messageBox.classList.add("hidden");
     }
 
-    function setLoading(isLoading) {
+    function setLoading(isLoading, message = null) {
       loader.classList.toggle("hidden", !isLoading);
+      
+      // Pokud je custom message, zobraz ho
+      if (isLoading && message) {
+        const loaderText = loader.querySelector('.text-sm');
+        if (loaderText) {
+          loaderText.textContent = message;
+        }
+      } else if (!isLoading) {
+        const loaderText = loader.querySelector('.text-sm');
+        if (loaderText) {
+          loaderText.textContent = 'Ověřování...';
+        }
+      }
     }
 
     // --- Jednotné auth funkce (Supabase) ---
     async function routeUser(user) {
       if (!user) return;
       
-      console.log('🔐 Login: Routing user after login...', user.email);
-      
-      // Přesměrování na index
+      console.log('🔐 Login: Redirecting to index.html...');
       window.location.href = "index.html";
     }
 
-    // Check pokud už je přihlášen
-    if (window.supabaseClient) {
+    // Check pokud už je přihlášen - ale POUZE jednou při načtení
+    let initialCheckDone = false;
+    if (window.supabaseClient && !initialCheckDone) {
+      initialCheckDone = true;
       window.supabaseClient.auth.getUser().then(({ data: { user } }) => {
         if (user) {
           console.log('🔐 Login: User already logged in, redirecting...');
@@ -463,19 +476,17 @@
         
         console.log('🔐 Login: Sign in successful', data.user.email);
         
-        // Dispatch event pro synchronizaci
-        window.dispatchEvent(new CustomEvent('supabase-auth-ready', { 
-          detail: { user: data.user } 
-        }));
+        // Změň text loaderu a redirect
+        setLoading(true, 'Přihlášení úspěšné! Přesměrování...');
         
-        showMessage("Přihlášení úspěšné! Přesměrování...", "success");
-        
+        // Krátké zpoždění aby uživatel viděl úspěšnou zprávu
         setTimeout(() => {
-          routeUser(data.user);
-        }, 500);
+          window.location.href = "index.html";
+        }, 300);
         
       } catch (err) {
         console.error('🔐 Login error:', err);
+        setLoading(false);
         
         let msg = "Přihlášení se nezdařilo. Zkontroluj e-mail a heslo.";
         
@@ -488,8 +499,6 @@
         }
         
         showMessage(msg);
-      } finally {
-        setLoading(false);
       }
     });
 
