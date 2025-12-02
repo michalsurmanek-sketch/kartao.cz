@@ -210,6 +210,18 @@
     }
     .svh { height: 100svh; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    
+    /* Plynulý přechod pro pokročilé filtry */
+    #advancedWrap {
+      transition: all 0.3s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+    #advancedWrap:not(.hidden) {
+      max-height: 500px;
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -800,7 +812,7 @@
       </div>
 
       <!-- Pokročilé filtry -->
-      <div class="mt-3 grid gap-3 md:grid-cols-6" id="advancedWrap">
+      <div class="mt-3 grid gap-3 md:grid-cols-6 hidden" id="advancedWrap">
         <div class="space-y-2">
           <label class="text-xs text-white/70">Rozpočet (Kč)</label>
           <div class="flex gap-2">
@@ -2256,10 +2268,25 @@
       }
 
       const advancedBtn = document.getElementById('advancedBtn');
-      if (advancedBtn) {
+      const advancedWrap = document.getElementById('advancedWrap');
+      if (advancedBtn && advancedWrap) {
         advancedBtn.addEventListener('click', () => {
-          const mp = document.getElementById('maxPrice');
-          if (mp) mp.focus();
+          const isHidden = advancedWrap.classList.contains('hidden');
+          advancedWrap.classList.toggle('hidden');
+          
+          // Změna textu a ikony tlačítka
+          const icon = advancedBtn.querySelector('i');
+          const text = isHidden ? 'Skrýt' : 'Pokročilé';
+          const iconName = isHidden ? 'chevron-up' : 'filter';
+          
+          advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i> ${text}`;
+          if (window.lucide?.createIcons) lucide.createIcons();
+          
+          // Focus na první input když se otevře
+          if (isHidden) {
+            const firstInput = advancedWrap.querySelector('input, select');
+            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+          }
         });
       }
 
