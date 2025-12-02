@@ -312,6 +312,9 @@
                   <div id="dailyTasksProgress" class="rounded-2xl border border-emerald-400/50 bg-emerald-400/10 px-3 py-1">
                     <span class="font-semibold text-emerald-200">Načítám úkoly...</span>
                   </div>
+                  <button id="watchAdBtn" class="rounded-2xl bg-gradient-to-r from-rose-500 to-orange-500 text-white px-3 py-1 font-semibold hover:brightness-110 transition shadow-lg">
+                    Reklamní odměny
+                  </button>
                   <a href="credits-dashboard.html" class="rounded-2xl bg-sky-500/90 text-slate-950 px-3 py-1 font-semibold hover:bg-sky-400 transition">
                     Otevřít Mystery Box
                   </a>
@@ -961,6 +964,70 @@
           
           // Reload feed
           loadFeed();
+        });
+      }
+
+      // Watch Ad Button - spustí automaticky reklamu
+      const watchAdBtn = document.getElementById("watchAdBtn");
+      if (watchAdBtn) {
+        watchAdBtn.addEventListener("click", async () => {
+          // Zkontroluj denní limit
+          const daily = JSON.parse(localStorage.getItem('kartao_daily_tasks') || '{}');
+          const today = new Date().toISOString().split('T')[0];
+          
+          let adsWatched = 0;
+          if (daily.date === today && daily.adsWatched) {
+            adsWatched = daily.adsWatched;
+          }
+
+          const maxAds = 5;
+          if (adsWatched >= maxAds) {
+            alert(`Už jsi dnes shlédl maximum reklam (${maxAds})! Vrať se zítra za dalšími odměnami. 🎁`);
+            return;
+          }
+
+          // Simulace reklamy
+          const adDuration = 5; // 5 sekund
+          let countdown = adDuration;
+          
+          watchAdBtn.disabled = true;
+          watchAdBtn.innerHTML = `Sleduj reklamu... ${countdown}s`;
+
+          const interval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              watchAdBtn.innerHTML = `Sleduj reklamu... ${countdown}s`;
+            } else {
+              clearInterval(interval);
+              
+              // Přičti odměnu
+              const reward = 4; // 4 K-Coins za reklamu
+              
+              if (window.creditSys && currentCreator) {
+                // Update v Supabase
+                const newCredits = (currentCreator.credits || 0) + reward;
+                supabase.from('creators').update({ credits: newCredits }).eq('id', currentUser.id).then(() => {
+                  currentCreator.credits = newCredits;
+                  updateUI(currentCreator);
+                });
+              }
+
+              // Update localStorage
+              const updatedDaily = JSON.parse(localStorage.getItem('kartao_daily_tasks') || '{}');
+              if (updatedDaily.date === today) {
+                updatedDaily.adsWatched = (updatedDaily.adsWatched || 0) + 1;
+              } else {
+                updatedDaily.date = today;
+                updatedDaily.adsWatched = 1;
+              }
+              localStorage.setItem('kartao_daily_tasks', JSON.stringify(updatedDaily));
+
+              watchAdBtn.disabled = false;
+              watchAdBtn.innerHTML = 'Reklamní odměny';
+              
+              alert(`Gratulujeme! 🎉\n\nZískáváš ${reward} K-Coins za zhlédnutí reklamy!\n\nDnes shlédnuto: ${updatedDaily.adsWatched}/${maxAds}`);
+            }
+          }, 1000);
         });
       }
 
