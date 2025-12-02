@@ -38,12 +38,10 @@ const STATIC_CACHE = [
   '/notification-system.js',
   '/advanced-analytics.js',
   '/security-manager.js',
-  '/internationalization-system.js',
+  '/internationalization-system.js'
   
-  // CDN - fallback
-  'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+  // CDN assety přeskakujeme při instalaci (CORS problém)
+  // Budou cachovány za běhu při prvním použití
 ];
 
 // API routes - cache s revalidací
@@ -71,7 +69,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('📦 Service Worker: Caching static assets');
-      return cache.addAll(STATIC_CACHE.map(url => new Request(url, { cache: 'reload' })));
+      // Pouze same-origin assety (CDN se cachují za běhu)
+      const sameOriginAssets = STATIC_CACHE.filter(url => !url.startsWith('http'));
+      return cache.addAll(sameOriginAssets.map(url => new Request(url, { cache: 'reload' })));
     })
     .then(() => {
       console.log('✅ Service Worker: Installed successfully');

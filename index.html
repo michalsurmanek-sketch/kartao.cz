@@ -1157,32 +1157,37 @@
       return url.startsWith("http") ? url : fallback;
     }
 
-    // DATA HELPERS - musí být před použitím!
-    const DataHelpers = {
-      formatFollowers(n) {
-        if (typeof n !== 'number') return '0';
-        if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
-        if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
-        return n.toString();
-      },
-      
-      calculateTotalFollowers(metrics, mode = 'sum') {
-        if (!metrics || typeof metrics !== 'object') return 0;
+    // DATA HELPERS - ochrana proti duplicitní deklaraci
+    if (!window.DataHelpers) {
+      window.DataHelpers = {
+        formatFollowers(n) {
+          if (typeof n !== 'number') return '0';
+          if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+          if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+          return n.toString();
+        },
         
-        const values = Object.values(metrics)
-          .filter(m => m && m.connected && typeof m.followers === 'number')
-          .map(m => m.followers);
-        
-        if (values.length === 0) return 0;
-        
-        if (mode === 'max') {
-          return Math.max(...values);
-        } else {
-          // sum
-          return values.reduce((sum, val) => sum + val, 0);
+        calculateTotalFollowers(metrics, mode = 'sum') {
+          if (!metrics || typeof metrics !== 'object') return 0;
+          
+          const values = Object.values(metrics)
+            .filter(m => m && m.connected && typeof m.followers === 'number')
+            .map(m => m.followers);
+          
+          if (values.length === 0) return 0;
+          
+          if (mode === 'max') {
+            return Math.max(...values);
+          } else {
+            // sum
+            return values.reduce((sum, val) => sum + val, 0);
+          }
         }
-      }
-    };
+      };
+    }
+    
+    // Alias pro snadnější použití
+    const DataHelpers = window.DataHelpers;
 
     // Inicializace služeb
     let creatorService;
