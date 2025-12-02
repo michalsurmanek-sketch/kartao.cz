@@ -2628,7 +2628,7 @@
     });
   </script>
 
-  <!-- Service Worker Registration (TVŮJ KÓD) -->
+  <!-- Service Worker Registration - PWA Support -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -2636,11 +2636,29 @@
           .register('/sw.js')
           .then(registration => {
             console.log('✅ Service Worker registered:', registration.scope);
+            
+            // Kontrola updatů každých 60 sekund
+            setInterval(() => {
+              registration.update();
+            }, 60000);
+            
+            // Notification při novém SW
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🆕 Nová verze Service Workeru je k dispozici');
+                  // Můžeš zobrazit notifikaci uživateli o dostupném updatu
+                }
+              });
+            });
           })
           .catch(error => {
-            console.log('❌ Service Worker registration failed:', error);
+            console.warn('⚠️ Service Worker registration failed:', error);
           });
       });
+    } else {
+      console.log('ℹ️ Service Worker není podporován v tomto prohlížeči');
     }
 
     let deferredPrompt;
