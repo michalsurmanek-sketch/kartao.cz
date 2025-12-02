@@ -858,6 +858,16 @@
       </div>
 
       <div id="grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      
+      <!-- Loading indikátor -->
+      <div id="loading" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
+        <div class="animate-spin w-8 h-8 mx-auto mb-3">
+          <i data-lucide="loader-2" class="w-8 h-8 text-fuchsia-400"></i>
+        </div>
+        <div class="font-semibold">Načítám tvůrce...</div>
+        <div class="text-white/60 text-sm mt-1">Chvilku strpení, prosím</div>
+      </div>
+      
       <div id="empty" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
         <i data-lucide="sparkles" class="w-6 h-6 mx-auto"></i>
         <div class="font-semibold mt-2">Zkuste upravit filtry</div>
@@ -1319,103 +1329,86 @@
        NAČTENÍ TVŮRCŮ ZE SUPABASE
     ========================== */
     /* ==========================
-       DYNAMICKÉ NAČÍTÁNÍ MĚST A KATEGORIÍ
+       DYNAMICKÉ NAČÍTÁNÍ MĚST A KATEGORIÍ (OPTIMALIZOVÁNO)
     ========================== */
-    async function loadAndPopulateCities() {
-      const citySelect = document.getElementById('city');
-      if (!citySelect || typeof window.supabaseClient === 'undefined') return;
+    let filtersCache = { cities: null, categories: null };
+
+    async function loadFiltersData() {
+      if (!window.supabaseClient) return { cities: [], categories: [] };
 
       try {
-        // Načteme všechna unikátní města z databáze
-        const { data, error } = await window.supabaseClient
-          .from('creators')
-          .select('city')
-          .not('city', 'is', null)
-          .order('city', { ascending: true });
+        // Paralelní načtení měst a kategorií - RYCHLEJŠÍ!
+        const [citiesResult, categoriesResult] = await Promise.all([
+          window.supabaseClient
+            .from('creators')
+            .select('city')
+            .not('city', 'is', null)
+            .order('city', { ascending: true }),
+          window.supabaseClient
+            .from('creators')
+            .select('category')
+            .not('category', 'is', null)
+            .order('category', { ascending: true })
+        ]);
 
-        if (error) {
-          console.error('Chyba při načítání měst:', error);
-          return;
-        }
-
-        // Extrahujeme unikátní města a seřadíme je
         const cities = [...new Set(
-          (data || [])
+          (citiesResult.data || [])
             .map(item => item.city)
             .filter(city => city && city.trim())
         )].sort((a, b) => a.localeCompare(b, 'cs'));
 
-        // Uložíme aktuální hodnotu
-        const currentValue = citySelect.value;
-
-        // Vymažeme všechny options kromě "Celá ČR"
-        citySelect.innerHTML = '<option value="all">Celá ČR</option>';
-
-        // Přidáme města z databáze
-        cities.forEach(city => {
-          const option = document.createElement('option');
-          option.value = city;
-          option.textContent = city;
-          citySelect.appendChild(option);
-        });
-
-        // Obnovíme předchozí výběr (pokud existuje)
-        if (currentValue && cities.includes(currentValue)) {
-          citySelect.value = currentValue;
-        }
-
-        console.log('Načteno měst do filtru:', cities.length);
-      } catch (error) {
-        console.error('Chyba při načítání měst:', error);
-      }
-    }
-
-    async function loadAndPopulateCategories() {
-      const categorySelect = document.getElementById('category');
-      if (!categorySelect || typeof window.supabaseClient === 'undefined') return;
-
-      try {
-        // Načteme všechny unikátní kategorie z databáze
-        const { data, error } = await window.supabaseClient
-          .from('creators')
-          .select('category')
-          .not('category', 'is', null)
-          .order('category', { ascending: true });
-
-        if (error) {
-          console.error('Chyba při načítání kategorií:', error);
-          return;
-        }
-
-        // Extrahujeme unikátní kategorie a seřadíme je
         const categories = [...new Set(
-          (data || [])
+          (categoriesResult.data || [])
             .map(item => item.category)
             .filter(cat => cat && cat.trim())
         )].sort((a, b) => a.localeCompare(b, 'cs'));
 
-        // Uložíme aktuální hodnotu
-        const currentValue = categorySelect.value;
-
-        // Vymažeme všechny options kromě "Vše"
-        categorySelect.innerHTML = '<option value="all">Vše</option>';
-
-        // Přidáme kategorie z databáze
-        categories.forEach(category => {
-          const option = document.createElement('option');
-          option.value = category;
-          option.textContent = category;
-          categorySelect.appendChild(option);
-        });
-
-        // Obnovíme předchozí výběr (pokud existuje)
-        if (currentValue && categories.includes(currentValue)) {
-          categorySelect.value = currentValue;
-        }
-
-        console.log('Načteno kategorií do filtru:', categories.length);
+        // Uložíme do cache
+        filtersCache = { cities, categories };
+        
+        console.log('✅ Načteno filtrů:', cities.length, 'měst,', categories.length, 'kategorií');
+        return { cities, categories };
       } catch (error) {
-        console.error('Chyba při načítání kategorií:', error);
+        console.error('Chyba při načítání filtrů:', error);
+        return { cities: [], categories: [] };
+      }
+    }
+
+    async function populateFilters() {
+      const citySelect = document.getElementById('city');
+      const categorySelect = document.getElementById('category');
+      
+      if (!citySelect || !categorySelect) return;
+
+      // Použij cache nebo načti znovu
+      const { cities, categories } = filtersCache.cities 
+        ? filtersCache 
+        : await loadFiltersData();
+
+      // Naplň města
+      const currentCity = citySelect.value;
+      citySelect.innerHTML = '<option value="all">Celá ČR</option>';
+      cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+      if (currentCity && cities.includes(currentCity)) {
+        citySelect.value = currentCity;
+      }
+
+      // Naplň kategorie
+      const currentCategory = categorySelect.value;
+      categorySelect.innerHTML = '<option value="all">Vše</option>';
+      categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+      });
+      if (currentCategory && categories.includes(currentCategory)) {
+        categorySelect.value = currentCategory;
       }
     }
 
@@ -1485,11 +1478,7 @@
             },
             createdAt: creator.created_at ? new Date(creator.created_at).getTime() : Date.now()
           }));
-          console.log('Načteno tvůrců ze Supabase:', allCreators.length);
-          
-          // Aktualizujeme seznam měst a kategorií po načtení tvůrců
-          await loadAndPopulateCities();
-          await loadAndPopulateCategories();
+          console.log('✅ Načteno tvůrců ze Supabase:', allCreators.length);
         }
       } catch (error) {
         console.error('Chyba při načítání tvůrců ze Supabase:', error);
@@ -1769,14 +1758,26 @@
     function render() {
       const grid = document.getElementById('grid');
       const empty = document.getElementById('empty');
+      const loading = document.getElementById('loading');
       const totalEl = document.getElementById('total');
       const pagination = document.getElementById('pagination');
       const sentinel = document.getElementById('sentinel');
       const modeBadge = document.getElementById('modeBadge');
 
-      if (!grid || !empty || !totalEl || !pagination || !sentinel || !modeBadge) {
+      if (!grid || !empty || !loading || !totalEl || !pagination || !sentinel || !modeBadge) {
         return;
       }
+
+      // Pokud se ještě načítají tvůrci, zobraz loading
+      if (isLoading) {
+        loading.classList.remove('hidden');
+        empty.classList.add('hidden');
+        grid.innerHTML = '';
+        if (window.lucide?.createIcons) lucide.createIcons();
+        return;
+      }
+      
+      loading.classList.add('hidden');
 
       const all = applyFilters();
       totalEl.textContent = String(all.length);
@@ -2170,7 +2171,7 @@
     /* ==========================
        START – DOMContentLoaded
     ========================== */
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
       readQS();
@@ -2189,11 +2190,12 @@
 
       syncInputsFromState();
       writeQS();
-      render();
       
-      // Načteme města a kategorie i při prvním načtení stránky
-      loadAndPopulateCities();
-      loadAndPopulateCategories();
+      // RYCHLE načteme filtry (města a kategorie) - jen lehký dotaz
+      await populateFilters();
+      
+      // Zobrazíme prázdný grid zatím
+      render();
 
       if (q) {
         q.addEventListener('input', async e => {
@@ -2346,11 +2348,16 @@
        AUTH LISTENER – TVŮRCI (SUPABASE)
     ========================== */
     if (typeof window.supabaseClient !== 'undefined') {
-      // Inicializace při načtení stránky
+      // LAZY LOADING - načte tvůrce až když je uživatel potřebuje
       (async () => {
+        // Počkáme chvilku, aby se stránka rychle načetla
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         if (!creatorService) {
           creatorService = new CreatorService();
           userService = new UserService();
+          
+          // Načteme tvůrce na pozadí
           await loadAllCreators();
           render();
         }
