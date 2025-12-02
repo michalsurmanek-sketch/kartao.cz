@@ -1244,7 +1244,8 @@
        KONSTANTY A POMOCNÉ FUNKCE
     ========================== */
     const PLATFORMS = [
-      { id: 'facebook', label: 'Facebook', icon: 'thumbs-up' },
+
+    { id: 'facebook', label: 'Facebook', icon: 'thumbs-up' },
       { id: 'instagram', label: 'Instagram', icon: 'instagram' },
       { id: 'tiktok', label: 'TikTok', icon: 'video' },
       { id: 'youtube', label: 'YouTube', icon: 'youtube' },
@@ -1406,22 +1407,17 @@
       console.log('📥 Načítám tvůrce z databáze...');
 
       try {
+        console.log('📡 Dotaz do Supabase...');
+        
         const { data, error } = await window.supabaseClient
           .from('creators')
-          .select(`
-            id, name, handle, bio, avatar_url, cover_url, gallery_urls,
-            category, city, price, rating, engagement, verified, premium, platforms,
-            facebook_connected, facebook_followers, facebook_updated_at,
-            instagram_connected, instagram_followers, instagram_updated_at,
-            youtube_connected, youtube_followers, youtube_updated_at,
-            tiktok_connected, tiktok_followers, tiktok_updated_at,
-            pinterest_connected, pinterest_followers, pinterest_updated_at,
-            created_at
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
 
+        console.log('📦 Odpověď z databáze:', { data: data?.length, error });
+
         if (error) {
-          console.error('Chyba při načítání tvůrců ze Supabase:', error);
+          console.error('❌ Chyba při načítání tvůrců ze Supabase:', error);
           allCreators = [];
         } else {
           // Mapujeme Supabase strukturu na očekávaný formát
