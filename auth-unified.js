@@ -310,6 +310,40 @@
     console.log('🔐 Auth Unified: Logout successful');
   };
 
+  // Listeners pro auth změny
+  const authListeners = [];
+  
+  window.kartaoAuth.onAuthStateChanged = function(callback) {
+    if (typeof callback !== 'function') {
+      console.error('🔐 Auth Unified: onAuthStateChanged requires a function');
+      return;
+    }
+    
+    // Přidat listener
+    authListeners.push(callback);
+    
+    // Zavolat okamžitě s aktuálním stavem (pokud je ready)
+    if (window.kartaoAuth.isReady) {
+      setTimeout(() => callback(window.kartaoAuth.user, window.kartaoAuth.profile), 0);
+    }
+  };
+  
+  // Přepsat notifyListeners aby volal všechny callbacky
+  const originalNotifyListeners = notifyListeners;
+  notifyListeners = function() {
+    originalNotifyListeners();
+    
+    // Zavolat všechny registrované listenery
+    const { user, profile } = window.kartaoAuth;
+    authListeners.forEach(callback => {
+      try {
+        callback(user, profile);
+      } catch (err) {
+        console.error('🔐 Auth Unified: Listener error:', err);
+      }
+    });
+  };
+
   window.kartaoAuth.setupLogoutButtons = function() {
     // Desktop logout - různé ID
     const logoutBtns = [
