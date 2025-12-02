@@ -2136,27 +2136,42 @@
        START – DOMContentLoaded
     ========================== */
     document.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide?.createIcons) lucide.createIcons();
+      // Počkej na Lucide před inicializací
+      const initApp = () => {
+        if (window.lucide?.createIcons) lucide.createIcons();
 
-      readQS();
+        readQS();
 
-      window.q = document.getElementById('q');
-      window.platform = document.getElementById('platform');
-      window.mode = document.getElementById('mode');
-      window.category = document.getElementById('category');
-      window.city = document.getElementById('city');
-      window.sort = document.getElementById('sort');
-      window.pageSize = document.getElementById('pageSize');
-      window.priceRange = document.getElementById('priceRange');
-      window.minFollowers = document.getElementById('minFollowers');
-      window.premiumOnly = document.getElementById('premiumOnly');
-      window.infinite = document.getElementById('infinite');
+        window.q = document.getElementById('q');
+        window.platform = document.getElementById('platform');
+        window.mode = document.getElementById('mode');
+        window.category = document.getElementById('category');
+        window.city = document.getElementById('city');
+        window.sort = document.getElementById('sort');
+        window.pageSize = document.getElementById('pageSize');
+        window.priceRange = document.getElementById('priceRange');
+        window.minFollowers = document.getElementById('minFollowers');
+        window.premiumOnly = document.getElementById('premiumOnly');
+        window.infinite = document.getElementById('infinite');
 
-      syncInputsFromState();
-      writeQS();
-      
-      // Načteme tvůrce a zobrazíme
-      loadAllCreators().then(() => render());
+        syncInputsFromState();
+        writeQS();
+        
+        // Načteme tvůrce a zobrazíme
+        loadAllCreators().then(() => render());
+      };
+
+      // Pokud je Lucide připravené, běž hned, jinak počkej
+      if (window.lucide) {
+        initApp();
+      } else {
+        const checkLucide = setInterval(() => {
+          if (window.lucide) {
+            clearInterval(checkLucide);
+            initApp();
+          }
+        }, 50);
+      }
 
       if (q) {
         q.addEventListener('input', async e => {
