@@ -773,7 +773,18 @@
 
         <select id="city" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
           <option value="all">Celá ČR</option>
-          <!-- Města se načtou dynamicky z databáze -->
+          <!-- Hlavní města -->
+          <option>Praha</option>
+          <option>Brno</option>
+          <option>Ostrava</option>
+          <option>Plzeň</option>
+          <option>Liberec</option>
+          <option>Olomouc</option>
+          <option>Zlín</option>
+          <option>Hradec Králové</option>
+          <option>České Budějovice</option>
+          <option>Pardubice</option>
+          <!-- Další města se doplní dynamicky z databáze -->
         </select>
 
         <select id="sort" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
@@ -1375,19 +1386,40 @@
       const citySelect = document.getElementById('city');
       if (!citySelect) return;
 
-      // Použij cache nebo načti znovu
-      const cities = citiesCache || await loadCitiesData();
+      // Získáme města, která už jsou v selectu (hardcoded)
+      const existingCities = Array.from(citySelect.options)
+        .map(opt => opt.value)
+        .filter(val => val !== 'all');
 
-      // Naplň města
+      // Načteme všechna města z databáze
+      const allCities = citiesCache || await loadCitiesData();
+
+      // Najdeme nová města, která ještě nejsou v selectu
+      const newCities = allCities.filter(city => !existingCities.includes(city));
+
+      // Uložíme aktuální výběr
       const currentCity = citySelect.value;
-      citySelect.innerHTML = '<option value="all">Celá ČR</option>';
-      cities.forEach(city => {
-        const option = document.createElement('option');
-        option.value = city;
-        option.textContent = city;
-        citySelect.appendChild(option);
-      });
-      if (currentCity && cities.includes(currentCity)) {
+
+      // Přidáme nová města na konec (za hardcoded města)
+      if (newCities.length > 0) {
+        // Přidáme oddělovač pokud jsou nová města
+        const separator = document.createElement('option');
+        separator.disabled = true;
+        separator.textContent = '─── Další města ───';
+        citySelect.appendChild(separator);
+
+        newCities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+
+        console.log('✅ Přidáno', newCities.length, 'nových měst k', existingCities.length, 'hlavním městům');
+      }
+
+      // Obnovíme předchozí výběr
+      if (currentCity && (existingCities.includes(currentCity) || allCities.includes(currentCity))) {
         citySelect.value = currentCity;
       }
     }
