@@ -892,7 +892,23 @@
           <span>tvůrců</span>
           <span id="modeBadge" class="ml-2 inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
         </div>
-        <div class="hidden md:flex items-center gap-2 text-xs" id="platformTags"></div>
+        <div class="hidden md:flex items-center gap-2 text-xs">
+          <span class="tag">
+            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Facebook
+          </span>
+          <span class="tag">
+            <i data-lucide="instagram" class="w-3.5 h-3.5"></i> Instagram
+          </span>
+          <span class="tag">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i> TikTok
+          </span>
+          <span class="tag">
+            <i data-lucide="youtube" class="w-3.5 h-3.5"></i> YouTube
+          </span>
+          <span class="tag">
+            <i data-lucide="pin" class="w-3.5 h-3.5"></i> Pinterest
+          </span>
+        </div>
       </div>
 
       <div id="grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -1827,17 +1843,6 @@
         pagination.appendChild(pager);
       } else {
         sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
-      }
-
-      const pt = document.getElementById('platformTags');
-      if (pt) {
-        pt.innerHTML = '';
-        PLATFORMS.forEach(p => {
-          const s = document.createElement('span');
-          s.className = 'tag ' + (state.platform === p.id ? 'ring-1 ring-fuchsia-500' : '');
-          s.innerHTML = `<i data-lucide="${p.icon}" class="w-3.5 h-3.5"></i> ${p.label}`;
-          pt.appendChild(s);
-        });
       }
 
       if (window.lucide?.createIcons) {
