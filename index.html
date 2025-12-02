@@ -2177,6 +2177,158 @@
         
         // Načteme tvůrce a zobrazíme
         loadAllCreators().then(() => render());
+
+        // Event listenery pro filtry
+        if (q) {
+          q.addEventListener('input', async e => {
+            state.q = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (platform) {
+          platform.addEventListener('change', async e => {
+            state.platform = e.target.value;
+            syncInputsFromState();
+            await resetPageAndRender();
+          });
+        }
+        if (mode) {
+          mode.addEventListener('change', async e => {
+            state.mode = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (category) {
+          category.addEventListener('change', async e => {
+            state.category = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (city) {
+          city.addEventListener('change', async e => {
+            state.city = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (sort) {
+          sort.addEventListener('change', async e => {
+            state.sort = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (pageSize) {
+          pageSize.addEventListener('change', async e => {
+            state.pageSize = Number(e.target.value);
+            await resetPageAndRender();
+          });
+        }
+
+        const priceRangeSelect = document.getElementById('priceRange');
+        const minRating = document.getElementById('minRating');
+        const minFollowersInput = document.getElementById('minFollowers');
+        const premiumOnlyInput = document.getElementById('premiumOnly');
+        const infiniteInput = document.getElementById('infinite');
+
+        if (priceRangeSelect) {
+          priceRangeSelect.addEventListener('change', async e => {
+            state.priceRange = e.target.value;
+            await resetPageAndRender();
+          });
+        }
+        if (minRating) {
+          minRating.addEventListener('change', async e => {
+            state.minRating = Number(e.target.value);
+            await resetPageAndRender();
+          });
+        }
+        if (minFollowersInput) {
+          minFollowersInput.addEventListener('input', async e => {
+            const v = e.target.value.trim();
+            state.minFollowers = v ? Number(v) : null;
+            await resetPageAndRender();
+          });
+        }
+        if (premiumOnlyInput) {
+          premiumOnlyInput.addEventListener('change', async e => {
+            state.premiumOnly = e.target.checked;
+            await resetPageAndRender();
+          });
+        }
+        if (infiniteInput) {
+          infiniteInput.addEventListener('change', async e => {
+            state.infinite = e.target.checked;
+            await resetPageAndRender();
+          });
+        }
+
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener('click', async () => {
+            state.q = '';
+            state.platform = 'all';
+            state.category = 'all';
+            state.city = 'all';
+            state.sort = 'relevance';
+            state.priceRange = 'all';
+            state.minRating = 0;
+            state.minFollowers = null;
+            state.premiumOnly = false;
+            state.infinite = false;
+            state.pageSize = 12;
+            state.page = 1;
+
+            syncInputsFromState();
+            await resetPageAndRender();
+          });
+        }
+
+        const advancedBtn = document.getElementById('advancedBtn');
+        const advancedWrap = document.getElementById('advancedWrap');
+        if (advancedBtn && advancedWrap) {
+          advancedBtn.addEventListener('click', () => {
+            const isHidden = advancedWrap.classList.contains('hidden');
+            advancedWrap.classList.toggle('hidden');
+            
+            // Změna textu a ikony tlačítka
+            const icon = advancedBtn.querySelector('i');
+            const text = isHidden ? 'Skrýt' : 'Pokročilé';
+            const iconName = isHidden ? 'chevron-up' : 'filter';
+            
+            advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 mr-1.5"></i> ${text}`;
+            if (window.lucide?.createIcons) lucide.createIcons();
+            
+            // Focus na rozpočet když se otevře
+            if (isHidden) {
+              const priceRange = document.getElementById('priceRange');
+              if (priceRange) setTimeout(() => priceRange.focus(), 100);
+            }
+          });
+        }
+
+        const overlayBg = document.getElementById('overlayBg');
+        if (overlayBg) overlayBg.addEventListener('click', closeDetail);
+        const closeDrawerBtn = document.getElementById('closeDrawer');
+        if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDetail);
+
+        const sent = document.getElementById('sentinel');
+        if (sent) {
+          const io = new IntersectionObserver(
+            entries => {
+              if (!state.infinite) return;
+              if (entries.some(e => e.isIntersecting)) {
+                const all = applyFilters();
+                const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
+                if (state.page < pageCount) {
+                  state.page++;
+                  writeQS();
+                  render();
+                }
+              }
+            },
+            { rootMargin: '200px' }
+          );
+          io.observe(sent);
+        }
       };
 
       // Pokud je Lucide připravené, běž hned, jinak počkej
@@ -2189,157 +2341,6 @@
             initApp();
           }
         }, 50);
-      }
-
-      if (q) {
-        q.addEventListener('input', async e => {
-          state.q = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (platform) {
-        platform.addEventListener('change', async e => {
-          state.platform = e.target.value;
-          syncInputsFromState();
-          await resetPageAndRender();
-        });
-      }
-      if (mode) {
-        mode.addEventListener('change', async e => {
-          state.mode = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (category) {
-        category.addEventListener('change', async e => {
-          state.category = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (city) {
-        city.addEventListener('change', async e => {
-          state.city = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (sort) {
-        sort.addEventListener('change', async e => {
-          state.sort = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (pageSize) {
-        pageSize.addEventListener('change', async e => {
-          state.pageSize = Number(e.target.value);
-          await resetPageAndRender();
-        });
-      }
-
-      const priceRangeSelect = document.getElementById('priceRange');
-      const minRating = document.getElementById('minRating');
-      const minFollowersInput = document.getElementById('minFollowers');
-      const premiumOnlyInput = document.getElementById('premiumOnly');
-      const infiniteInput = document.getElementById('infinite');
-
-      if (priceRangeSelect) {
-        priceRangeSelect.addEventListener('change', async e => {
-          state.priceRange = e.target.value;
-          await resetPageAndRender();
-        });
-      }
-      if (minRating) {
-        minRating.addEventListener('change', async e => {
-          state.minRating = Number(e.target.value);
-          await resetPageAndRender();
-        });
-      }
-      if (minFollowersInput) {
-        minFollowersInput.addEventListener('input', async e => {
-          const v = e.target.value.trim();
-          state.minFollowers = v ? Number(v) : null;
-          await resetPageAndRender();
-        });
-      }
-      if (premiumOnlyInput) {
-        premiumOnlyInput.addEventListener('change', async e => {
-          state.premiumOnly = e.target.checked;
-          await resetPageAndRender();
-        });
-      }
-      if (infiniteInput) {
-        infiniteInput.addEventListener('change', async e => {
-          state.infinite = e.target.checked;
-          await resetPageAndRender();
-        });
-      }
-
-      const resetFiltersBtn = document.getElementById('resetFilters');
-      if (resetFiltersBtn) {
-        resetFiltersBtn.addEventListener('click', async () => {
-          state.q = '';
-          state.platform = 'all';
-          state.category = 'all';
-          state.city = 'all';
-          state.sort = 'relevance';
-          state.priceRange = 'all';
-          state.minRating = 0;
-          state.minFollowers = null;
-          state.premiumOnly = false;
-          state.infinite = false;
-          state.pageSize = 12;
-          state.page = 1;
-
-          syncInputsFromState();
-          await resetPageAndRender();
-        });
-      }
-
-      const advancedBtn = document.getElementById('advancedBtn');
-      const advancedWrap = document.getElementById('advancedWrap');
-      if (advancedBtn && advancedWrap) {
-        advancedBtn.addEventListener('click', () => {
-          const isHidden = advancedWrap.classList.contains('hidden');
-          advancedWrap.classList.toggle('hidden');
-          
-          // Změna textu a ikony tlačítka
-          const icon = advancedBtn.querySelector('i');
-          const text = isHidden ? 'Skrýt' : 'Pokročilé';
-          const iconName = isHidden ? 'chevron-up' : 'filter';
-          
-          advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 mr-1.5"></i> ${text}`;
-          if (window.lucide?.createIcons) lucide.createIcons();
-          
-          // Focus na rozpočet když se otevře
-          if (isHidden) {
-            const priceRange = document.getElementById('priceRange');
-            if (priceRange) setTimeout(() => priceRange.focus(), 100);
-          }
-        });
-      }
-
-      const overlayBg = document.getElementById('overlayBg');
-      if (overlayBg) overlayBg.addEventListener('click', closeDetail);
-      const closeDrawerBtn = document.getElementById('closeDrawer');
-      if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDetail);
-
-      const sent = document.getElementById('sentinel');
-      if (sent) {
-        const io = new IntersectionObserver(
-          entries => {
-            if (!state.infinite) return;
-            if (entries.some(e => e.isIntersecting)) {
-              const all = applyFilters();
-              const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
-              if (state.page < pageCount) {
-                state.page++;
-                writeQS();
-                render();
-              }
-            }
-          },
-          { rootMargin: '200px' }
-        );
-        io.observe(sent);
       }
     });
 
