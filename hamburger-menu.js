@@ -411,18 +411,32 @@ if (typeof window !== 'undefined') {
  * Auto-detekce typu uživatele a inicializace
  */
 async function autoInitHamburgerMenu() {
+  console.log('🍔 autoInitHamburgerMenu: Start detekce...');
+  
   try {
     // Zkusit získat data z Supabase
     if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
-      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      console.log('🍔 autoInitHamburgerMenu: Supabase client nalezen');
+      
+      const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+      
+      if (userError) {
+        console.warn('🍔 autoInitHamburgerMenu: Chyba při získání uživatele:', userError);
+      }
       
       if (user) {
+        console.log('🍔 autoInitHamburgerMenu: User nalezen:', user.email);
+        
         // Získat metadata uživatele
         const { data: profile, error } = await window.supabaseClient
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
+        
+        if (error) {
+          console.warn('🍔 autoInitHamburgerMenu: Chyba při načítání profilu:', error);
+        }
         
         if (profile && !error) {
           const userType = profile.is_company ? 'company' : 'creator';
@@ -435,8 +449,14 @@ async function autoInitHamburgerMenu() {
           console.log('🍔 Hamburger Menu: Inicializace pro', userType, userData);
           initHamburgerMenu(userType, userData);
           return;
+        } else {
+          console.log('🍔 autoInitHamburgerMenu: Profil nenalezen, používám guest menu');
         }
+      } else {
+        console.log('🍔 autoInitHamburgerMenu: Žádný přihlášený uživatel');
       }
+    } else {
+      console.log('🍔 autoInitHamburgerMenu: Supabase client není dostupný');
     }
     
     // Fallback - nepřihlášený uživatel
@@ -451,6 +471,11 @@ async function autoInitHamburgerMenu() {
 
 // Posluchač na auth změny
 if (typeof window !== 'undefined') {
+  window.addEventListener('supabase-initialized', () => {
+    console.log('🍔 Hamburger Menu: Supabase inicializován, spouštím detekci...');
+    setTimeout(() => autoInitHamburgerMenu(), 100);
+  });
+  
   window.addEventListener('supabase-auth-ready', () => {
     console.log('🍔 Hamburger Menu: Supabase auth ready, reinicializace...');
     autoInitHamburgerMenu();
@@ -468,22 +493,29 @@ if (typeof window !== 'undefined') {
 }
 
 // Auto-init při načtení stránky (pokud existují menu elementy)
+// Primárně spoléháme na event systém, ale jako fallback inicializujeme guest menu
 if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       if (document.getElementById('menuToggle') && document.getElementById('mobileMenu')) {
-        // Počkat chvíli na Supabase
+        // Fallback - pokud po 2s nejsou žádné eventy, zobraz guest menu
         setTimeout(() => {
-          autoInitHamburgerMenu();
-        }, 500);
+          if (!document.getElementById('menuContent').innerHTML) {
+            console.log('🍔 Hamburger Menu: Fallback init (guest)');
+            initHamburgerMenu('guest');
+          }
+        }, 2000);
       }
     });
   } else {
     if (document.getElementById('menuToggle') && document.getElementById('mobileMenu')) {
-      // Počkat chvíli na Supabase
+      // Fallback
       setTimeout(() => {
-        autoInitHamburgerMenu();
-      }, 500);
+        if (!document.getElementById('menuContent').innerHTML) {
+          console.log('🍔 Hamburger Menu: Fallback init (guest)');
+          initHamburgerMenu('guest');
+        }
+      }, 2000);
     }
   }
 }

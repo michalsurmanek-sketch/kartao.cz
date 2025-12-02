@@ -21,4 +21,7 @@ if (typeof supabaseConfig === "undefined") {
   window.sb = window.supabaseClient;
   
   console.log("✅ Supabase připraveno");
+  
+  // Vyvolat event pro ostatní komponenty
+  window.dispatchEvent(new CustomEvent('supabase-initialized'));
 }
