@@ -25,16 +25,45 @@ function initHamburgerMenu() {
     mobileMenu.classList.remove('hidden');
     menuToggle.setAttribute('aria-expanded', 'true');
     
-    // Force reflow pro animaci
-    mobileMenu.offsetHeight;
-    
-    // Animace panelu
-    if (menuPanel) {
-      menuPanel.classList.remove('-translate-x-full');
+    // Animace ikony hamburgeru
+    const menuIcon = menuToggle.querySelector('[data-lucide="menu"]');
+    if (menuIcon) {
+      menuIcon.style.transform = 'rotate(90deg)';
+      menuIcon.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     }
+    
+    // Force reflow pro animaci
+    requestAnimationFrame(() => {
+      // Animace backdrop
+      if (menuBackdrop) {
+        menuBackdrop.classList.remove('opacity-0');
+        menuBackdrop.classList.add('opacity-100');
+      }
+      
+      // Animace panelu s plynulou křivkou
+      if (menuPanel) {
+        menuPanel.classList.remove('-translate-x-full');
+        menuPanel.classList.add('translate-x-0');
+      }
+    });
     
     // Zamknout scroll
     document.body.style.overflow = 'hidden';
+    
+    // Animace položek menu (staggered fade-in)
+    const menuItems = mobileMenu.querySelectorAll('nav a, nav button');
+    menuItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(-20px)';
+      item.style.transition = `opacity 0.3s ease-out ${index * 0.05}s, transform 0.3s ease-out ${index * 0.05}s`;
+      
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateX(0)';
+        }, 50);
+      });
+    });
     
     // Reinicializace Lucide ikon v menu
     if (typeof lucide !== 'undefined') {
@@ -48,7 +77,21 @@ function initHamburgerMenu() {
   function closeMenu() {
     menuToggle.setAttribute('aria-expanded', 'false');
     
+    // Animace ikony hamburgeru zpět
+    const menuIcon = menuToggle.querySelector('[data-lucide="menu"]');
+    if (menuIcon) {
+      menuIcon.style.transform = 'rotate(0deg)';
+    }
+    
+    // Animace backdrop fade out
+    if (menuBackdrop) {
+      menuBackdrop.classList.remove('opacity-100');
+      menuBackdrop.classList.add('opacity-0');
+    }
+    
+    // Animace panelu slide out
     if (menuPanel) {
+      menuPanel.classList.remove('translate-x-0');
       menuPanel.classList.add('-translate-x-full');
     }
     
