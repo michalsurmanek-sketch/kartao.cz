@@ -2,10 +2,8 @@
 // AUTH.JS – Supabase Edition – Kartao.cz
 // ==========================================
 
-const sb = window.supabaseClient || window.sb;
-
-if (!sb) {
-  console.error("❌ Supabase client není dostupný. Zkontroluj supabase-init.js");
+function getSupabaseClient() {
+  return window.supabaseClient || window.sb;
 }
 
 // ==========================================
@@ -16,6 +14,9 @@ if (!sb) {
  * Přihlášení e-mailem a heslem
  */
 async function loginWithEmail(email, password) {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   const { data, error } = await sb.auth.signInWithPassword({
     email,
     password
@@ -29,6 +30,9 @@ async function loginWithEmail(email, password) {
  * Registrace e-mailem a heslem
  */
 async function registerWithEmail(email, password, role = "influencer") {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   // 1. Vytvoř auth uživatele
   const { data: authData, error: authError } = await sb.auth.signUp({
     email,
@@ -68,6 +72,9 @@ async function registerWithEmail(email, password, role = "influencer") {
  * Přihlášení přes Google
  */
 async function loginWithGoogle(role = "influencer") {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -91,6 +98,9 @@ async function loginWithGoogle(role = "influencer") {
  * Odhlášení
  */
 async function logout() {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   const { error } = await sb.auth.signOut();
   if (error) throw error;
 }
@@ -99,6 +109,9 @@ async function logout() {
  * Získat aktuálního uživatele
  */
 async function getCurrentUser() {
+  const sb = getSupabaseClient();
+  if (!sb) return null;
+  
   const { data: { user } } = await sb.auth.getUser();
   return user;
 }
@@ -107,19 +120,26 @@ async function getCurrentUser() {
  * Auth state listener (jako Firebase onAuthStateChanged)
  */
 function onAuthStateChanged(callback) {
+  const sb = getSupabaseClient();
+  if (!sb) {
+    console.error("Supabase client není dostupný");
+    return () => {};
+  }
+  
   // Okamžitě zavolej s aktuálním userem
-  sb.auth.getUser().then(({ data: { user } }) => {
+  (async () => {
+    const { data: { user } } = await sb.auth.getUser();
     callback(user);
-  });
+  })();
   
   // Poslouchej změny
-  const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+  const { data: authListener } = sb.auth.onAuthStateChange((event, session) => {
     callback(session?.user || null);
   });
   
   // Vrať funkci pro unsubscribe
   return () => {
-    subscription.unsubscribe();
+    authListener?.subscription?.unsubscribe();
   };
 }
 
@@ -127,6 +147,9 @@ function onAuthStateChanged(callback) {
  * Resetování hesla
  */
 async function resetPassword(email) {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   const { error } = await sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/reset-password.html'
   });
@@ -138,6 +161,9 @@ async function resetPassword(email) {
  * Aktualizace hesla (po resetu)
  */
 async function updatePassword(newPassword) {
+  const sb = getSupabaseClient();
+  if (!sb) throw new Error("Supabase client není dostupný");
+  
   const { error } = await sb.auth.updateUser({
     password: newPassword
   });
