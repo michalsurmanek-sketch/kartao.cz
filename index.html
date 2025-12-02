@@ -774,16 +774,16 @@
         <select id="city" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
           <option value="all">Celá ČR</option>
           <!-- Hlavní města -->
-          <option>Praha</option>
-          <option>Brno</option>
-          <option>Ostrava</option>
-          <option>Plzeň</option>
-          <option>Liberec</option>
-          <option>Olomouc</option>
-          <option>Zlín</option>
-          <option>Hradec Králové</option>
-          <option>České Budějovice</option>
-          <option>Pardubice</option>
+          <option value="Praha">Praha</option>
+          <option value="Brno">Brno</option>
+          <option value="Ostrava">Ostrava</option>
+          <option value="Plzeň">Plzeň</option>
+          <option value="Liberec">Liberec</option>
+          <option value="Olomouc">Olomouc</option>
+          <option value="Zlín">Zlín</option>
+          <option value="Hradec Králové">Hradec Králové</option>
+          <option value="České Budějovice">České Budějovice</option>
+          <option value="Pardubice">Pardubice</option>
           <!-- Další města se doplní dynamicky z databáze -->
         </select>
 
@@ -1384,15 +1384,25 @@
 
     async function populateCities() {
       const citySelect = document.getElementById('city');
-      if (!citySelect) return;
+      if (!citySelect) {
+        console.warn('⚠️ City select element nenalezen');
+        return;
+      }
 
       // Získáme města, která už jsou v selectu (hardcoded)
       const existingCities = Array.from(citySelect.options)
         .map(opt => opt.value)
         .filter(val => val !== 'all');
 
+      console.log('📍 Hardcoded měst:', existingCities.length, existingCities);
+
       // Načteme všechna města z databáze
       const allCities = citiesCache || await loadCitiesData();
+
+      if (!allCities || allCities.length === 0) {
+        console.log('ℹ️ Zatím žádná další města v databázi');
+        return;
+      }
 
       // Najdeme nová města, která ještě nejsou v selectu
       const newCities = allCities.filter(city => !existingCities.includes(city));
@@ -1416,6 +1426,8 @@
         });
 
         console.log('✅ Přidáno', newCities.length, 'nových měst k', existingCities.length, 'hlavním městům');
+      } else {
+        console.log('ℹ️ Všechna města z DB už jsou v selectu');
       }
 
       // Obnovíme předchozí výběr
