@@ -34,8 +34,8 @@ const MENU_CONFIGS = {
       {
         label: 'Účet',
         items: [
-          { href: 'kartao-prihlaseni.html', icon: 'log-in', text: 'Přihlásit se', color: 'green' },
-          { href: 'kartao-registrace.html', icon: 'user-plus', text: 'Registrovat se', color: 'blue' }
+          { href: 'login.html', icon: 'log-in', text: 'Přihlásit se', color: 'green' },
+          { href: 'login.html', icon: 'user-plus', text: 'Registrovat se', color: 'blue' }
         ]
       }
     ]
