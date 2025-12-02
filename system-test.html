@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Systémový Test - Kartao.cz</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -127,7 +129,6 @@
                 
                 // Reinitialize icons
                 if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
                 }
             }
 
@@ -193,7 +194,6 @@
                 document.getElementById('test-results').innerHTML += summaryHTML;
                 
                 if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
                 }
             }
         }
@@ -204,7 +204,6 @@
             
             // Initialize icons
             if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
             }
 
             document.getElementById('run-tests').addEventListener('click', () => {

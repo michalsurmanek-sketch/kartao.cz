@@ -27,7 +27,9 @@
   </script>
 
   <!-- Ikony -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
 
@@ -143,7 +145,6 @@
   <script>
     // Inicializace ikon
     if (window.lucide) {
-      lucide.createIcons();
     }
 
     let allCreators = [];
@@ -193,7 +194,6 @@
       grid.innerHTML = creators.map(creator => createCreatorCard(creator)).join('');
 
       if (window.lucide) {
-        lucide.createIcons();
       }
     }
 

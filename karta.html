@@ -32,7 +32,9 @@
   </script>
 
   <!-- Ikony -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
 
@@ -251,7 +253,6 @@
   <script>
     // Inicializace ikon
     if (window.lucide) {
-      lucide.createIcons();
     }
 
     // Supabase init - INLINE pro spolehlivost
@@ -350,7 +351,6 @@
 
         // Re-init icons po zobrazení profilu
         if (window.lucide) {
-          lucide.createIcons();
         }
 
       } catch (error) {
@@ -540,7 +540,6 @@
 
       // Aktualizuj ikony
       if (window.lucide) {
-        lucide.createIcons();
       }
     }
 
@@ -548,7 +547,6 @@
       document.getElementById('loadingState').classList.add('hidden');
       document.getElementById('errorState').classList.remove('hidden');
       if (window.lucide) {
-        lucide.createIcons();
       }
     }
 
@@ -570,7 +568,6 @@
       
       // Re-init icons after dynamic content
       if (window.lucide) {
-        lucide.createIcons();
       }
     });
   </script>

@@ -1,0 +1,42 @@
+<!-- ==========================================
+     KARTAO STANDARD HEAD - COMPLETE
+     Standardní <head> pro všechny stránky projektu
+     Použití: Zkopíruj tento blok do každé HTML stránky
+     ========================================== -->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- TITLE - přizpůsob pro každou stránku -->
+  <title>Kartao.cz - [název stránky]</title>
+  
+  <!-- Meta Description - přizpůsob pro každou stránku -->
+  <meta name="description" content="[Popis stránky pro SEO]" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  
+  <!-- === TAILWIND CSS === -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+  
+  <!-- === LUCIDE ICONS === -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <!-- === SUPABASE === -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- === KARTAO CORE SCRIPTS (v tomto pořadí!) === -->
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="auth-unified.js"></script>
+  <script src="hamburger-menu.js"></script>
+  <script src="icons-loader.js"></script>
+  <script src="credits-system-supabase.js"></script>
+  
+  <!-- Performance optimizations -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://hrmrgudiindtnfaaiyyg.supabase.co" />
+</head>

@@ -7,7 +7,9 @@
   <meta name="description" content="Kompletní mapa webu Kartao.cz – přehled všech stránek influencer platformy." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
@@ -559,7 +561,6 @@
       });
 
       // Initialize Lucide icons
-      lucide.createIcons();
     });
   </script>
 
@@ -572,7 +573,6 @@
   <!-- 5. Initialize Lucide Icons -->
   <script>
     if (typeof lucide !== "undefined") {
-      lucide.createIcons();
     }
   </script>
 

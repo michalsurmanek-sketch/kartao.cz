@@ -86,7 +86,9 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
@@ -166,7 +168,6 @@
         handle: 'testuser',
         avatar_url: 'https://i.pravatar.cc/150?img=12'
       });
-      lucide.createIcons();
     }
 
     // Check every 2s
@@ -174,7 +175,6 @@
     checkStatus();
 
     // Initialize Lucide
-    lucide.createIcons();
 
     // Auth listener
     if (window.kartaoAuth) {

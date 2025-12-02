@@ -110,7 +110,9 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
   <script src="hamburger-menu.js"></script>
   
   <script>
@@ -123,7 +125,6 @@
       try {
         window.HamburgerMenu.init('guest');
         updateStatus('✓ Guest menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
-        lucide.createIcons();
       } catch (error) {
         updateStatus('✗ Chyba: ' + error.message);
         console.error(error);
@@ -139,7 +140,6 @@
           avatar_url: 'https://i.pravatar.cc/150?img=12'
         });
         updateStatus('✓ Creator menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
-        lucide.createIcons();
       } catch (error) {
         updateStatus('✗ Chyba: ' + error.message);
         console.error(error);
@@ -155,7 +155,6 @@
           avatar_url: 'https://i.pravatar.cc/150?img=5'
         });
         updateStatus('✓ Company menu úspěšně inicializováno! Klikněte na hamburger ikonu.');
-        lucide.createIcons();
       } catch (error) {
         updateStatus('✗ Chyba: ' + error.message);
         console.error(error);

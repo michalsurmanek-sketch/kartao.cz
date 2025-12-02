@@ -28,7 +28,9 @@
   </script>
 
   <!-- Ikony -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
 
   <style>
     /* ✨ Mystery Box – animace a efekty */
@@ -334,7 +336,6 @@
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
-        lucide.createIcons();
       }
     });
   </script>

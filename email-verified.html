@@ -7,7 +7,9 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>✉️</text></svg>">
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide ikony - unified system -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
   
   <!-- Supabase + Unified Auth -->
   <script src="supabase-init.js"></script>
@@ -102,7 +104,6 @@
 
   <script>
     // Inicializace Lucide ikon
-    lucide.createIcons();
 
     // Získání parametrů z URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -124,7 +125,6 @@
     function showSuccess() {
       loadingEl.classList.add('hidden');
       successEl.classList.remove('hidden');
-      lucide.createIcons();
       
       // Odpočítávání
       let seconds = 3;
@@ -148,13 +148,11 @@
       } else {
         document.getElementById('error-details').classList.add('hidden');
       }
-      lucide.createIcons();
     }
 
     function showInvalid() {
       loadingEl.classList.add('hidden');
       invalidEl.classList.remove('hidden');
-      lucide.createIcons();
     }
 
     // Hlavní logika
