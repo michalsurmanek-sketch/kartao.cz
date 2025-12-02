@@ -2321,14 +2321,6 @@
           userService = new UserService();
         }
       })();
-
-      // Poslouchat změny auth stavu
-      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && !creatorService) {
-          creatorService = new CreatorService();
-          userService = new UserService();
-        }
-      });
     }
   </script>
 
@@ -2350,6 +2342,8 @@
     }
 
     if (window.supabaseClient) {
+      let userDataCache = null;
+      
       // Auth state listener
       window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
         const notLoggedIn = document.getElementById('desktop-not-logged-in');
@@ -2364,20 +2358,34 @@
           const userEmail = document.getElementById('desktop-user-email');
           const userAvatar = document.getElementById('desktop-user-avatar');
 
-          // Načti creator data pro jméno
-          const { data: creator } = await window.supabaseClient
-            .from('creators')
-            .select('name')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (userName) userName.textContent = creator?.name || user.email?.split('@')[0] || 'Uživatel';
+          // Okamžitě zobraz email, pak načti jméno
+          const emailName = user.email?.split('@')[0] || 'Uživatel';
+          if (userName) userName.textContent = emailName;
           if (userEmail) userEmail.textContent = user.email || '';
           if (userAvatar) {
-            const initial = (creator?.name || user.email || '?')[0].toUpperCase();
+            const initial = emailName[0].toUpperCase();
             userAvatar.textContent = initial;
           }
+
+          // Načti creator data v pozadí (jen pokud není v cache)
+          if (!userDataCache || userDataCache.id !== user.id) {
+            const { data: creator } = await window.supabaseClient
+              .from('creators')
+              .select('name')
+              .eq('id', user.id)
+              .maybeSingle();
+            
+            if (creator?.name) {
+              userDataCache = { id: user.id, name: creator.name };
+              if (userName) userName.textContent = creator.name;
+              if (userAvatar) userAvatar.textContent = creator.name[0].toUpperCase();
+            }
+          } else if (userDataCache.name) {
+            if (userName) userName.textContent = userDataCache.name;
+            if (userAvatar) userAvatar.textContent = userDataCache.name[0].toUpperCase();
+          }
         } else {
+          userDataCache = null;
           if (notLoggedIn) notLoggedIn.classList.remove('hidden');
           if (loggedIn) loggedIn.classList.add('hidden');
         }
