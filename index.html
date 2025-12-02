@@ -2129,7 +2129,6 @@
     async function resetPageAndRender() {
       state.page = 1;
       writeQS();
-      await loadAllCreators();
       render();
     }
 
