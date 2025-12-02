@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo: Hamburger Menu - Kartao.cz</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      min-height: 100vh;
+      color: white;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur-lg bg-neutral-950/70 border-b border-white/10">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div class="font-extrabold text-lg">Kartao.cz</div>
+        </a>
+
+        <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+          <span class="sr-only">Otevřít menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Demo Content -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold mb-4">🍔 Hamburger Menu Demo</h1>
+      <p class="text-white/70 text-lg">Vyzkoušejte tři různé varianty menu</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <!-- Guest Menu -->
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-500 to-gray-700 grid place-items-center mx-auto mb-4">
+          <i data-lucide="user-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2 text-center">Nepřihlášený</h3>
+        <p class="text-white/60 text-sm mb-4 text-center">Základní veřejné menu</p>
+        <button onclick="switchMenu('guest')" class="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 transition font-medium">
+          Zobrazit menu
+        </button>
+      </div>
+
+      <!-- Creator Menu -->
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 grid place-items-center mx-auto mb-4">
+          <i data-lucide="sparkles" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2 text-center">Tvůrce</h3>
+        <p class="text-white/60 text-sm mb-4 text-center">Dashboard pro influencery</p>
+        <button onclick="switchMenu('creator')" class="w-full py-3 px-4 rounded-xl bg-fuchsia-500/20 hover:bg-fuchsia-500/30 border border-fuchsia-500/40 hover:border-fuchsia-500/60 transition font-medium">
+          Zobrazit menu
+        </button>
+      </div>
+
+      <!-- Company Menu -->
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 grid place-items-center mx-auto mb-4">
+          <i data-lucide="building-2" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2 text-center">Firma</h3>
+        <p class="text-white/60 text-sm mb-4 text-center">Dashboard pro společnosti</p>
+        <button onclick="switchMenu('company')" class="w-full py-3 px-4 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 hover:border-blue-500/60 transition font-medium">
+          Zobrazit menu
+        </button>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="mt-16 max-w-3xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6 text-center">✨ Funkce</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+          <i data-lucide="zap" class="w-5 h-5 text-amber-400 mt-1 flex-shrink-0"></i>
+          <div>
+            <div class="font-semibold mb-1">Plynulé animace</div>
+            <div class="text-sm text-white/60">Rotace ikony, fade-in backdrop, staggered menu items</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+          <i data-lucide="users" class="w-5 h-5 text-blue-400 mt-1 flex-shrink-0"></i>
+          <div>
+            <div class="font-semibold mb-1">Dynamické menu</div>
+            <div class="text-sm text-white/60">Různé položky podle typu uživatele</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+          <i data-lucide="palette" class="w-5 h-5 text-fuchsia-400 mt-1 flex-shrink-0"></i>
+          <div>
+            <div class="font-semibold mb-1">Barevné ikony</div>
+            <div class="text-sm text-white/60">Každá položka má vlastní barvu při hoveru</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+          <i data-lucide="user-circle" class="w-5 h-5 text-emerald-400 mt-1 flex-shrink-0"></i>
+          <div>
+            <div class="font-semibold mb-1">User sekce</div>
+            <div class="text-sm text-white/60">Avatar a jméno pro přihlášené uživatele</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mobilní menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out"></div>
+    <div class="relative h-full flex flex-col items-stretch">
+      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-2xl -translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">
+        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
+          <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-extrabold">Kartao.cz</div>
+              <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
+            </div>
+          </a>
+          <button id="menuClose" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-red-500/20 hover:border-red-500/50 hover:scale-110 active:scale-95 flex items-center justify-center transition-all duration-200">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Dynamický obsah menu -->
+        <div id="menuContent">
+          <!-- Menu bude vygenerováno JavaScriptem -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="hamburger-menu.js"></script>
+  
+  <script>
+    // Demo switch funkce
+    function switchMenu(type) {
+      const demoUsers = {
+        guest: null,
+        creator: {
+          name: 'Jan Novák',
+          handle: 'jannovak',
+          avatar_url: 'https://i.pravatar.cc/150?img=12'
+        },
+        company: {
+          name: 'ACME Corporation',
+          handle: 'acmecorp',
+          avatar_url: 'https://i.pravatar.cc/150?img=5'
+        }
+      };
+
+      // Reinicializovat menu s novým typem
+      window.HamburgerMenu.init(type, demoUsers[type]);
+      
+      // Otevřít menu
+      document.getElementById('menuToggle').click();
+    }
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
