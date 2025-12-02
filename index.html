@@ -808,14 +808,14 @@
           <option value="newest">Nejnovější</option>
         </select>
 
-        <button id="advancedBtn" class="btn btn-primary md:col-span-1"><i data-lucide="filter" class="w-4 h-4"></i> Pokročilé</button>
+        <button id="advancedBtn" class="btn btn-primary md:col-span-1"><i data-lucide="filter" class="w-4 h-4 mr-1.5"></i> Pokročilé</button>
       </div>
 
       <!-- Pokročilé filtry -->
       <div class="mt-3 grid gap-3 md:grid-cols-6 hidden" id="advancedWrap">
         <div class="space-y-2">
           <label class="text-xs text-white/70">Rozpočet (Kč)</label>
-          <select id="priceRange" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
+          <select id="priceRange" class="w-full rounded-xl bg-neutral-900 border border-white/10 pl-3 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500">
             <option value="all">Jakýkoliv</option>
             <option value="0-1500">0 - 1 500 Kč</option>
             <option value="1501-3000">1 501 - 3 000 Kč</option>
@@ -2272,13 +2272,13 @@
           const text = isHidden ? 'Skrýt' : 'Pokročilé';
           const iconName = isHidden ? 'chevron-up' : 'filter';
           
-          advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i> ${text}`;
+          advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 mr-1.5"></i> ${text}`;
           if (window.lucide?.createIcons) lucide.createIcons();
           
-          // Focus na první input když se otevře
+          // Focus na rozpočet když se otevře
           if (isHidden) {
-            const firstInput = advancedWrap.querySelector('input, select');
-            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+            const priceRange = document.getElementById('priceRange');
+            if (priceRange) setTimeout(() => priceRange.focus(), 100);
           }
         });
       }
