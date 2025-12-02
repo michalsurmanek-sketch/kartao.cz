@@ -1387,15 +1387,23 @@
     // Města jsou přímo v HTML - žádné načítání z DB potřeba!
 
     async function loadAllCreators() {
-      if (isLoading) return;
+      if (isLoading) {
+        console.log('⏳ Už načítám, přeskakuji...');
+        return;
+      }
+      
+      console.log('🔍 Kontrola Supabase:', typeof window.supabaseClient);
+      
       if (typeof window.supabaseClient === 'undefined') {
-        console.warn('Supabase není inicializováno.');
+        console.error('❌ Supabase není inicializováno!');
         allCreators = [];
         return;
       }
 
       isLoading = true;
       const startTime = performance.now();
+      
+      console.log('📥 Načítám tvůrce z databáze...');
 
       try {
         const { data, error } = await window.supabaseClient
@@ -1471,6 +1479,7 @@
         allCreators = [];
       } finally {
         isLoading = false;
+        console.log('✅ Načítání dokončeno, volám render()');
       }
     }
 
@@ -2153,7 +2162,7 @@
     /* ==========================
        START – DOMContentLoaded
     ========================== */
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
       readQS();
@@ -2174,8 +2183,9 @@
       writeQS();
       
       // Načteme tvůrce a zobrazíme
-      await loadAllCreators();
-      render();
+      loadAllCreators().then(() => {
+        render();
+      });
 
       if (q) {
         q.addEventListener('input', async e => {
