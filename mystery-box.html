@@ -389,6 +389,12 @@
           // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
           creditSysInstance = new CreditsSystemSupabase();
           await creditSysInstance.init(user.uid);
+          
+          // Registruj callback pro real-time updates
+          creditSysInstance.onChange(function(newCredits) {
+            updateCreditsUI();
+          });
+          
           window.creditSys = creditSysInstance;
 
           // Počáteční zobrazení

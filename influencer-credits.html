@@ -289,6 +289,7 @@
 
           const val = creditsSystem.getCredits();
           updateCreditsDisplayLocal(val);
+          if (window.updateCreditsDisplay) window.updateCreditsDisplay(val);
 
           // Výběr balíčku
           const cards = document.querySelectorAll(".topup-card");
