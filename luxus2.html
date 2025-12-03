@@ -661,10 +661,15 @@
         return;
       }
       
+      // Ochrana proti duplicitnímu načítání
+      let isLoading = false;
+      
       // Auth state listener
       supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if (event === 'SIGNED_IN' && session?.user && !isLoading) {
+          isLoading = true;
           await loadUserData(session.user);
+          isLoading = false;
         } else if (event === 'SIGNED_OUT') {
           window.location.href = 'login.html';
         }
@@ -672,9 +677,13 @@
       
       // Spustit počáteční načtení
       const initUser = async () => {
+        if (isLoading) return; // Už se načítá
+        
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          isLoading = true;
           await loadUserData(user);
+          isLoading = false;
         } else {
           window.location.href = 'login.html';
         }
