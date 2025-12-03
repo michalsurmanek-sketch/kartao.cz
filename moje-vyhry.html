@@ -105,6 +105,7 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
+        lucide.createIcons();
       }
 
       const grid = document.getElementById("rewardsGrid");
@@ -196,6 +197,7 @@
 
       // Po dynamickém vložení ikon je znovu vygenerujeme
       if (window.lucide) {
+        lucide.createIcons();
       }
     });
   </script>
