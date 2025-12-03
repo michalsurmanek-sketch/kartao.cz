@@ -254,10 +254,8 @@
     if (window.lucide) {
     }
 
-    // Supabase init - INLINE pro spolehlivost
-    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2ODEzMTEsImV4cCI6MjA0NzI1NzMxMX0.t_3skmJCbidwUPvKy6hLWYu3aJEvGLWPJe-LZCdVoMo';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Použij centrální Supabase client
+    const supabase = window.supabaseClient || window.sb;
 
     let currentUser = null;
     let currentUserCreator = null;

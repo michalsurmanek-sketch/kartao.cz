@@ -1,14 +1,28 @@
 # ✅ DEPLOYMENT READY - KARTAO.CZ
 
 **Status:** 🟢 PRODUCTION READY  
-**Datum:** 1. prosince 2025  
-**Verze:** 1.0.0
+**Datum:** 3. prosince 2025  
+**Verze:** 1.0.1 (Vyčištěno)
 
 ---
 
 ## 🎉 PROJEKT JE PŘIPRAVEN K NASAZENÍ!
 
-Všechny systémy byly zkompletovány, otestovány a optimalizovány.
+Všechny systémy byly zkompletovány, otestovány, optimalizovány a **vyčištěny** (3.12.2025).
+
+---
+
+## 🧹 NOVÉ: Vyčištění projektu (3.12.2025)
+
+### ✅ Opravené kritické chyby:
+- ✅ **Chybná Supabase inicializace** - opraveno ve 3 souborech
+- ✅ **Duplicitní konfigurace** - unifikováno na centrální systém
+- ✅ **Smazáno 26 zbytečných souborů** (testy, zálohy, .pre-supabase)
+- ✅ **Odstraněny prázdné script tagy**
+- ✅ **Nahrazeny placeholder obrázky** za SVG avatary
+
+### 📝 Detaily vyčištění:
+Viz **CLEANUP-2025-12-03.md** pro kompletní seznam změn.
 
 ---
 

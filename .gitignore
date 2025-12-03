@@ -33,11 +33,18 @@ dist/
 build/
 *.log
 
-# Backup files (měly by být smazány)
+# Backup files (vyčištěno 3.12.2025)
 *záloha*
 *backup*
+*.bak
+*.old
+*.pre-supabase
 *new/
-*old/
+
+# Test files
+test-*.html
+debug-*.html
+*-test.html
 
 # Temporary
 *.tmp
