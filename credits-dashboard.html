@@ -351,7 +351,7 @@
 
   <!-- Centrální kreditní systém -->
   <script src="credits-system-supabase.js"></script>
-  <script src="credits-header.js"></script>
+  <!-- credits-header.js ODSTRANĚN - používá Firebase auth -->
 
   <!-- Dashboard JS + kontrola přihlášení + STREAK + LEVEL + REKLAMY -->
   <script>
@@ -399,11 +399,26 @@
         if (creator) {
           console.log('📊 Creator data načtena:', { name: creator.name, credits: creator.credits });
           
+          // Inicializuj CreditsSystemSupabase pro real-time updates
+          const creditsSystem = new CreditsSystemSupabase();
+          await creditsSystem.init(user.id);
+          
+          // Callback pro aktualizaci UI
+          creditsSystem.onChange((newCredits) => {
+            const currentCreditsEl = document.getElementById('currentCredits');
+            if (currentCreditsEl) {
+              currentCreditsEl.textContent = newCredits.toLocaleString('cs-CZ');
+            }
+          });
+          
           // Aktualizuj zobrazení kreditů
           const currentCreditsEl = document.getElementById('currentCredits');
           if (currentCreditsEl) {
-            currentCreditsEl.textContent = (creator.credits || 0).toLocaleString('cs-CZ');
+            currentCreditsEl.textContent = creditsSystem.getCredits().toLocaleString('cs-CZ');
           }
+          
+          // Pro debug
+          window.creditSys = creditsSystem;
 
           // Inicializuj dashboard s creator daty
           await initDashboard(creator, user, supabase);
