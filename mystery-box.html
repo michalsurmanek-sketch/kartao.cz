@@ -366,14 +366,14 @@
     document.addEventListener("DOMContentLoaded", async function () {
       console.log('[MysteryBox] Inicializace...');
       
-      if (!window.supabase || !window.auth) {
-        console.warn("Supabase není dostupný na mystery-box.html");
+      if (!window.supabaseClient) {
+        console.error("❌ Supabase client není dostupný na mystery-box.html");
         return;
       }
       
       console.log('[MysteryBox] Supabase OK, získávám usera...');
 
-      const { data: { user } } = await window.supabase.auth.getUser();
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
       
       if (!user) {
         console.warn('[MysteryBox] User není přihlášen, redirect na login');

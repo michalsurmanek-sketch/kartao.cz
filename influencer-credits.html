@@ -263,15 +263,15 @@
         if (currentCreditsEl) currentCreditsEl.textContent = val;
       }
 
-      if (!auth) {
-        console.error("[InfluencerCredits] Auth není dostupné!");
+      if (!window.supabaseClient) {
+        console.error("[InfluencerCredits] Supabase client není dostupný!");
         return;
       }
 
       console.log('[InfluencerCredits] Inicializace...');
 
       (async function() {
-        const { data: { user } } = await window.supabase.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         
         if (!user) {
           console.warn('[InfluencerCredits] User není přihlášen');
