@@ -254,13 +254,29 @@
       const messageEl = document.getElementById("topupMessage");
       const confirmBtn = document.getElementById("confirmTopup");
 
+      console.log('[InfluencerCredits] DOM loaded, elementy:', {
+        headerCreditsEl: !!headerCreditsEl,
+        currentCreditsEl: !!currentCreditsEl
+      });
+
       let selectedAmount = null;
       let selectedLabel = null;
 
       function updateCreditsDisplayLocal(val) {
+        console.log('[InfluencerCredits] updateCreditsDisplayLocal:', val);
         if (typeof val !== "number") return;
-        if (headerCreditsEl) headerCreditsEl.textContent = val;
-        if (currentCreditsEl) currentCreditsEl.textContent = val;
+        if (headerCreditsEl) {
+          headerCreditsEl.textContent = val;
+          console.log('[InfluencerCredits] headerCredits aktualizován:', val);
+        } else {
+          console.warn('[InfluencerCredits] headerCreditsEl nenalezen!');
+        }
+        if (currentCreditsEl) {
+          currentCreditsEl.textContent = val;
+          console.log('[InfluencerCredits] currentCredits aktualizován:', val);
+        } else {
+          console.warn('[InfluencerCredits] currentCreditsEl nenalezen!');
+        }
       }
 
       if (!window.supabaseClient) {
