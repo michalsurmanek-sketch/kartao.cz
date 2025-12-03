@@ -378,15 +378,17 @@
             const headerCredits = document.getElementById("currentCredits");
             if (headerCredits && creditSysInstance) {
               try {
-                headerCredits.textContent = creditSysInstance.getCredits();
+                const credits = creditSysInstance.credits || 0;
+                headerCredits.textContent = credits;
               } catch (e) {
                 console.warn("MysteryBox: chyba při čtení kreditů:", e);
               }
             }
           }
 
-          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
-          creditSysInstance = new CreditsSystem(user.uid, updateCreditsUI);
+          // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
+          creditSysInstance = new CreditsSystemSupabase();
+          await creditSysInstance.init(user.uid);
           window.creditSys = creditSysInstance;
 
           // Počáteční zobrazení
@@ -463,9 +465,10 @@
 
       // 🔢 zobrazení kreditů v headeru
       function updateCreditsDisplay() {
-        if (!creditsLabel || !window.creditSys || typeof creditSys.getCredits !== "function") return;
+        if (!creditsLabel || !window.creditSys) return;
         try {
-          creditsLabel.textContent = creditSys.getCredits();
+          const credits = window.creditSys.credits || window.creditSys.getCredits() || 0;
+          creditsLabel.textContent = credits;
         } catch (e) {
           console.warn("MysteryBox: chyba při čtení kreditů pro UI:", e);
         }
@@ -543,12 +546,12 @@
       }
 
       function hasEnoughCredits() {
-        if (!window.creditSys || typeof creditSys.getCredits !== "function") {
-          console.warn("MysteryBox: creditSys.getCredits není dostupné.");
+        if (!window.creditSys) {
+          console.warn("MysteryBox: creditSys není dostupné.");
           return true; // neblokuj UI když není napojené
         }
         try {
-          const current = creditSys.getCredits();
+          const current = window.creditSys.credits || window.creditSys.getCredits() || 0;
           return typeof current === "number" ? current >= COST : true;
         } catch (e) {
           console.warn("MysteryBox: chyba při čtení kreditů:", e);
@@ -670,8 +673,8 @@
       }
 
       async function trySubtractCredits() {
-        if (!window.creditSys || typeof creditSys.subtractCredits !== "function") {
-          alert("Kreditní systém není napojený (creditSys.subtractCredits chybí).");
+        if (!window.creditSys) {
+          alert("Kreditní systém není napojený.");
           return true; // neblokovat testování UI
         }
 
@@ -681,7 +684,7 @@
         }
 
         try {
-          await creditSys.subtractCredits(COST);
+          await creditSys.deductCredits(COST, "Mystery Box otevřen");
           updateCreditsDisplay();
           return true;
         } catch (e) {
