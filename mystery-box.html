@@ -378,7 +378,7 @@
             const headerCredits = document.getElementById("currentCredits");
             if (headerCredits && creditSysInstance) {
               try {
-                const credits = creditSysInstance.credits || 0;
+                const credits = creditSysInstance.getCredits();
                 headerCredits.textContent = credits;
               } catch (e) {
                 console.warn("MysteryBox: chyba při čtení kreditů:", e);
@@ -467,7 +467,7 @@
       function updateCreditsDisplay() {
         if (!creditsLabel || !window.creditSys) return;
         try {
-          const credits = window.creditSys.credits || window.creditSys.getCredits() || 0;
+          const credits = window.creditSys.getCredits();
           creditsLabel.textContent = credits;
         } catch (e) {
           console.warn("MysteryBox: chyba při čtení kreditů pro UI:", e);
@@ -551,7 +551,7 @@
           return true; // neblokuj UI když není napojené
         }
         try {
-          const current = window.creditSys.credits || window.creditSys.getCredits() || 0;
+          const current = window.creditSys.getCredits();
           return typeof current === "number" ? current >= COST : true;
         } catch (e) {
           console.warn("MysteryBox: chyba při čtení kreditů:", e);
