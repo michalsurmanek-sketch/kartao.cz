@@ -353,22 +353,23 @@
   <script src="credits-system-supabase.js"></script>
   <script src="credits-header.js"></script>
 
-  <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele – Firestore master -->
+  <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele – Supabase -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth) {
-        console.warn("Firebase není dostupný na mystery-box.html");
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!window.supabase || !window.auth) {
+        console.warn("Supabase není dostupný na mystery-box.html");
         return;
       }
 
-      kartaoAuth.onAuthStateChanged(async function (user) {
-        if (!user) {
-          window.location.href = "login.html";
-          return;
-        }
+      const { data: { user } } = await window.supabase.auth.getUser();
+      
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-        // stejné UID jako na ostatních stránkách
-        window.currentUserId = user.uid;
+      // stejné UID jako na ostatních stránkách
+      window.currentUserId = user.id;
 
         try {
           let creditSysInstance;
@@ -388,7 +389,7 @@
 
           // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
           creditSysInstance = new CreditsSystemSupabase();
-          await creditSysInstance.init(user.uid);
+          await creditSysInstance.init(user.id);
           
           // Registruj callback pro real-time updates
           creditSysInstance.onChange(function(newCredits) {
@@ -406,7 +407,6 @@
         } catch (err) {
           console.warn("MysteryBox: chyba při inicializaci kreditního systému:", err);
         }
-      });
     });
   </script>
 

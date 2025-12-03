@@ -260,13 +260,15 @@
         return;
       }
 
-      kartaoAuth.onAuthStateChanged(function (user) {
+      (async function() {
+        const { data: { user } } = await window.supabase.auth.getUser();
+        
         if (!user) {
           window.location.href = "login.html";
           return;
         }
 
-        window.currentUserId = user.uid;
+        window.currentUserId = user.id;
 
         let creditsSystem;
         try {
@@ -276,7 +278,7 @@
 
           // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
           creditsSystem = new window.CreditsSystemSupabase();
-          await creditsSystem.init(user.uid);
+          await creditsSystem.init(user.id);
           
           // Registruj callback pro real-time updates
           creditsSystem.onChange(function(val) {
@@ -334,7 +336,7 @@
         } catch (e) {
           console.warn("Dobití kreditů: chyba při práci s CreditsSystem:", e);
         }
-      });
+      })();
     });
   </script>
 </body>
