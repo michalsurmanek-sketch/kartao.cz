@@ -297,6 +297,30 @@
             </div>
           </div>
         `;
+        // Vlož akci do každé karty
+        const actionContainer = card.querySelector(".js-reward-action");
+        if (reward.type === "gold-card") {
+          actionContainer.innerHTML = `
+            <a href="vyber-vyhru.html"
+              class="px-3 py-1.5 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-200 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap">
+              Vybrat výhru
+            </a>
+          `;
+        } else if (reward.type === "ticket") {
+          actionContainer.innerHTML = `
+            <a href="mini-slevomat.html"
+              class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap">
+              Vybrat slevu
+            </a>
+          `;
+        } else {
+          actionContainer.innerHTML = `
+            <button class="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-[11px] font-semibold text-neutral-950 shadow-md shadow-amber-500/40 whitespace-nowrap"
+                    data-reward-id="${reward.id || ""}">
+              Detail
+            </button>
+          `;
+        }
         track.appendChild(card);
       });
 
