@@ -130,7 +130,13 @@
       </div>
 
       <!-- Партнеры в круглых аватарках как в Instagram Stories -->
-      <div class="flex flex-wrap md:flex-wrap md:justify-center md:items-center gap-6 md:gap-8 overflow-x-auto flex-nowrap scrollbar-hide md:overflow-x-visible" style="-webkit-overflow-scrolling: touch;">
+      <div class="flex flex-nowrap gap-6 overflow-x-auto md:flex-wrap md:gap-8 md:overflow-x-visible md:justify-center md:items-center" style="-webkit-overflow-scrolling: touch; scrollbar-width: none;">
+        <style>
+          @media (max-width: 767px) {
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          }
+        </style>
         <!-- Partner 1 -->
         <a href="https://www.slevao.cz" target="_blank" class="group flex flex-col items-center gap-2 transition-transform hover:scale-105">
           <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 via-fuchsia-500 to-amber-400 p-[3px] shadow-lg shadow-amber-500/30">
