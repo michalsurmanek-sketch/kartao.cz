@@ -300,8 +300,12 @@
 
         let creditsSystem;
         try {
-          if (typeof window.CreditsSystemSupabase !== "function") {
-            throw new Error("CreditsSystemSupabase není dostupný – zkontroluj credits-system-supabase.js");
+          console.log('[InfluencerCredits] CreditsSystemSupabase dostupný?', typeof window.CreditsSystemSupabase);
+          
+          if (!window.CreditsSystemSupabase) {
+            console.error('[InfluencerCredits] CreditsSystemSupabase NENÍ dostupný!');
+            console.log('[InfluencerCredits] window keys:', Object.keys(window).filter(k => k.includes('Credit')));
+            throw new Error("CreditsSystemSupabase není dostupný");
           }
 
           // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci

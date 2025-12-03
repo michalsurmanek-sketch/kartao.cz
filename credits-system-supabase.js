@@ -236,6 +236,13 @@ class CreditsSystemSupabase {
 }
 
 // ==========================================
+// GLOBÁLNÍ EXPORT
+// ==========================================
+// Zpřístupníme třídu globálně
+window.CreditsSystemSupabase = CreditsSystemSupabase;
+console.log('✅ CreditsSystemSupabase načten a dostupný na window.CreditsSystemSupabase');
+
+// ==========================================
 // GLOBÁLNÍ INSTANCE
 // ==========================================
 // Inicializace se provádí v auth-unified.js po načtení profilu
