@@ -270,22 +270,22 @@
 
         let creditsSystem;
         try {
-          if (typeof window.CreditsSystem !== "function") {
-            throw new Error("CreditsSystem není dostupný – zkontroluj credits-system.js");
+          if (typeof window.CreditsSystemSupabase !== "function") {
+            throw new Error("CreditsSystemSupabase není dostupný – zkontroluj credits-system-supabase.js");
           }
 
-          // Vytvoř CreditsSystem s callback pro automatickou aktualizaci
-          creditsSystem = new window.CreditsSystem(user.uid, function(val) {
+          // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
+          creditsSystem = new window.CreditsSystemSupabase();
+          await creditsSystem.init(user.uid);
+          
+          // Registruj callback pro real-time updates
+          creditsSystem.onChange(function(val) {
             updateCreditsDisplayLocal(val);
             if (window.updateCreditsDisplay) window.updateCreditsDisplay(val);
           });
 
           // Pro debug
-          window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
-          };
+          window.creditSys = creditsSystem;
 
           const val = creditsSystem.getCredits();
           updateCreditsDisplayLocal(val);
