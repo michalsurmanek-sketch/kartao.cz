@@ -257,28 +257,38 @@
     if (window.lucide) {
     }
 
-    // Použij centrální Supabase client
-    const supabase = window.supabaseClient || window.sb;
+    // Bezpečná inicializace Supabase klienta
+    function getSupabaseClient() {
+      if (!window.supabaseClient && !window.sb) {
+        console.error('❌ Supabase klient není inicializován!');
+        return null;
+      }
+      return window.supabaseClient || window.sb;
+    }
 
+    let supabase = null;
     let currentUser = null;
     let currentUserCreator = null;
 
     // Získej handle z URL
     const urlParams = new URLSearchParams(window.location.search);
     const handle = urlParams.get('handle') || window.location.pathname.split('/').pop().replace('.html', '');
-
-    // Auth state listener - synchronizuje přihlášení v reálném čase
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        await updateAuthState(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        currentUser = null;
-        currentUserCreator = null;
-        document.getElementById('headerGuest').classList.remove('hidden');
-        document.getElementById('headerLoggedIn').classList.add('hidden');
-        document.getElementById('editProfileBtn')?.classList.add('hidden');
-      }
-    });
+    
+    // Nastavení auth listeneru v DOMContentLoaded
+    function setupAuthListener() {
+      // Auth state listener - synchronizuje přihlášení v reálném čase
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          await updateAuthState(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          currentUserCreator = null;
+          document.getElementById('headerGuest').classList.remove('hidden');
+          document.getElementById('headerLoggedIn').classList.add('hidden');
+          document.getElementById('editProfileBtn')?.classList.add('hidden');
+        }
+      });
+    }
 
     // Aktualizace auth stavu
     async function updateAuthState(user) {
@@ -563,6 +573,16 @@
 
     // Load profile on page load
     document.addEventListener('DOMContentLoaded', async () => {
+      supabase = getSupabaseClient();
+      
+      if (!supabase) {
+        console.error('Supabase není dostupný');
+        return;
+      }
+      
+      // Nastav auth listener
+      setupAuthListener();
+      
       await checkAuth();
       await loadCreatorProfile();
       
