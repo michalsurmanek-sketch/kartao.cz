@@ -36,21 +36,6 @@
     <!-- Horní lišta -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
       <div>
-        <a href="index.html" class="inline-flex items-center gap-3 mb-3">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-400 to-emerald-500 grid place-items-center">
-            <i data-lucide="crown" class="w-5 h-5"></i>
-          </div>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">
-                Slevy & Kupóny
-              </span>
-            </div>
-                        <i data-lucide="crown" class="w-5 h-5 text-neutral-950"></i>
-          </div>
-        </a>
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/50 text-[11px] text-amber-200">
           <i data-lucide="sparkles" class="w-4 h-4"></i>
           <span>Mini Slevomat · partnerské nabídky Kartao</span>
@@ -59,26 +44,20 @@
           <span>Slevy & Kupóny</span>
         </h1>
         <p class="mt-1 text-sm text-white/65 max-w-2xl">
-          Vyber si odměnu z partnerských nabídek. Slevové kupony získáš z <a href="mystery-box.html" class="text-amber-300 font-semibold hover:text-amber-400 underline decoration-amber-300/50 hover:decoration-amber-400 transition-all duration-200">K-Coins Mystery Boxu</a>,
+          Vyber si odměnu z partnerských nabídek. Slevové kupony získáš z <span class="text-amber-300 font-semibold">K-Coins Mystery Boxu</span>,
           tady je proměníš za konkrétní zážitek nebo nákup.
         </p>
       </div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <a href="mystery-box.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/60 bg-amber-500/10 text-xs font-semibold text-amber-100 hover:bg-amber-500/20">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-          <span>Mystery Box</span>
-        </a>
-        <a
+       <a
             href="moje-karta.html"
             class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20"
           >
             ← Zpět na kredity
           </a>
-        <a href="moje-vyhry.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-sky-500/60 bg-sky-500/10 text-xs font-semibold text-sky-100 hover:bg-sky-500/20">
-          <i data-lucide="trophy" class="w-4 h-4"></i>
-          <span>Zpět na moje výhry</span>
-        </a>
-      </div>
+      <a href="moje-vyhry.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-sky-500/60 bg-sky-500/10 text-xs font-semibold text-sky-100 hover:bg-sky-500/20">
+        <i data-lucide="trophy" class="w-4 h-4"></i>
+        <span>Zpět na moje výhry</span>
+      </a>
     </header>
 
     <!-- Info o kuponu z ekosystému Kartao -->
@@ -86,7 +65,8 @@
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/40 text-[11px] text-emerald-200">
         <i data-lucide="ticket-percent" class="w-4 h-4"></i>
         <span>
-          Aktivní slevové kupony: <span id="couponCount" class="font-semibold text-emerald-100">0</span>
+          Aktivní slevové kupony z Mystery Boxu: <span id="couponCount" class="font-semibold text-emerald-100">0</span>.
+          Vyber si jednu z nabídek a v další fázi ji propojíme s tvým účtem.
         </span>
       </div>
     </section>
@@ -111,21 +91,21 @@
       </div>
     </section>
 
-    <!-- Filtry kategorií -->
+    <!-- Filtry kategorií (zatím jen vizuálně) -->
     <section class="mb-5 flex flex-wrap gap-2 text-xs">
-      <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full bg-amber-500 text-neutral-950 font-semibold shadow-soft">
+      <button class="px-3 py-1.5 rounded-full bg-amber-500 text-neutral-950 font-semibold shadow-soft">
         Vše
       </button>
-      <button data-filter="Pobyty & wellness" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Pobyty & wellness
       </button>
-      <button data-filter="Jídlo & restaurace" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Jídlo & restaurace
       </button>
-      <button data-filter="E‑shop slevy" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         E‑shop slevy
       </button>
-      <button data-filter="Zážitky" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Zážitky
       </button>
     </section>
@@ -133,7 +113,7 @@
     <!-- GRID nabídek -->
     <section id="offersGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- Nabídka 1: Sleva 10 % globálně -->
-      <article data-category="E‑shop slevy" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/60 shadow-soft">
+      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=60" alt="Nákup" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -160,7 +140,7 @@
       </article>
 
       <!-- Nabídka 2: Zážitkový pobyt -->
-      <article data-category="Pobyty & wellness" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-fuchsia-400/60 shadow-soft">
+      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-fuchsia-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60" alt="Wellness" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -187,7 +167,7 @@
       </article>
 
       <!-- Nabídka 3: Večeře v restauraci -->
-      <article data-category="Jídlo & restaurace" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-emerald-400/60 shadow-soft">
+      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-emerald-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=800&q=60" alt="Restaurace" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -254,34 +234,6 @@
             "Vybraná nabídka: " + offerId + "\n\n" +
             "Napojíme na backend, odečteme příslušný ticket z Moje výhry a pošleme potvrzení e‑mailem."
           );
-        });
-      });
-
-      // 3) Filtry kategorií
-      const filterButtons = document.querySelectorAll(".filter-btn");
-      const offerCards = document.querySelectorAll(".offer-card");
-
-      filterButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const filterValue = btn.getAttribute("data-filter");
-
-          // Aktualizace aktivního tlačítka
-          filterButtons.forEach((b) => {
-            b.classList.remove("bg-amber-500", "text-neutral-950", "font-semibold", "shadow-soft");
-            b.classList.add("bg-neutral-900", "border", "border-white/10", "text-white/80");
-          });
-          btn.classList.remove("bg-neutral-900", "border", "border-white/10", "text-white/80");
-          btn.classList.add("bg-amber-500", "text-neutral-950", "font-semibold", "shadow-soft");
-
-          // Filtrování nabídek
-          offerCards.forEach((card) => {
-            const category = card.getAttribute("data-category");
-            if (filterValue === "all" || category === filterValue) {
-              card.style.display = "";
-            } else {
-              card.style.display = "none";
-            }
-          });
         });
       });
     });
