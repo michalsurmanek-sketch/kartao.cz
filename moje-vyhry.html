@@ -95,8 +95,11 @@
       </a>
     </div>
 
-    <!-- GRID VÝHER (doplní se z JS) -->
-    <div id="rewardsGrid" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+    <!-- CAROUSEL VÝHER -->
+    <div id="rewardsCarousel" class="mt-6 hidden">
+      <div id="carouselTrack" class="flex transition-transform duration-300 ease-in-out will-change-transform"></div>
+      <div id="carouselNav" class="flex justify-center gap-2 mt-4"></div>
+    </div>
 
     <!-- Naši partneři -->
     <section class="mt-5 mb-8">
@@ -238,7 +241,9 @@
         lucide.createIcons();
       }
 
-      const grid = document.getElementById("rewardsGrid");
+      const carousel = document.getElementById("rewardsCarousel");
+      const track = document.getElementById("carouselTrack");
+      const nav = document.getElementById("carouselNav");
       const emptyState = document.getElementById("emptyState");
 
       // 1) Načti výhry z localStorage (uloží je Mystery Box)
@@ -255,48 +260,92 @@
       }
 
       emptyState.classList.add("hidden");
-      grid.classList.remove("hidden");
+      carousel.classList.remove("hidden");
 
-      rewards.forEach((reward) => {
-        const card = document.createElement("div");
-        card.className = "rounded-2xl shadow-soft hover:shadow-xl transition-all";
-
+      // Vytvoř karty výher
+      track.innerHTML = "";
+      rewards.forEach((reward, idx) => {
         const icon = getIcon(reward.type);
-
+        const card = document.createElement("div");
+        card.className = "carousel-card min-w-full sm:min-w-[33.3333%] px-2";
         card.innerHTML = `
-          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/50 p-[1px]">
-            <div class="rounded-2xl bg-neutral-950/95 px-4 py-4 flex flex-col gap-3">
-              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/40 text-[11px] text-emerald-200">
-                <span>Výhra z Mystery Boxu</span>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-300 to-yellow-200 flex items-center justify-center shadow-lg shadow-amber-400/70">
-                  <i data-lucide="${icon}" class="w-5 h-5 text-neutral-950"></i>
+          <div class='rounded-2xl shadow-soft hover:shadow-xl transition-all h-full'>
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/50 p-[1px]">
+              <div class="rounded-2xl bg-neutral-950/95 px-4 py-4 flex flex-col gap-3">
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/40 text-[11px] text-emerald-200">
+                  <span>Výhra z Mystery Boxu</span>
                 </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[11px] text-amber-200/80 mb-0.5">Vyhráno: ${formatDate(reward.date)}</p>
-                  <h3 class="font-semibold text-base text-amber-100 truncate">${reward.title || "Výhra"}</h3>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-300 to-yellow-200 flex items-center justify-center shadow-lg shadow-amber-400/70">
+                    <i data-lucide='${icon}' class='w-5 h-5 text-neutral-950'></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[11px] text-amber-200/80 mb-0.5">Vyhráno: ${formatDate(reward.date)}</p>
+                    <h3 class="font-semibold text-base text-amber-100 truncate">${reward.title || "Výhra"}</h3>
+                  </div>
                 </div>
-              </div>
-
-              <div class="mt-1 flex items-center justify-between gap-3">
-                <div class="text-[11px] text-white/60">
-                  Typ odměny:
-                  <span class="font-medium text-amber-200">
-                    ${reward.type === "gold-card" ? "VIP karta" : reward.type === "ticket" ? "Kupon / tiket" : "K-Coins"}
-                  </span>
+                <div class="mt-1 flex items-center justify-between gap-3">
+                  <div class="text-[11px] text-white/60">
+                    Typ odměny:
+                    <span class="font-medium text-amber-200">
+                      ${reward.type === "gold-card" ? "VIP karta" : reward.type === "ticket" ? "Kupon / tiket" : "K-Coins"}
+                    </span>
+                  </div>
+                  <div class="js-reward-action"></div>
                 </div>
-                <div class="js-reward-action"></div>
               </div>
             </div>
           </div>
         `;
+        track.appendChild(card);
+      });
 
-        const actionContainer = card.querySelector(".js-reward-action");
+      // Navigace (tečky)
+      nav.innerHTML = "";
+      const maxDesktop = 3;
+      const maxMobile = 1;
+      const total = rewards.length;
+      let current = 0;
 
-        if (reward.type === "mystery") {
-          // K-Coins – bez tlačítko
+      function updateCarousel() {
+        const isMobile = window.innerWidth < 640;
+        const visible = isMobile ? maxMobile : Math.min(maxDesktop, total);
+        const offset = -current * (100 / visible);
+        track.style.transform = `translateX(${offset}%)`;
+        // Tečky
+        nav.innerHTML = "";
+        for (let i = 0; i <= total - visible; i++) {
+          const dot = document.createElement("button");
+          dot.className = `w-3 h-3 rounded-full mx-1 ${i === current ? 'bg-amber-400' : 'bg-white/30'}`;
+          dot.addEventListener("click", () => { current = i; updateCarousel(); });
+          nav.appendChild(dot);
+        }
+      }
+
+      updateCarousel();
+
+      // Swipe na mobilu
+      let startX = null;
+      track.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+      });
+      track.addEventListener("touchend", e => {
+        if (startX === null) return;
+        const endX = e.changedTouches[0].clientX;
+        const delta = endX - startX;
+        const isMobile = window.innerWidth < 640;
+        const visible = isMobile ? maxMobile : Math.min(maxDesktop, total);
+        if (Math.abs(delta) > 40) {
+          if (delta < 0 && current < total - visible) current++;
+          if (delta > 0 && current > 0) current--;
+          updateCarousel();
+        }
+        startX = null;
+      });
+
+      window.addEventListener("resize", updateCarousel);
+
+      if (window.lucide) lucide.createIcons();
   
         } else if (reward.type === "gold-card") {
          actionContainer.innerHTML = `
