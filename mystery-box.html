@@ -352,25 +352,39 @@
   <!-- 🔗 Kreditní systém Kartao.cz -->
   <script src="credits-system-supabase.js"></script>
 
+  <!-- 🎨 Inicializace Lucide ikon -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
   <!-- 🔁 Inicializace creditSys přes přihlášeného uživatele – Supabase -->
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
+      console.log('[MysteryBox] Inicializace...');
+      
       if (!window.supabase || !window.auth) {
         console.warn("Supabase není dostupný na mystery-box.html");
         return;
       }
+      
+      console.log('[MysteryBox] Supabase OK, získávám usera...');
 
       const { data: { user } } = await window.supabase.auth.getUser();
       
       if (!user) {
+        console.warn('[MysteryBox] User není přihlášen, redirect na login');
         window.location.href = "login.html";
         return;
       }
 
-      // stejné UID jako na ostatních stránkách
+      console.log('[MysteryBox] User přihlášen:', user.id);
       window.currentUserId = user.id;
 
-        try {
+      try {
           let creditSysInstance;
 
           // Funkce pro aktualizaci zobrazení kreditů
@@ -386,26 +400,31 @@
             }
           }
 
-          // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
-          creditSysInstance = new CreditsSystemSupabase();
-          await creditSysInstance.init(user.id);
-          
-          // Registruj callback pro real-time updates
-          creditSysInstance.onChange(function(newCredits) {
-            updateCreditsUI();
-          });
-          
-          window.creditSys = creditSysInstance;
-
-          // Počáteční zobrazení
+        // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
+        console.log('[MysteryBox] Vytvářím CreditsSystemSupabase...');
+        creditSysInstance = new CreditsSystemSupabase();
+        await creditSysInstance.init(user.id);
+        console.log('[MysteryBox] CreditsSystemSupabase inicializován');
+        
+        // Registruj callback pro real-time updates
+        creditSysInstance.onChange(function(newCredits) {
+          console.log('[MysteryBox] onChange:', newCredits);
           updateCreditsUI();
+        });
+        
+        window.creditSys = creditSysInstance;
 
-          if (typeof window.updateMysteryBoxCreditsDisplay === "function") {
-            window.updateMysteryBoxCreditsDisplay();
-          }
-        } catch (err) {
-          console.warn("MysteryBox: chyba při inicializaci kreditního systému:", err);
+        // Počáteční zobrazení
+        const initialCredits = creditSysInstance.getCredits();
+        console.log('[MysteryBox] Počáteční kredity:', initialCredits);
+        updateCreditsUI();
+
+        if (typeof window.updateMysteryBoxCreditsDisplay === "function") {
+          window.updateMysteryBoxCreditsDisplay();
         }
+      } catch (err) {
+        console.error('[MysteryBox] CHYBA při inicializaci:', err);
+      }
     });
   </script>
 

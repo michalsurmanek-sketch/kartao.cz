@@ -236,6 +236,15 @@
   <script src="database-init.js"></script>
 
   <script>
+    // Inicializace Lucide ikon
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const auth = window.auth;
       const headerCreditsEl = document.getElementById("headerCredits");
@@ -255,18 +264,22 @@
       }
 
       if (!auth) {
-        console.warn("Auth není dostupné na dobiti-kreditu.html – zkontroluj supabase-config.js a supabase-init.js");
+        console.error("[InfluencerCredits] Auth není dostupné!");
         return;
       }
+
+      console.log('[InfluencerCredits] Inicializace...');
 
       (async function() {
         const { data: { user } } = await window.supabase.auth.getUser();
         
         if (!user) {
+          console.warn('[InfluencerCredits] User není přihlášen');
           window.location.href = "login.html";
           return;
         }
 
+        console.log('[InfluencerCredits] User přihlášen:', user.id);
         window.currentUserId = user.id;
 
         let creditsSystem;
@@ -276,11 +289,14 @@
           }
 
           // Vytvoř CreditsSystemSupabase s callback pro automatickou aktualizaci
+          console.log('[InfluencerCredits] Vytvářím CreditsSystemSupabase...');
           creditsSystem = new window.CreditsSystemSupabase();
           await creditsSystem.init(user.id);
+          console.log('[InfluencerCredits] CreditsSystemSupabase inicializován');
           
           // Registruj callback pro real-time updates
           creditsSystem.onChange(function(val) {
+            console.log('[InfluencerCredits] onChange:', val);
             updateCreditsDisplayLocal(val);
             if (window.updateCreditsDisplay) window.updateCreditsDisplay(val);
           });
@@ -289,6 +305,7 @@
           window.creditSys = creditsSystem;
 
           const val = creditsSystem.getCredits();
+          console.log('[InfluencerCredits] Počáteční kredity:', val);
           updateCreditsDisplayLocal(val);
           if (window.updateCreditsDisplay) window.updateCreditsDisplay(val);
 
