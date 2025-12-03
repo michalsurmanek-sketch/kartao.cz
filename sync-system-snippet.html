@@ -1,0 +1,32 @@
+<!-- ========================================== -->
+<!-- KARTAO SYNCHRONIZATION SYSTEM             -->
+<!-- Přidej tento blok před </body> tag         -->
+<!-- ========================================== -->
+
+<!-- Supabase Client (pokud ještě není načten) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Inicializace Supabase (nahraď vlastními credentials) -->
+<script>
+  if (!window.supabaseClient && !window.sb) {
+    // TODO: Nahraď těmito hodnotami z Supabase Dashboard
+    const SUPABASE_URL = 'https://tvuj-projekt.supabase.co';
+    const SUPABASE_ANON_KEY = 'tvuj-anon-key-zde';
+    
+    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase inicializován');
+  }
+</script>
+
+<!-- Rewards System - synchronizace výher -->
+<script src="rewards-system-supabase.js"></script>
+
+<!-- Credits System - synchronizace kreditů -->
+<script src="credits-system-supabase.js"></script>
+
+<!-- Unified Init - automatická inicializace obou systémů -->
+<script src="kartao-systems-init.js"></script>
+
+<!-- ========================================== -->
+<!-- KONEC SYNCHRONIZATION SYSTEM               -->
+<!-- ========================================== -->
