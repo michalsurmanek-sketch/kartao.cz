@@ -37,38 +37,9 @@
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <!-- Logo / název -->
         <a href="index.html" class="flex items-center gap-3">
-          <div id="logoBox" class="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 via-40% to-emerald-400 to-80% grid place-items-center shadow-soft border-2 border-sky-400 transition-colors duration-300">
-            <i id="logoIcon" data-lucide="crown" class="w-5 h-5 text-neutral-950 transition-colors duration-300"></i>
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 via-40% to-emerald-400 to-80% grid place-items-center shadow-soft border-2 border-sky-400">
+            <i data-lucide="crown" class="w-5 h-5 text-neutral-950"></i>
           </div>
-            <script>
-              // Dynamická změna barvy loga podle kliknuté sekce
-              document.addEventListener('DOMContentLoaded', function () {
-                const logoBox = document.getElementById('logoBox');
-                const logoIcon = document.getElementById('logoIcon');
-                const sectionLinks = [
-                  { selector: 'a[href="credits-dashboard.html"]', gradient: 'from-amber-400 to-amber-500', icon: 'coins', color: 'text-amber-900' },
-                  { selector: 'a[href="mystery-box.html"]', gradient: 'from-fuchsia-500 to-fuchsia-700', icon: 'gift', color: 'text-fuchsia-900' },
-                  { selector: 'a[href="moje-vyhry.html"]', gradient: 'from-emerald-400 to-emerald-600', icon: 'trophy', color: 'text-emerald-900' },
-                  { selector: 'a[href="mini-slevomat.html"]', gradient: 'from-sky-400 to-sky-600', icon: 'ticket-percent', color: 'text-sky-900' },
-                ];
-                sectionLinks.forEach(link => {
-                  document.querySelectorAll(link.selector).forEach(el => {
-                    el.addEventListener('mouseenter', () => {
-                      logoBox.className = `w-9 h-9 rounded-2xl bg-gradient-to-br ${link.gradient} grid place-items-center shadow-soft border-2 border-sky-400 transition-colors duration-300`;
-                      logoIcon.setAttribute('data-lucide', link.icon);
-                      logoIcon.className = `w-5 h-5 ${link.color} transition-colors duration-300`;
-                      if(window.lucide) lucide.createIcons();
-                    });
-                    el.addEventListener('mouseleave', () => {
-                      logoBox.className = 'w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-fuchsia-500 via-40% to-emerald-400 to-80% grid place-items-center shadow-soft border-2 border-sky-400 transition-colors duration-300';
-                      logoIcon.setAttribute('data-lucide', 'crown');
-                      logoIcon.className = 'w-5 h-5 text-neutral-950 transition-colors duration-300';
-                      if(window.lucide) lucide.createIcons();
-                    });
-                  });
-                });
-              });
-            </script>
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
