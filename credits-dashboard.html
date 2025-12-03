@@ -406,15 +406,26 @@
           // Callback pro aktualizaci UI
           creditsSystem.onChange((newCredits) => {
             const currentCreditsEl = document.getElementById('currentCredits');
+            const creditsValueHeroEl = document.getElementById('creditsValueHero');
+            
             if (currentCreditsEl) {
               currentCreditsEl.textContent = newCredits.toLocaleString('cs-CZ');
             }
+            if (creditsValueHeroEl) {
+              creditsValueHeroEl.textContent = newCredits.toLocaleString('cs-CZ');
+            }
           });
           
-          // Aktualizuj zobrazení kreditů
+          // Aktualizuj zobrazení kreditů (počáteční)
           const currentCreditsEl = document.getElementById('currentCredits');
+          const creditsValueHeroEl = document.getElementById('creditsValueHero');
+          const initialCredits = creditsSystem.getCredits();
+          
           if (currentCreditsEl) {
-            currentCreditsEl.textContent = creditsSystem.getCredits().toLocaleString('cs-CZ');
+            currentCreditsEl.textContent = initialCredits.toLocaleString('cs-CZ');
+          }
+          if (creditsValueHeroEl) {
+            creditsValueHeroEl.textContent = initialCredits.toLocaleString('cs-CZ');
           }
           
           // Pro debug
