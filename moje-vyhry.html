@@ -34,17 +34,38 @@
 <body class="min-h-screen bg-neutral-950 text-white py-10">
 
   <div class="max-w-5xl mx-auto px-4">
-    <h1 class="text-3xl font-bold mb-2 flex items-center gap-3">
-      <i data-lucide="trophy" class="w-8 h-8 text-amber-400"></i>
-      Moje výhry
-    </h1>
-    <p class="text-sm text-white/60 mb-6">
-  Tady se ti ukládají všechny výhry z 
-  <a href="mystery-box.html" class="text-amber-300 font-semibold hover:text-amber-400 transition-all duration-200">
-    Mystery Boxu
-  </a>
-  a dalších odměn Kartao.cz.
-</p>
+    <!-- Hlavička s odkazy -->
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-bold mb-2 flex items-center gap-3">
+          <i data-lucide="trophy" class="w-8 h-8 text-amber-400"></i>
+          Moje výhry
+        </h1>
+        <p class="text-sm text-white/60">
+          Tady se ti ukládají všechny výhry z 
+          <a href="mystery-box.html" class="text-amber-300 font-semibold hover:text-amber-400 transition-all duration-200">
+            Mystery Boxu
+          </a>
+          a dalších odměn Kartao.cz.
+        </p>
+      </div>
+      
+      <div class="flex flex-wrap gap-2">
+        <a href="mystery-box.html" class="inline-flex items-center gap-2 rounded-2xl border border-amber-500/60 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-500/20">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Mystery Box</span>
+        </a>
+        
+        <a href="mini-slevomat.html" class="inline-flex items-center gap-2 rounded-2xl border border-emerald-500/60 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-100 hover:bg-emerald-500/20">
+          <i data-lucide="ticket-percent" class="w-4 h-4"></i>
+          <span>Slevy & Kupóny</span>
+        </a>
+        
+        <a href="credits-dashboard.html" class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-100 hover:bg-sky-500/20">
+          <span>← Zpět na kredity</span>
+        </a>
+      </div>
+    </div>
 
 
     <!-- Stav, když ještě nic nevyhrál -->
