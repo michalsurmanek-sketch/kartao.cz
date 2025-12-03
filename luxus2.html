@@ -35,9 +35,6 @@
   <!-- Ikony - unified system -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     body {
       background: radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 50%),
@@ -634,22 +631,57 @@
     </div>
   </div>
 
+  <!-- Supabase SDK + konfigurace (MUSÍ BÝT PŘED hlavním kódem!) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="auth-unified.js"></script>
+
   <!-- INIT IKON + jednoduchý JS pro mobil menu -->
   <script>
-    // Použij centrální Supabase client
-    const supabase = window.supabaseClient || window.sb;
+    // Získání Supabase klienta s validací
+    function getSupabaseClient() {
+      if (!window.supabaseClient && !window.sb) {
+        console.error('❌ KRITICKÁ CHYBA: Supabase klient není inicializován!');
+        return null;
+      }
+      return window.supabaseClient || window.sb;
+    }
 
     let currentUser = null;
     let currentCreator = null;
+    let supabase = null;
 
-    // Auth state listener
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        await loadUserData(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        window.location.href = 'login.html';
+    // Inicializace při načtení
+    document.addEventListener('DOMContentLoaded', () => {
+      supabase = getSupabaseClient();
+      
+      if (!supabase) {
+        alert('Kritická chyba: Supabase není dostupný. Zkus obnovit stránku.');
+        return;
       }
-    });
+      
+      // Auth state listener
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          await loadUserData(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          window.location.href = 'login.html';
+        }
+      });
+      
+      // Spustit počáteční načtení
+      const initUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await loadUserData(user);
+        } else {
+          window.location.href = 'login.html';
+        }
+      };
+      
+      initUser();
+    }); // Konec DOMContentLoaded
 
     // Načtení uživatelských dat
     async function loadUserData(user) {
@@ -1155,11 +1187,7 @@
     }
   </script>
 
-  <!-- Supabase + Auth -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="auth-unified.js"></script>
+  <!-- Další skripty -->
   <script src="hamburger-menu.js"></script>
   <script src="credits-system-supabase.js"></script>
 </body>

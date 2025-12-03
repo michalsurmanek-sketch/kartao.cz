@@ -455,16 +455,29 @@
     </section>
   </main>
 
-  <!-- Supabase -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
+  <!-- Konfigurace + inicializace (MUSÍ BÝT PŘED hlavním kódem!) -->
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="auth-unified.js"></script>
+  
   <script>
-    // Použij centrální Supabase client
-    const supabase = window.supabaseClient || window.sb;
+    // Získání Supabase klienta s validací
+    function getSupabaseClient() {
+      if (!window.supabaseClient && !window.sb) {
+        console.error('❌ KRITICKÁ CHYBA: Supabase klient není inicializován!');
+        console.error('Zkontroluj, že supabase-init.js byl správně načten.');
+        return null;
+      }
+      return window.supabaseClient || window.sb;
+    }
 
     const VIP_COST = 1000; // K-Coins potřebné pro aktivaci
     let currentUser = null;
     let currentCreator = null;
+    let supabase = null; // Bude nastaven v DOMContentLoaded
 
     // Toast notifikace
     function showToast(message, type = 'success') {
@@ -729,6 +742,14 @@
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', () => {
+      // Inicializuj Supabase client
+      supabase = getSupabaseClient();
+      
+      if (!supabase) {
+        alert('Kritická chyba: Supabase není dostupný. Zkus obnovit stránku.');
+        return;
+      }
+      
       // Inicializuj Lucide ikony
       lucide.createIcons();
       
@@ -742,11 +763,7 @@
     });
   </script>
 
-  <!-- Supabase + Auth -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="auth-unified.js"></script>
+  <!-- Další skripty -->
   <script src="hamburger-menu.js"></script>
   <script src="credits-system-supabase.js"></script>
 </body>
