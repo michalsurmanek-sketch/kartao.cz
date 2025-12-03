@@ -124,11 +124,11 @@ class CreditsSystemSupabase {
   }
 
   /**
+   * Přidej kredity (např. za reklamu)
+   */
   async addCredits(amount, reason = "Manual add") {
     const sb = window.supabaseClient || window.sb;
     
-    if (!this.currentUser) {
-  async addCredits(amount, reason = "Manual add") {
     if (!this.currentUser) {
       throw new Error("User není přihlášen");
     }
