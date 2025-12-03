@@ -368,23 +368,29 @@
 
   <script>
     // Pouze kontrola přihlášení a zobrazení jména, kredity řeší credits-header.js
-    document.addEventListener("DOMContentLoaded", function () {
-      kartaoAuth.onAuthStateChanged(async function (user) {
-        if (!user) {
-          window.location.href = "login.html";
-          return;
-        }
-        
-        // jméno
-        const nameEl = document.getElementById("userName");
-        const initialEl = document.getElementById("userInitial");
-        const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Tvoje karta na Kartao.cz");
-        if (nameEl) nameEl.textContent = displayName;
-        if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
-        
-        // 🔥 Načti creator kartu
-        try {
-          const creatorCard = await loadCreatorCard(user.id);
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!window.supabaseClient) {
+        console.error("Supabase client není dostupný");
+        return;
+      }
+
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      
+      // jméno
+      const nameEl = document.getElementById("userName");
+      const initialEl = document.getElementById("userInitial");
+      const displayName = user.user_metadata?.name || (user.email ? user.email.split("@")[0] : "Tvoje karta na Kartao.cz");
+      if (nameEl) nameEl.textContent = displayName;
+      if (initialEl && displayName) initialEl.textContent = displayName.charAt(0).toUpperCase();
+      
+      // 🔥 Načti creator kartu
+      try {
+        const creatorCard = await loadCreatorCard(user.id);
           if (creatorCard) {
             console.log("📋 Creator karta načtena:", creatorCard);
             
@@ -567,7 +573,6 @@
         } catch (error) {
           console.error("❌ Chyba při načítání creator karty:", error);
         }
-      });
     });
   </script>
 </body>
