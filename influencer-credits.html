@@ -327,10 +327,14 @@
 
           // Výběr balíčku
           const cards = document.querySelectorAll(".topup-card");
+          console.log('[InfluencerCredits] Nalezeno balíčků:', cards.length);
+          
           cards.forEach((card) => {
             card.addEventListener("click", () => {
               selectedAmount = parseInt(card.getAttribute("data-amount"), 10) || null;
               selectedLabel = card.querySelector("p.text-sm.font-semibold")?.textContent || null;
+
+              console.log('[InfluencerCredits] Vybrán balíček:', selectedAmount, selectedLabel);
 
               cards.forEach((c) => c.classList.remove("ring-2", "ring-amber-400"));
               card.classList.add("ring-2", "ring-amber-400");
@@ -345,10 +349,16 @@
           });
 
           if (confirmBtn) {
+            console.log('[InfluencerCredits] Confirm button nalezen, přidávám listener');
             confirmBtn.addEventListener("click", async () => {
-              if (!selectedAmount) return;
+              if (!selectedAmount) {
+                console.warn('[InfluencerCredits] Není vybrán balíček!');
+                return;
+              }
 
+              console.log('[InfluencerCredits] Přidávám kredity:', selectedAmount);
               await creditsSystem.addCredits(selectedAmount);
+              console.log('[InfluencerCredits] Kredity přidány, nový stav:', creditsSystem.getCredits());
               // Realtime listener automaticky aktualizuje UI přes callback
 
               if (messageEl) {
