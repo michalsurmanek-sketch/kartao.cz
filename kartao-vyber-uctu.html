@@ -23,6 +23,8 @@
   </script>
 
   <!-- Supabase + Unified Auth -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
   <script src="hamburger-menu.js"></script>
@@ -30,18 +32,21 @@
   <script src="api-services.js"></script>
 
   <script>
-  // Počkej, až Firebase naběhne
+  // Počkej, až Supabase naběhne
   document.addEventListener("DOMContentLoaded", async () => {
     kartaoAuth.onAuthStateChanged(async (user) => {
       if (!user) return; // není přihlášený → nech výběr role
 
-      const uid = user.uid;
-      const doc = await firebase.firestore().collection("users").doc(uid).get();
+      const sb = window.supabaseClient || window.sb;
+      const { data: userData, error } = await sb
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
 
-      // Pokud už role existuje → ODJEBEM tu stránku pryč
-      if (doc.exists && doc.data().role) {
-
-        const role = doc.data().role;
+      // Pokud už role existuje → přesměruj
+      if (userData && userData.role) {
+        const role = userData.role;
 
         if (role === "firma") {
           window.location.href = "dashboard-firma.html";
@@ -164,16 +169,16 @@
     }
 
     (function initRoleSelection() {
-      // Ověříme, že je načtená Firebase
-      if (typeof firebase === "undefined") {
-        console.error("Firebase není načtená.");
-        showRoleMessage("Technický problém: přihlášení není dostupné (Firebase není načtená).", "error");
+      // Ověříme, že je načtená Supabase
+      if (typeof window.supabaseClient === "undefined" && typeof window.sb === "undefined") {
+        console.error("Supabase není načtená.");
+        showRoleMessage("Technický problém: přihlášení není dostupné (Supabase není načtená).", "error");
         return;
       }
 
-      // Ověříme, že máme auth a db (z firebase-init.js)
-      if (typeof auth === "undefined" || typeof db === "undefined") {
-        console.error("auth nebo db nejsou definované. Zkontroluj firebase-init.js.");
+      // Ověříme kartaoAuth
+      if (typeof kartaoAuth === "undefined") {
+        console.error("kartaoAuth není definovaný. Zkontroluj auth-unified.js.");
         showRoleMessage("Technický problém: přihlášení není plně inicializované. Zkuste to prosím později.", "error");
         return;
       }
@@ -219,16 +224,23 @@
   </script>
   <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  if (!window.auth.currentUser) {
+  // Získat aktuálního uživatele přes kartaoAuth
+  const user = await kartaoAuth.getCurrentUser();
+  
+  if (!user) {
     // uživatel není přihlášen → nic nedělej
     return;
   }
 
-  const uid = window.auth.currentUser.uid;
-  const doc = await firebase.firestore().collection("users").doc(uid).get();
+  const sb = window.supabaseClient || window.sb;
+  const { data: userData, error } = await sb
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
 
-  if (doc.exists) {
-    const role = doc.data().role;
+  if (userData && userData.role) {
+    const role = userData.role;
 
     // ROLE EXISTUJE → automatický redirect
     if (role === "firma") {

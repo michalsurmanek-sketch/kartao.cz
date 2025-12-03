@@ -849,21 +849,23 @@
       let isOnline = false;
       
       async function checkFirebaseConnection() {
-        if (!window.db) {
-          console.warn("⚠️ window.db není dostupné");
+        const sb = window.supabaseClient || window.sb;
+        if (!sb) {
+          console.warn("⚠️ Supabase není dostupné");
           updateFirebaseStatus(false);
           return false;
         }
         
         try {
-          // Jednoduchý test - přečíst .info/connected (neexistuje v Firestore, ale test připojení)
-          const testRef = window.db.collection("_ping").doc("test");
-          await testRef.set({ t: Date.now() }, { merge: true });
+          // Jednoduchý test - ping Supabase
+          const { error } = await sb
+            .from('_ping')
+            .upsert({ id: 'test', t: Date.now() });
           
           if (!isOnline) {
             isOnline = true;
             updateFirebaseStatus(true);
-            console.log("✅ Firebase ONLINE");
+            console.log("✅ Supabase ONLINE");
           }
           return true;
         } catch (err) {
@@ -891,15 +893,17 @@
             console.log(`[Auth] Přihlášen: ${user.id}`);
             
             // Ihned po přihlášení zkus test READ
-            if (window.db) {
-              window.db.collection('creators').doc(user.uid).get()
-                .then((doc) => {
-                  console.log(`✅ Test READ creators/${user.uid}:`, doc.exists ? 'existuje' : 'neexistuje (OK)');
-                })
-                .catch((err) => {
-                  console.error(`❌ Test READ SELHAL:`, err.code, err.message);
-                  if (err.code === 'permission-denied') {
-                    console.error(`🔴🔴🔴 FIRESTORE RULES BLOKUJÍ ČTENÍ! Musíš nasadit nová pravidla!`);
+            const sb = window.supabaseClient || window.sb;
+            if (sb) {
+              sb.from('creators')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle()
+                .then(({ data, error }) => {
+                  if (error) {
+                    console.error(`❌ Test READ SELHAL:`, error.message);
+                  } else {
+                    console.log(`✅ Test READ creators/${user.id}:`, data ? 'existuje' : 'neexistuje (OK)');
                   }
                 });
             }

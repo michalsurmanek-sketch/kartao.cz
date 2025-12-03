@@ -186,10 +186,11 @@
   </script>
 
   <!-- Supabase + Unified Auth -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
   <script src="hamburger-menu.js"></script>
-  <script src="database-init.js"></script>
   <script src="credits-system-supabase.js"></script>
 
   <script>
@@ -206,7 +207,7 @@
       const filterTypeEl = document.getElementById("filterType");
       const filterStatusEl = document.getElementById("filterStatus");
 
-      const db = firebase.firestore();
+      const sb = window.supabaseClient || window.sb;
 
       let allInvoices = [];
 
@@ -355,18 +356,19 @@
           console.warn("Fakturace: chyba při práci s CreditsSystem:", e);
         }
 
-        // Načtení dokladů z Firestore (kolekce "invoices") – demo struktura
-        db.collection("invoices")
-          .where("firmId", "==", firmId)
-          .orderBy("createdAt", "desc")
+        // Načtení dokladů z Supabase (tabulka "invoices") – demo struktura
+        sb.from("invoices")
+          .select("*")
+          .eq("firmId", firmId)
+          .order("createdAt", { ascending: false })
           .limit(50)
-          .get()
-          .then((snapshot) => {
+          .then(({ data, error }) => {
+            if (error) throw error;
+            
             allInvoices = [];
-            snapshot.forEach((doc) => {
-              const d = doc.data();
+            (data || []).forEach((d) => {
               allInvoices.push({
-                id: doc.id,
+                id: d.id,
                 number: d.number || d.invoiceNumber || "–",
                 dateText: d.dateText || d.date || "–",
                 periodKey: d.periodKey || null,
