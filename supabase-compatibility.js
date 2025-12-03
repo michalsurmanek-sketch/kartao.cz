@@ -6,23 +6,37 @@ if (window.CreditsSystemSupabase && !window.CreditsSystem) {
   window.CreditsSystem = class CreditsSystem {
     constructor(userId, callback) {
       // userId může být buď user.uid (Firebase) nebo user.id (Supabase)
-      this.instance = new CreditsSystemSupabase(userId, callback);
+      this.instance = new CreditsSystemSupabase();
+      this.userId = userId;
+      this.initialized = false;
+      
+      // Inicializuj asynchronně
+      this.initPromise = this.instance.init(userId).then(() => {
+        this.initialized = true;
+        if (callback) {
+          this.instance.onChange(callback);
+        }
+      });
     }
     
     async loadCredits() {
+      await this.initPromise;
       return await this.instance.loadCredits();
     }
     
     async addCredits(amount, description) {
+      await this.initPromise;
       return await this.instance.addCredits(amount, description);
     }
     
     async subtractCredits(amount, description) {
-      return await this.instance.subtractCredits(amount, description);
+      await this.initPromise;
+      return await this.instance.deductCredits(amount, description);
     }
     
-    async getCredits() {
-      return await this.instance.loadCredits();
+    getCredits() {
+      // Synchronní - vrátí lokální cache
+      return this.instance.getCredits();
     }
     
     destroy() {

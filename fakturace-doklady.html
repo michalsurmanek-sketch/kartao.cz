@@ -192,13 +192,10 @@
   <script src="auth-unified.js"></script>
   <script src="hamburger-menu.js"></script>
   <script src="credits-system-supabase.js"></script>
+  <script src="supabase-compatibility.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.firebase || !firebase.auth || !firebase.firestore) {
-        console.warn("Firebase není plně dostupný na fakturace-doklady.html");
-        return;
-      }
 
       const headerCreditsEl = document.getElementById("headerCredits");
       const currentCreditsEl = document.getElementById("currentCredits");

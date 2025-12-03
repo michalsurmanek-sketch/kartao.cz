@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Credits System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">🧪 Test Credits System</h1>
+    
+    <div class="bg-slate-800 p-6 rounded-lg mb-4">
+      <h2 class="text-xl mb-4">Aktuální kredity: <span id="credits" class="text-amber-400 font-bold">-</span></h2>
+      
+      <div class="space-y-2">
+        <button onclick="testAdd()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+          Přidat 100 kreditů
+        </button>
+        <button onclick="testDeduct()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded ml-2">
+          Odečíst 50 kreditů
+        </button>
+        <button onclick="testLoad()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded ml-2">
+          Znovu načíst
+        </button>
+      </div>
+    </div>
+    
+    <div class="bg-slate-800 p-6 rounded-lg">
+      <h3 class="text-lg mb-2">Log:</h3>
+      <pre id="log" class="text-xs text-green-400 h-64 overflow-auto"></pre>
+    </div>
+  </div>
+
+  <!-- Supabase + Credits System -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="auth-unified.js"></script>
+  <script src="credits-system-supabase.js"></script>
+  <script src="supabase-compatibility.js"></script>
+
+  <script>
+    const creditsEl = document.getElementById('credits');
+    const logEl = document.getElementById('log');
+    let creditsSystem;
+    
+    function log(msg) {
+      console.log(msg);
+      logEl.textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function updateUI(credits) {
+      creditsEl.textContent = credits;
+      log(`UI updated: ${credits} kreditů`);
+    }
+    
+    async function testAdd() {
+      try {
+        log('Přidávám 100 kreditů...');
+        const newCredits = await creditsSystem.addCredits(100, 'Test přidání');
+        log(`✅ Přidáno! Nový stav: ${newCredits}`);
+      } catch (err) {
+        log(`❌ Chyba: ${err.message}`);
+      }
+    }
+    
+    async function testDeduct() {
+      try {
+        log('Odečítám 50 kreditů...');
+        const newCredits = await creditsSystem.subtractCredits(50, 'Test odečtení');
+        log(`✅ Odečteno! Nový stav: ${newCredits}`);
+      } catch (err) {
+        log(`❌ Chyba: ${err.message}`);
+      }
+    }
+    
+    async function testLoad() {
+      try {
+        log('Načítám kredity z DB...');
+        const credits = await creditsSystem.loadCredits();
+        log(`✅ Načteno: ${credits} kreditů`);
+      } catch (err) {
+        log(`❌ Chyba: ${err.message}`);
+      }
+    }
+    
+    // Inicializace
+    kartaoAuth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        log('❌ Uživatel není přihlášený');
+        creditsEl.textContent = 'Nepřihlášen';
+        return;
+      }
+      
+      log(`✅ Přihlášen jako: ${user.email}`);
+      log(`User ID: ${user.id}`);
+      
+      try {
+        // Test se starým API (CreditsSystem - compatibility)
+        log('Inicializuji CreditsSystem (compatibility wrapper)...');
+        creditsSystem = new CreditsSystem(user.id, updateUI);
+        
+        // Počkej na init
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const credits = creditsSystem.getCredits();
+        log(`✅ CreditsSystem inicializován! Kredity: ${credits}`);
+        updateUI(credits);
+      } catch (err) {
+        log(`❌ Chyba při inicializaci: ${err.message}`);
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
