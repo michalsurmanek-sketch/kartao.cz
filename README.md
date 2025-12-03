@@ -2,12 +2,33 @@
 
 ![Kartao Logo](https://api.dicebear.com/7.x/shapes/svg?seed=kartao&backgroundColor=8b5cf6)
 
+**Status:** 🟢 Production Ready (Updated: 3. prosince 2025)
+
 ## 📖 Popis projektu
 
 Kartao.cz je kompletní marketplace platforma pro influencery a značky, která umožňuje:
 - **Tvůrcům** nabízet své služby a monetizovat svůj obsah
 - **Firmám** najít vhodné influencery pro své kampaně
 - **Bezpečné platby** s escrow systémem a automatickým zpracováním
+
+---
+
+## 🎯 RYCHLÝ START
+
+### Pre-Deployment Validace:
+```bash
+./pre-deploy-test.sh
+```
+
+### Deployment do produkce:
+```bash
+firebase login
+firebase deploy
+```
+
+📚 **Kompletní návod:** Viz [QUICK-DEPLOY.md](QUICK-DEPLOY.md) a [DEPLOYMENT-CHECKLIST.md](DEPLOYMENT-CHECKLIST.md)
+
+---
 
 ## 🚀 Hlavní funkce
 
