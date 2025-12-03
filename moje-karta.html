@@ -416,10 +416,14 @@
               bioEl.textContent = creatorCard.bio;
             }
             
-            // Kredity
+            // Kredity (body + header)
             const creditsEl = document.getElementById('userCredits');
+            const headerCreditsEl = document.getElementById('headerCredits');
             if (creditsEl && creatorCard.credits !== undefined) {
               creditsEl.textContent = creatorCard.credits;
+            }
+            if (headerCreditsEl && creatorCard.credits !== undefined) {
+              headerCreditsEl.textContent = creatorCard.credits;
             }
             
             // Instagram followers
