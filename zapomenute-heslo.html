@@ -199,26 +199,14 @@
     </footer>
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 
   <script>
-    // Inicializace Firebase jen pro tuto stránku
-    const firebaseConfig = {
-      apiKey: "AIzaSyC-jRAsCQ7dn3xT-JUxG1Jg675Sej7vp2o",
-      authDomain: "kartao-97df7.firebaseapp.com",
-      projectId: "kartao-97df7",
-      storageBucket: "kartao-97df7.firebasestorage.app",
-      messagingSenderId: "1041236043484",
-      appId: "1:1041236043484:web:6b916ba41fb82aeb2bf619",
-      measurementId: "G-77NDPH3TXM"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const auth = window.auth;
+    // Inicializace Supabase
+    const { createClient } = supabase;
+    const sb = createClient(supabaseConfig.url, supabaseConfig.anonKey);
 
     // rok v patičce
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -250,16 +238,19 @@
         submitBtn.textContent = 'Odesíláme...';
 
         try {
-          await auth.sendPasswordResetEmail(email);
+          const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password.html`
+          });
+          
+          if (error) throw error;
+          
           messageEl.textContent = 'Pokud tento e-mail existuje v našem systému, posíláme odkaz pro nastavení nového hesla.';
           messageEl.className = 'text-xs text-emerald-300 min-h-[1.25rem]';
         } catch (err) {
           console.error(err);
           let text = 'Nepodařilo se odeslat e-mail. Zkus to prosím znovu.';
-          if (err.code === 'auth/user-not-found') {
+          if (err.message?.includes('user not found') || err.message?.includes('Invalid email')) {
             text = 'Tento e-mail u nás nemáme. Zkus jinou adresu nebo se nejdřív zaregistruj.';
-          } else if (err.code === 'auth/invalid-email') {
-            text = 'Zadaný e-mail nemá platný formát.';
           }
           messageEl.textContent = text;
           messageEl.className = 'text-xs text-rose-300 min-h-[1.25rem]';
