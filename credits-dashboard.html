@@ -97,13 +97,7 @@
         mystery boxy a další bonusy.
       </p>
 
-      <div class="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
-          <p class="text-xs text-white/60">Kredity</p>
-          <p class="text-2xl font-semibold text-amber-300">
-            <span id="creditsValueHero">0</span>
-          </p>
-        </div>
+      <div class="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
         <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
           <p class="text-xs text-white/60">Streak</p>
           <p class="text-2xl font-semibold text-emerald-300">
@@ -406,26 +400,17 @@
           // Callback pro aktualizaci UI
           creditsSystem.onChange((newCredits) => {
             const currentCreditsEl = document.getElementById('currentCredits');
-            const creditsValueHeroEl = document.getElementById('creditsValueHero');
-            
             if (currentCreditsEl) {
               currentCreditsEl.textContent = newCredits.toLocaleString('cs-CZ');
-            }
-            if (creditsValueHeroEl) {
-              creditsValueHeroEl.textContent = newCredits.toLocaleString('cs-CZ');
             }
           });
           
           // Aktualizuj zobrazení kreditů (počáteční)
           const currentCreditsEl = document.getElementById('currentCredits');
-          const creditsValueHeroEl = document.getElementById('creditsValueHero');
           const initialCredits = creditsSystem.getCredits();
           
           if (currentCreditsEl) {
             currentCreditsEl.textContent = initialCredits.toLocaleString('cs-CZ');
-          }
-          if (creditsValueHeroEl) {
-            creditsValueHeroEl.textContent = initialCredits.toLocaleString('cs-CZ');
           }
           
           // Pro debug
