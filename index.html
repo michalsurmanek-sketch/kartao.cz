@@ -2563,7 +2563,7 @@
             const { data: creator } = await window.supabaseClient
               .from('creators')
               .select('name')
-              .eq('id', user.id)
+              .eq('user_id', user.id)
               .maybeSingle();
             
             if (creator?.name) {
@@ -2732,7 +2732,7 @@
       const { data: existing } = await window.supabaseClient
         .from('creators')
         .select('id')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (existing) {

@@ -507,8 +507,8 @@
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('*')
-          .eq('id', user.id)
-          .single();
+          .eq('user_id', user.id)
+          .maybeSingle();
 
         if (creatorError) {
           console.error('❌ Chyba načítání creator dat:', creatorError);

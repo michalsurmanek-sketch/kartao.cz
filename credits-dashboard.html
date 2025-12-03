@@ -380,16 +380,19 @@
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('*')
-          .eq('id', user.id)
-          .single();
+          .eq('user_id', user.id)
+          .maybeSingle();
 
         if (creatorError) {
           console.error('❌ Chyba načítání creator dat:', creatorError);
-          
-          if (creatorError.code === 'PGRST116') {
-            alert('Nejprve musíš vytvořit svoji kartu!');
-            window.location.href = 'zalozit-kartu.html';
-          }
+          alert('Chyba při načítání profilu. Zkus to prosím znovu.');
+          return;
+        }
+
+        if (!creator) {
+          console.warn('⚠️ Creator profil neexistuje');
+          alert('Nejprve musíš vytvořit svoji kartu!');
+          window.location.href = 'zalozit-kartu.html';
           return;
         }
 
@@ -541,7 +544,7 @@
                 last_active_date: today,
                 level: level
               })
-              .eq('id', user.id);
+              .eq('user_id', user.id);
 
             if (error) throw error;
 
@@ -1003,7 +1006,7 @@
             const { error } = await supabase
               .from('creators')
               .update({ credits: newCredits, updated_at: new Date().toISOString() })
-              .eq('id', user.id);
+              .eq('user_id', user.id);
             
             if (!error) {
               creator.credits = newCredits;
@@ -1017,7 +1020,7 @@
             const { error } = await supabase
               .from('creators')
               .update({ credits: newCredits, updated_at: new Date().toISOString() })
-              .eq('id', user.id);
+              .eq('user_id', user.id);
             
             if (!error) {
               creator.credits = newCredits;
