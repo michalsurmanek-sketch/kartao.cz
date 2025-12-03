@@ -91,21 +91,21 @@
       </div>
     </section>
 
-    <!-- Filtry kategorií (zatím jen vizuálně) -->
+    <!-- Filtry kategorií -->
     <section class="mb-5 flex flex-wrap gap-2 text-xs">
-      <button class="px-3 py-1.5 rounded-full bg-amber-500 text-neutral-950 font-semibold shadow-soft">
+      <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full bg-amber-500 text-neutral-950 font-semibold shadow-soft">
         Vše
       </button>
-      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button data-filter="Pobyty & wellness" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Pobyty & wellness
       </button>
-      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button data-filter="Jídlo & restaurace" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Jídlo & restaurace
       </button>
-      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button data-filter="E‑shop slevy" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         E‑shop slevy
       </button>
-      <button class="px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
+      <button data-filter="Zážitky" class="filter-btn px-3 py-1.5 rounded-full bg-neutral-900 border border-white/10 text-white/80 hover:bg-neutral-800">
         Zážitky
       </button>
     </section>
@@ -113,7 +113,7 @@
     <!-- GRID nabídek -->
     <section id="offersGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- Nabídka 1: Sleva 10 % globálně -->
-      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/60 shadow-soft">
+      <article data-category="E‑shop slevy" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-amber-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=60" alt="Nákup" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -140,7 +140,7 @@
       </article>
 
       <!-- Nabídka 2: Zážitkový pobyt -->
-      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-fuchsia-400/60 shadow-soft">
+      <article data-category="Pobyty & wellness" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-fuchsia-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60" alt="Wellness" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -167,7 +167,7 @@
       </article>
 
       <!-- Nabídka 3: Večeře v restauraci -->
-      <article class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-emerald-400/60 shadow-soft">
+      <article data-category="Jídlo & restaurace" class="offer-card group relative overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-950 border border-emerald-400/60 shadow-soft">
         <div class="relative h-36 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=800&q=60" alt="Restaurace" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
@@ -234,6 +234,34 @@
             "Vybraná nabídka: " + offerId + "\n\n" +
             "Napojíme na backend, odečteme příslušný ticket z Moje výhry a pošleme potvrzení e‑mailem."
           );
+        });
+      });
+
+      // 3) Filtry kategorií
+      const filterButtons = document.querySelectorAll(".filter-btn");
+      const offerCards = document.querySelectorAll(".offer-card");
+
+      filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const filterValue = btn.getAttribute("data-filter");
+
+          // Aktualizace aktivního tlačítka
+          filterButtons.forEach((b) => {
+            b.classList.remove("bg-amber-500", "text-neutral-950", "font-semibold", "shadow-soft");
+            b.classList.add("bg-neutral-900", "border", "border-white/10", "text-white/80");
+          });
+          btn.classList.remove("bg-neutral-900", "border", "border-white/10", "text-white/80");
+          btn.classList.add("bg-amber-500", "text-neutral-950", "font-semibold", "shadow-soft");
+
+          // Filtrování nabídek
+          offerCards.forEach((card) => {
+            const category = card.getAttribute("data-category");
+            if (filterValue === "all" || category === filterValue) {
+              card.style.display = "";
+            } else {
+              card.style.display = "none";
+            }
+          });
         });
       });
     });
