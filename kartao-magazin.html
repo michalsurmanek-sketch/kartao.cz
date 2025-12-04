@@ -18,11 +18,15 @@
   <!-- HLAVIČKA -->
   <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Ikona přihlášení úplně vlevo na mobilu -->
+      <a id="loginBtnMobile" href="login.html" class="md:hidden inline-flex items-center justify-center p-2 rounded-lg bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition mr-2">
+        <i data-lucide="log-in" class="w-5 h-5"></i>
+        <span class="sr-only">Přihlásit se</span>
+      </a>
       <!-- Hamburger menu tlačítko -->
       <button id="menuToggle" class="md:hidden p-2 rounded-lg hover:bg-white/5 transition">
         <i data-lucide="menu" class="w-6 h-6"></i>
       </button>
-
       <a href="index.html" class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center shadow">
           <i data-lucide="newspaper" class="w-5 h-5"></i>
@@ -61,10 +65,6 @@
 
       <!-- Mobile Auth & Search Buttons vpravo -->
       <div class="flex items-center gap-1">
-        <a id="loginBtnMobile" href="login.html" class="md:hidden inline-flex items-center justify-center p-2 rounded-lg bg-gradient-to-tr from-fuchsia-500 to-amber-400 hover:from-fuchsia-600 hover:to-amber-500 transition">
-          <i data-lucide="log-in" class="w-5 h-5"></i>
-          <span class="sr-only">Přihlásit se</span>
-        </a>
         <button id="searchToggle" class="p-2 rounded-lg hover:bg-white/5 transition">
           <i data-lucide="search" class="w-5 h-5"></i>
         </button>
