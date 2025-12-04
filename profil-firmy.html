@@ -34,8 +34,8 @@
             const logoUrl = publicUrlData.publicUrl;
             // Uložit URL do tabulky firms
             const { error: updateError } = await window.supabaseClient
-              .from('firms')
-              .update({ logo_url: logoUrl })
+              .from('firmy')
+              .update({ ikona: logoUrl })
               .eq('user_id', userId);
             if (updateError) {
               alert('Chyba při ukládání URL loga!');
@@ -247,165 +247,116 @@
   <script src="api-services.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Ikony
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-
-      const auth =
-        window.auth ||
-        window.auth;
-      const db =
-        window.db ||
-        (window.firebase && firebase.firestore && firebase.firestore());
-
-      if (!auth || !db) {
-        console.warn("Profil firmy – Firebase Auth nebo Firestore není dostupný.");
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (window.lucide) lucide.createIcons();
+      const supabase = window.supabaseClient;
+      // --- Ověření přihlášení ---
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        window.location.href = "login.html";
         return;
       }
+      window.currentUserId = user.id;
 
-      const headerCreditsEl = document.getElementById("headerCredits");
+      // --- Načtení dat firmy ---
+      const { data: firmData, error: firmError } = await supabase
+        .from('firmy')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      if (firmError) {
+        console.warn("Chyba načítání firmy:", firmError);
+      }
+      // Vyplnění údajů do formuláře
+      document.getElementById("companyNameInput").value = firmData?.název_společnosti || "";
+      document.getElementById("icoInput").value = firmData?.ikona || "";
+      document.getElementById("dicInput").value = firmData?.dic || "";
+      document.getElementById("emailInput").value = firmData?.kontaktní_e_mail || "";
+      document.getElementById("phoneInput").value = firmData?.telefon || "";
+      document.getElementById("billingAddressInput").value = firmData?.fakturační_adresa || "";
+      document.getElementById("billingZipInput").value = firmData?.psc || "";
+      document.getElementById("billingCityInput").value = firmData?.město || "";
+      document.getElementById("billingCountryInput").value = firmData?.země || "";
+      // Zobrazení loga firmy
+      if (firmData?.ikona) {
+        let logoEl = document.getElementById('companyLogoImg');
+        if (!logoEl) {
+          logoEl = document.createElement('img');
+          logoEl.id = 'companyLogoImg';
+          logoEl.className = 'w-28 h-28 rounded-3xl object-cover absolute top-0 left-0';
+          document.querySelector('.relative').appendChild(logoEl);
+        }
+        logoEl.src = firmData.ikona;
+      }
 
-      const companyNameHeading = document.getElementById("companyName");
-      const companyInitialEl = document.getElementById("companyInitial");
-
-      const nameInput = document.getElementById("companyNameInput");
-      const icoInput = document.getElementById("icoInput");
-      const dicInput = document.getElementById("dicInput");
-      const emailInput = document.getElementById("emailInput");
-      const phoneInput = document.getElementById("phoneInput");
-
-      const billingAddressInput = document.getElementById("billingAddressInput");
-      const billingZipInput = document.getElementById("billingZipInput");
-      const billingCityInput = document.getElementById("billingCityInput");
-      const billingCountryInput = document.getElementById("billingCountryInput");
-
-      const saveBtn = document.getElementById("saveCompanyBtn");
-      const saveStatus = document.getElementById("saveStatus");
-
-      auth.onAuthStateChanged(async (user) => {
-        if (!user) {
-          window.location.href = "login.html";
+      // --- Upload loga ---
+      const fileInput = document.querySelector('input[type="file"]');
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        // Upload do Supabase Storage
+        const { data, error } = await supabase.storage
+          .from('company-logos')
+          .upload(`logo_${user.id}_${Date.now()}.png`, file, { upsert: true });
+        if (error) {
+          alert('Chyba při nahrávání loga!');
           return;
         }
-
-        window.currentUserId = user.uid;
-
-        // 1) Kredity
-        try {
-          const cs = new CreditsSystem(user.uid);
-          const credits = cs.getCredits();
-          if (headerCreditsEl && typeof credits === "number") {
-            headerCreditsEl.textContent = credits;
-          }
-        } catch (e) {
-          console.warn("Profil firmy – CreditsSystem error:", e);
+        // Získat veřejnou URL
+        const { data: publicUrlData } = supabase.storage
+          .from('company-logos')
+          .getPublicUrl(data.path);
+        const logoUrl = publicUrlData.publicUrl;
+        // Uložit URL do tabulky firmy
+        const { error: updateError } = await supabase
+          .from('firmy')
+          .update({ ikona: logoUrl })
+          .eq('user_id', user.id);
+        if (updateError) {
+          alert('Chyba při ukládání URL loga!');
+          return;
         }
-
-        // 2) Firemní údaje z Firestore
-        const companyDocRef = db.collection("companies").doc(user.uid);
-
-        try {
-          const snap = await companyDocRef.get();
-          if (snap.exists) {
-            const data = snap.data() || {};
-
-            if (nameInput && data.name) nameInput.value = data.name;
-            if (icoInput && data.ico) icoInput.value = data.ico;
-            if (dicInput && data.dic) dicInput.value = data.dic;
-            if (emailInput && data.email) emailInput.value = data.email;
-            if (phoneInput && data.phone) phoneInput.value = data.phone;
-
-            if (billingAddressInput && data.billingAddress) billingAddressInput.value = data.billingAddress;
-            if (billingZipInput && data.billingZip) billingZipInput.value = data.billingZip;
-            if (billingCityInput && data.billingCity) billingCityInput.value = data.billingCity;
-            if (billingCountryInput && data.billingCountry) billingCountryInput.value = data.billingCountry;
-
-            if (companyNameHeading && data.name) companyNameHeading.textContent = data.name;
-            if (companyInitialEl && data.name) companyInitialEl.textContent = data.name.charAt(0).toUpperCase();
-          }
-        } catch (e) {
-          console.warn("Profil firmy – chyba při načítání company doc:", e);
+        alert('Logo firmy bylo úspěšně nahráno!');
+        // Zobraz logo na stránce
+        let logoEl = document.getElementById('companyLogoImg');
+        if (!logoEl) {
+          logoEl = document.createElement('img');
+          logoEl.id = 'companyLogoImg';
+          logoEl.className = 'w-28 h-28 rounded-3xl object-cover absolute top-0 left-0';
+          document.querySelector('.relative').appendChild(logoEl);
         }
+        logoEl.src = logoUrl;
+      });
 
-        // 3) Tlačítko změnit / uložit
-        if (saveBtn) {
-          const defaultLabel = `
-            <span class="flex items-center gap-1">
-              <i data-lucide="edit-3" class="w-4 h-4"></i>
-              <span>Změnit údaje</span>
-            </span>
-          `;
-          const saveLabel = `
-            <span class="flex items-center gap-1">
-              <i data-lucide="save" class="w-4 h-4"></i>
-              <span>Uložit změny</span>
-            </span>
-          `;
-          const loadingLabel = `
-            <span class="flex items-center gap-2">
-              <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
-              <span>Ukládám…</span>
-            </span>
-          `;
-
-          saveBtn.dataset.mode = saveBtn.dataset.mode || "view";
-          saveBtn.innerHTML = defaultLabel;
-          if (window.lucide) lucide.createIcons();
-
-          saveBtn.addEventListener("click", async () => {
-            const mode = saveBtn.dataset.mode || "view";
-
-            // První klik – přepnout do režimu editace
-            if (mode === "view") {
-              saveBtn.dataset.mode = "edit";
-              saveBtn.innerHTML = saveLabel;
-              if (saveStatus) saveStatus.textContent = "Proveď změny a znovu klikni na Uložit.";
-              if (window.lucide) lucide.createIcons();
-              return;
-            }
-
-            // Druhé klik – uložení do Firestore
-            saveBtn.disabled = true;
-            saveBtn.classList.add("opacity-70", "cursor-not-allowed");
-            if (saveStatus) saveStatus.textContent = "Ukládám…";
-
-            saveBtn.innerHTML = loadingLabel;
-            if (window.lucide) lucide.createIcons();
-
-            const payload = {
-              name: nameInput?.value || "",
-              ico: icoInput?.value || "",
-              dic: dicInput?.value || "",
-              email: emailInput?.value || "",
-              phone: phoneInput?.value || "",
-              billingAddress: billingAddressInput?.value || "",
-              billingZip: billingZipInput?.value || "",
-              billingCity: billingCityInput?.value || "",
-              billingCountry: billingCountryInput?.value || "",
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            };
-
-            try {
-              await companyDocRef.set(payload, { merge: true });
-
-              if (companyNameHeading && payload.name) companyNameHeading.textContent = payload.name;
-              if (companyInitialEl && payload.name) companyInitialEl.textContent = payload.name.charAt(0).toUpperCase();
-
-              if (saveStatus) saveStatus.textContent = "Uloženo ✔";
-              saveBtn.dataset.mode = "edit";
-            } catch (e) {
-              console.error("Profil firmy – chyba při ukládání:", e);
-              if (saveStatus) saveStatus.textContent = "Chyba při ukládání";
-            } finally {
-              saveBtn.disabled = false;
-              saveBtn.classList.remove("opacity-70", "cursor-not-allowed");
-              saveBtn.innerHTML = saveLabel;
-              if (window.lucide) lucide.createIcons();
-            }
-          });
+      // --- Uložení údajů firmy ---
+      const saveBtn = document.getElementById("saveCompanyBtn");
+      const saveStatus = document.getElementById("saveStatus");
+      saveBtn.addEventListener("click", async () => {
+        saveBtn.disabled = true;
+        saveBtn.classList.add("opacity-70", "cursor-not-allowed");
+        if (saveStatus) saveStatus.textContent = "Ukládám…";
+        const payload = {
+          název_společnosti: document.getElementById("companyNameInput").value,
+          kontaktní_e_mail: document.getElementById("emailInput").value,
+          telefon: document.getElementById("phoneInput").value,
+          fakturační_adresa: document.getElementById("billingAddressInput").value,
+          psc: document.getElementById("billingZipInput").value,
+          město: document.getElementById("billingCityInput").value,
+          země: document.getElementById("billingCountryInput").value,
+          dic: document.getElementById("dicInput").value,
+          ikona: firmData?.ikona || ""
+        };
+        const { error: updateError } = await supabase
+          .from('firmy')
+          .update(payload)
+          .eq('user_id', user.id);
+        if (updateError) {
+          if (saveStatus) saveStatus.textContent = "Chyba při ukládání";
+        } else {
+          if (saveStatus) saveStatus.textContent = "Uloženo ✔";
         }
+        saveBtn.disabled = false;
+        saveBtn.classList.remove("opacity-70", "cursor-not-allowed");
       });
     });
   </script>
