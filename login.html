@@ -111,6 +111,17 @@
   </style>
 </head>
 <body class="text-slate-100">
+    <script>
+      // Nastavení role podle parametru v URL (např. login.html?role=firma)
+      document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role');
+        if (role === 'firma' || role === 'influencer') {
+          localStorage.setItem('userRole', role);
+          window.currentUserRole = role;
+        }
+      });
+    </script>
   <div class="relative min-h-screen flex flex-col">
     <!-- Dekorativní kruhy v pozadí -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
