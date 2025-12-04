@@ -445,7 +445,7 @@
         <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
         <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
         <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
-        <a href="vip.html" class="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
+        <a href="vip.html" class="lg:hidden inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
           <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
           <span class="font-bold">VIP</span>
         </a>
@@ -454,16 +454,16 @@
       <div class="hidden md:flex items-center gap-3">
   <!-- Přihlášen - zobrazí se po načtení auth -->
   <div id="userMenu" data-auth="in" class="hidden items-center gap-3">
-    <!-- K-Coins zobrazení -->
-    <a href="credits-dashboard.html" id="creditsDisplay" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition">
+    <!-- K-Coins zobrazení (skryto na desktopu) -->
+    <a href="credits-dashboard.html" id="creditsDisplay" class="md:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition">
       <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
       <span id="userCredits" class="font-semibold text-amber-300">0</span>
       <span class="text-xs text-amber-400/70">K-Coins</span>
     </a>
-    
+    <!-- Jméno uživatele skryto na desktopu, zůstává jen ikonka -->
     <a href="kartao-muj-ucet.html" class="text-white/80 hover:text-white transition flex items-center gap-2">
       <i data-lucide="user" class="w-4 h-4"></i>
-      <span id="userName">Můj účet</span>
+      <span id="userName" class="md:hidden">Můj účet</span>
     </a>
     <!-- Odhlášení přes auth-unified -->
     <button id="logoutBtn"
