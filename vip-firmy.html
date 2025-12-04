@@ -36,6 +36,7 @@
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-amber-900 text-white">
   <div class="min-h-screen flex flex-col">
     <script>
+      window.kartaoMode = 'production';
       document.addEventListener('DOMContentLoaded', async () => {
         lucide.init();
         const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
@@ -59,8 +60,8 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-amber-400/20 text-amber-100 border border-amber-300/70">
-                VIP firmy
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-green-600/20 text-green-200 border border-green-500/40">
+                Ostrý režim
               </span>
             </div>
             <p class="text-[11px] text-white/60">Výběr top firem v ekosystému Kartao.cz</p>

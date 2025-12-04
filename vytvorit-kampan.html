@@ -33,6 +33,7 @@
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-emerald-950 text-white">
   <div class="min-h-screen flex flex-col">
     <script>
+      window.kartaoMode = 'production';
       document.addEventListener('DOMContentLoaded', async () => {
         lucide.init();
         const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
@@ -57,8 +58,8 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/15 text-emerald-200 border border-emerald-400/40">
-                Nová kampaň
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-green-600/20 text-green-200 border border-green-500/40">
+                Ostrý režim
               </span>
             </div>
             <p class="text-[11px] text-white/60">Založit novou marketingovou kampaň</p>
@@ -214,70 +215,76 @@
   <script src="api-services.js"></script>
 
   <script>
-    // Přihlášení + kredity v hlavičce + jednoduchý DEMO submit
+    // Přihlášení + kredity v hlavičce + reálné vytvoření kampaně přes Supabase
     document.addEventListener("DOMContentLoaded", function () {
-      const auth = window.auth;
-      if (!auth) {
-        console.warn("Firebase Auth není dostupný na vytvorit-kampan.html");
-        return;
-      }
-
       const headerCreditsEl = document.getElementById("headerCredits");
       const btn = document.getElementById("createCampaignBtn");
+      const sb = window.supabaseClient || window.sb;
 
-      auth.onAuthStateChanged(function (user) {
-        if (!user) {
+      async function getUser() {
+        const { data, error } = await sb.auth.getUser();
+        if (error || !data?.user) {
           window.location.href = "login.html";
-          return;
+          return null;
         }
+        return data.user;
+      }
 
-        window.currentUserId = user.uid;
+      getUser().then(async (user) => {
+        if (!user) return;
+        window.currentUserId = user.id;
 
-        // Kredity přes CreditsSystem – stejný systém jako jinde
+        // Načti kredity
         try {
-          const creditsSystem = new CreditsSystem(user.uid);
-          window.creditSys = {
-            getCredits: () => creditsSystem.getCredits(),
-            addCredits: (a) => creditsSystem.addCredits(a),
-            subtractCredits: (a) => creditsSystem.subtractCredits(a),
-          };
-
-          const val = creditsSystem.getCredits();
-          if (typeof val === "number" && headerCreditsEl) {
-            headerCreditsEl.textContent = val;
+          const { data: firm, error: firmError } = await sb
+            .from('firms')
+            .select('credits')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (firm && typeof firm.credits === "number" && headerCreditsEl) {
+            headerCreditsEl.textContent = firm.credits;
           }
         } catch (e) {
           console.warn("Vytvořit kampaň: chyba při načítání kreditů:", e);
         }
 
-        // DEMO – odeslání kampaně (zatím jen alert, ne Firestore)
+        // Vytvoření kampaně
         if (btn) {
-          btn.addEventListener("click", function () {
+          btn.addEventListener("click", async function () {
             const name = document.getElementById("campaignName")?.value?.trim() || "";
             const platform = document.getElementById("campaignPlatform")?.value || "";
-            const budget = document.getElementById("campaignBudget")?.value || "";
+            const budget = parseInt(document.getElementById("campaignBudget")?.value, 10) || 0;
             const goal = document.getElementById("campaignGoal")?.value?.trim() || "";
             const influencersMode = document.getElementById("campaignInfluencers")?.value || "";
             const start = document.getElementById("campaignStart")?.value || "";
             const end = document.getElementById("campaignEnd")?.value || "";
 
-            if (!name || !budget) {
-              alert("Vyplň prosím minimálně název kampaně a rozpočet (K-Coins).");
+            // Validace
+            if (!name || !budget || budget < 1) {
+              alert("Vyplň prosím minimálně název kampaně a rozpočet (K-Coins > 0).");
               return;
             }
 
-            alert(
-              "DEMO – kampaň by se teď uložila.\n\n" +
-              "Název: " + name + "\n" +
-              "Platforma: " + platform + "\n" +
-              "Rozpočet: " + budget + " K-Coins\n" +
-              "Cíl: " + (goal || "neuvedeno") + "\n" +
-              "Influenceři: " + influencersMode + "\n" +
-              "Období: " + (start || "TBD") + " – " + (end || "TBD")
-            );
-
-            // Po DEMO odeslání skočíme na přehled kampaní
-            window.location.href = "kampane-firma.html";
+            // Uložení do Supabase
+            try {
+              const { error } = await sb
+                .from('campaigns')
+                .insert({
+                  user_id: user.id,
+                  name,
+                  platform,
+                  budget,
+                  goal,
+                  influencers_mode: influencersMode,
+                  start_date: start,
+                  end_date: end,
+                  created_at: new Date().toISOString()
+                });
+              if (error) throw error;
+              window.location.href = "kampane-firma.html";
+            } catch (e) {
+              alert("Chyba při ukládání kampaně: " + (e.message || e));
+            }
           });
         }
       });
