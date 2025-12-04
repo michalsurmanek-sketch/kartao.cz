@@ -1031,20 +1031,21 @@
           </ul>
         </div>
 
-        <!-- Newsletter & Social -->
+        <!-- Newsletter / Nabídky -->
         <div>
-          <div class="flex items-center gap-2 font-bold mb-4 text-sky-400">
-            <i data-lucide="mail" class="w-5 h-5"></i>
-            <span>Novinky</span>
+          <div class="flex items-center gap-2 font-bold mb-4 text-emerald-400">
+            <i data-lucide="mail-open" class="w-5 h-5"></i>
+            <span>Získejte exkluzivní nabídky</span>
           </div>
-          <p class="text-sm text-white/60 mb-3">Žádný spam. Jen podstatné novinky a tipy.</p>
-          <form id="footer-newsletter" class="flex gap-2 mb-4">
-            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail" 
-                   class="flex-1 rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
-            <button type="submit" class="rounded-xl bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 font-medium text-sm whitespace-nowrap transition">
-              Odebírat
+          <p class="text-sm text-white/60 mb-3">Zadejte svůj e-mail a jako první dostanete přístup k novým funkcím, slevám a speciálním nabídkám. Žádný spam, jen to nejlepší.</p>
+          <form id="footer-newsletter" class="flex flex-col sm:flex-row gap-2 mb-4">
+            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail pro nabídky" 
+                   class="flex-1 rounded-xl bg-white/10 border border-emerald-400/30 px-3 py-2 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition" />
+            <button type="submit" class="rounded-xl bg-emerald-500 hover:bg-emerald-600 px-5 py-2 font-semibold text-sm whitespace-nowrap transition shadow-md">
+              Chci nabídky
             </button>
           </form>
+          <div class="text-xs text-white/40 italic mb-2">Odběr můžete kdykoliv zrušit.</div>
           
           <!-- Social Icons -->
           <div class="flex items-center gap-2">
