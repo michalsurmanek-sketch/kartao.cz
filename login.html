@@ -134,20 +134,40 @@
             Jedno bezpečné přihlášení pro všechny funkce Kartao.cz.
           </p>
 
-          <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
-            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-1').classList.toggle('hidden')">
-              <span class="mt-0.5 text-emerald-400">●</span>
-              <span>Bezpečné přihlášení <span class="hidden" id="desc-1">– hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span></span>
-            </li>
-            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-2').classList.toggle('hidden')">
-              <span class="mt-0.5 text-sky-400">●</span>
-              <span>Jednotný účet <span class="hidden" id="desc-2">– stejný e-mail používáš pro všechny dashboardy a funkce.</span></span>
-            </li>
-            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-3').classList.toggle('hidden')">
-              <span class="mt-0.5 text-amber-400">●</span>
-              <span>Role účtu <span class="hidden" id="desc-3">– influencer nebo firma, podle volby na předchozí obrazovce.</span></span>
-            </li>
-          </ul>
+          <!-- MOBILNÍ VERZE -->
+          <div class="block md:hidden">
+            <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
+              <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-1').classList.toggle('hidden')">
+                <span class="mt-0.5 text-emerald-400">●</span>
+                <span>Bezpečné přihlášení <span class="hidden" id="desc-1">– hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span></span>
+              </li>
+              <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-2').classList.toggle('hidden')">
+                <span class="mt-0.5 text-sky-400">●</span>
+                <span>Jednotný účet <span class="hidden" id="desc-2">– stejný e-mail používáš pro všechny dashboardy a funkce.</span></span>
+              </li>
+              <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-3').classList.toggle('hidden')">
+                <span class="mt-0.5 text-amber-400">●</span>
+                <span>Role účtu <span class="hidden" id="desc-3">– influencer nebo firma, podle volby na předchozí obrazovce.</span></span>
+              </li>
+            </ul>
+          </div>
+          <!-- DESKTOP VERZE -->
+          <div class="hidden md:block">
+            <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
+              <li class="flex items-start gap-2">
+                <span class="mt-0.5 text-emerald-400">●</span>
+                <span>Bezpečné přihlášení – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-0.5 text-sky-400">●</span>
+                <span>Jednotný účet – stejný e-mail používáš pro všechny dashboardy a funkce.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-0.5 text-amber-400">●</span>
+                <span>Role účtu – influencer nebo firma, podle volby na předchozí obrazovce.</span>
+              </li>
+            </ul>
+          </div>
 
           <div class="mt-auto flex flex-wrap items-center gap-3 pt-2">
             <div class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400 ring-1 ring-slate-700/80">
