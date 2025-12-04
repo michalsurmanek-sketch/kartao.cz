@@ -132,6 +132,69 @@
       </button>
     </div>
 
+    <!-- MOBILNÍ VERZE -->
+    <!-- mobil -->
+    <div class="block md:hidden">
+      <!-- Karty výběru pro mobil -->
+      <div id="role-card-mobile" class="grid gap-4">
+        <!-- Firma -->
+        <button id="btn-firma-mobile" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-amber-400 hover:bg-neutral-800 transition flex flex-col justify-between">
+          <div class="flex-1">
+            <div class="text-xs uppercase tracking-wide text-amber-300 mb-1">Pro firmy &amp; značky</div>
+            <div class="text-lg font-semibold mb-2">Jsem firma</div>
+            <p class="text-sm text-white/70">Chci zadávat kampaně, oslovit influencery a spravovat spolupráce.</p>
+          </div>
+          <div class="mt-4 text-xs text-white/50 group-hover:text-amber-200 flex items-center justify-between">
+            <span>Pokračovat do rozhraní pro firmy</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </div>
+        </button>
+        <!-- Tvůrce -->
+        <button id="btn-tvurce-mobile" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-fuchsia-400 hover:bg-neutral-800 transition flex flex-col justify-between">
+          <div class="flex-1">
+            <div class="text-xs uppercase tracking-wide text-fuchsia-300 mb-1">Influenceři &amp; tvůrci</div>
+            <div class="text-lg font-semibold mb-2">Jsem tvůrce</div>
+            <p class="text-sm text-white/70">Chci získávat spolupráce, nabízet své služby a mít vlastní kartu Kartao.</p>
+          </div>
+          <div class="mt-4 text-xs text-white/50 group-hover:text-fuchsia-200 flex items-center justify-between">
+            <span>Pokračovat do rozhraní pro tvůrce</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- DESKTOP VERZE -->
+    <div class="hidden md:block">
+      <!-- Karty výběru pro desktop -->
+      <div id="role-card-desktop" class="grid grid-cols-2 gap-4">
+        <!-- Firma -->
+        <button id="btn-firma-desktop" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-amber-400 hover:bg-neutral-800 transition flex flex-col justify-between h-56">
+          <div class="flex-1">
+            <div class="text-xs uppercase tracking-wide text-amber-300 mb-1">Pro firmy &amp; značky</div>
+            <div class="text-lg font-semibold mb-2">Jsem firma</div>
+            <p class="text-sm text-white/70">Chci zadávat kampaně, oslovit influencery a spravovat spolupráce.</p>
+          </div>
+          <div class="mt-4 text-xs text-white/50 group-hover:text-amber-200 flex items-center justify-between">
+            <span>Pokračovat do rozhraní pro firmy</span>
+            <span>→</span>
+          </div>
+        </button>
+        <!-- Tvůrce -->
+        <button id="btn-tvurce-desktop" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-fuchsia-400 hover:bg-neutral-800 transition flex flex-col justify-between h-56">
+          <div class="flex-1">
+            <div class="text-xs uppercase tracking-wide text-fuchsia-300 mb-1">Influenceři &amp; tvůrci</div>
+            <div class="text-lg font-semibold mb-2">Jsem tvůrce</div>
+            <p class="text-sm text-white/70">Chci získávat spolupráce, nabízet své služby a mít vlastní kartu Kartao.</p>
+          </div>
+          <div class="mt-4 text-xs text-white/50 group-hover:text-fuchsia-200 flex items-center justify-between">
+            <span>Pokračovat do rozhraní pro tvůrce</span>
+            <span>→</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
     <p class="mt-6 text-[11px] text-white/40">
       Pokud jste se sem dostali omylem, můžete se <a href="index.html" class="underline">vrátit na homepage</a>.
     </p>
