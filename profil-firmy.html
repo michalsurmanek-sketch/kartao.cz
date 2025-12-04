@@ -258,7 +258,7 @@
       }
       window.currentUserId = user.id;
 
-      // --- Načtení dat firmy ---
+      // --- Načtení dat firmy a firemních K-Coins ---
       const { data: firmData, error: firmError } = await supabase
         .from('firmy')
         .select('*')
@@ -287,6 +287,10 @@
           document.querySelector('.relative').appendChild(logoEl);
         }
         logoEl.src = firmData.ikona;
+      }
+      // Zobrazení firemních K-Coins
+      if (document.getElementById('headerCredits')) {
+        document.getElementById('headerCredits').textContent = firmData?.credits || 0;
       }
 
       // --- Upload loga ---
