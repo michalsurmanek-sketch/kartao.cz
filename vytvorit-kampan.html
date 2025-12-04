@@ -324,7 +324,7 @@
 
             // Uložení do Supabase
             try {
-              const { error } = await sb
+              const { error, data } = await sb
                 .from('campaigns')
                 .insert({
                   user_id: user.id,
@@ -338,10 +338,39 @@
                   end_date: end,
                   created_at: new Date().toISOString()
                 });
-              if (error) throw error;
+              if (error) {
+                console.error("Chyba při ukládání kampaně:", error);
+                alert("Chyba při ukládání kampaně: " + (error.details || error.message || error));
+                // Monitoring: log do externí služby (např. Sentry, custom endpoint)
+                if (window.monitoringService && typeof window.monitoringService.logError === 'function') {
+                  window.monitoringService.logError({
+                    type: 'campaign_create',
+                    error,
+                    userId: user.id,
+                    payload: { name, platform, budget, goal, influencersMode, selectedInfluencers, start, end }
+                  });
+                }
+                return;
+              }
+              // Monitoring: log úspěšného vytvoření
+              if (window.monitoringService && typeof window.monitoringService.logEvent === 'function') {
+                window.monitoringService.logEvent({
+                  type: 'campaign_create_success',
+                  campaignId: data?.[0]?.id,
+                  userId: user.id
+                });
+              }
               window.location.href = "kampane-firma.html";
             } catch (e) {
+              console.error("Chyba při ukládání kampaně:", e);
               alert("Chyba při ukládání kampaně: " + (e.message || e));
+              if (window.monitoringService && typeof window.monitoringService.logError === 'function') {
+                window.monitoringService.logError({
+                  type: 'campaign_create_exception',
+                  error: e,
+                  userId: user.id
+                });
+              }
             }
           });
         }
