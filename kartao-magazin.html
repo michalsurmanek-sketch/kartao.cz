@@ -471,10 +471,8 @@
 
       function openMenu() {
         mobileMenu.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          menuBackdrop.classList.remove('opacity-0');
-          menuPanel.classList.remove('-translate-x-full');
-        });
+        menuBackdrop.classList.remove('opacity-0');
+        menuPanel.classList.remove('-translate-x-full');
         document.body.style.overflow = 'hidden';
       }
 
