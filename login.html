@@ -330,8 +330,15 @@
           </form>
 
           <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-            <span>Vrátit se na <a href="index.html" class="text-amber-200 hover:text-amber-100 underline underline-offset-2">hlavní stránku</a></span>
-            <span>Po přihlášení: dashboard influencera nebo firmy podle role.</span>
+            <div class="login-bottom-links">
+              <span>Vrátit se na <a href="index.html" class="text-amber-200 hover:text-amber-100 underline underline-offset-2">hlavní stránku</a></span>
+              <span>Po přihlášení: dashboard influencera nebo firmy podle role.</span>
+            </div>
+                  @media (max-width: 767px) {
+                    .login-bottom-links {
+                      display: none !important;
+                    }
+                  }
           </div>
         </section>
       </div>
