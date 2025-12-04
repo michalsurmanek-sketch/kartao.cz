@@ -259,9 +259,19 @@
             const start = document.getElementById("campaignStart")?.value || "";
             const end = document.getElementById("campaignEnd")?.value || "";
 
-            // Validace
-            if (!name || !budget || budget < 1) {
-              alert("Vyplň prosím minimálně název kampaně a rozpočet (K-Coins > 0).");
+            // Rozšířená validace
+            let errors = [];
+            if (!name) errors.push("Název kampaně je povinný.");
+            if (!platform) errors.push("Platforma je povinná.");
+            if (!budget || budget < 1) errors.push("Rozpočet musí být větší než 0 K-Coins.");
+            if (!goal) errors.push("Cíl kampaně je povinný.");
+            if (!influencersMode) errors.push("Vyberte způsob výběru influencerů.");
+            if (!start) errors.push("Datum začátku je povinné.");
+            if (!end) errors.push("Datum konce je povinné.");
+            if (start && end && start > end) errors.push("Datum konce musí být po datu začátku.");
+
+            if (errors.length > 0) {
+              alert("Opravte chyby:\n" + errors.join("\n"));
               return;
             }
 
