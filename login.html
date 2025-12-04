@@ -377,7 +377,12 @@
         roleBadge.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Firemní účet</span>';
         roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Nový firemní účet</span>';
         loginSubheading.textContent = "Přihlášení pro firmy a značky zadávající kampaně.";
-        registerSubheading.textContent = "Založ si firemní Kartao účet pro kampaně a spolupráce.";
+        // Na mobilu při registraci nezobrazovat text
+        if (window.innerWidth < 768) {
+          registerSubheading.textContent = "";
+        } else {
+          registerSubheading.textContent = "Založ si firemní Kartao účet pro kampaně a spolupráce.";
+        }
       } else {
         roleHeading.textContent = "influencer účtu";
         roleDescription.textContent = "Přihlášení pro tvůrce obsahu, sportovce, streamery a osobnosti, které sbírají K-Coins a spolupráce.";
