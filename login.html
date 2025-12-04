@@ -52,19 +52,18 @@
             #login-info-desktop .highlight.role {
               color: #FFD700;
             }
-        /* Skrytí informací v mobilní verzi */
-        @media (max-width: 767px) {
-          #login-info-mobile {
-            display: none;
-          }
-          #roleBadgeReg {
-            display: none !important;
-          }
-          /* Skrytí badge i pro firemní účet na mobilu */
-          #roleBadgeReg {
-            display: none !important;
-          }
-        }
+              /* Skrytí informací v mobilní verzi */
+              @media (max-width: 767px) {
+                #login-info-mobile {
+                  display: none;
+                }
+                #roleBadgeReg {
+                  display: none !important;
+                }
+                #login-info-desktop {
+                  display: none !important;
+                }
+              }
     body {
       min-height: 100vh;
       background: radial-gradient(circle at top left, rgba(236,72,153,0.15), transparent 55%),
@@ -178,22 +177,23 @@
             </ul>
           </div>
           <!-- DESKTOP VERZE -->
-          <div id="login-info-desktop" class="hidden md:block">
-            <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
-              <li class="flex items-start gap-2">
-                <span class="mt-0.5 text-emerald-400">●</span>
-                <span><span class="highlight bezpecne">Bezpečné přihlášení</span> – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-0.5 text-sky-400">●</span>
-                <span><span class="highlight jednotny">Jednotný účet</span> – stejný e-mail používáš pro všechny dashboardy a funkce.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-0.5 text-amber-400">●</span>
-                <span><span class="highlight role">Role účtu</span> – influencer nebo firma, podle volby na předchozí obrazovce.</span>
-              </li>
-            </ul>
-          </div>
+          <!-- DESKTOP VERZE -->
+            <div id="login-info-desktop" class="block md:block">
+              <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
+                <li class="flex items-start gap-2">
+                  <span class="mt-0.5 text-emerald-400">●</span>
+                  <span><span class="highlight bezpecne">Bezpečné přihlášení</span> – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="mt-0.5 text-sky-400">●</span>
+                  <span><span class="highlight jednotny">Jednotný účet</span> – stejný e-mail používáš pro všechny dashboardy a funkce.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="mt-0.5 text-amber-400">●</span>
+                  <span><span class="highlight role">Role účtu</span> – influencer nebo firma, podle volby na předchozí obrazovce.</span>
+                </li>
+              </ul>
+            </div>
 
           <div class="mt-auto flex flex-wrap items-center gap-1 pt-2">
             <div class="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400 ring-1 ring-slate-700/80">
