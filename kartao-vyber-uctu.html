@@ -136,15 +136,21 @@
     <div class="block md:hidden">
       <div class="flex flex-col items-center justify-center py-10">
         <div class="w-full max-w-xs bg-neutral-900/85 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md p-6">
-          <h2 class="text-xl font-bold mb-4 text-center">Jak chceš hrát v Kartao?</h2>
-          <div class="flex flex-col gap-4">
-            <button id="btn-mobil-influencer" class="rounded-xl bg-fuchsia-600/80 hover:bg-fuchsia-700 text-white py-3 px-4 font-semibold text-lg transition">
-              Chci být influencer
-            </button>
-            <button id="btn-mobil-firma" class="rounded-xl bg-amber-500/80 hover:bg-amber-600 text-white py-3 px-4 font-semibold text-lg transition">
-              Chci být firma
-            </button>
-          </div>
+          <h2 class="text-xl font-bold mb-4 text-center">Přihlášení do Kartao.cz</h2>
+          <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
+            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-1').classList.toggle('hidden')">
+              <span class="mt-0.5 text-emerald-400">●</span>
+              <span>Bezpečné přihlášení <span class="hidden" id="desc-1">– hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span></span>
+            </li>
+            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-2').classList.toggle('hidden')">
+              <span class="mt-0.5 text-sky-400">●</span>
+              <span>Jednotný účet <span class="hidden" id="desc-2">– stejný e-mail používáš pro všechny dashboardy a funkce.</span></span>
+            </li>
+            <li class="flex items-start gap-2 cursor-pointer" onclick="document.getElementById('desc-3').classList.toggle('hidden')">
+              <span class="mt-0.5 text-amber-400">●</span>
+              <span>Role účtu <span class="hidden" id="desc-3">– influencer nebo firma, podle volby na předchozí obrazovce.</span></span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -308,17 +314,14 @@ document.addEventListener("DOMContentLoaded", function() {
   if (window.lucide) {
     lucide.createIcons();
   }
-  // Mobilní přesměrování
+  // Mobilní zobrazení podrobností
   const btnInfluencer = document.getElementById("btn-mobil-influencer");
-  const btnFirma = document.getElementById("btn-mobil-firma");
   if (btnInfluencer) {
     btnInfluencer.onclick = function() {
-      window.location.href = "login.html?role=influencer";
-    };
-  }
-  if (btnFirma) {
-    btnFirma.onclick = function() {
-      window.location.href = "login.html?role=firma";
+      document.getElementById('desc-1').classList.remove('hidden');
+      document.getElementById('desc-2').classList.remove('hidden');
+      document.getElementById('desc-3').classList.remove('hidden');
+      btnInfluencer.style.display = 'none';
     };
   }
 });
