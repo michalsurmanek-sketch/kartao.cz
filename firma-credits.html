@@ -32,6 +32,19 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
   <div class="min-h-screen flex flex-col">
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Zajisti, že kredity se načítají z 'firms' podle přihlášeného uživatele
+        const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
+        if (!userId) return;
+        window.kreditsSystem = new CreditsSystemSupabase();
+        await window.kreditsSystem.init(userId);
+        window.kreditsSystem.callbacks.push((credits) => {
+          const el = document.getElementById('headerCredits');
+          if (el) el.textContent = credits;
+        });
+      });
+    </script>
     <!-- HLAVIČKA -->
     <header class="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">

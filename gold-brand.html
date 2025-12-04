@@ -32,6 +32,18 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-amber-950 text-white">
   <div class="min-h-screen flex flex-col">
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
+        if (!userId) return;
+        window.kreditsSystem = new CreditsSystemSupabase();
+        await window.kreditsSystem.init(userId);
+        window.kreditsSystem.callbacks.push((credits) => {
+          const el = document.getElementById('headerCredits');
+          if (el) el.textContent = credits;
+        });
+      });
+    </script>
 
     <!-- HLAVIČKA -->
     <header class="sticky top-0 z-30 border-b border-yellow-400/40 bg-neutral-950/90 backdrop-blur">

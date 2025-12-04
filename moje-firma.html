@@ -327,7 +327,7 @@
         }
 
         try {
-          // načteme firmu z kolekce firms
+          // Načteme firemní profil včetně K-Coins
           const { data: firmData, error } = await sb
             .from('firms')
             .select('*')
@@ -338,24 +338,12 @@
             console.error('Chyba načítání firmy:', error);
           }
 
-          // Pokud není firma, zkusíme creators (může být influencer)
-          if (!firmData) {
-            // Pokud není firemní profil, můžeš zde zobrazit hlášku nebo nechat uživatele na stránce
-            // Pokud chceš přesměrovat pouze pokud nemá žádný profil, uprav zde
+          // Zobrazení firemních K-Coins
+          if (document.getElementById('headerCredits')) {
+            document.getElementById('headerCredits').textContent = firmData?.credits || 0;
           }
 
-          // ✅ SEM SE DOSTANE JEN UŽIVATEL S FIREMNÍM PROFILEM
-          window.currentUserId = user.id;
-
-                if (creatorData) { 
-                  // Uživatel má influencer profil, ale zůstáváme na firemní stránce
-                  // Pokud chceš přesměrovat pouze pokud nemá žádný profil, uprav zde
-
-          if (nameEl) nameEl.textContent = displayName;
-          if (initialEl && displayName)
-            initialEl.textContent = displayName.charAt(0).toUpperCase();
-
-          // Kredity se načtou automaticky přes credits-header.js
+          // Další firemní údaje můžeš načítat stejně jako v profil-firmy.html
 
         } catch (err) {
           console.error("Chyba při ověřování firemní role:", err);
