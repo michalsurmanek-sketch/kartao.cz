@@ -366,17 +366,17 @@
       if (role === "firma") {
         roleHeading.textContent = "firemního účtu";
         roleDescription.textContent = "Přihlášení pro firmy, značky, agentury a projekty, které chtějí zadávat kampaně a pracovat s influencery.";
-        rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> Firemní účet';
-        roleBadge.innerHTML = '<span class="text-xs">🏢</span><span>Firemní účet</span>';
-        roleBadgeReg.innerHTML = '<span class="text-xs">🏢</span><span>Nový firemní účet</span>';
+        rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> <span class="hidden md:inline">Firemní účet</span>';
+        roleBadge.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Firemní účet</span>';
+        roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Nový firemní účet</span>';
         loginSubheading.textContent = "Přihlášení pro firmy a značky zadávající kampaně.";
         registerSubheading.textContent = "Založ si firemní Kartao účet pro kampaně a spolupráce.";
       } else {
         roleHeading.textContent = "influencer účtu";
         roleDescription.textContent = "Přihlášení pro tvůrce obsahu, sportovce, streamery a osobnosti, které sbírají K-Coins a spolupráce.";
-        rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> Influencer účet';
-        roleBadge.innerHTML = '<span class="text-xs">⭐</span><span>Influencer účet</span>';
-        roleBadgeReg.innerHTML = '<span class="text-xs">⭐</span><span>Nový influencer účet</span>';
+        rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> <span class="hidden md:inline">Influencer účet</span>';
+        roleBadge.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Influencer účet</span>';
+        roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Nový influencer účet</span>';
         loginSubheading.textContent = "Přihlášení pro influencery a tvůrce obsahu.";
         registerSubheading.textContent = "Založ si influencer účet a začni sbírat K-Coins.";
       }
