@@ -356,10 +356,9 @@
           // ✅ SEM SE DOSTANE JEN UŽIVATEL S FIREMNÍM PROFILEM
           window.currentUserId = user.id;
 
-          // Název firmy
-          const nameEl = document.getElementById("userName");
-          const initialEl = document.getElementById("userInitial");
-          const displayName = firmData?.company || user.user_metadata?.name || user.email?.split('@')[0] || "Tvoje firma";
+                if (creatorData) { 
+                  // Uživatel má influencer profil, ale zůstáváme na firemní stránce
+                  // Pokud chceš přesměrovat pouze pokud nemá žádný profil, uprav zde
 
           if (nameEl) nameEl.textContent = displayName;
           if (initialEl && displayName)
@@ -379,7 +378,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       if (window.lucide) {
         try {
-          lucide.createIcons();
+              // Zůstáváme na stránce, případně zobrazíme chybovou hlášku
         } catch (e) {
           console.warn("Lucide ikonky nešly inicializovat:", e);
         }
