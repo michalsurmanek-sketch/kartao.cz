@@ -249,11 +249,26 @@
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       if (window.lucide) lucide.createIcons();
-      const supabase = window.supabaseClient;
-      // --- Ověření přihlášení ---
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
+      // --- Inicializace Supabase klienta ---
+      const supabase = window.supabaseClient || window.sb || window.createClient?.();
+      if (!supabase) {
+        alert('Supabase není inicializován!');
         window.location.href = "login.html";
+        return;
+      }
+      // --- Ověření přihlášení ---
+      let user = null;
+      let authError = null;
+      try {
+        const authRes = await supabase.auth.getUser();
+        user = authRes?.data?.user || null;
+        authError = authRes?.error || null;
+      } catch (e) {
+        authError = e;
+      }
+      if (authError || !user) {
+        alert('Nejste přihlášen/a. Přihlaste se jako firma.');
+        window.location.href = "login.html?role=firma";
         return;
       }
       window.currentUserId = user.id;
