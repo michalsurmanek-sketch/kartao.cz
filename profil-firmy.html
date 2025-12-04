@@ -8,6 +8,44 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+        // --- UPLOAD LOGA DO SUPABASE ---
+        document.addEventListener('DOMContentLoaded', () => {
+          const fileInput = document.querySelector('input[type="file"]');
+          fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const userId = window.currentUserId || window.currentUserId;
+            if (!userId) {
+              alert('Nejprve se přihlas!');
+              return;
+            }
+            // Upload do Supabase Storage
+            const { data, error } = await window.supabaseClient.storage
+              .from('company-logos')
+              .upload(`logo_${userId}_${Date.now()}.png`, file, { upsert: true });
+            if (error) {
+              alert('Chyba při nahrávání loga!');
+              return;
+            }
+            // Získat veřejnou URL
+            const { data: publicUrlData } = window.supabaseClient.storage
+              .from('company-logos')
+              .getPublicUrl(data.path);
+            const logoUrl = publicUrlData.publicUrl;
+            // Uložit URL do tabulky firms
+            const { error: updateError } = await window.supabaseClient
+              .from('firms')
+              .update({ logo_url: logoUrl })
+              .eq('user_id', userId);
+            if (updateError) {
+              alert('Chyba při ukládání URL loga!');
+              return;
+            }
+            alert('Logo firmy bylo úspěšně nahráno!');
+            // Volitelně: zobraz logo na stránce
+            // document.getElementById('companyLogoImg').src = logoUrl;
+          });
+        });
     tailwind.config = {
       theme: {
         extend: {
