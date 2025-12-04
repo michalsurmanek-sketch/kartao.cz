@@ -2687,7 +2687,12 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Role je určující, email nerozhoduje
-      const role = window.currentUserRole || localStorage.getItem('userRole') || 'influencer';
+      let role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
+      // Pokud je role v sessionStorage, synchronizuj ji do localStorage
+      if (sessionStorage.getItem('kartaoRole')) {
+        localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
+        role = sessionStorage.getItem('kartaoRole');
+      }
 
       const linkEl = document.getElementById('userCardLink');
       const titleEl = document.getElementById('userCardTitle');
