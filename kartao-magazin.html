@@ -339,12 +339,14 @@
     const menuBackdrop = document.getElementById('menuBackdrop');
 
     function openMenu() {
+      mobileMenu.classList.remove('hidden');
       mobileMenu.classList.remove('-translate-x-full');
       document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
       mobileMenu.classList.add('-translate-x-full');
+      setTimeout(() => mobileMenu.classList.add('hidden'), 300);
       document.body.style.overflow = '';
     }
 
