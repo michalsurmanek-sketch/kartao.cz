@@ -8,13 +8,15 @@
   <script>
         // Pokud je v URL parametr ?redirect=1, přesměruj podle role
         document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
           const params = new URLSearchParams(window.location.search);
-          if (params.get('redirect') === '1') {
+          if (params.get('redirect') === '1' && !sessionStorage.getItem('kartaoRedirected')) {
             let role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
             if (sessionStorage.getItem('kartaoRole')) {
               localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
               role = sessionStorage.getItem('kartaoRole');
             }
+            sessionStorage.setItem('kartaoRedirected', '1');
             if (role === 'firma') {
               window.location.replace('moje-firma.html');
             } else {
