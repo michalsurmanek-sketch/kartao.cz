@@ -42,12 +42,15 @@
             /* Decentní zvýraznění hlavních bodů v desktop info */
             #login-info-desktop .highlight {
               font-weight: 600;
+            }
+            #login-info-desktop .highlight.bezpecne {
+              color: #34d399;
+            }
+            #login-info-desktop .highlight.jednotny {
+              color: #38bdf8;
+            }
+            #login-info-desktop .highlight.role {
               color: #FFD700;
-              background: none;
-              -webkit-background-clip: initial;
-              -webkit-text-fill-color: initial;
-              background-clip: initial;
-              text-fill-color: initial;
             }
         /* Skrytí informací v mobilní verzi */
         @media (max-width: 767px) {
@@ -179,15 +182,15 @@
             <ul class="mb-6 space-y-3 text-sm text-slate-200/90">
               <li class="flex items-start gap-2">
                 <span class="mt-0.5 text-emerald-400">●</span>
-                <span><span class="highlight">Bezpečné přihlášení</span> – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span>
+                <span><span class="highlight bezpecne">Bezpečné přihlášení</span> – hesla jsou šifrovaná, Kartao.cz je nikdy nevidí.</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="mt-0.5 text-sky-400">●</span>
-                <span><span class="highlight">Jednotný účet</span> – stejný e-mail používáš pro všechny dashboardy a funkce.</span>
+                <span><span class="highlight jednotny">Jednotný účet</span> – stejný e-mail používáš pro všechny dashboardy a funkce.</span>
               </li>
               <li class="flex items-start gap-2">
                 <span class="mt-0.5 text-amber-400">●</span>
-                <span><span class="highlight">Role účtu</span> – influencer nebo firma, podle volby na předchozí obrazovce.</span>
+                <span><span class="highlight role">Role účtu</span> – influencer nebo firma, podle volby na předchozí obrazovce.</span>
               </li>
             </ul>
           </div>
