@@ -340,17 +340,8 @@
 
           // Pokud není firma, zkusíme creators (může být influencer)
           if (!firmData) {
-            const { data: creatorData } = await sb
-              .from('creators')
-              .select('*')
-              .eq('user_id', user.id)
-              .maybeSingle();
-            
-            if (creatorData) {
-              console.warn("Uživatel nemá firemní profil, přesměrovávám na moje-karta.html");
-              window.location.href = "moje-karta.html";
-              return;
-            }
+            // Pokud není firemní profil, můžeš zde zobrazit hlášku nebo nechat uživatele na stránce
+            // Pokud chceš přesměrovat pouze pokud nemá žádný profil, uprav zde
           }
 
           // ✅ SEM SE DOSTANE JEN UŽIVATEL S FIREMNÍM PROFILEM
@@ -368,7 +359,7 @@
 
         } catch (err) {
           console.error("Chyba při ověřování firemní role:", err);
-          window.location.href = "moje-karta.html";
+          // Zůstáváme na stránce, případně zobrazíme chybovou hlášku
         }
       });
     });
