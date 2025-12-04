@@ -34,6 +34,7 @@
   <div class="min-h-screen flex flex-col">
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
+        lucide.init();
         const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
         if (!userId) return;
         window.kreditsSystem = new CreditsSystemSupabase();
