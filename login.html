@@ -379,8 +379,13 @@
         rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> <span class="hidden md:inline">Firemní účet</span>';
         roleBadge.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Firemní účet</span>';
         roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">🏢</span><span class="hidden md:inline">Nový firemní účet</span>';
-        loginSubheading.textContent = "Přihlášení pro firmy a značky zadávající kampaně.";
-        // Na mobilu při registraci nezobrazovat text
+        // Na mobilu zobrazit pouze nadpis
+        if (window.innerWidth < 768) {
+          loginSubheading.textContent = "";
+        } else {
+          loginSubheading.textContent = "Přihlášení pro firmy a značky zadávající kampaně.";
+        }
+        // Registrace firemní
         if (window.innerWidth < 768) {
           registerSubheading.textContent = "";
         } else {
@@ -392,8 +397,13 @@
         rolePill.innerHTML = '<span class="h-4 w-4 rounded-full bg-emerald-400 animate-pulse"></span> <span class="hidden md:inline">Influencer účet</span>';
         roleBadge.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Influencer účet</span>';
         roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Nový influencer účet</span>';
-        loginSubheading.textContent = "Přihlášení pro influencery a tvůrce obsahu.";
-        // Na mobilu při registraci nezobrazovat text
+        // Na mobilu zobrazit pouze nadpis
+        if (window.innerWidth < 768) {
+          loginSubheading.textContent = "";
+        } else {
+          loginSubheading.textContent = "Přihlášení pro influencery a tvůrce obsahu.";
+        }
+        // Registrace influencer
         if (window.innerWidth < 768) {
           registerSubheading.textContent = "";
         } else {
