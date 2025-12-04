@@ -2702,6 +2702,12 @@
         linkEl.href = 'moje-firma.html';
         iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
         if (window.lucide?.createIcons) window.lucide.createIcons();
+      } else {
+        titleEl.textContent = 'Moje karta';
+        subtitleEl.textContent = 'Profil & ovládání účtu';
+        linkEl.href = 'moje-karta.html';
+        iconEl.innerHTML = '<i data-lucide="id-card" class="w-4 h-4"></i>';
+        if (window.lucide?.createIcons) window.lucide.createIcons();
       }
     });
   </script>
