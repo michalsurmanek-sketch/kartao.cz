@@ -611,14 +611,21 @@
         const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + '/index.html'
+            redirectTo: window.location.origin + '/login-redirect.html'
           }
         });
         
         if (error) throw error;
         
         console.log('🔐 Google login initiated');
-        
+        // Po úspěšném přihlášení přesměrujeme podle role
+        // (Toto je fallback pro případ, že Supabase redirect nefunguje)
+        const role = window.kartaoRole || localStorage.getItem('userRole') || 'influencer';
+        if (role === 'firma') {
+          window.location.href = 'moje-firma.html';
+        } else {
+          window.location.href = 'moje-karta.html';
+        }
       } catch (err) {
         console.error('🔐 Google login error:', err);
         showMessage("Přihlášení přes Google se nezdařilo. Zkus to prosím znovu.");
