@@ -132,35 +132,20 @@
       </button>
     </div>
 
-    <!-- MOBILNÍ VERZE -->
-    <!-- mobil -->
+    <!-- MOBILNÍ VERZE: První krok -->
     <div class="block md:hidden">
-      <!-- Karty výběru pro mobil -->
-      <div id="role-card-mobile" class="grid gap-4">
-        <!-- Firma -->
-        <button id="btn-firma-mobile" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-amber-400 hover:bg-neutral-800 transition flex flex-col justify-between">
-          <div class="flex-1">
-            <div class="text-xs uppercase tracking-wide text-amber-300 mb-1">Pro firmy &amp; značky</div>
-            <div class="text-lg font-semibold mb-2">Jsem firma</div>
-            <p class="text-sm text-white/70">Chci zadávat kampaně, oslovit influencery a spravovat spolupráce.</p>
+      <div class="flex flex-col items-center justify-center py-10">
+        <div class="w-full max-w-xs bg-neutral-900/85 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md p-6">
+          <h2 class="text-xl font-bold mb-4 text-center">Jak chceš hrát v Kartao?</h2>
+          <div class="flex flex-col gap-4">
+            <button id="btn-mobil-influencer" class="rounded-xl bg-fuchsia-600/80 hover:bg-fuchsia-700 text-white py-3 px-4 font-semibold text-lg transition">
+              Chci být influencer
+            </button>
+            <button id="btn-mobil-firma" class="rounded-xl bg-amber-500/80 hover:bg-amber-600 text-white py-3 px-4 font-semibold text-lg transition">
+              Chci být firma
+            </button>
           </div>
-          <div class="mt-4 text-xs text-white/50 group-hover:text-amber-200 flex items-center justify-between">
-            <span>Pokračovat do rozhraní pro firmy</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </div>
-        </button>
-        <!-- Tvůrce -->
-        <button id="btn-tvurce-mobile" class="group rounded-2xl border border-white/15 bg-neutral-900/80 p-4 text-left hover:border-fuchsia-400 hover:bg-neutral-800 transition flex flex-col justify-between">
-          <div class="flex-1">
-            <div class="text-xs uppercase tracking-wide text-fuchsia-300 mb-1">Influenceři &amp; tvůrci</div>
-            <div class="text-lg font-semibold mb-2">Jsem tvůrce</div>
-            <p class="text-sm text-white/70">Chci získávat spolupráce, nabízet své služby a mít vlastní kartu Kartao.</p>
-          </div>
-          <div class="mt-4 text-xs text-white/50 group-hover:text-fuchsia-200 flex items-center justify-between">
-            <span>Pokračovat do rozhraní pro tvůrce</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -322,6 +307,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 document.addEventListener("DOMContentLoaded", function() {
   if (window.lucide) {
     lucide.createIcons();
+  }
+  // Mobilní přesměrování
+  const btnInfluencer = document.getElementById("btn-mobil-influencer");
+  const btnFirma = document.getElementById("btn-mobil-firma");
+  if (btnInfluencer) {
+    btnInfluencer.onclick = function() {
+      window.location.href = "login.html?role=influencer";
+    };
+  }
+  if (btnFirma) {
+    btnFirma.onclick = function() {
+      window.location.href = "login.html?role=firma";
+    };
   }
 });
 </script>
