@@ -571,6 +571,9 @@
         
         if (err.message?.includes("already registered")) {
           msg = "E-mail už je registrovaný. Přejdi na Přihlášení.";
+          if (window.innerWidth < 768) {
+            msg = "E-mail už je registrovaný.";
+          }
         } else if (err.message?.includes("Password")) {
           msg = "Heslo musí mít alespoň 6 znaků.";
         }
