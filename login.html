@@ -378,7 +378,12 @@
         roleBadge.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Influencer účet</span>';
         roleBadgeReg.innerHTML = '<span class="hidden md:inline text-xs">⭐</span><span class="hidden md:inline">Nový influencer účet</span>';
         loginSubheading.textContent = "Přihlášení pro influencery a tvůrce obsahu.";
-        registerSubheading.textContent = "Založ si influencer účet a začni sbírat K-Coins.";
+        // Na mobilu při registraci nezobrazovat text
+        if (window.innerWidth < 768) {
+          registerSubheading.textContent = "";
+        } else {
+          registerSubheading.textContent = "Založ si influencer účet a začni sbírat K-Coins.";
+        }
       }
     }
 
