@@ -27,15 +27,7 @@ const MENU_CONFIGS = {
         items: [
           { href: 'kartao-magazin.html', icon: 'newspaper', text: 'Magazín', color: 'violet' },
           { href: 'kartao-o-nas.html', icon: 'info', text: 'O nás', color: 'cyan' },
-          { href: 'kontakt.html', icon: 'mail', text: 'Kontakt', color: 'amber', active: true },
-          { href: 'vip.html', icon: 'crown', text: 'VIP', color: 'amber', rotate: true }
-        ]
-      },
-      {
-        label: 'Účet',
-        items: [
-          { href: 'login.html', icon: 'log-in', text: 'Přihlásit se', color: 'green' },
-          { href: 'login.html', icon: 'user-plus', text: 'Registrovat se', color: 'blue' }
+          { href: 'kontakt.html', icon: 'mail', text: 'Kontakt', color: 'amber', active: true }
         ]
       }
     ]
