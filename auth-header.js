@@ -63,8 +63,8 @@
       // Mobile
       if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
       if (userMenuMobile) {
-        userMenuMobile.classList.remove('hidden');
-        userMenuMobile.classList.add('flex');
+        userMenuMobile.classList.add('hidden'); // Panáček na mobilu vždy skrytý
+        userMenuMobile.classList.remove('flex');
       }
       
       // Hamburger menu (legacy)
