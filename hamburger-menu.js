@@ -265,13 +265,15 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
       html += `<div class="text-xs font-medium text-white/50 px-3 py-2 uppercase tracking-wide">${section.label}</div>`;
       
       section.items.forEach(item => {
+        if (item.custom && item.html) {
+          html += item.html;
+          return;
+        }
         const colorClass = getColorClass(item.color);
         const activeClass = item.active ? 'bg-amber-500/10 hover:bg-amber-500/20' : 'hover:bg-white/5';
         const textClass = item.active ? 'text-amber-300' : 'text-white/90';
         const rotateClass = item.rotate ? 'group-hover:rotate-12' : '';
-        
         if (item.action) {
-          // Action button (např. logout)
           html += `
             <button data-action="${item.action}" class="group w-full text-left block px-3 py-1.5 rounded-xl ${activeClass} hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
               <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70 ${colorClass} group-hover:scale-110 ${rotateClass} transition-all duration-200"></i>
@@ -279,7 +281,6 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
             </button>
           `;
         } else {
-          // Link
           html += `
             <a href="${item.href}" class="group block px-3 py-1.5 rounded-xl ${activeClass} hover:bg-white/5 hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
               <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70 ${colorClass} group-hover:scale-110 ${rotateClass} transition-all duration-200"></i>
