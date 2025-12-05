@@ -88,7 +88,15 @@
         <!-- NADPIS -->
         <section class="rounded-3xl bg-neutral-950/80 border border-white/10 p-6 shadow-soft">
           <h1 class="text-xl md:text-2xl font-semibold">Vytvořit novou kampaň</h1>
-          <p class="text-xs text-white/60 mt-1">Nastav rozpočet, platformu, cíle a vyber influencery.</p>
+          <p class="text-xs text-white/60 mt-1">Vyplňte všechny údaje níže. Po odeslání bude kampaň uložena a zobrazí se v přehledu kampaní.</p>
+          <ul class="text-xs text-white/40 mt-2 list-disc pl-5">
+            <li>1. Zadejte název kampaně a rozpočet.</li>
+            <li>2. Vyberte platformu, kde chcete kampaň spustit.</li>
+            <li>3. Popište cíl kampaně.</li>
+            <li>4. Zvolte způsob výběru influencerů (AI doporučení nebo ručně).</li>
+            <li>5. Nastavte období kampaně.</li>
+            <li>6. Klikněte na <b>Vytvořit kampaň</b>. Po úspěšném uložení budete přesměrováni na přehled kampaní.</li>
+          </ul>
         </section>
 
         <!-- FORMULÁŘ -->
@@ -312,6 +320,9 @@
         // Vytvoření kampaně
         if (btn) {
           btn.addEventListener("click", async function () {
+                        // Zobrazení loading textu při odesílání
+                        btn.disabled = true;
+                        btn.textContent = "Ukládám kampaň...";
             const name = document.getElementById("campaignName")?.value?.trim() || "";
             const platform = document.querySelector('input[name="campaignPlatform"]:checked')?.value || "";
             const budget = parseInt(document.getElementById("campaignBudget")?.value, 10) || 0;
@@ -338,6 +349,8 @@
 
             if (errors.length > 0) {
               alert("Opravte chyby:\n" + errors.join("\n"));
+              btn.disabled = false;
+              btn.textContent = "Vytvořit kampaň";
               return;
             }
 
@@ -360,6 +373,8 @@
               if (error) {
                 console.error("Chyba při ukládání kampaně:", error);
                 alert("Chyba při ukládání kampaně: " + (error.details || error.message || error));
+                btn.disabled = false;
+                btn.textContent = "Vytvořit kampaň";
                 // Monitoring: log do externí služby (např. Sentry, custom endpoint)
                 if (window.monitoringService && typeof window.monitoringService.logError === 'function') {
                   window.monitoringService.logError({
@@ -379,7 +394,10 @@
                   userId: user.id
                 });
               }
-              window.location.href = "kampane-firma.html";
+              btn.textContent = "Kampaň byla úspěšně vytvořena!";
+              setTimeout(() => {
+                window.location.href = "kampane-firma.html";
+              }, 1200);
             } catch (e) {
               console.error("Chyba při ukládání kampaně:", e);
               alert("Chyba při ukládání kampaně: " + (e.message || e));
