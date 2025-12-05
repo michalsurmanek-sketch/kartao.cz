@@ -14,7 +14,7 @@ const MENU_CONFIGS = {
     title: 'Menu',
     sections: [
       {
-        label: 'Hlavní menu kokote',
+        label: 'Hlavní menu',
         items: [
           { href: 'index.html', icon: 'home', text: 'Domů', color: 'sky' },
           { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně', color: 'emerald' },
