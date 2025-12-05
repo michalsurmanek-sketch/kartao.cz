@@ -52,7 +52,7 @@ const MENU_CONFIGS = {
           // Moje karta + Založit kartu vedle sebe
           {
             custom: true,
-            html: `<div class="flex gap-2">
+            html: `<div class="flex gap-2 px-3 py-1.5 mb-2">
               <a href="kartao-muj-profil.html" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-fuchsia-500/10 hover:bg-fuchsia-500/20 transition">
                 <i data-lucide="user" class="w-4 h-4 text-fuchsia-400"></i>
                 <span>Moje karta</span>
