@@ -2,10 +2,7 @@
 // KARTAO.CZ - Univerzální Hamburger Menu
 // POUZE generování HTML - inicializace v kartao-core-loader.js
 // ===============================================
-      {
-        label: 'Tvůrce',
-        items: [
-          { href: 'https://www.kartao.cz/zalozit-kartu.html', icon: 'id-card', text: 'Založit kartu', color: 'lime' },
+// (Odstraněn nevalidní útržek objektu na začátku souboru)
 /**
  * Definice menu podle typu uživatele
  */
