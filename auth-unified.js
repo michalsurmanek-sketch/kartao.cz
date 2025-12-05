@@ -201,32 +201,37 @@
     console.log('🔐 Auth Unified: Updating UI, user:', user ? user.email : 'none', 'profile:', !!profile);
     
     // 1. HEADER BUTTONS
-    const desktopAuthBtn = document.getElementById('desktopAuthBtn');
-    const desktopAuthIcon = document.getElementById('desktopAuthIcon');
-    const desktopAuthText = document.getElementById('desktopAuthText');
+    // Podpora více desktopAuthBtn na stránce
+    const desktopAuthBtns = Array.from(document.querySelectorAll('#desktopAuthBtn'));
+    const desktopAuthIcons = Array.from(document.querySelectorAll('#desktopAuthIcon'));
+    const desktopAuthTexts = Array.from(document.querySelectorAll('#desktopAuthText'));
     const loginBtnMobile = document.getElementById('loginBtnMobile');
     const userMenu = document.getElementById('userMenu');
     const userMenuMobile = document.getElementById('userMenuMobile');
     const userName = document.getElementById('userName');
 
-    if (desktopAuthBtn && desktopAuthIcon && desktopAuthText) {
-      if (user) {
-        desktopAuthBtn.classList.remove('btn-primary');
-        desktopAuthBtn.classList.add('btn-outline');
-        desktopAuthIcon.setAttribute('data-lucide', 'log-out');
-        desktopAuthText.textContent = 'Odhlásit';
-        desktopAuthBtn.onclick = function() {
-          window.supabaseClient.auth.signOut();
-        };
-      } else {
-        desktopAuthBtn.classList.remove('btn-outline');
-        desktopAuthBtn.classList.add('btn-primary');
-        desktopAuthIcon.setAttribute('data-lucide', 'log-in');
-        desktopAuthText.textContent = 'Přihlásit se';
-        desktopAuthBtn.onclick = function() {
-          window.location.href = 'login.html';
-        };
-      }
+    if (desktopAuthBtns.length && desktopAuthIcons.length && desktopAuthTexts.length) {
+      desktopAuthBtns.forEach((btn, i) => {
+        const icon = desktopAuthIcons[i] || btn.querySelector('i');
+        const text = desktopAuthTexts[i] || btn.querySelector('span');
+        if (user) {
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-outline');
+          if (icon) icon.setAttribute('data-lucide', 'log-out');
+          if (text) text.textContent = 'Odhlásit';
+          btn.onclick = function() {
+            window.supabaseClient.auth.signOut();
+          };
+        } else {
+          btn.classList.remove('btn-outline');
+          btn.classList.add('btn-primary');
+          if (icon) icon.setAttribute('data-lucide', 'log-in');
+          if (text) text.textContent = 'Přihlásit se';
+          btn.onclick = function() {
+            window.location.href = 'login.html';
+          };
+        }
+      });
       if (window.lucide?.createIcons) window.lucide.createIcons();
     }
 

@@ -78,22 +78,11 @@
       </nav>
       
       <div class="hidden md:flex items-center gap-3">
-        <!-- Nepřihlášen -->
-        <a id="loginBtnDesktop" href="login.html" class="btn btn-outline text-sm">
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-          Přihlásit se
-        </a>
-        <!-- Přihlášen -->
-        <div id="userMenuDesktop" class="hidden items-center gap-2">
-          <a href="kartao-muj-ucet.html" class="btn btn-outline text-sm">
-            <i data-lucide="user" class="w-4 h-4"></i>
-            <span id="userNameDesktop">Můj účet</span>
-          </a>
-          <button id="logoutBtnDesktop" class="btn btn-outline text-sm">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            Odhlásit
-          </button>
-        </div>
+        <!-- Sjednocené desktop auth tlačítko -->
+        <button id="desktopAuthBtn" class="btn btn-primary text-sm md:inline-flex flex items-center gap-2">
+          <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
+          <span id="desktopAuthText">Přihlásit se</span>
+        </button>
       </div>
       
       <!-- Mobile Auth Buttons -->
