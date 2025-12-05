@@ -99,6 +99,10 @@ class HamburgerMenu {
     html += '</nav>';
     this.menuContent.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
+    // Po každém renderu menu zajistit správné napojení odhlašovací logiky
+    if (window.kartaoAuth && typeof window.kartaoAuth.setupLogoutButtons === 'function') {
+      setTimeout(() => window.kartaoAuth.setupLogoutButtons(), 100);
+    }
   }
 
   _getMenuLinks() {
