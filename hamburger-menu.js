@@ -146,17 +146,18 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     return;
   }
 
+
   // OCHRANA: Odstranit staré event listenery a obnovit výchozí stav
-  const newMenuToggle = menuToggle.cloneNode(true);
-  menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
-  if (menuClose) {
-    const newMenuClose = menuClose.cloneNode(true);
-    menuClose.parentNode.replaceChild(newMenuClose, menuClose);
-  }
-  if (menuBackdrop) {
-    const newMenuBackdrop = menuBackdrop.cloneNode(true);
-    menuBackdrop.parentNode.replaceChild(newMenuBackdrop, menuBackdrop);
-  }
+  // Uložit reference na handler funkce do closure, aby šly odstranit
+  if (!window._kartaoMenuHandlers) window._kartaoMenuHandlers = {};
+  const handlers = window._kartaoMenuHandlers;
+
+  // Odstranit staré eventy
+  if (handlers.toggle && menuToggle) menuToggle.removeEventListener('click', handlers.toggle);
+  if (handlers.close && menuClose) menuClose.removeEventListener('click', handlers.close);
+  if (handlers.backdrop && menuBackdrop) menuBackdrop.removeEventListener('click', handlers.backdrop);
+  if (handlers.esc) document.removeEventListener('keydown', handlers.esc);
+
   // Skrytí menu při nové inicializaci
   mobileMenu.classList.add('hidden');
   if (menuPanel) {
@@ -164,10 +165,28 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     menuPanel.classList.remove('translate-x-0');
   }
   document.body.style.overflow = '';
-  // Znovu načíst elementy po klonování
-  const menuToggleFinal = document.getElementById('menuToggle');
-  const menuCloseFinal = document.getElementById('menuClose');
-  const menuBackdropFinal = document.getElementById('menuBackdrop');
+
+  // Definice handlerů
+  handlers.toggle = function toggleMenu() {
+    if (mobileMenu.classList.contains('hidden')) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  };
+  handlers.close = closeMenu;
+  handlers.backdrop = closeMenu;
+  handlers.esc = function(e) {
+    if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+      closeMenu();
+    }
+  };
+
+  // Navěsit nové eventy
+  menuToggle.addEventListener('click', handlers.toggle);
+  if (menuClose) menuClose.addEventListener('click', handlers.close);
+  if (menuBackdrop) menuBackdrop.addEventListener('click', handlers.backdrop);
+  document.addEventListener('keydown', handlers.esc);
 
   /**
    * Získání CSS třídy pro barvu ikony
