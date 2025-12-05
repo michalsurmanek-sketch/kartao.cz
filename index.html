@@ -5,32 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <!-- EMERGENCY: Vymazat Service Worker -->
-  <script>
-        // Pokud je v URL parametr ?redirect=1, přesměruj podle role
-        document.addEventListener('DOMContentLoaded', () => {
-        document.addEventListener('DOMContentLoaded', () => {
-          const params = new URLSearchParams(window.location.search);
-          if (params.get('redirect') === '1' && !sessionStorage.getItem('kartaoRedirected')) {
-            let role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
-            if (sessionStorage.getItem('kartaoRole')) {
-              localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
-              role = sessionStorage.getItem('kartaoRole');
-            }
-            sessionStorage.setItem('kartaoRedirected', '1');
-            if (role === 'firma') {
-              window.location.replace('moje-firma.html');
-            } else {
-              window.location.replace('moje-karta.html');
-            }
-          }
-        });
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(reg => reg.unregister());
-      });
-      caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- Redirect logika ---
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get('redirect') === '1' && !sessionStorage.getItem('kartaoRedirected')) {
+    
+    let role =
+      window.currentUserRole ||
+      localStorage.getItem('userRole') ||
+      sessionStorage.getItem('kartaoRole') ||
+      'influencer';
+
+    // Pokud je role v session -> přesun do localStorage
+    if (sessionStorage.getItem('kartaoRole')) {
+      localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
+      role = sessionStorage.getItem('kartaoRole');
     }
-  </script>
+
+    sessionStorage.setItem('kartaoRedirected', '1');
+
+    if (role === 'firma') {
+      window.location.replace('moje-firma.html');
+    } else {
+      window.location.replace('moje-karta.html');
+    }
+  }
+
+  // --- Vymazání Service Worker + cache ---
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
+    });
+
+    caches.keys().then(keys => {
+      keys.forEach(key => caches.delete(key));
+    });
+  }
+
+});
+</script>
+
   
   <title>Kartao.cz – síť influencerů</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
