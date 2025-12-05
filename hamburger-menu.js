@@ -230,7 +230,7 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
         if (item.action) {
           // Action button (např. logout)
           html += `
-            <button data-action="${item.action}" class="group w-full text-left block px-3 py-3 rounded-xl ${activeClass} hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
+            <button data-action="${item.action}" class="group w-full text-left block px-3 py-1.5 rounded-xl ${activeClass} hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
               <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70 ${colorClass} group-hover:scale-110 ${rotateClass} transition-all duration-200"></i>
               <span class="group-hover:text-white transition-colors">${item.text}</span>
             </button>
@@ -238,7 +238,7 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
         } else {
           // Link
           html += `
-            <a href="${item.href}" class="group block px-3 py-3 rounded-xl ${activeClass} hover:bg-white/5 hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
+            <a href="${item.href}" class="group block px-3 py-1.5 rounded-xl ${activeClass} hover:bg-white/5 hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
               <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70 ${colorClass} group-hover:scale-110 ${rotateClass} transition-all duration-200"></i>
               <span class="group-hover:text-white transition-colors">${item.text}</span>
             </a>
