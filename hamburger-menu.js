@@ -46,7 +46,7 @@ const MENU_CONFIGS = {
         items: [
           { href: 'luxus2.html', icon: 'sparkles', text: 'Dashboard', color: 'sky' },
           { href: 'creator-dashboard.html', icon: 'layout-dashboard', text: 'Přehled', color: 'purple' },
-          // Moje karta + Založit kartu vedle sebe
+          // Moje karta + Založit kartu vedle sebe nahoře
           {
             custom: true,
             html: `<div class="flex gap-2 px-3 py-1.5 mb-2">
