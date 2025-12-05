@@ -1080,28 +1080,30 @@ document.addEventListener('DOMContentLoaded', () => {
               Chci nabídky
             </button>
             <div id="newsletter-success" class="hidden text-emerald-400 text-sm mt-2">Děkujeme za přihlášení k odběru!</div>
-              // Newsletter validace a potvrzení
-              document.addEventListener('DOMContentLoaded', function() {
-                const form = document.getElementById('footer-newsletter');
-                if (form) {
-                  form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const email = form.email.value.trim();
-                    const success = document.getElementById('newsletter-success');
-                    if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-                      form.reset();
-                      if (success) {
-                        success.classList.remove('hidden');
-                        setTimeout(() => success.classList.add('hidden'), 4000);
-                      }
-                    } else {
-                      form.email.focus();
-                      form.email.classList.add('ring-2', 'ring-red-500');
-                      setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
-                    }
-                  });
+          <script>
+          // Newsletter validace a potvrzení
+          document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('footer-newsletter');
+            if (form) {
+              form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = form.email.value.trim();
+                const success = document.getElementById('newsletter-success');
+                if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                  form.reset();
+                  if (success) {
+                    success.classList.remove('hidden');
+                    setTimeout(() => success.classList.add('hidden'), 4000);
+                  }
+                } else {
+                  form.email.focus();
+                  form.email.classList.add('ring-2', 'ring-red-500');
+                  setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
                 }
               });
+            }
+          });
+          </script>
           </form>
           <div class="text-xs text-white/40 italic mb-2">Odběr můžete kdykoliv zrušit.</div>
           
