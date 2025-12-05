@@ -396,6 +396,19 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     });
   }
 
+
+  // Nastavit flex layout a výšku pro panel a obsah menu (pro správné scrollování)
+  if (menuPanel) {
+    menuPanel.style.display = 'flex';
+    menuPanel.style.flexDirection = 'column';
+    menuPanel.style.height = '100vh';
+  }
+  const menuContentContainer = document.getElementById('menuContent');
+  if (menuContentContainer) {
+    menuContentContainer.style.flex = '1 1 auto';
+    menuContentContainer.style.minHeight = '0';
+  }
+
   // Generovat obsah menu podle typu uživatele
   generateMenuContent(userType, userData);
 
