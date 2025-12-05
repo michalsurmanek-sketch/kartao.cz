@@ -35,7 +35,7 @@
     <script>
       window.kartaoMode = 'production';
       document.addEventListener('DOMContentLoaded', async () => {
-        lucide.init();
+        lucide.createIcons();
         const userId = window.currentUserId || localStorage.getItem('userId') || sessionStorage.getItem('kartaoUserId');
         if (!userId) return;
         window.kreditsSystem = new CreditsSystemSupabase();
