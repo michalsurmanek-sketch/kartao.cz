@@ -254,7 +254,6 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     menuContentContainer.style.maxHeight = 'calc(100vh - 16px)'; // menší offset pro lepší viditelnost spodního obsahu
     menuContentContainer.style.overflowY = 'auto';
     menuContentContainer.style.webkitOverflowScrolling = 'touch';
-    
     menuContentContainer.innerHTML = html;
     
     // Přidat event listenery pro action buttony
