@@ -428,12 +428,12 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     }
   });
 
-  // Auto-close při kliknutí na odkaz - delegace na menuContent
-  if (mobileMenu) {
-    mobileMenu.addEventListener('click', (e) => {
+  // Auto-close při kliknutí na odkaz - delegace pouze na menuContent (ne celý mobileMenu)
+  const menuContentContainer = document.getElementById('menuContent');
+  if (menuContentContainer) {
+    menuContentContainer.addEventListener('click', (e) => {
       const link = e.target.closest('a');
       if (link && link.getAttribute('href')) {
-        // Zavřít s malým zpožděním pro lepší UX
         setTimeout(closeMenu, 150);
       }
     });
