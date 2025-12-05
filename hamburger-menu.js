@@ -252,7 +252,7 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     html += '</nav>';
 
     // Nastavit scrollování obsahu menu
-    menuContentContainer.style.maxHeight = 'calc(100vh - 48px)'; // 48px = výška headeru menu
+    menuContentContainer.style.maxHeight = 'calc(100vh - 16px)'; // menší offset pro lepší viditelnost spodního obsahu
     menuContentContainer.style.overflowY = 'auto';
     menuContentContainer.style.webkitOverflowScrolling = 'touch';
     
