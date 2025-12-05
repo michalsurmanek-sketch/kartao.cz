@@ -471,4 +471,3 @@ if (typeof window !== 'undefined') {
   };
 }
 
-})(); // Konec IIFE
