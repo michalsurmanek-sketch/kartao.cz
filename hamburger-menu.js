@@ -49,7 +49,20 @@ const MENU_CONFIGS = {
         items: [
           { href: 'luxus2.html', icon: 'sparkles', text: 'Dashboard', color: 'sky' },
           { href: 'creator-dashboard.html', icon: 'layout-dashboard', text: 'Přehled', color: 'purple' },
-          { href: 'kartao-muj-profil.html', icon: 'user', text: 'Můj profil', color: 'fuchsia' },
+          // Moje karta + Založit kartu vedle sebe
+          {
+            custom: true,
+            html: `<div class="flex gap-2">
+              <a href="kartao-muj-profil.html" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-fuchsia-500/10 hover:bg-fuchsia-500/20 transition">
+                <i data-lucide="user" class="w-4 h-4 text-fuchsia-400"></i>
+                <span>Moje karta</span>
+              </a>
+              <a href="https://www.kartao.cz/zalozit-kartu.html" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-lime-500/10 hover:bg-lime-500/20 transition">
+                <i data-lucide="id-card" class="w-4 h-4 text-lime-400"></i>
+                <span>Založit kartu</span>
+              </a>
+            </div>`
+          },
           { href: 'credits-dashboard.html', icon: 'coins', text: 'Kredity', color: 'amber' },
           { href: 'earnings-management.html', icon: 'wallet', text: 'Výdělky', color: 'emerald' }
         ]
