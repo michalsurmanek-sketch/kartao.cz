@@ -254,10 +254,13 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     menuContentContainer.style.maxHeight = 'calc(100vh - 16px)'; // menší offset pro lepší viditelnost spodního obsahu
     menuContentContainer.style.overflowY = 'auto';
     menuContentContainer.style.webkitOverflowScrolling = 'touch';
+    // Odstranit předchozí event listenery (reset obsahu)
+    menuContentContainer.replaceChildren();
     menuContentContainer.innerHTML = html;
-    
-    // Přidat event listenery pro action buttony
+
+    // Přidat event listenery pro action buttony (jen jednou)
     menuContentContainer.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.onclick = null;
       btn.addEventListener('click', (e) => {
         const action = e.currentTarget.getAttribute('data-action');
         handleMenuAction(action);
