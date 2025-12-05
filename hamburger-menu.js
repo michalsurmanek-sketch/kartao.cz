@@ -446,7 +446,6 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     menuPanel.style.flexDirection = 'column';
     menuPanel.style.height = '100vh';
   }
-  const menuContentContainer = document.getElementById('menuContent');
   if (menuContentContainer) {
     menuContentContainer.style.flex = '1 1 auto';
     menuContentContainer.style.minHeight = '0';
