@@ -83,7 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="auth-unified.js"></script>
   
   <!-- HAMBURGER MENU -->
-  <script src="hamburger-menu.js"></script>
+  <!-- <script src="hamburger-menu.js"></script> -->
+  <script src="hamburger-menu-refactored.js"></script>
   
   <!-- CREDITS SYSTEM -->
   <script src="credits-system-supabase.js"></script>
@@ -539,31 +540,22 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Dynamický obsah menu -->
         <div id="menuContent"></div>
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            // Po načtení auth-unified zajistit inicializaci hamburger menu
-            function tryInitMenu() {
-              if (window.kartaoAuth && window.kartaoAuth.isReady && window.HamburgerMenu) {
-                const user = window.kartaoAuth.user;
-                const profile = window.kartaoAuth.profile;
-                if (user && profile) {
-                  const userType = profile.is_company ? 'company' : 'creator';
-                  const userData = {
-                    name: profile.name || profile.display_name || user.email.split('@')[0],
-                    handle: profile.handle,
-                    avatar_url: profile.avatar_url
-                  };
-                  window.HamburgerMenu.init(userType, userData);
-                } else {
-                  window.HamburgerMenu.init('guest');
-                }
-              } else {
-                setTimeout(tryInitMenu, 100);
-              }
+          // Nový hamburger menu systém
+          let menuInstance = null;
+          function initMenuRefactored() {
+            if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
+            const user = window.kartaoAuth?.user;
+            const profile = window.kartaoAuth?.profile;
+            let type = 'guest';
+            if (user && profile) type = profile.is_company ? 'company' : 'creator';
+            if (!menuInstance) {
+              menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+            } else {
+              menuInstance.setUser(user, profile, type);
             }
-            tryInitMenu();
-            // Aktualizace při změně auth stavu
-            window.addEventListener('kartao-auth-changed', tryInitMenu);
-          });
+          }
+          document.addEventListener('DOMContentLoaded', initMenuRefactored);
+          window.addEventListener('kartao-auth-changed', initMenuRefactored);
         </script>
         <!-- Přihlášení/Účet blok v mobilním menu (desktop auth mini panel)
               <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
