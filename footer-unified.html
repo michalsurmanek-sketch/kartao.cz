@@ -184,5 +184,28 @@
         }
       });
     });
+
+      // Newsletter validace a potvrzení
+      const form = document.getElementById('footer-newsletter');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const email = form.email.value.trim();
+          // Jednoduchá validace emailu
+          if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            form.reset();
+            form.classList.add('ring-2', 'ring-green-500');
+            setTimeout(() => {
+              form.classList.remove('ring-2', 'ring-green-500');
+            }, 2000);
+          } else {
+            form.email.focus();
+            form.classList.add('ring-2', 'ring-red-500');
+            setTimeout(() => {
+              form.classList.remove('ring-2', 'ring-red-500');
+            }, 2000);
+          }
+        });
+      }
   });
 </script>
