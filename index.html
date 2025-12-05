@@ -82,8 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- UNIFIED AUTH - JEDINÝ AUTH SYSTÉM -->
   <script src="auth-unified.js"></script>
   
-  <!-- HAMBURGER MENU - pouze refactored verze -->
-  <script src="hamburger-menu-refactored.js"></script>
+  <!-- HAMBURGER MENU - pouze refactored verze (přesunuto na konec body) -->
   
   <!-- CREDITS SYSTEM -->
   <script src="credits-system-supabase.js"></script>
@@ -538,6 +537,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Dynamický obsah menu -->
         <div id="menuContent"></div>
+        <!-- Injektováno na konec body -->
+        </div>
+
+        <!-- HAMBURGER MENU - pouze refactored verze (načítání až po všem) -->
+        <script src="hamburger-menu-refactored.js"></script>
         <script>
           // Nový hamburger menu systém
           let menuInstance = null;
