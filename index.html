@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   <link rel="canonical" href="https://www.kartao.cz/" />
   
-  <!-- === SUPABASE === -->
+  <!-- SUPABASE SDK - pouze jednou -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- KONFIGURACE -->
@@ -82,8 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- UNIFIED AUTH - JEDINÝ AUTH SYSTÉM -->
   <script src="auth-unified.js"></script>
   
-  <!-- HAMBURGER MENU -->
-  <!-- <script src="hamburger-menu.js"></script> -->
+  <!-- HAMBURGER MENU - pouze refactored verze -->
   <script src="hamburger-menu-refactored.js"></script>
   
   <!-- CREDITS SYSTEM -->
@@ -1154,16 +1153,15 @@ document.addEventListener('DOMContentLoaded', () => {
   </button>
      <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase SDK - odstraněno duplicitní načítání -->
 
   <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
   <script src="database-init.js"></script>
-  <!-- <script src="api-services.js"></script> DISABLED - konflikt s inline DataHelpers -->
+  <!-- api-services.js zakomentováno, není načítáno -->
 
   <!-- Advanced Systems -->
   <script src="notification-system.js"></script>
-  <!-- <script src="live-chat-system.js"></script> -->
+  <!-- live-chat-system.js zakomentováno, není načítáno -->
   <script src="advanced-analytics.js"></script>
   <script src="security-manager.js"></script>
   <script src="internationalization-system.js"></script>
