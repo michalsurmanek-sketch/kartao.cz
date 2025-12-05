@@ -201,34 +201,42 @@
     console.log('🔐 Auth Unified: Updating UI, user:', user ? user.email : 'none', 'profile:', !!profile);
     
     // 1. HEADER BUTTONS
-    const loginBtn = document.getElementById('loginBtn');
+    const desktopAuthBtn = document.getElementById('desktopAuthBtn');
+    const desktopAuthIcon = document.getElementById('desktopAuthIcon');
+    const desktopAuthText = document.getElementById('desktopAuthText');
     const loginBtnMobile = document.getElementById('loginBtnMobile');
     const userMenu = document.getElementById('userMenu');
     const userMenuMobile = document.getElementById('userMenuMobile');
     const userName = document.getElementById('userName');
-    
-    if (user) {
-      // Přihlášen (i bez profilu)
-      if (loginBtn) loginBtn.classList.add('hidden');
-      if (loginBtnMobile) loginBtnMobile.classList.add('hidden');
-      if (userMenu) {
-        userMenu.classList.remove('hidden');
-        userMenu.classList.add('flex');
+
+    if (desktopAuthBtn && desktopAuthIcon && desktopAuthText) {
+      if (user) {
+        desktopAuthBtn.classList.remove('btn-primary');
+        desktopAuthBtn.classList.add('btn-outline');
+        desktopAuthIcon.setAttribute('data-lucide', 'log-out');
+        desktopAuthText.textContent = 'Odhlásit';
+        desktopAuthBtn.onclick = function() {
+          window.supabaseClient.auth.signOut();
+        };
+      } else {
+        desktopAuthBtn.classList.remove('btn-outline');
+        desktopAuthBtn.classList.add('btn-primary');
+        desktopAuthIcon.setAttribute('data-lucide', 'log-in');
+        desktopAuthText.textContent = 'Přihlásit se';
+        desktopAuthBtn.onclick = function() {
+          window.location.href = 'login.html';
+        };
       }
-      if (userMenuMobile) {
-        userMenuMobile.classList.remove('hidden');
-        userMenuMobile.classList.add('flex');
-      }
-      if (userName) {
-        const displayName = profile?.name || profile?.display_name || user.email.split('@')[0];
-        userName.textContent = displayName;
-      }
-    } else {
-      // Odhlášen
-      if (loginBtn) loginBtn.classList.remove('hidden');
-      if (loginBtnMobile) loginBtnMobile.classList.remove('hidden');
-      if (userMenu) userMenu.classList.add('hidden');
-      if (userMenuMobile) userMenuMobile.classList.add('hidden');
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+    }
+
+    // Ostatní UI prvky (mobilní menu atd.)
+    if (loginBtnMobile) loginBtnMobile.classList.toggle('hidden', !!user);
+    if (userMenu) userMenu.classList.toggle('hidden', !user);
+    if (userMenuMobile) userMenuMobile.classList.toggle('hidden', !user);
+    if (userName && user) {
+      const displayName = profile?.name || profile?.display_name || user.email.split('@')[0];
+      userName.textContent = displayName;
     }
     
     // 2. HAMBURGER MENU

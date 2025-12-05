@@ -486,29 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
       </nav>
 
       <div class="hidden md:flex items-center gap-3">
-  <!-- Přihlášen - zobrazí se po načtení auth -->
-  <div id="userMenu" data-auth="in" class="hidden items-center gap-3">
-    <!-- K-Coins zobrazení (skryto na desktopu) -->
-    <a href="credits-dashboard.html" id="creditsDisplay" class="md:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition">
-      <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
-      <span id="userCredits" class="font-semibold text-amber-300">0</span>
-      <span class="text-xs text-amber-400/70">K-Coins</span>
-    </a>
-    <!-- Odhlášení přes auth-unified (ikona účtu odstraněna na desktopu) -->
-    <button id="logoutBtn"
-       class="btn btn-outline text-sm hover:bg-white/5 transition flex items-center gap-2">
-      <i data-lucide="log-out" class="w-4 h-4"></i>
-      Odhlásit
-    </button>
-  </div>
-
-  <!-- Nepřihlášen -->
-  <div id="loginMenu" data-auth="out" class="flex">
-    <a id="loginBtn" href="login.html" class="btn btn-primary text-sm md:inline-flex">
-      <i data-lucide="log-in" class="w-4 h-4"></i>
-      Přihlásit se
-    </a>
-  </div>
+  <!-- Desktop auth button (přihlášení/odhlášení) -->
+  <button id="desktopAuthBtn" class="btn btn-primary text-sm md:inline-flex flex items-center gap-2">
+    <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
+    <span id="desktopAuthText">Přihlásit se</span>
+  </button>
 </div>
 
 <div class="md:hidden flex items-center gap-2">
