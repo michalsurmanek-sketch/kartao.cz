@@ -29,6 +29,13 @@ const MENU_CONFIGS = {
           { href: 'kartao-o-nas.html', icon: 'info', text: 'O nás', color: 'cyan' },
           { href: 'kontakt.html', icon: 'mail', text: 'Kontakt', color: 'amber', active: true }
         ]
+      },
+      {
+        label: 'Účet',
+        items: [
+          { href: 'login.html', icon: 'user-plus', text: 'Registrovat se', color: 'blue' },
+          { href: 'login.html', icon: 'log-in', text: 'Přihlásit se', color: 'green' }
+        ]
       }
     ]
   },
