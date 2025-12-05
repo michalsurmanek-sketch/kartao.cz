@@ -191,21 +191,52 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     let html = '';
 
     // User section (pro přihlášené uživatele)
-    if (config.userSection && user) {
-      const avatarLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-      const avatarImg = user.avatar_url ? 
-        `<img src="${user.avatar_url}" alt="${user.name}" class="w-full h-full object-cover rounded-full">` : 
-        `<div class="w-full h-full rounded-full bg-gradient-to-br from-fuchsia-500 via-sky-500 to-emerald-400 flex items-center justify-center text-lg font-bold">${avatarLetter}</div>`;
-      
+    // Logo v hamburger menu podle typu účtu
+    if (type === 'creator' && user) {
       html += `
         <div class="px-4 py-4 border-b border-white/10">
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-              ${avatarImg}
+              <div class="w-full h-full rounded-full bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+                <i data-lucide="id-card" class="w-7 h-7"></i>
+              </div>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="font-semibold text-white truncate">${user.name || 'Uživatel'}</div>
-              <div class="text-xs text-white/60 truncate">@${user.handle || 'user'}</div>
+              <div class="font-semibold text-white truncate">Moje karta</div>
+              <div class="text-xs text-white/60 truncate">Profil & ovládání účtu</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (type === 'company' && user) {
+      html += `
+        <div class="px-4 py-4 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-gradient-to-tr from-emerald-400 to-sky-400 grid place-items-center">
+                <i data-lucide="building-2" class="w-7 h-7"></i>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-white truncate">Moje firma</div>
+              <div class="text-xs text-white/60 truncate">Firemní profil & správa</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // Nepřihlášený uživatel - defaultní logo
+      html += `
+        <div class="px-4 py-4 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+                <i data-lucide="crown" class="w-6 h-6 animate-crown-glow"></i>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-white truncate">Kartao.cz</div>
+              <div class="text-xs text-white/60 truncate">Síť influencerů</div>
             </div>
           </div>
         </div>
