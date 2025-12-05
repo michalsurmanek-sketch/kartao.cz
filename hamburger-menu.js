@@ -238,7 +238,7 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
         } else {
           // Link
           html += `
-            <a href="${item.href}" class="group block px-3 py-3 rounded-xl ${activeClass} hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
+            <a href="${item.href}" class="group block px-3 py-3 rounded-xl ${activeClass} hover:bg-white/5 hover:translate-x-1 transition-all duration-200 ${textClass} flex items-center gap-3">
               <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70 ${colorClass} group-hover:scale-110 ${rotateClass} transition-all duration-200"></i>
               <span class="group-hover:text-white transition-colors">${item.text}</span>
             </a>
@@ -250,6 +250,11 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     });
     
     html += '</nav>';
+
+    // Nastavit scrollování obsahu menu
+    menuContentContainer.style.maxHeight = 'calc(100vh - 48px)'; // 48px = výška headeru menu
+    menuContentContainer.style.overflowY = 'auto';
+    menuContentContainer.style.webkitOverflowScrolling = 'touch';
     
     menuContentContainer.innerHTML = html;
     
