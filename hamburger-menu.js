@@ -201,8 +201,22 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     let html = '';
 
     // User section (pro přihlášené uživatele)
-    // Logo v hamburger menu podle typu účtu
-    if (type === 'creator' && user) {
+    // Pokud je přihlášený uživatel a má avatar_url, zobrazit fotku
+    if ((type === 'creator' || type === 'company') && user && user.avatar_url) {
+      html += `
+        <div class="px-4 py-4 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-neutral-800">
+              <img src="${user.avatar_url}" alt="Profilová fotka" class="w-full h-full object-cover rounded-full" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-white truncate">${type === 'creator' ? 'Moje karta' : 'Moje firma'}</div>
+              <div class="text-xs text-white/60 truncate">${type === 'creator' ? 'Profil & ovládání účtu' : 'Firemní profil & správa'}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (type === 'creator' && user) {
       html += `
         <div class="px-4 py-4 border-b border-white/10">
           <div class="flex items-center gap-3">
