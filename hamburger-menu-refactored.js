@@ -14,7 +14,18 @@ class HamburgerMenu {
     this.profile = options.profile || null;
     this.type = options.type || 'guest';
     this._binded = false;
-    this._init();
+      console.log('[HamburgerMenu] Konstruktor:', {
+        menuToggle: !!this.menuToggle,
+        mobileMenu: !!this.mobileMenu,
+        menuBackdrop: !!this.menuBackdrop,
+        menuPanel: !!this.menuPanel,
+        menuContent: !!this.menuContent,
+        menuClose: !!this.menuClose,
+        user: this.user,
+        profile: this.profile,
+        type: this.type
+      });
+      this._init();
   }
 
   _init() {
@@ -23,11 +34,13 @@ class HamburgerMenu {
     this._bindEvents();
     this.render();
     this.close();
-  }
+      console.log('[HamburgerMenu] Inicializace probíhá.');
+    }
 
   _bindEvents() {
     if (this._binded) return;
-    this.menuToggle.addEventListener('click', this.toggle.bind(this));
+      console.log('[HamburgerMenu] Bindování eventů.');
+      this.menuToggle.addEventListener('click', this.toggle.bind(this));
     if (this.menuClose) this.menuClose.addEventListener('click', this.close.bind(this));
     if (this.menuBackdrop) this.menuBackdrop.addEventListener('click', this.close.bind(this));
     document.addEventListener('keydown', this._escHandler = (e) => {
@@ -48,6 +61,7 @@ class HamburgerMenu {
   }
 
   open() {
+    console.log('[HamburgerMenu] Otevírám menu.');
     this.mobileMenu.classList.remove('hidden');
     this.menuPanel.classList.remove('-translate-x-full');
     this.menuPanel.classList.add('translate-x-0');
@@ -55,6 +69,7 @@ class HamburgerMenu {
   }
 
   close() {
+    console.log('[HamburgerMenu] Zavírám menu.');
     this.menuPanel.classList.add('-translate-x-full');
     this.menuPanel.classList.remove('translate-x-0');
     setTimeout(() => {
