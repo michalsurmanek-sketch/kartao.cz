@@ -134,6 +134,7 @@ const MENU_CONFIGS = {
  * Použití: Zavolat na konci stránky po načtení DOM
  */
 function initHamburgerMenu(userType = 'guest', userData = null) {
+
   const menuToggle = document.getElementById('menuToggle');
   const mobileMenu = document.getElementById('mobileMenu');
   const menuClose = document.getElementById('menuClose');
@@ -144,6 +145,29 @@ function initHamburgerMenu(userType = 'guest', userData = null) {
     console.warn('Hamburger menu elements not found');
     return;
   }
+
+  // OCHRANA: Odstranit staré event listenery a obnovit výchozí stav
+  const newMenuToggle = menuToggle.cloneNode(true);
+  menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+  if (menuClose) {
+    const newMenuClose = menuClose.cloneNode(true);
+    menuClose.parentNode.replaceChild(newMenuClose, menuClose);
+  }
+  if (menuBackdrop) {
+    const newMenuBackdrop = menuBackdrop.cloneNode(true);
+    menuBackdrop.parentNode.replaceChild(newMenuBackdrop, menuBackdrop);
+  }
+  // Skrytí menu při nové inicializaci
+  mobileMenu.classList.add('hidden');
+  if (menuPanel) {
+    menuPanel.classList.add('-translate-x-full');
+    menuPanel.classList.remove('translate-x-0');
+  }
+  document.body.style.overflow = '';
+  // Znovu načíst elementy po klonování
+  const menuToggleFinal = document.getElementById('menuToggle');
+  const menuCloseFinal = document.getElementById('menuClose');
+  const menuBackdropFinal = document.getElementById('menuBackdrop');
 
   /**
    * Získání CSS třídy pro barvu ikony

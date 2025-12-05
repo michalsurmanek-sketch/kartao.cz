@@ -507,23 +507,7 @@
   <!-- Lucide ikony - unified system -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
   <script>
-    // Hamburger menu
-    const menuToggle = document.getElementById('menuToggle');
-    const menuClose = document.getElementById('menuClose');
-    const menuBackdrop = document.getElementById('menuBackdrop');
-    const mobileMenu = document.getElementById('mobileMenu');
 
-    function openMenu() {
-      mobileMenu.classList.remove('-translate-x-full');
-    }
-
-    function closeMenu() {
-      mobileMenu.classList.add('-translate-x-full');
-    }
-
-    menuToggle?.addEventListener('click', openMenu);
-    menuClose?.addEventListener('click', closeMenu);
-    menuBackdrop?.addEventListener('click', closeMenu);
 
     // Auto rok
     document.getElementById('year').textContent = new Date().getFullYear();
