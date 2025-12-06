@@ -1,8 +1,3 @@
 # .firebaserc - Firebase project configuration
-{
-  "projects": {
-    "default": "kartao-97df7"
-  },
-  "targets": {},
   "etags": {}
 }

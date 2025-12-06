@@ -1,23 +1,4 @@
-{
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "**/*.md",
-      "15,11,2025 web/**",
-      "15.11.2025 záloha new/**",
-      "16,11,2025 web/**",
-      "api servis záloha/**",
-      "credits drashboard záloha/**",
-      "dvojitá lišta záloha/**",
-      "index záloha hlavní web 22,11,2025/**",
-      "kampan záloha/**",
-      "kartao-muj-ucet-zaloha/**"
-    ],
-    "rewrites": [
-      {
+
         "source": "**",
         "destination": "/index.html"
       }
