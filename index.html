@@ -540,26 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Injektováno na konec body -->
         </div>
 
-        <!-- HAMBURGER MENU - pouze refactored verze (načítání až po všem) -->
-        <script src="hamburger-menu-refactored.js"></script>
-        <script>
-          // Nový hamburger menu systém
-          let menuInstance = null;
-          function initMenuRefactored() {
-            if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
-            const user = window.kartaoAuth?.user;
-            const profile = window.kartaoAuth?.profile;
-            let type = 'guest';
-            if (user && profile) type = profile.is_company ? 'company' : 'creator';
-            if (!menuInstance) {
-              menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
-            } else {
-              menuInstance.setUser(user, profile, type);
-            }
-          }
-          document.addEventListener('DOMContentLoaded', initMenuRefactored);
-          window.addEventListener('kartao-auth-changed', initMenuRefactored);
-        </script>
+        <!-- Hamburger menu refactored načítat pouze jednou na konci stránky -->
         <!-- Přihlášení/Účet blok v mobilním menu (desktop auth mini panel)
               <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
               <span class="font-bold">VIP zóna</span>
