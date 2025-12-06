@@ -94,6 +94,12 @@ class HamburgerMenu {
   }
 
   render() {
+    console.log('[HamburgerMenu] render() spuštěn:', {
+      type: this.type,
+      user: this.user,
+      profile: this.profile,
+      menuContent: this.menuContent
+    });
     // Avatar a jméno nahoře
     let avatar = '';
     if (this.type !== 'guest' && this.profile && this.profile.avatar_url) {
@@ -109,8 +115,10 @@ class HamburgerMenu {
       <div class="text-xs text-white/60">${role}</div>
     </div>`;
     // Menu sekce podle typu
+    const menuLinks = this._getMenuLinks();
+    console.log('[HamburgerMenu] odkazy v menu:', menuLinks);
     html += '<nav class="px-3 py-3">';
-    html += this._getMenuLinks();
+    html += menuLinks;
     html += '</nav>';
     this.menuContent.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -121,6 +129,7 @@ class HamburgerMenu {
   }
 
   _getMenuLinks() {
+    console.log('[HamburgerMenu] _getMenuLinks() typ:', this.type);
     // Definice menu pro různé role
     const links = {
       guest: [
