@@ -1,3 +1,4 @@
+// Pokud by se někde v budoucnu prováděl dotaz na Supabase s userId, vždy ověřit že není null
 // security-manager.js – zjednodušená verze pro Kartao.cz
 
 class SecurityManager {

@@ -39,7 +39,12 @@ class CreditsSystemSupabase {
    */
   async loadCredits() {
     const sb = window.supabaseClient || window.sb;
-    
+    if (!this.currentUser) {
+      console.warn("⚠️ CreditsSystem: currentUser není definován, dotaz na Supabase přeskočen.");
+      this.localCredits = 0;
+      this.notifyCallbacks(this.localCredits);
+      return this.localCredits;
+    }
     // Zkus creators tabulku
     let { data, error } = await sb
       .from('creators')
