@@ -2873,5 +2873,25 @@ document.addEventListener('DOMContentLoaded', () => {
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>
+  <!-- HAMBURGER MENU - pouze refactored verze (načítání až po všem) -->
+  <script src="hamburger-menu-refactored.js"></script>
+  <script>
+    // Nový hamburger menu systém
+    let menuInstance = null;
+    function initMenuRefactored() {
+      if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
+      const user = window.kartaoAuth?.user;
+      const profile = window.kartaoAuth?.profile;
+      let type = 'guest';
+      if (user && profile) type = profile.is_company ? 'company' : 'creator';
+      if (!menuInstance) {
+        menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+      } else {
+        menuInstance.setUser(user, profile, type);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initMenuRefactored);
+    window.addEventListener('kartao-auth-changed', initMenuRefactored);
+  </script>
 </body>
 </html>
