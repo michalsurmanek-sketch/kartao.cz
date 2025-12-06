@@ -68,6 +68,7 @@
     console.log('🔐 Auth Unified: Setting user:', user.email);
     
     window.kartaoAuth.user = user;
+    window.dispatchEvent(new CustomEvent('kartao-auth-changed'));
     
     // Načíst profil z DB (zkusit creators, pak firms)
     try {
@@ -92,6 +93,7 @@
       
       if (profile) {
         window.kartaoAuth.profile = profile;
+        window.dispatchEvent(new CustomEvent('kartao-auth-changed'));
         console.log('🔐 Auth Unified: Profile loaded:', profile.handle || profile.email || profile.name);
         
         // Inicializovat Credits System
@@ -172,6 +174,7 @@
     window.kartaoAuth.user = null;
     window.kartaoAuth.profile = null;
     window.kartaoAuth.isReady = true;
+    window.dispatchEvent(new CustomEvent('kartao-auth-changed'));
     notifyListeners();
   }
 
