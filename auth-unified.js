@@ -248,31 +248,7 @@
     }
     
     // 2. HAMBURGER MENU
-    if (typeof window.HamburgerMenu !== 'undefined') {
-      try {
-        if (user && profile) {
-          const userType = profile.is_company ? 'company' : 'creator';
-          const userData = {
-            name: profile.name || profile.display_name || user.email.split('@')[0],
-            handle: profile.handle,
-            avatar_url: profile.avatar_url
-          };
-          console.log('🔐 Auth Unified: Initializing hamburger menu as', userType);
-          window.HamburgerMenu.init(userType, userData);
-        } else if (user) {
-          // Uživatel přihlášen, ale nemá profil - zobrazit jako guest
-          console.log('🔐 Auth Unified: User without profile, showing as guest');
-          window.HamburgerMenu.init('guest');
-        } else {
-          console.log('🔐 Auth Unified: Initializing hamburger menu as guest');
-          window.HamburgerMenu.init('guest');
-        }
-      } catch (err) {
-        console.error('🔐 Auth Unified: Chyba při inicializaci hamburger menu:', err);
-      }
-    } else {
-      console.warn('🔐 Auth Unified: HamburgerMenu není k dispozici');
-    }
+    // (inicializace a update probíhá pouze v index.html přes KartaoHamburgerMenu a eventy)
     
     // 3. LUCIDE ICONS
     if (window.lucide?.createIcons) {
