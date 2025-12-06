@@ -2,6 +2,8 @@
 // Moderní, čistý a univerzální hamburger menu pro Kartao.cz
 // Autor: GitHub Copilot (GPT-4.1)
 
+
+// Modern, robust, full-screen mobile hamburger menu for Kartao.cz
 class HamburgerMenu {
   constructor(options = {}) {
     this.menuToggle = document.getElementById('menuToggle');
@@ -14,18 +16,9 @@ class HamburgerMenu {
     this.profile = options.profile || null;
     this.type = options.type || 'guest';
     this._binded = false;
-      console.log('[HamburgerMenu] Konstruktor:', {
-        menuToggle: !!this.menuToggle,
-        mobileMenu: !!this.mobileMenu,
-        menuBackdrop: !!this.menuBackdrop,
-        menuPanel: !!this.menuPanel,
-        menuContent: !!this.menuContent,
-        menuClose: !!this.menuClose,
-        user: this.user,
-        profile: this.profile,
-        type: this.type
-      });
-      this._init();
+    this._escHandler = (e) => { if (e.key === 'Escape') this.close(); };
+    this._menuActionHandler = this._menuActionHandler.bind(this);
+    this._init();
   }
 
   _init() {
@@ -34,47 +27,48 @@ class HamburgerMenu {
     this._bindEvents();
     this.render();
     this.close();
-      console.log('[HamburgerMenu] Inicializace probíhá.');
-    }
+  }
 
   _bindEvents() {
     if (this._binded) return;
-      console.log('[HamburgerMenu] Bindování eventů.');
-      this.menuToggle.addEventListener('click', this.toggle.bind(this));
-    if (this.menuClose) this.menuClose.addEventListener('click', this.close.bind(this));
-    if (this.menuBackdrop) this.menuBackdrop.addEventListener('click', this.close.bind(this));
-    document.addEventListener('keydown', this._escHandler = (e) => {
-      if (e.key === 'Escape') this.close();
-    });
-    this.menuContent.addEventListener('click', this._menuActionHandler.bind(this));
+    this.menuToggle.addEventListener('click', () => this.toggle());
+    if (this.menuClose) this.menuClose.addEventListener('click', () => this.close());
+    if (this.menuBackdrop) this.menuBackdrop.addEventListener('click', () => this.close());
+    document.addEventListener('keydown', this._escHandler);
+    this.menuContent.addEventListener('click', this._menuActionHandler);
     this._binded = true;
   }
 
   _unbindEvents() {
     if (!this._binded) return;
-    this.menuToggle.removeEventListener('click', this.toggle.bind(this));
-    if (this.menuClose) this.menuClose.removeEventListener('click', this.close.bind(this));
-    if (this.menuBackdrop) this.menuBackdrop.removeEventListener('click', this.close.bind(this));
+    this.menuToggle.removeEventListener('click', () => this.toggle());
+    if (this.menuClose) this.menuClose.removeEventListener('click', () => this.close());
+    if (this.menuBackdrop) this.menuBackdrop.removeEventListener('click', () => this.close());
     document.removeEventListener('keydown', this._escHandler);
-    this.menuContent.removeEventListener('click', this._menuActionHandler.bind(this));
+    this.menuContent.removeEventListener('click', this._menuActionHandler);
     this._binded = false;
   }
 
   open() {
-    console.log('[HamburgerMenu] Otevírám menu.');
     this.mobileMenu.classList.remove('hidden');
-    this.menuPanel.classList.remove('-translate-x-full');
-    this.menuPanel.classList.add('translate-x-0');
+    setTimeout(() => {
+      this.menuBackdrop.classList.add('opacity-100');
+      this.menuPanel.classList.remove('-translate-x-full');
+      this.menuPanel.classList.add('translate-x-0');
+    }, 10);
     document.body.style.overflow = 'hidden';
+    this.menuToggle.setAttribute('aria-expanded', 'true');
+    this.menuPanel.focus();
   }
 
   close() {
-    console.log('[HamburgerMenu] Zavírám menu.');
+    this.menuBackdrop.classList.remove('opacity-100');
     this.menuPanel.classList.add('-translate-x-full');
     this.menuPanel.classList.remove('translate-x-0');
     setTimeout(() => {
       this.mobileMenu.classList.add('hidden');
       document.body.style.overflow = '';
+      this.menuToggle.setAttribute('aria-expanded', 'false');
     }, 300);
   }
 
@@ -94,43 +88,33 @@ class HamburgerMenu {
   }
 
   render() {
-    console.log('[HamburgerMenu] render() spuštěn:', {
-      type: this.type,
-      user: this.user,
-      profile: this.profile,
-      menuContent: this.menuContent
-    });
-    // Avatar a jméno nahoře
+    // Avatar, name, and role at the top
     let avatar = '';
     if (this.type !== 'guest' && this.profile && this.profile.avatar_url) {
-      avatar = `<a href="kartao-muj-ucet.html" class="block mx-auto w-16 h-16 rounded-full overflow-hidden mb-2 border-2 border-amber-400"><img src="${this.profile.avatar_url}" alt="avatar" class="w-full h-full object-cover" /></a>`;
+      avatar = `<a href="kartao-muj-ucet.html" class="block mx-auto w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-amber-400"><img src="${this.profile.avatar_url}" alt="avatar" class="w-full h-full object-cover" /></a>`;
     } else {
-      avatar = `<div class="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-fuchsia-500 to-amber-400 flex items-center justify-center mb-2"><i data-lucide="user" class="w-8 h-8 text-white"></i></div>`;
+      avatar = `<div class="mx-auto w-20 h-20 rounded-full bg-gradient-to-tr from-fuchsia-500 to-amber-400 flex items-center justify-center mb-3"><i data-lucide="user" class="w-10 h-10 text-white"></i></div>`;
     }
     let name = (this.profile && (this.profile.name || this.profile.display_name)) || (this.user && this.user.email) || 'Host';
     let role = this.type === 'company' ? 'Firma' : (this.type === 'creator' ? 'Tvůrce' : 'Host');
-    let html = `<div class="p-4 border-b border-white/10 text-center">
+    let html = `<div class="p-6 border-b border-white/10 text-center">
       ${avatar}
-      <div class="font-semibold text-white">${name}</div>
+      <div class="font-semibold text-lg text-white mb-1">${name}</div>
       <div class="text-xs text-white/60">${role}</div>
     </div>`;
-    // Menu sekce podle typu
+    // Menu links by role
     const menuLinks = this._getMenuLinks();
-    console.log('[HamburgerMenu] odkazy v menu:', menuLinks);
-    html += '<nav class="px-3 py-3">';
+    html += '<nav class="px-4 py-5">';
     html += menuLinks;
     html += '</nav>';
+    // Footer
+    html += `<div class="mt-auto px-4 pb-6 pt-2 text-center text-xs text-white/40">&copy; ${new Date().getFullYear()} Kartao.cz</div>`;
     this.menuContent.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    // Po každém renderu menu zajistit správné napojení odhlašovací logiky
-    if (window.kartaoAuth && typeof window.kartaoAuth.setupLogoutButtons === 'function') {
-      setTimeout(() => window.kartaoAuth.setupLogoutButtons(), 100);
-    }
   }
 
   _getMenuLinks() {
-    console.log('[HamburgerMenu] _getMenuLinks() typ:', this.type);
-    // Definice menu pro různé role
+    // Menu definitions for each role
     const links = {
       guest: [
         { href: 'index.html', icon: 'home', text: 'Domů' },
@@ -163,9 +147,9 @@ class HamburgerMenu {
     const menu = links[this.type] || links.guest;
     return menu.map(item => {
       if (item.action === 'logout') {
-        return `<button data-action="logout" class="group w-full text-left block px-3 py-1.5 rounded-xl hover:bg-white/5 text-white/90 flex items-center gap-3 mt-2"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></button>`;
+        return `<button data-action="logout" class="group w-full text-left block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3 mt-2"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></button>`;
       } else {
-        return `<a href="${item.href}" class="group block px-3 py-1.5 rounded-xl hover:bg-white/5 text-white/90 flex items-center gap-3"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></a>`;
+        return `<a href="${item.href}" class="group block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></a>`;
       }
     }).join('');
   }
@@ -183,5 +167,5 @@ class HamburgerMenu {
   }
 }
 
-// Globální inicializace
+// Global initialization
 window.KartaoHamburgerMenu = HamburgerMenu;
