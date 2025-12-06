@@ -3,7 +3,7 @@
 
 class EmailNotificationService {
   constructor() {
-    this.db = firebase.firestore();
+    this.supabase = window.supabase;
     this.emailTemplates = {
       orderCreated: {
         subject: '🎉 Nová objednávka na Kartao.cz',
@@ -32,7 +32,7 @@ class EmailNotificationService {
     };
     
     // In production, this would be replaced with actual email service (SendGrid, Mailgun, etc.)
-    this.emailProvider = 'demo'; // 'sendgrid', 'mailgun', 'firebase-functions'
+    this.emailProvider = 'demo'; // 'sendgrid', 'mailgun', 'supabase-functions'
   }
 
   // Send email notification for new order
@@ -165,25 +165,23 @@ class EmailNotificationService {
   async sendEmail(templateType, emailData) {
     try {
       if (this.emailProvider === 'demo') {
-        // Demo mode - log to console and save to Firestore for tracking
+        // Demo mode - log to console and save to Supabase for tracking
         console.log('📧 Email Notification (Demo Mode):', {
           type: templateType,
           to: emailData.to,
           subject: emailData.subject,
           data: emailData.templateData
         });
-
-        // Save to notifications collection for demo purposes
-        await this.db.collection('email_notifications').add({
+        // Save to notifications table for demo purposes
+        await this.supabase.from('email_notifications').insert([{
           type: templateType,
           recipient: emailData.to,
           subject: emailData.subject,
           templateData: emailData.templateData,
           status: 'demo_sent',
-          sentAt: firebase.firestore.FieldValue.serverTimestamp(),
+          sentAt: new Date().toISOString(),
           provider: 'demo'
-        });
-
+        }]);
         return { success: true, messageId: 'demo_' + Date.now() };
       }
 
@@ -213,15 +211,15 @@ class EmailNotificationService {
       console.error('Error sending email:', error);
       
       // Save failed email to queue for retry
-      await this.db.collection('failed_emails').add({
+      await this.supabase.from('failed_emails').insert([{
         type: templateType,
         recipient: emailData.to,
         subject: emailData.subject,
         templateData: emailData.templateData,
         error: error.message,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date().toISOString(),
         retryCount: 0
-      });
+      }]);
 
       throw error;
     }
@@ -230,12 +228,13 @@ class EmailNotificationService {
   // Get notification preferences for user
   async getNotificationPreferences(userId) {
     try {
-      const prefsDoc = await this.db.collection('notification_preferences').doc(userId).get();
-      
-      if (prefsDoc.exists) {
-        return prefsDoc.data();
-      }
-
+      const { data, error } = await this.supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('userId', userId)
+        .single();
+      if (error) return null;
+      if (data) return data;
       // Default preferences
       return {
         orderCreated: true,
@@ -256,13 +255,12 @@ class EmailNotificationService {
   // Update notification preferences
   async updateNotificationPreferences(userId, preferences) {
     try {
-      await this.db.collection('notification_preferences').doc(userId).set({
+      await this.supabase.from('notification_preferences').upsert({
+        userId,
         ...preferences,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-
+        updatedAt: new Date().toISOString()
+      });
       return true;
-
     } catch (error) {
       console.error('Error updating notification preferences:', error);
       throw error;
@@ -324,36 +322,31 @@ class EmailNotificationService {
   // Method to retry failed emails
   async retryFailedEmails() {
     try {
-      const failedEmailsQuery = await this.db.collection('failed_emails')
-        .where('retryCount', '<', 3)
-        .orderBy('createdAt', 'desc')
-        .limit(50)
-        .get();
-
-      const retryPromises = failedEmailsQuery.docs.map(async (doc) => {
-        const emailData = doc.data();
-        
+      const { data: failedEmails, error } = await this.supabase
+        .from('failed_emails')
+        .select('*')
+        .lt('retryCount', 3)
+        .order('createdAt', { ascending: false })
+        .limit(50);
+      if (error || !failedEmails) return;
+      const retryPromises = failedEmails.map(async (email) => {
         try {
-          await this.sendEmail(emailData.type, {
-            to: emailData.recipient,
-            subject: emailData.subject,
-            templateData: emailData.templateData
+          await this.sendEmail(email.type, {
+            to: email.recipient,
+            subject: email.subject,
+            templateData: email.templateData
           });
-
-          // Delete successful retry
-          await doc.ref.delete();
-          
+          // Smaž úspěšně odeslaný email
+          await this.supabase.from('failed_emails').delete().eq('id', email.id);
         } catch (error) {
-          // Increment retry count
-          await doc.ref.update({
-            retryCount: firebase.firestore.FieldValue.increment(1),
-            lastRetryAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          // Zvyši retryCount a nastav lastRetryAt
+          await this.supabase.from('failed_emails').update({
+            retryCount: (email.retryCount || 0) + 1,
+            lastRetryAt: new Date().toISOString()
+          }).eq('id', email.id);
         }
       });
-
       await Promise.allSettled(retryPromises);
-      
     } catch (error) {
       console.error('Error retrying failed emails:', error);
     }

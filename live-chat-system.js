@@ -14,7 +14,7 @@ class LiveChatSystem {
     async init() {
         console.log('💬 Inicializace Live Chat systému...');
         this.createChatInterface();
-        this.setupFirebaseListeners();
+        this.setupSupabaseListeners();
         console.log('✅ Live Chat systém připraven');
     }
 
@@ -148,10 +148,9 @@ class LiveChatSystem {
         });
     }
 
-    setupFirebaseListeners() {
-        if (!window.auth) return;
-
-        window.auth.onAuthStateChanged((user) => {
+    setupSupabaseListeners() {
+        if (!window.kartaoAuth) return;
+        window.kartaoAuth.onAuthStateChanged((user) => {
             if (user) {
                 this.currentUser = user;
                 this.startListeningForMessages();
@@ -165,64 +164,64 @@ class LiveChatSystem {
     }
 
     startListeningForMessages() {
-        if (!this.currentUser || !window.db) return;
-
-        // Listen for new conversations
-        this.conversationsUnsubscribe = window.db.collection('conversations')
-            .where('participants', 'array-contains', this.currentUser.uid)
-            .orderBy('lastMessageTime', 'desc')
-            .onSnapshot((snapshot) => {
-                this.updateConversationsList(snapshot);
-            });
+        if (!this.currentUser) return;
+        // Polling Supabase for new conversations every 10s
+        this.conversationsUnsubscribe = setInterval(async () => {
+            const { data, error } = await window.supabase
+                .from('conversations')
+                .select('*')
+                .contains('participants', [this.currentUser.id])
+                .order('lastMessageTime', { ascending: false });
+            if (!error && data) {
+                this.updateConversationsList(data);
+            }
+        }, 10000);
     }
 
     stopListeningForMessages() {
         if (this.conversationsUnsubscribe) {
-            this.conversationsUnsubscribe();
+            clearInterval(this.conversationsUnsubscribe);
             this.conversationsUnsubscribe = null;
         }
         if (this.messagesUnsubscribe) {
-            this.messagesUnsubscribe();
+            clearInterval(this.messagesUnsubscribe);
             this.messagesUnsubscribe = null;
         }
     }
 
     async loadConversations() {
-        if (!this.currentUser || !window.db) return;
-
+        if (!this.currentUser) return;
         try {
-            const snapshot = await window.db.collection('conversations')
-                .where('participants', 'array-contains', this.currentUser.uid)
-                .orderBy('lastMessageTime', 'desc')
-                .limit(20)
-                .get();
-
-            this.updateConversationsList(snapshot);
+            const { data, error } = await window.supabase
+                .from('conversations')
+                .select('*')
+                .contains('participants', [this.currentUser.id])
+                .order('lastMessageTime', { ascending: false })
+                .limit(20);
+            if (!error && data) {
+                this.updateConversationsList(data);
+            } else {
+                this.showEmptyConversations();
+            }
         } catch (error) {
             console.error('Error loading conversations:', error);
             this.showEmptyConversations();
         }
     }
 
-    updateConversationsList(snapshot) {
+    updateConversationsList(conversations) {
         const conversationsList = document.getElementById('conversations-list');
         this.unreadCount = 0;
         this.conversations.clear();
-
-        if (!snapshot || snapshot.empty) {
+        if (!conversations || conversations.length === 0) {
             this.showEmptyConversations();
             return;
         }
-
-        const conversationsHTML = snapshot.docs.map(doc => {
-            const conversation = { id: doc.id, ...doc.data() };
+        const conversationsHTML = conversations.map(conversation => {
             this.conversations.set(conversation.id, conversation);
-
             const partner = this.getConversationPartner(conversation);
-            const isUnread = conversation.unreadBy && conversation.unreadBy.includes(this.currentUser.uid);
-            
+            const isUnread = conversation.unreadBy && conversation.unreadBy.includes(this.currentUser.id);
             if (isUnread) this.unreadCount++;
-
             return `
                 <div class="conversation-item p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 ${isUnread ? 'bg-blue-50' : ''}"
                      data-conversation-id="${conversation.id}">
@@ -242,18 +241,14 @@ class LiveChatSystem {
                 </div>
             `;
         }).join('');
-
         conversationsList.innerHTML = conversationsHTML;
-
         // Add click listeners
         conversationsList.querySelectorAll('.conversation-item').forEach(item => {
             item.addEventListener('click', () => {
                 this.openConversation(item.dataset.conversationId);
             });
         });
-
         this.updateUnreadBadge();
-
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
@@ -280,33 +275,33 @@ class LiveChatSystem {
     }
 
     getConversationPartner(conversation) {
-        const partnerId = conversation.participants.find(id => id !== this.currentUser.uid);
+        const partnerId = conversation.participants.find(id => id !== this.currentUser.id);
         return (conversation.participantInfo && conversation.participantInfo[partnerId]) || { name: 'Neznámý uživatel' };
     }
 
     getPartnerId(conversationId) {
         const conv = this.conversations.get(conversationId);
         if (!conv || !conv.participants) return null;
-        return conv.participants.find(id => id !== this.currentUser.uid) || null;
+        return conv.participants.find(id => id !== this.currentUser.id) || null;
     }
 
     async openConversation(conversationId) {
         try {
             // Load conversation details (aktualizace mapy)
-            const conversationDoc = await window.db.collection('conversations').doc(conversationId).get();
-            const conversation = { id: conversationDoc.id, ...conversationDoc.data() };
+            const { data: conversation, error } = await window.supabase
+                .from('conversations')
+                .select('*')
+                .eq('id', conversationId)
+                .single();
+            if (error || !conversation) throw new Error('Conversation not found');
             this.conversations.set(conversation.id, conversation);
             this.currentConversationId = conversation.id;
-
             // Show chat panel
             this.showChatPanel(conversation);
-
             // Load messages
             this.loadMessages(conversationId);
-
             // Mark as read
             this.markConversationAsRead(conversationId);
-
         } catch (error) {
             console.error('Error opening conversation:', error);
         }
@@ -335,26 +330,26 @@ class LiveChatSystem {
 
     loadMessages(conversationId) {
         if (this.messagesUnsubscribe) {
-            this.messagesUnsubscribe();
+            clearInterval(this.messagesUnsubscribe);
         }
-
-        this.messagesUnsubscribe = window.db.collection('conversations')
-            .doc(conversationId)
-            .collection('messages')
-            .orderBy('timestamp', 'asc')
-            .limit(50)
-            .onSnapshot((snapshot) => {
-                this.updateMessagesArea(snapshot);
-            });
+        // Polling Supabase for new messages every 5s
+        this.messagesUnsubscribe = setInterval(async () => {
+            const { data, error } = await window.supabase
+                .from('messages')
+                .select('*')
+                .eq('conversationId', conversationId)
+                .order('timestamp', { ascending: true })
+                .limit(50);
+            if (!error && data) {
+                this.updateMessagesArea(data);
+            }
+        }, 5000);
     }
 
-    updateMessagesArea(snapshot) {
+    updateMessagesArea(messages) {
         const messagesArea = document.getElementById('messages-area');
-        
-        const messagesHTML = snapshot.docs.map(doc => {
-            const message = { id: doc.id, ...doc.data() };
-            const isOwn = message.senderId === this.currentUser.uid;
-
+        const messagesHTML = messages.map(message => {
+            const isOwn = message.senderId === this.currentUser.id;
             return `
                 <div class="flex ${isOwn ? 'justify-end' : 'justify-start'}">
                     <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
@@ -368,7 +363,6 @@ class LiveChatSystem {
                 </div>
             `;
         }).join('');
-
         messagesArea.innerHTML = messagesHTML;
         messagesArea.scrollTop = messagesArea.scrollHeight;
     }
@@ -376,44 +370,33 @@ class LiveChatSystem {
     async sendMessage() {
         const input = document.getElementById('message-input');
         const text = input.value.trim();
-        
         if (!text) return;
-
         const conversationId = this.getCurrentConversationId();
         if (!conversationId) {
             console.error('No conversation selected');
             return;
         }
-
         try {
-            const now = new Date();
+            const now = new Date().toISOString();
             const partnerId = this.getPartnerId(conversationId);
-
             // Send message
-            await window.db.collection('conversations')
-                .doc(conversationId)
-                .collection('messages')
-                .add({
-                    text: text,
-                    senderId: this.currentUser.uid,
-                    timestamp: now,
-                    type: 'text'
-                });
-
+            await window.supabase.from('messages').insert([{
+                conversationId: conversationId,
+                text: text,
+                senderId: this.currentUser.id,
+                timestamp: now,
+                type: 'text'
+            }]);
             // Update conversation last message
             const updateData = {
                 lastMessage: text,
                 lastMessageTime: now
             };
-
             if (partnerId) {
-                updateData.unreadBy = firebase.firestore.FieldValue.arrayUnion(partnerId);
+                updateData.unreadBy = [...(this.conversations.get(conversationId)?.unreadBy || []), partnerId];
             }
-
-            await window.db.collection('conversations').doc(conversationId).update(updateData);
-
+            await window.supabase.from('conversations').update(updateData).eq('id', conversationId);
             input.value = '';
-
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -425,9 +408,12 @@ class LiveChatSystem {
 
     async markConversationAsRead(conversationId) {
         try {
-            await window.db.collection('conversations').doc(conversationId).update({
-                unreadBy: firebase.firestore.FieldValue.arrayRemove(this.currentUser.uid)
-            });
+            const conv = this.conversations.get(conversationId);
+            if (!conv) return;
+            const newUnreadBy = (conv.unreadBy || []).filter(id => id !== this.currentUser.id);
+            await window.supabase.from('conversations').update({
+                unreadBy: newUnreadBy
+            }).eq('id', conversationId);
         } catch (error) {
             console.error('Error marking conversation as read:', error);
         }
@@ -504,11 +490,11 @@ class LiveChatSystem {
     // Public API methods
     async startConversation(partnerId, initialMessage = null) {
         try {
-            const now = new Date();
+            const now = new Date().toISOString();
             const conversationData = {
-                participants: [this.currentUser.uid, partnerId],
+                participants: [this.currentUser.id, partnerId],
                 participantInfo: {
-                    [this.currentUser.uid]: {
+                    [this.currentUser.id]: {
                         name: this.currentUser.displayName || 'Uživatel',
                         email: this.currentUser.email
                     },
@@ -519,19 +505,19 @@ class LiveChatSystem {
                 lastMessage: initialMessage || '',
                 unreadBy: initialMessage ? [partnerId] : []
             };
-
-            const conversationRef = await window.db.collection('conversations').add(conversationData);
-
+            const { data, error } = await window.supabase.from('conversations').insert([conversationData]).select();
+            if (error || !data || !data[0]) throw error || new Error('Failed to create conversation');
+            const conversationId = data[0].id;
             if (initialMessage) {
-                await conversationRef.collection('messages').add({
+                await window.supabase.from('messages').insert([{
+                    conversationId: conversationId,
                     text: initialMessage,
-                    senderId: this.currentUser.uid,
+                    senderId: this.currentUser.id,
                     timestamp: now,
                     type: 'text'
-                });
+                }]);
             }
-
-            return conversationRef.id;
+            return conversationId;
         } catch (error) {
             console.error('Error starting conversation:', error);
             throw error;
@@ -540,15 +526,16 @@ class LiveChatSystem {
 
     async getUserInfo(userId) {
         try {
-            const userDoc = await window.db.collection('users').doc(userId).get();
-            if (userDoc.exists) {
-                const userData = userDoc.data();
-                return {
-                    name: userData.displayName || 'Uživatel',
-                    email: userData.email
-                };
-            }
-            return { name: 'Neznámý uživatel' };
+            const { data, error } = await window.supabase
+                .from('users')
+                .select('displayName,email')
+                .eq('id', userId)
+                .single();
+            if (error || !data) return { name: 'Neznámý uživatel' };
+            return {
+                name: data.displayName || 'Uživatel',
+                email: data.email
+            };
         } catch (error) {
             console.error('Error getting user info:', error);
             return { name: 'Neznámý uživatel' };
@@ -567,9 +554,9 @@ class LiveChatSystem {
     }
 }
 
-// Auto-initialize if Firebase is available
+// Auto-initialize if Supabase is available
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.firebase && window.db && window.auth) {
+    if (window.supabase && window.kartaoAuth) {
         window.liveChatSystem = new LiveChatSystem();
     }
 });

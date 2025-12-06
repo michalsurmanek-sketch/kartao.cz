@@ -12,7 +12,7 @@ class NotificationSystem {
     async init() {
         console.log('🔔 Inicializace Notification systému...');
         this.createNotificationContainer();
-        this.setupFirebaseListener();
+        this.setupSupabaseListener();
         await this.loadUserSettings();
         this.requestPermission();
         console.log('✅ Notification systém připraven');
@@ -32,12 +32,11 @@ class NotificationSystem {
         }
     }
 
-    setupFirebaseListener() {
-        if (!window.auth || !window.db) return;
-
-        window.auth.onAuthStateChanged((user) => {
+    setupSupabaseListener() {
+        if (!window.kartaoAuth) return;
+        window.kartaoAuth.onAuthStateChanged((user) => {
             if (user) {
-                this.userId = user.uid;
+                this.userId = user.id;
                 this.startListening();
             } else {
                 this.stopListening();
@@ -47,38 +46,41 @@ class NotificationSystem {
 
     startListening() {
         if (!this.userId) return;
-
-        // Listen for real-time notifications
-        this.unsubscribe = window.db.collection('notifications')
-            .where('userId', '==', this.userId)
-            .where('read', '==', false)
-            .orderBy('timestamp', 'desc')
-            .limit(50)
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === 'added') {
-                        this.handleNewNotification(change.doc);
+        // Polling Supabase for new notifications every 10s
+        this.unsubscribe = setInterval(async () => {
+            const { data, error } = await window.supabase
+                .from('notifications')
+                .select('*')
+                .eq('userId', this.userId)
+                .eq('read', false)
+                .order('timestamp', { ascending: false })
+                .limit(50);
+            if (!error && data) {
+                data.forEach((notif) => {
+                    if (!this.notifications.find(n => n.id === notif.id)) {
+                        this.notifications.push(notif);
+                        this.handleNewNotification(notif);
                     }
                 });
-            });
+            }
+        }, 10000);
     }
 
     stopListening() {
         if (this.unsubscribe) {
-            this.unsubscribe();
+            clearInterval(this.unsubscribe);
         }
     }
 
     async loadUserSettings() {
         try {
             if (!this.userId) return;
-            
-            const settings = await window.db.collection('userSettings')
-                .doc(this.userId)
-                .get();
-                
-            if (settings.exists) {
-                const data = settings.data();
+            const { data, error } = await window.supabase
+                .from('user_settings')
+                .select('notificationSound')
+                .eq('userId', this.userId)
+                .single();
+            if (!error && data) {
                 this.soundEnabled = data.notificationSound !== false;
             }
         } catch (error) {
@@ -86,15 +88,11 @@ class NotificationSystem {
         }
     }
 
-    handleNewNotification(doc) {
-        const notification = { id: doc.id, ...doc.data() };
-        
+    handleNewNotification(notification) {
         // Show in-app notification
         this.showInAppNotification(notification);
-        
         // Show browser notification if permission granted
         this.showBrowserNotification(notification);
-        
         // Play sound if enabled
         if (this.soundEnabled) {
             this.playNotificationSound(notification.type);
@@ -251,10 +249,10 @@ class NotificationSystem {
 
     async markAsRead(notificationId) {
         try {
-            await window.db.collection('notifications').doc(notificationId).update({
+            await window.supabase.from('notifications').update({
                 read: true,
-                readAt: new Date()
-            });
+                readAt: new Date().toISOString()
+            }).eq('id', notificationId);
         } catch (error) {
             console.error('Error marking notification as read:', error);
         }
@@ -278,42 +276,36 @@ class NotificationSystem {
     // Public API methods
     async sendNotification(userId, notification) {
         try {
-            await window.db.collection('notifications').add({
+            await window.supabase.from('notifications').insert([{
                 userId: userId,
                 title: notification.title,
                 message: notification.message,
                 type: notification.type || 'system',
-                timestamp: new Date(),
+                timestamp: new Date().toISOString(),
                 read: false,
                 actionUrl: notification.actionUrl,
                 actionText: notification.actionText,
                 duration: notification.duration
-            });
+            }]);
         } catch (error) {
             console.error('Error sending notification:', error);
         }
     }
 
     async sendBulkNotification(userIds, notification) {
-        const batch = window.db.batch();
-        
-        userIds.forEach(userId => {
-            const docRef = window.db.collection('notifications').doc();
-            batch.set(docRef, {
-                userId: userId,
-                title: notification.title,
-                message: notification.message,
-                type: notification.type || 'system',
-                timestamp: new Date(),
-                read: false,
-                actionUrl: notification.actionUrl,
-                actionText: notification.actionText,
-                duration: notification.duration
-            });
-        });
-
+        const inserts = userIds.map(userId => ({
+            userId: userId,
+            title: notification.title,
+            message: notification.message,
+            type: notification.type || 'system',
+            timestamp: new Date().toISOString(),
+            read: false,
+            actionUrl: notification.actionUrl,
+            actionText: notification.actionText,
+            duration: notification.duration
+        }));
         try {
-            await batch.commit();
+            await window.supabase.from('notifications').insert(inserts);
             console.log('Bulk notifications sent successfully');
         } catch (error) {
             console.error('Error sending bulk notifications:', error);
@@ -322,13 +314,14 @@ class NotificationSystem {
 
     async getUnreadCount() {
         if (!this.userId) return 0;
-        
         try {
-            const snapshot = await window.db.collection('notifications')
-                .where('userId', '==', this.userId)
-                .where('read', '==', false)
-                .get();
-            return snapshot.size;
+            const { data, error } = await window.supabase
+                .from('notifications')
+                .select('id')
+                .eq('userId', this.userId)
+                .eq('read', false);
+            if (error || !data) return 0;
+            return data.length;
         } catch (error) {
             console.error('Error getting unread count:', error);
             return 0;
@@ -337,19 +330,11 @@ class NotificationSystem {
 
     async markAllAsRead() {
         if (!this.userId) return;
-
         try {
-            const snapshot = await window.db.collection('notifications')
-                .where('userId', '==', this.userId)
-                .where('read', '==', false)
-                .get();
-
-            const batch = window.db.batch();
-            snapshot.docs.forEach(doc => {
-                batch.update(doc.ref, { read: true, readAt: new Date() });
-            });
-
-            await batch.commit();
+            await window.supabase.from('notifications').update({
+                read: true,
+                readAt: new Date().toISOString()
+            }).eq('userId', this.userId).eq('read', false);
         } catch (error) {
             console.error('Error marking all notifications as read:', error);
         }
@@ -363,11 +348,11 @@ class NotificationSystem {
 
     async saveUserSettings() {
         if (!this.userId) return;
-
         try {
-            await window.db.collection('userSettings').doc(this.userId).set({
+            await window.supabase.from('user_settings').upsert({
+                userId: this.userId,
                 notificationSound: this.soundEnabled
-            }, { merge: true });
+            });
         } catch (error) {
             console.error('Error saving user settings:', error);
         }
@@ -383,9 +368,9 @@ class NotificationSystem {
     }
 }
 
-// Auto-initialize if Firebase is available
+// Auto-initialize if Supabase is available
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.firebase && window.db && window.auth) {
+    if (window.supabase && window.kartaoAuth) {
         window.notificationSystem = new NotificationSystem();
     }
 });

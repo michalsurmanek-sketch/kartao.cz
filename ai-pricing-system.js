@@ -5,8 +5,8 @@
 
 class AIPricingSystem {
     constructor() {
-        this.db = firebase.firestore();
-        this.auth = window.auth;    // Váhy pro různé faktory při výpočtu ceny
+      this.supabase = window.supabase;
+      this.auth = window.kartaoAuth;
     this.pricingFactors = {
       followers: {
         weight: 0.30,
@@ -80,24 +80,22 @@ class AIPricingSystem {
   // Výpočet ceny pro influencera
   async calculateInfluencerPrice(creatorId, contentType = 'instagram_post') {
     try {
-      // Načti data influencera
-      const creatorDoc = await this.db.collection('creators').doc(creatorId).get();
-      if (!creatorDoc.exists) {
+      // Načti data influencera ze Supabase
+      const { data: creatorData, error } = await this.supabase
+        .from('creators')
+        .select('*')
+        .eq('id', creatorId)
+        .single();
+      if (error || !creatorData) {
         throw new Error('Influencer nenalezen');
       }
-
-      const creatorData = creatorDoc.data();
       const metrics = creatorData.metrics || {};
-
       // Analýza základních metrik
       const analysis = this.analyzeCreatorMetrics(creatorData, metrics);
-      
       // Výpočet ceny podle různých faktorů
       const price = this.computePrice(analysis, contentType);
-      
       // Uložení cenového návrhu
       await this.savePriceRecommendation(creatorId, contentType, price, analysis);
-
       return {
         recommendedPrice: price.recommended,
         priceRange: {
@@ -109,7 +107,6 @@ class AIPricingSystem {
         contentType: contentType,
         updatedAt: new Date().toISOString()
       };
-
     } catch (error) {
       console.error('Chyba při výpočtu ceny:', error);
       throw error;
