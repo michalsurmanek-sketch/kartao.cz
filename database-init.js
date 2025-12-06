@@ -2,7 +2,7 @@
 // KARTAO.CZ - Database initialization & structure
 // ===============================================
 
-// Firestore databázová struktura pro Kartao.cz
+// Supabase databázová struktura pro Kartao.cz
 const COLLECTIONS = {
   USERS: 'users',
   CREATORS: 'creators', 
@@ -15,20 +15,20 @@ const COLLECTIONS = {
   MESSAGES: 'messages'
 };
 
-// Ukázkový inicializační script pro seeding databáze
+// Ukázkový inicializační script pro seeding databáze (Supabase)
 async function initializeDatabase() {
-  if (!firebase || !firebase.firestore) {
-    console.error('Firebase není inicializován');
+  const db = window.supabaseClient || window.sb;
+  if (!db) {
+    console.error('Supabase není dostupný');
     return;
   }
 
-  const db = firebase.firestore();
-
   // Ukázková data pro tvůrce
+  const now = new Date().toISOString();
   const mockCreators = [
     {
       id: 'creator-1',
-      userId: 'user-1', // reference na users collection
+      userId: 'user-1',
       name: 'Marie Novotná',
       handle: '@mariemakeup',
       email: 'marie@example.com',
@@ -47,8 +47,8 @@ async function initializeDatabase() {
         'https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=600&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=600&auto=format&fit=crop'
       ],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: now,
+      updatedAt: now
     },
     {
       id: 'creator-2', 

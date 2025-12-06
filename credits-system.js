@@ -1,6 +1,6 @@
 // credits-system.js
 // Centrální mozek kreditního systému Kartao.cz
-// Jediný master stav kreditů je ve Firestore: users/{uid}.credits
+// Jediný master stav kreditů je v Supabase: users(id).credits
 // LocalStorage = jen denní úkoly a limity reklam (per zařízení)
 
 /*
@@ -25,14 +25,9 @@ class CreditsSystem {
     this.userId = userId || null;
     this.onCreditsChange = onCreditsChange || null; // callback pro UI update
 
-    // 🔥 jediná správná cesta – používá globální Firebase instanci z firebase-init.js
-    this.db =
-      window.db ||
-      (window.firebase &&
-        window.firebase.firestore &&
-        window.firebase.firestore());
-
-    if (!this.db) console.warn("CreditsSystem: Firestore není připraveno.");
+    // Supabase klient
+    this.supabase = window.supabase;
+    if (!this.supabase) console.warn("CreditsSystem: Supabase není připraveno.");
     if (!this.userId) console.warn("CreditsSystem vytvořen bez userId.");
 
     this.credits = null; // null = ještě nenačteno
@@ -46,7 +41,7 @@ class CreditsSystem {
       ? `kartao_adsCooldown_${this.userId}`
       : "kartao_adsCooldown_no_user";
 
-    // 🔥 Realtime listener na Firestore – aby byly kredity stejné PC vs mobil
+    // Realtime listener na Supabase – aby byly kredity stejné PC vs mobil
     this._creditsUnsub = null;
     this._startCreditsListener();
   }
@@ -72,110 +67,104 @@ class CreditsSystem {
   }
 
   // ==============================
-  // REALTIME LISTENER FIRESTORE
+  // REALTIME LISTENER SUPABASE
   // ==============================
   _startCreditsListener() {
     try {
-      if (!this.db || !this.userId) return;
-
-      const ref = this.db.collection("users").doc(this.userId);
-
-      this._creditsUnsub = ref.onSnapshot(
-        (snap) => {
-          if (!snap.exists) {
-            // Dokument neexistuje - zobraz 0, ale NEUKLADEJ do databáze
-            this.setCredits(0);
-            return;
-          }
-
-          const data = snap.data() || {};
-          const val =
-            typeof data.credits === "number" && Number.isFinite(data.credits)
-              ? data.credits
-              : 0;
-
-          this.setCredits(val);
-        },
-        (e) => {
-          console.warn("CreditsSystem: chyba realtime listeneru:", e);
+      if (!this.supabase || !this.userId) return;
+      // Supabase nemá onSnapshot, použijeme reaktivní kanál nebo polling
+      // Zde použijeme polling každých 5s
+      this._creditsUnsub = setInterval(async () => {
+        const { data, error } = await this.supabase
+          .from('users')
+          .select('credits')
+          .eq('id', this.userId)
+          .single();
+        if (error || !data) {
+          this.setCredits(0);
+        } else {
+          this.setCredits(Number(data.credits) || 0);
         }
-      );
+      }, 5000);
+      // Okamžitě načti kredity
+      this.supabase
+        .from('users')
+        .select('credits')
+        .eq('id', this.userId)
+        .single()
+        .then(({ data, error }) => {
+          if (error || !data) {
+            this.setCredits(0);
+          } else {
+            this.setCredits(Number(data.credits) || 0);
+          }
+        });
     } catch (e) {
       console.warn("CreditsSystem: start listeneru error:", e);
     }
   }
 
   destroy() {
-    if (typeof this._creditsUnsub === "function") {
-      try {
-        this._creditsUnsub();
-      } catch (e) {}
+    if (this._creditsUnsub) {
+      clearInterval(this._creditsUnsub);
     }
     this._creditsUnsub = null;
   }
 
   // ==============================
-  // PŘIČTENÍ KREDITŮ
+  // PŘIČTENÍ KREDITŮ (SUPABASE)
   // ==============================
   async addCredits(amount) {
     const num = Number(amount) || 0;
     if (!num) return this.credits;
-
     try {
-      if (this.db && this.userId) {
-        const ref = this.db.collection("users").doc(this.userId);
-        
-        // Nejdřív zkontroluj, jestli dokument existuje
-        const snap = await ref.get();
-        if (!snap.exists || typeof snap.data()?.credits !== 'number') {
-          // Dokument neexistuje nebo nemá pole credits - vytvoř ho s aktuální hodnotou
-          const currentVal = this.credits || 0;
-          await ref.set({ credits: currentVal + num }, { merge: true });
-        } else {
-          // Dokument existuje - použij increment
-          const inc = window.firebase.firestore.FieldValue.increment(num);
-          await ref.set({ credits: inc }, { merge: true });
-        }
-        // Realtime listener automaticky aktualizuje this.credits a zavolá callback
+      if (this.supabase && this.userId) {
+        // Načti aktuální kredity
+        const { data, error } = await this.supabase
+          .from('users')
+          .select('credits')
+          .eq('id', this.userId)
+          .single();
+        const currentVal = (data && typeof data.credits === 'number') ? data.credits : 0;
+        const newVal = currentVal + num;
+        await this.supabase
+          .from('users')
+          .update({ credits: newVal })
+          .eq('id', this.userId);
+        this.setCredits(newVal);
       }
     } catch (e) {
       console.warn("CreditsSystem: addCredits error:", e);
     }
-
     return this.credits;
   }
 
   // ==============================
-  // ODEČTENÍ KREDITŮ
+  // ODEČTENÍ KREDITŮ (SUPABASE)
   // ==============================
   async subtractCredits(amount) {
     const num = Number(amount) || 0;
     if (!num) return this.credits;
-
     const delta = -Math.abs(num);
-
     try {
-      if (this.db && this.userId) {
-        const ref = this.db.collection("users").doc(this.userId);
-        
-        // Nejdřív zkontroluj, jestli dokument existuje
-        const snap = await ref.get();
-        if (!snap.exists || typeof snap.data()?.credits !== 'number') {
-          // Dokument neexistuje nebo nemá pole credits - vytvoř ho s aktuální hodnotou
-          const currentVal = this.credits || 0;
-          const newVal = Math.max(0, currentVal + delta);
-          await ref.set({ credits: newVal }, { merge: true });
-        } else {
-          // Dokument existuje - použij increment
-          const inc = window.firebase.firestore.FieldValue.increment(delta);
-          await ref.set({ credits: inc }, { merge: true });
-        }
-        // Realtime listener automaticky aktualizuje this.credits a zavolá callback
+      if (this.supabase && this.userId) {
+        // Načti aktuální kredity
+        const { data, error } = await this.supabase
+          .from('users')
+          .select('credits')
+          .eq('id', this.userId)
+          .single();
+        const currentVal = (data && typeof data.credits === 'number') ? data.credits : 0;
+        const newVal = Math.max(0, currentVal + delta);
+        await this.supabase
+          .from('users')
+          .update({ credits: newVal })
+          .eq('id', this.userId);
+        this.setCredits(newVal);
       }
     } catch (e) {
       console.warn("CreditsSystem: subtractCredits error:", e);
     }
-
     return this.credits;
   }
 

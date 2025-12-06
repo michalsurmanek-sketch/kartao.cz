@@ -5,8 +5,8 @@
 
 class BadgeSystem {
   constructor() {
-    this.db = firebase.firestore();
-    this.auth = window.auth;
+    this.supabase = window.supabase;
+    this.auth = window.kartaoAuth;
     
     // Konfigurace badge kategorií
     this.badgeCategories = {
@@ -447,83 +447,68 @@ class BadgeSystem {
   }
 
   async checkCampaignRequirements(userId, requirements) {
-    const snapshot = await this.db.collection('campaigns')
-      .where('creatorId', '==', userId)
-      .where('status', '==', 'completed')
-      .get();
-
-    let validCampaigns = snapshot.docs;
-
+    const { data, error } = await this.supabase
+      .from('campaigns')
+      .select('*')
+      .eq('creatorId', userId)
+      .eq('status', 'completed');
+    if (error || !data) return false;
+    let validCampaigns = data;
     if (requirements.min_rating) {
-      validCampaigns = validCampaigns.filter(doc => {
-        const data = doc.data();
-        return data.rating >= requirements.min_rating;
-      });
+      validCampaigns = validCampaigns.filter(c => c.rating >= requirements.min_rating);
     }
-
     return validCampaigns.length >= requirements.count;
   }
 
   async checkEngagementRequirements(userId, requirements) {
-    // Načteme průměrný engagement z posledních kampaní
-    const snapshot = await this.db.collection('campaigns')
-      .where('creatorId', '==', userId)
-      .where('status', '==', 'completed')
-      .orderBy('completedAt', 'desc')
-      .limit(10)
-      .get();
-
-    if (snapshot.docs.length === 0) return false;
-
-    const engagements = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return data.metrics?.engagement_rate || 0;
-    });
-
+    const { data, error } = await this.supabase
+      .from('campaigns')
+      .select('metrics')
+      .eq('creatorId', userId)
+      .eq('status', 'completed')
+      .order('completedAt', { ascending: false })
+      .limit(10);
+    if (error || !data || data.length === 0) return false;
+    const engagements = data.map(c => c.metrics?.engagement_rate || 0);
     const avgEngagement = engagements.reduce((sum, rate) => sum + rate, 0) / engagements.length;
     return avgEngagement >= requirements.min_value;
   }
 
   async checkViewsRequirements(userId, requirements) {
-    // Načteme celkové views z kampaní
-    const snapshot = await this.db.collection('campaigns')
-      .where('creatorId', '==', userId)
-      .where('status', '==', 'completed')
-      .get();
-
-    const totalViews = snapshot.docs.reduce((sum, doc) => {
-      const data = doc.data();
-      return sum + (data.metrics?.views || 0);
-    }, 0);
-
+    const { data, error } = await this.supabase
+      .from('campaigns')
+      .select('metrics')
+      .eq('creatorId', userId)
+      .eq('status', 'completed');
+    if (error || !data) return false;
+    const totalViews = data.reduce((sum, c) => sum + (c.metrics?.views || 0), 0);
     return totalViews >= requirements.min_value;
   }
 
   async checkFollowersRequirements(userId, requirements) {
-    const userDoc = await this.db.collection('creators').doc(userId).get();
-    if (!userDoc.exists) return false;
-
-    const userData = userDoc.data();
-    const metrics = userData.metrics || {};
-
-    // Spočítáme celkový počet followerů ze všech platforem
+    const { data, error } = await this.supabase
+      .from('creators')
+      .select('metrics')
+      .eq('id', userId)
+      .single();
+    if (error || !data) return false;
+    const metrics = data.metrics || {};
     let totalFollowers = 0;
     Object.values(metrics).forEach(platformData => {
       if (platformData.connected && platformData.followers) {
         totalFollowers += platformData.followers;
       }
     });
-
     return totalFollowers >= requirements.min_value;
   }
 
   async checkPlatformFollowersRequirements(userId, requirements) {
-    // Zkontrolujeme následovníky na naší platformě
-    const followersSnapshot = await this.db.collection('follows')
-      .where('followedId', '==', userId)
-      .get();
-
-    return followersSnapshot.docs.length >= requirements.min_value;
+    const { data, error } = await this.supabase
+      .from('follows')
+      .select('*')
+      .eq('followedId', userId);
+    if (error || !data) return false;
+    return data.length >= requirements.min_value;
   }
 
   async checkLeaderboardRequirements(userId, requirements) {
@@ -534,13 +519,14 @@ class BadgeSystem {
   }
 
   async checkAccountAgeRequirements(userId, requirements) {
-    const userDoc = await this.db.collection('creators').doc(userId).get();
-    if (!userDoc.exists) return false;
-
-    const userData = userDoc.data();
-    const createdAt = new Date(userData.createdAt);
+    const { data, error } = await this.supabase
+      .from('creators')
+      .select('createdAt')
+      .eq('id', userId)
+      .single();
+    if (error || !data) return false;
+    const createdAt = new Date(data.createdAt);
     const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
-
     return daysSinceCreation >= requirements.min_days;
   }
 
@@ -553,13 +539,14 @@ class BadgeSystem {
   }
 
   async checkCategoryExpertiseRequirements(userId, requirements) {
-    const snapshot = await this.db.collection('campaigns')
-      .where('creatorId', '==', userId)
-      .where('category', '==', requirements.category)
-      .where('status', '==', 'completed')
-      .get();
-
-    return snapshot.docs.length >= requirements.min_campaigns;
+    const { data, error } = await this.supabase
+      .from('campaigns')
+      .select('*')
+      .eq('creatorId', userId)
+      .eq('category', requirements.category)
+      .eq('status', 'completed');
+    if (error || !data) return false;
+    return data.length >= requirements.min_campaigns;
   }
 
   async checkEarlyUserRequirements(userId, requirements) {
@@ -596,7 +583,6 @@ class BadgeSystem {
     try {
       const badge = this.badgeDefinitions[badgeId];
       if (!badge) throw new Error(`Badge ${badgeId} neexistuje`);
-
       const awardData = {
         userId: userId,
         badgeId: badgeId,
@@ -604,18 +590,13 @@ class BadgeSystem {
         awardedAt: new Date().toISOString(),
         points: badge.points
       };
-
-      // Uložíme badge do kolekce user badges
-      await this.db.collection('userBadges').add(awardData);
-
+      // Uložíme badge do tabulky user_badges
+      await this.supabase.from('user_badges').insert([awardData]);
       // Aktualizujeme celkový počet bodů uživatele
       await this.addPointsToUser(userId, badge.points);
-
       console.log(`✅ Badge ${badgeId} udělen uživateli ${userId}`);
-
       // Pošleme notifikaci
       await this.sendBadgeNotification(userId, badge);
-
     } catch (error) {
       console.error(`❌ Chyba při udělování badge ${badgeId}:`, error);
     }
@@ -637,34 +618,32 @@ class BadgeSystem {
         createdAt: new Date().toISOString(),
         read: false
       };
-
-      await this.db.collection('notifications').add(notification);
+      await this.supabase.from('notifications').insert([notification]);
     } catch (error) {
       console.error('❌ Chyba při odesílání notifikace:', error);
     }
   }
 
   async userHasBadge(userId, badgeId) {
-    const snapshot = await this.db.collection('userBadges')
-      .where('userId', '==', userId)
-      .where('badgeId', '==', badgeId)
-      .limit(1)
-      .get();
-
-    return !snapshot.empty;
+    const { data, error } = await this.supabase
+      .from('user_badges')
+      .select('*')
+      .eq('userId', userId)
+      .eq('badgeId', badgeId)
+      .limit(1);
+    if (error || !data) return false;
+    return data.length > 0;
   }
 
   async getUserBadges(userId) {
     try {
-      const snapshot = await this.db.collection('userBadges')
-        .where('userId', '==', userId)
-        .orderBy('awardedAt', 'desc')
-        .get();
-
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const { data, error } = await this.supabase
+        .from('user_badges')
+        .select('*')
+        .eq('userId', userId)
+        .order('awardedAt', { ascending: false });
+      if (error || !data) return [];
+      return data;
     } catch (error) {
       console.error('❌ Chyba při načítání badges:', error);
       return [];
@@ -673,8 +652,13 @@ class BadgeSystem {
 
   async getUserData(userId) {
     try {
-      const doc = await this.db.collection('creators').doc(userId).get();
-      return doc.exists ? doc.data() : null;
+      const { data, error } = await this.supabase
+        .from('creators')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (error || !data) return null;
+      return data;
     } catch (error) {
       console.error('❌ Chyba při načítání user data:', error);
       return null;
@@ -688,21 +672,20 @@ class BadgeSystem {
       const totalPoints = await this.getUserTotalPoints(userId);
       const currentLevel = this.getLevelByPoints(totalPoints);
       const previousLevel = await this.getUserCurrentLevel(userId);
-
       // Aktualizujeme level v user profilu
-      await this.db.collection('creators').doc(userId).update({
-        level: currentLevel.level,
-        totalPoints: totalPoints,
-        lastLevelUpdate: new Date().toISOString()
-      });
-
+      await this.supabase
+        .from('creators')
+        .update({
+          level: currentLevel.level,
+          totalPoints: totalPoints,
+          lastLevelUpdate: new Date().toISOString()
+        })
+        .eq('id', userId);
       // Pokud došlo k level up, pošleme notifikaci
       if (previousLevel && currentLevel.level > previousLevel.level) {
         await this.sendLevelUpNotification(userId, currentLevel, previousLevel);
       }
-
       return currentLevel;
-
     } catch (error) {
       console.error('❌ Chyba při aktualizaci levelu:', error);
       return null;
@@ -710,14 +693,12 @@ class BadgeSystem {
   }
 
   async getUserTotalPoints(userId) {
-    const snapshot = await this.db.collection('userBadges')
-      .where('userId', '==', userId)
-      .get();
-
-    return snapshot.docs.reduce((total, doc) => {
-      const data = doc.data();
-      return total + (data.points || 0);
-    }, 0);
+    const { data, error } = await this.supabase
+      .from('user_badges')
+      .select('points')
+      .eq('userId', userId);
+    if (error || !data) return 0;
+    return data.reduce((total, b) => total + (b.points || 0), 0);
   }
 
   getLevelByPoints(points) {
@@ -731,12 +712,13 @@ class BadgeSystem {
   }
 
   async getUserCurrentLevel(userId) {
-    const userDoc = await this.db.collection('creators').doc(userId).get();
-    if (!userDoc.exists) return null;
-
-    const userData = userDoc.data();
-    const levelNumber = userData.level || 1;
-    
+    const { data, error } = await this.supabase
+      .from('creators')
+      .select('level')
+      .eq('id', userId)
+      .single();
+    if (error || !data) return null;
+    const levelNumber = data.level || 1;
     return this.levelSystem.levels.find(level => level.level === levelNumber);
   }
 
@@ -756,8 +738,7 @@ class BadgeSystem {
         createdAt: new Date().toISOString(),
         read: false
       };
-
-      await this.db.collection('notifications').add(notification);
+      await this.supabase.from('notifications').insert([notification]);
     } catch (error) {
       console.error('❌ Chyba při odesílání level up notifikace:', error);
     }
@@ -765,18 +746,17 @@ class BadgeSystem {
 
   async addPointsToUser(userId, points) {
     try {
-      const userRef = this.db.collection('creators').doc(userId);
-      
-      await this.db.runTransaction(async (transaction) => {
-        const userDoc = await transaction.get(userRef);
-        
-        if (userDoc.exists) {
-          const currentPoints = userDoc.data().totalPoints || 0;
-          transaction.update(userRef, {
-            totalPoints: currentPoints + points
-          });
-        }
-      });
+      // Načti aktuální body
+      const { data, error } = await this.supabase
+        .from('creators')
+        .select('totalPoints')
+        .eq('id', userId)
+        .single();
+      const currentPoints = (data && typeof data.totalPoints === 'number') ? data.totalPoints : 0;
+      await this.supabase
+        .from('creators')
+        .update({ totalPoints: currentPoints + points })
+        .eq('id', userId);
     } catch (error) {
       console.error('❌ Chyba při přidávání bodů:', error);
     }
@@ -786,15 +766,14 @@ class BadgeSystem {
 
   async getBadgeStatistics() {
     try {
-      const allBadges = await this.db.collection('userBadges').get();
+      const { data: allBadges, error } = await this.supabase
+        .from('user_badges')
+        .select('*');
+      if (error || !allBadges) return null;
       const badgeStats = {};
-
-      // Počet udělených badges podle typu
-      allBadges.docs.forEach(doc => {
-        const data = doc.data();
+      allBadges.forEach(data => {
         const badgeId = data.badgeId;
         const badge = this.badgeDefinitions[badgeId];
-        
         if (badge) {
           if (!badgeStats[badgeId]) {
             badgeStats[badgeId] = {
@@ -807,7 +786,6 @@ class BadgeSystem {
           badgeStats[badgeId].totalPoints += badge.points;
         }
       });
-
       // Statistiky podle kategorií
       const categoryStats = {};
       Object.values(badgeStats).forEach(stat => {
@@ -824,7 +802,6 @@ class BadgeSystem {
         categoryStats[category].totalAwarded += stat.count;
         categoryStats[category].totalPoints += stat.totalPoints;
       });
-
       // Statistiky podle rarity
       const rarityStats = {};
       Object.values(badgeStats).forEach(stat => {
@@ -839,15 +816,13 @@ class BadgeSystem {
         rarityStats[rarity].count += stat.count;
         rarityStats[rarity].totalPoints += stat.totalPoints;
       });
-
       return {
         totalBadges: Object.keys(this.badgeDefinitions).length,
-        totalAwarded: allBadges.docs.length,
+        totalAwarded: allBadges.length,
         badgeStats: badgeStats,
         categoryStats: categoryStats,
         rarityStats: rarityStats
       };
-
     } catch (error) {
       console.error('❌ Chyba při načítání statistik:', error);
       return null;
@@ -856,28 +831,25 @@ class BadgeSystem {
 
   async getTopBadgeHolders(limit = 10) {
     try {
-      const usersSnapshot = await this.db.collection('creators')
-        .orderBy('totalPoints', 'desc')
-        .limit(limit)
-        .get();
-
+      const { data: users, error } = await this.supabase
+        .from('creators')
+        .select('*')
+        .order('totalPoints', { ascending: false })
+        .limit(limit);
+      if (error || !users) return [];
       const topUsers = [];
-      
-      for (const doc of usersSnapshot.docs) {
-        const userData = doc.data();
-        const badges = await this.getUserBadges(doc.id);
-        
+      for (const user of users) {
+        const badges = await this.getUserBadges(user.id);
         topUsers.push({
-          id: doc.id,
-          displayName: userData.displayName,
-          avatar: userData.avatar,
-          totalPoints: userData.totalPoints || 0,
-          level: userData.level || 1,
+          id: user.id,
+          displayName: user.displayName,
+          avatar: user.avatar,
+          totalPoints: user.totalPoints || 0,
+          level: user.level || 1,
           badgeCount: badges.length,
           rareBadges: badges.filter(b => b.badge.rarity === 'epic' || b.badge.rarity === 'legendary').length
         });
       }
-
       return topUsers;
     } catch (error) {
       console.error('❌ Chyba při načítání top badge holders:', error);
