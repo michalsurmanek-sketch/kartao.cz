@@ -4,7 +4,7 @@
 
 class PaymentService {
   constructor() {
-    this.db = firebase.firestore();
+    this.db = window.supabase;
     // Initialize email service if available
     this.emailService = typeof EmailNotificationService !== 'undefined' ? 
       new EmailNotificationService() : null;

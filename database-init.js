@@ -70,8 +70,8 @@ async function initializeDatabase() {
         'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?q=80&w=600&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1434754205268-ad3b5f549b11?q=80&w=600&auto=format&fit=crop'
       ],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
       id: 'creator-3',
@@ -315,17 +315,7 @@ if (typeof module !== 'undefined' && module.exports) {
   window.initializeDatabase = initializeDatabase;
 }
 // ============================================
-// 🔌 Globální zapnutí Firestore ONLINE režimu
+// Firestore odstraněn – pouze Supabase
 // ============================================
 
-if (window.firebase && firebase.firestore) {
-  firebase.firestore().enableNetwork()
-    .then(() => {
-      console.log("🌐 Firestore ONLINE – aktivní pro celý web Kartao.cz");
-    })
-    .catch((err) => {
-      console.warn("⚠️ Nepodařilo se přepnout Firestore do online režimu:", err);
-    });
-} else {
-  console.warn("⚠️ Firestore nebyl dostupný – zkontroluj firebase-init.js");
-}
+// Firestore enableNetwork odstraněn – pouze Supabase

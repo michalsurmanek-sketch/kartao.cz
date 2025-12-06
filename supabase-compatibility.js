@@ -14,7 +14,7 @@ if (!window.auth && window.kartaoAuth) {
 
 // Zajisti že window.db existuje
 if (!window.db && window.supabaseClient) {
-  window.db = window.firebase.firestore();
+  // window.db = window.supabase; // Pokud je potřeba globální proměnná, použij Supabase
   console.log('✅ window.db alias vytvořen');
 }
 

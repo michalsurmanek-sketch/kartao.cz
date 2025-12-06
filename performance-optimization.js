@@ -115,8 +115,8 @@ function loadDeferredStyles() {
 function addResourceHints() {
   const domains = [
     'https://www.gstatic.com',
-    'https://firebaseapp.com',
-    'https://firebaseio.com'
+    // 'https://firebaseapp.com',
+    // 'https://firebaseio.com'
   ];
   
   domains.forEach(domain => {

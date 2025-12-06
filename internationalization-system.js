@@ -56,7 +56,7 @@ class InternationalizationSystem {
             return;
         }
 
-        // Check user preference from Firebase
+        // Check user preference from Supabase
         this.loadUserLanguagePreference();
     }
 

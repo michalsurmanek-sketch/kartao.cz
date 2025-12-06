@@ -5,7 +5,7 @@
 
 class LeaderboardsSystem {
   constructor() {
-    this.db = firebase.firestore();
+    this.db = window.supabase;
     this.auth = window.auth;
     
     // Konfigurace žebříčků

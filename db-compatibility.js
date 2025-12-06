@@ -1,6 +1,6 @@
 // ==========================================
 // DATABASE COMPATIBILITY LAYER
-// Univerzální wrapper pro Firebase i Supabase
+// Univerzální wrapper pouze pro Supabase
 // ==========================================
 
 

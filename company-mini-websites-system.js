@@ -3,9 +3,9 @@
 
 class CompanyMiniWebsiteSystem {
     constructor() {
-        this.db = firebase.firestore();
+        this.db = window.supabase;
         this.auth = window.auth;
-        this.storage = firebase.storage();
+        this.storage = window.supabase.storage;
         this.currentUser = null;
         this.websiteCache = new Map();
         this.templateLibrary = new Map();
@@ -76,8 +76,8 @@ class CompanyMiniWebsiteSystem {
                 ...websiteData,
                 status: 'draft',
                 isPublished: false,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
                 stats: {
                     views: 0,
                     uniqueVisitors: 0,
@@ -148,7 +148,7 @@ class CompanyMiniWebsiteSystem {
             await websiteRef.update({
                 ...validatedData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                version: firebase.firestore.FieldValue.increment(1)
+                version: (version || 0) + 1
             });
 
             // Invalidovat cache
@@ -200,8 +200,8 @@ class CompanyMiniWebsiteSystem {
             await websiteRef.update({
                 status: 'published',
                 isPublished: true,
-                publishedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                publishedAt: new Date(),
+                updatedAt: new Date()
             });
 
             // Notifikace
@@ -240,8 +240,8 @@ class CompanyMiniWebsiteSystem {
                     description: pageData.seoDescription || '',
                     keywords: pageData.keywords || []
                 },
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: new Date(),
+                updatedAt: new Date()
             };
 
             await this.db.collection('website_pages').doc(page.id).set(page);
@@ -263,7 +263,7 @@ class CompanyMiniWebsiteSystem {
 
             await pageRef.update({
                 ...validatedData,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: new Date()
             });
 
             console.log('✏️ Stránka upravena:', pageId);
@@ -349,7 +349,7 @@ class CompanyMiniWebsiteSystem {
                 type: file.type,
                 size: file.size,
                 uploadedBy: this.currentUser.uid,
-                uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                uploadedAt: new Date(),
                 metadata: metadata
             };
 
@@ -537,7 +537,7 @@ class CompanyMiniWebsiteSystem {
                 ],
                 customEvents: [],
                 goals: [],
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: new Date()
             };
 
             await this.db.collection('website_analytics_config').doc(websiteId).set(analyticsConfig);
@@ -554,7 +554,7 @@ class CompanyMiniWebsiteSystem {
             const visit = {
                 id: this.generateId(),
                 websiteId: websiteId,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                timestamp: new Date(),
                 page: visitData.page || '/',
                 referrer: visitData.referrer,
                 userAgent: visitData.userAgent,
@@ -660,7 +660,7 @@ class CompanyMiniWebsiteSystem {
             const sitemap = {
                 websiteId: websiteId,
                 entries: sitemapEntries,
-                generatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                generatedAt: new Date()
             };
 
             await this.db.collection('website_sitemaps').doc(websiteId).set(sitemap);

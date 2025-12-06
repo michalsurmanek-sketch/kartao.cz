@@ -3,7 +3,7 @@
 
 class AIPriceNegotiationSystem {
     constructor() {
-        this.db = firebase.firestore();
+        this.db = window.supabase;
         this.auth = window.auth;
         this.currentUser = null;
         this.negotiationCache = new Map();
@@ -116,8 +116,8 @@ class AIPriceNegotiationSystem {
                 negotiationHistory: [],
                 marketAnalysis: marketAnalysis,
                 fairnessScore: fairnessAnalysis.score,
-                startedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastActivity: firebase.firestore.FieldValue.serverTimestamp(),
+                startedAt: new Date(),
+                lastActivity: new Date(),
                 aiInsights: {
                     recommendedStrategy: await this.recommendNegotiationStrategy(campaign, initialOffer),
                     predictedOutcome: await this.predictNegotiationOutcome(campaign, initialOffer, marketAnalysis),
@@ -171,9 +171,9 @@ class AIPriceNegotiationSystem {
 
             // Aktualizovat negotiation
             const updateData = {
-                currentRound: firebase.firestore.FieldValue.increment(1),
+                currentRound: (currentRound || 0) + 1,
                 lastActivity: firebase.firestore.FieldValue.serverTimestamp(),
-                negotiationHistory: firebase.firestore.FieldValue.arrayUnion({
+                negotiationHistory: [...(negotiationHistory || []), {...}],
                     round: negotiation.currentRound + 1,
                     respondent: this.currentUser.uid,
                     responseType: response.type, // 'counter_offer', 'accept', 'reject'
@@ -188,27 +188,27 @@ class AIPriceNegotiationSystem {
             if (response.type === 'accept') {
                 updateData.status = 'accepted';
                 updateData.finalPrice = negotiation.currentOffer;
-                updateData.acceptedAt = firebase.firestore.FieldValue.serverTimestamp();
+                updateData.acceptedAt = new Date();
                 
                 // Vytvořit contract
                 await this.createNegotiationContract(negotiation);
                 
             } else if (response.type === 'reject') {
                 updateData.status = 'rejected';
-                updateData.rejectedAt = firebase.firestore.FieldValue.serverTimestamp();
+                updateData.rejectedAt = new Date();
                 
             } else if (response.type === 'counter_offer') {
                 updateData.currentOffer = response.offer;
                 
                 // AI doporučení pro counter-offer
                 const aiRecommendation = await this.generateAIRecommendation(negotiation, 'counter_offer', response);
-                updateData.aiRecommendations = firebase.firestore.FieldValue.arrayUnion(aiRecommendation);
+                updateData.aiRecommendations = [...(updateData.aiRecommendations || []), aiRecommendation];
             }
 
             // Kontrola limitu kol
             if (negotiation.currentRound >= negotiation.maxRounds && response.type === 'counter_offer') {
                 updateData.status = 'expired';
-                updateData.expiredAt = firebase.firestore.FieldValue.serverTimestamp();
+                updateData.expiredAt = new Date();
             }
 
             await negotiationRef.update(updateData);
@@ -745,7 +745,7 @@ class AIPriceNegotiationSystem {
             for (const notification of notifications) {
                 await this.db.collection('notifications').add({
                     ...notification,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdAt: new Date(),
                     isRead: false
                 });
             }
@@ -769,7 +769,7 @@ class AIPriceNegotiationSystem {
                     negotiationId: negotiation.id,
                     responseType: response.type
                 },
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date(),
                 isRead: false
             });
 
@@ -796,7 +796,7 @@ class AIPriceNegotiationSystem {
                     deadlines: []    // Load from campaign
                 },
                 status: 'active',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date(),
                 aiNegotiationData: {
                     rounds: negotiation.currentRound,
                     initialOffer: negotiation.initialOffer,

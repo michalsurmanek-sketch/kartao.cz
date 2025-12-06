@@ -3,7 +3,7 @@
 
 class CommentsSystem {
     constructor() {
-        this.db = firebase.firestore();
+        this.db = window.supabase;
         this.auth = window.auth;
         this.currentUser = null;
         this.commentCache = new Map();
@@ -53,7 +53,7 @@ class CommentsSystem {
                 authorId: this.currentUser.uid,
                 authorName: this.currentUser.displayName || 'Neznámý uživatel',
                 authorAvatar: this.currentUser.photoURL || null,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                timestamp: new Date(),
                 likes: 0,
                 dislikes: 0,
                 likedBy: [],
@@ -124,7 +124,7 @@ class CommentsSystem {
             await commentRef.update({
                 content: newContent.trim(),
                 isEdited: true,
-                editedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                editedAt: new Date(),
                 status: this.moderationEnabled ? 'pending' : 'approved'
             });
 
@@ -164,7 +164,7 @@ class CommentsSystem {
             await commentRef.update({
                 content: '[Komentář byl smazán]',
                 isDeleted: true,
-                deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                deletedAt: new Date(),
                 deletedBy: this.currentUser.uid
             });
 
@@ -216,17 +216,17 @@ class CommentsSystem {
 
                 if (hasLiked) {
                     // Odebrat like
-                    updateData.likedBy = firebase.firestore.FieldValue.arrayRemove(userId);
-                    updateData.likes = firebase.firestore.FieldValue.increment(-1);
+                    updateData.likedBy = (updateData.likedBy || []).filter(id => id !== userId);
+                    updateData.likes = (updateData.likes || 0) - 1;
                 } else {
                     // Přidat like
-                    updateData.likedBy = firebase.firestore.FieldValue.arrayUnion(userId);
-                    updateData.likes = firebase.firestore.FieldValue.increment(1);
+                    updateData.likedBy = [...(updateData.likedBy || []), userId];
+                    updateData.likes = (updateData.likes || 0) + 1;
 
                     // Pokud má dislike, odebrat ho
                     if (hasDisliked) {
-                        updateData.dislikedBy = firebase.firestore.FieldValue.arrayRemove(userId);
-                        updateData.dislikes = firebase.firestore.FieldValue.increment(-1);
+                        updateData.dislikedBy = (updateData.dislikedBy || []).filter(id => id !== userId);
+                        updateData.dislikes = (updateData.dislikes || 0) - 1;
                     }
                 }
             } else if (reactionType === 'dislike') {
@@ -235,17 +235,17 @@ class CommentsSystem {
 
                 if (hasDisliked) {
                     // Odebrat dislike
-                    updateData.dislikedBy = firebase.firestore.FieldValue.arrayRemove(userId);
-                    updateData.dislikes = firebase.firestore.FieldValue.increment(-1);
+                    updateData.dislikedBy = (updateData.dislikedBy || []).filter(id => id !== userId);
+                    updateData.dislikes = (updateData.dislikes || 0) - 1;
                 } else {
                     // Přidat dislike
-                    updateData.dislikedBy = firebase.firestore.FieldValue.arrayUnion(userId);
-                    updateData.dislikes = firebase.firestore.FieldValue.increment(1);
+                    updateData.dislikedBy = [...(updateData.dislikedBy || []), userId];
+                    updateData.dislikes = (updateData.dislikes || 0) + 1;
 
                     // Pokud má like, odebrat ho
                     if (hasLiked) {
-                        updateData.likedBy = firebase.firestore.FieldValue.arrayRemove(userId);
-                        updateData.likes = firebase.firestore.FieldValue.increment(-1);
+                        updateData.likedBy = (updateData.likedBy || []).filter(id => id !== userId);
+                        updateData.likes = (updateData.likes || 0) - 1;
                     }
                 }
             }
@@ -393,12 +393,12 @@ class CommentsSystem {
             const flagData = {
                 userId: this.currentUser.uid,
                 reason: reason,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: new Date()
             };
 
             await commentRef.update({
                 isFlagged: true,
-                flagReasons: firebase.firestore.FieldValue.arrayUnion(flagData)
+                flagReasons: [...(flagReasons || []), flagData]
             });
 
             // Pokud má komentář více než 3 nahlášení, automaticky skrýt

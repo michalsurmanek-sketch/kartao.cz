@@ -189,7 +189,7 @@ class EmailNotificationService {
       // Example with SendGrid:
       /*
       if (this.emailProvider === 'sendgrid') {
-        const sgMail = require('@sendgrid/mail');
+        const sgMail = require('@sendgrid/mail'); // SendGrid pouze, žádné Firebase
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         
         const msg = {

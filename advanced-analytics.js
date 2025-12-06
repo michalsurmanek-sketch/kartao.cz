@@ -1,5 +1,5 @@
 // ===============================
-// Advanced Analytics – bezpečná verze pro Firestore
+// Advanced Analytics – bezpečná verze pro Supabase
 // ===============================
 
 // Pomocná funkce – vyčistí data od undefined / funkcí / NaN atd.

@@ -17,7 +17,7 @@ if (typeof supabaseConfig === "undefined") {
   
   console.log("🚀 Supabase client inicializován:", supabaseConfig.url);
   
-  // Globální zkratky (pro kompatibilitu s Firebase kódem)
+  // Globální zkratky pouze pro Supabase
   window.sb = window.supabaseClient;
   
   console.log("✅ Supabase připraveno");

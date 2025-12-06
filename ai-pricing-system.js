@@ -472,7 +472,7 @@ class AIPricingSystem {
         .get();
 
       let processedCount = 0;
-      const batchSize = 50; // Firebase batch limit
+      const batchSize = 50; // Supabase batch limit (případně upravit dle potřeby)
 
       for (let i = 0; i < creatorsSnapshot.docs.length; i += batchSize) {
         const batch = creatorsSnapshot.docs.slice(i, i + batchSize);
