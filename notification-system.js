@@ -48,7 +48,7 @@ class NotificationSystem {
         if (!this.userId) return;
         // Polling Supabase for new notifications every 10s
         this.unsubscribe = setInterval(async () => {
-            const { data, error } = await window.supabase
+            const { data, error } = await (window.supabaseClient || window.sb)
                 .from('notifications')
                 .select('*')
                 .eq('userId', this.userId)
@@ -75,7 +75,7 @@ class NotificationSystem {
     async loadUserSettings() {
         try {
             if (!this.userId) return;
-            const { data, error } = await window.supabase
+            const { data, error } = await (window.supabaseClient || window.sb)
                 .from('user_settings')
                 .select('notificationSound')
                 .eq('userId', this.userId)
@@ -249,7 +249,7 @@ class NotificationSystem {
 
     async markAsRead(notificationId) {
         try {
-            await window.supabase.from('notifications').update({
+            await (window.supabaseClient || window.sb).from('notifications').update({
                 read: true,
                 readAt: new Date().toISOString()
             }).eq('id', notificationId);
@@ -276,7 +276,7 @@ class NotificationSystem {
     // Public API methods
     async sendNotification(userId, notification) {
         try {
-            await window.supabase.from('notifications').insert([{
+            await (window.supabaseClient || window.sb).from('notifications').insert([{
                 userId: userId,
                 title: notification.title,
                 message: notification.message,
@@ -305,7 +305,7 @@ class NotificationSystem {
             duration: notification.duration
         }));
         try {
-            await window.supabase.from('notifications').insert(inserts);
+            await (window.supabaseClient || window.sb).from('notifications').insert(inserts);
             console.log('Bulk notifications sent successfully');
         } catch (error) {
             console.error('Error sending bulk notifications:', error);
@@ -315,7 +315,7 @@ class NotificationSystem {
     async getUnreadCount() {
         if (!this.userId) return 0;
         try {
-            const { data, error } = await window.supabase
+            const { data, error } = await (window.supabaseClient || window.sb)
                 .from('notifications')
                 .select('id')
                 .eq('userId', this.userId)
@@ -331,7 +331,7 @@ class NotificationSystem {
     async markAllAsRead() {
         if (!this.userId) return;
         try {
-            await window.supabase.from('notifications').update({
+            await (window.supabaseClient || window.sb).from('notifications').update({
                 read: true,
                 readAt: new Date().toISOString()
             }).eq('userId', this.userId).eq('read', false);
@@ -349,7 +349,7 @@ class NotificationSystem {
     async saveUserSettings() {
         if (!this.userId) return;
         try {
-            await window.supabase.from('user_settings').upsert({
+            await (window.supabaseClient || window.sb).from('user_settings').upsert({
                 userId: this.userId,
                 notificationSound: this.soundEnabled
             });
@@ -370,7 +370,7 @@ class NotificationSystem {
 
 // Auto-initialize if Supabase is available
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.supabase && window.kartaoAuth) {
+    if ((window.supabaseClient || window.sb) && window.kartaoAuth) {
         window.notificationSystem = new NotificationSystem();
     }
 });
