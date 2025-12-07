@@ -165,7 +165,11 @@ class HamburgerMenu {
     const btn = e.target.closest('button[data-action]');
     if (btn && btn.dataset.action === 'logout') {
       if (typeof window.kartaoAuth?.logout === 'function') {
-        window.kartaoAuth.logout();
+        window.kartaoAuth.logout().then(() => {
+          window.location.reload();
+        }).catch(() => {
+          window.location.href = 'index.html';
+        });
       } else {
         window.location.href = 'index.html';
       }
