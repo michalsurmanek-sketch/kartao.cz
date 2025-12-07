@@ -2874,8 +2874,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       // Získej správný profil a roli
-      const { role, profile } = await getUserRoleAndProfile(user.id, window.supabaseClient);
+      const { role, profile, allProfiles } = await getUserRoleAndProfile(user.id, window.supabaseClient);
       let type = role || 'guest';
+      console.log('DEBUG getUserRoleAndProfile', { user, role, profile, allProfiles });
       if (!menuInstance) {
         menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
       } else {
