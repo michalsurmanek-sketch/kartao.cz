@@ -51,10 +51,14 @@ class HamburgerMenu {
 
   open() {
     this.mobileMenu.classList.remove('hidden');
+    // Zajistí, že menuPanel je nad backdropem
+    this.menuPanel.style.zIndex = '100';
     setTimeout(() => {
       this.menuBackdrop.classList.add('opacity-100');
       this.menuPanel.classList.remove('-translate-x-full');
       this.menuPanel.classList.add('translate-x-0');
+      // Pro jistotu odstraní display:none pokud by byl někde nastaven
+      this.menuPanel.style.display = 'block';
     }, 10);
     document.body.style.overflow = 'hidden';
     this.menuToggle.setAttribute('aria-expanded', 'true');
@@ -67,6 +71,9 @@ class HamburgerMenu {
     this.menuPanel.classList.remove('translate-x-0');
     setTimeout(() => {
       this.mobileMenu.classList.add('hidden');
+      // Vrátí z-index a display do původního stavu
+      this.menuPanel.style.zIndex = '';
+      this.menuPanel.style.display = '';
       document.body.style.overflow = '';
       this.menuToggle.setAttribute('aria-expanded', 'false');
     }, 300);
