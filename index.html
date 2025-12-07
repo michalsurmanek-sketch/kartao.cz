@@ -31,13 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.replace('moje-firma.html');
     } else {
       window.location.replace('moje-karta.html');
-    }
-  }
-
-  // --- Vymazání Service Worker + cache ---
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => reg.unregister());
+                }
+              });
+            }
+          });
+        </script>
+        </form>
     });
 
     caches.keys().then(keys => {
