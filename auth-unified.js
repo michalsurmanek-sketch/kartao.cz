@@ -86,9 +86,10 @@
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
-        
         profile = firmResult.data;
         error = firmResult.error;
+        // Pokud je profil z tabulky firms, nastav is_company na true
+        if (profile) profile.is_company = true;
       }
       
       if (profile) {
