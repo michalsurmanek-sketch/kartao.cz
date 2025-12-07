@@ -1,4 +1,20 @@
 console.log('USER-ROLE-UTILS MODULE LOADED');
+
+/**
+ * Získá roli uživatele z sessionStorage/localStorage, pokud je uložená.
+ * @returns {'company'|'creator'|null}
+ */
+export function getStoredUserRole() {
+  let role = null;
+  try {
+    role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
+    if (role !== 'company' && role !== 'creator') role = null;
+  } catch (e) {
+    console.warn('USER-ROLE-UTILS: Nelze načíst roli ze storage:', e);
+  }
+  if (role) console.log('USER-ROLE-UTILS: Role ze storage:', role);
+  return role;
+}
 // user-role-utils.js
 // Centrální utilita pro detekci role a profilu uživatele
 
@@ -10,6 +26,14 @@ console.log('USER-ROLE-UTILS MODULE LOADED');
  * @returns {Promise<{role: 'company'|'creator'|null, profile: object|null, allProfiles: {creator: object|null, company: object|null}}>} 
  */
 export async function getUserRoleAndProfile(userId, supabaseClient) {
+  // 1. Zkusit roli ze storage
+  const storedRole = getStoredUserRole();
+  if (storedRole) {
+    console.log('USER-ROLE-UTILS: Vrací roli ze storage:', storedRole);
+    return { role: storedRole, profile: null, allProfiles: { creator: null, company: null } };
+  }
+
+  // 2. Fallback na DB
   if (!userId || !supabaseClient) return { role: null, profile: null, allProfiles: { creator: null, company: null } };
 
   const [creatorResult, firmResult] = await Promise.all([
