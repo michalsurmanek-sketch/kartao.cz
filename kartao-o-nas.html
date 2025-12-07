@@ -434,22 +434,19 @@
     </section>
   </main>
 
-  <footer class="border-t border-white/10 text-center text-white/60 py-8 mt-20 text-sm">
-    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
-      <a href="ochrana-osobnich-udaju.html" class="hover:text-white">Ochrana osobních údajů</a>
-      <span class="hidden md:block">•</span>
-      <a href="obchodni-podminky.html" class="hover:text-white">Obchodní podmínky</a>
-      <span class="hidden md:block">•</span>
-      <a href="kontakt.html" class="hover:text-white">Kontakt</a>
-    </div>
-    © 2025 Kartao.cz – Síť influencerů a tvůrců
-  </footer>
+
+  <div id="footer-include"></div>
+
 
   <script>
+    // Dynamické načtení footeru
     document.addEventListener('DOMContentLoaded', () => {
-      // Lucide ikony
-      if (window.lucide?.createIcons) window.lucide.createIcons();
-      
+      fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer-include').innerHTML = html;
+          if (window.lucide?.createIcons) window.lucide.createIcons();
+        });
       // Inicializace hamburger menu
       if (typeof initHamburgerMenu === 'function') {
         initHamburgerMenu();
