@@ -2866,8 +2866,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const profile = window.kartaoAuth?.profile;
       let type = 'guest';
       if (user && profile) {
-        // Oprava: pokud profil má is_company true, je to firma
-        if (profile.is_company || profile.is_company === true) {
+        // Robustní detekce firemního profilu (boolean, číslo, string)
+        if (
+          profile.is_company === true ||
+          profile.is_company === 1 ||
+          profile.is_company === "true" ||
+          profile.is_company === "1"
+        ) {
           type = 'company';
         } else {
           type = 'creator';
