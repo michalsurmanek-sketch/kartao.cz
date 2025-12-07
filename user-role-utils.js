@@ -1,3 +1,4 @@
+console.log('USER-ROLE-UTILS MODULE LOADED');
 // user-role-utils.js
 // Centrální utilita pro detekci role a profilu uživatele
 
