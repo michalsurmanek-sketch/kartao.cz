@@ -72,24 +72,31 @@
     
     // Načíst profil z DB (zkusit creators, pak firms)
     try {
-      // Nejprve zkusit creators
-      let { data: profile, error } = await window.supabaseClient
-        .from('creators')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      // Pokud není v creators, zkusit firms
-      if (!profile) {
-        const firmResult = await window.supabaseClient
+      // Načíst oba profily paralelně
+      const [creatorResult, firmResult] = await Promise.all([
+        window.supabaseClient
+          .from('creators')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        window.supabaseClient
           .from('firms')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .maybeSingle()
+      ]);
+
+      let profile = null;
+      let error = null;
+      // Preferuj firemní profil, pokud existuje
+      if (firmResult.data) {
         profile = firmResult.data;
+        profile.is_company = true;
         error = firmResult.error;
-        // Pokud je profil z tabulky firms, nastav is_company na true
-        if (profile) profile.is_company = true;
+      } else if (creatorResult.data) {
+        profile = creatorResult.data;
+        profile.is_company = false;
+        error = creatorResult.error;
       }
       
       if (profile) {
