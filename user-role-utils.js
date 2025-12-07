@@ -27,6 +27,14 @@ export async function getUserRoleAndProfile(userId, supabaseClient) {
   const creator = creatorResult.data || null;
   const company = firmResult.data || null;
 
+  console.log('USER-ROLE-UTILS DEBUG:', {
+    userId,
+    creatorResult,
+    firmResult,
+    creator,
+    company
+  });
+
   let role = null;
   let profile = null;
 
