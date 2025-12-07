@@ -2865,7 +2865,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const user = window.kartaoAuth?.user;
       const profile = window.kartaoAuth?.profile;
       let type = 'guest';
-      if (user && profile) type = profile.is_company ? 'company' : 'creator';
+      if (user && profile) {
+        // Oprava: pokud profil má is_company true, je to firma
+        if (profile.is_company || profile.is_company === true) {
+          type = 'company';
+        } else {
+          type = 'creator';
+        }
+      }
       if (!menuInstance) {
         menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
       } else {
