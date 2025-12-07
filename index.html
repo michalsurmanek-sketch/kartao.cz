@@ -1048,47 +1048,48 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- Newsletter / Nabídky -->
-        <div class="xl:order-4 w-full col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1 xl:col-span-1">
-          <div class="flex items-center gap-2 font-bold mb-4 text-emerald-400">
-            <i data-lucide="mail-open" class="w-5 h-5"></i>
-            <span>Získejte exkluzivní nabídky</span>
-          </div>
-          <p class="text-sm text-white/60 mb-3">Zadejte svůj e-mail a jako první dostanete přístup k novým funkcím, slevám a speciálním nabídkám.</p>
-          <form id="footer-newsletter" class="flex flex-col sm:flex-row gap-2 mb-4 w-full md:max-w-xs md:w-auto">
-            <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail pro nabídky" aria-label="Váš e-mail pro nabídky"
-                   class="flex-1 rounded-xl bg-white/10 border border-emerald-400/30 px-3 py-2 text-base placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition" />
-            <button type="submit" class="rounded-xl bg-emerald-500 hover:bg-emerald-600 px-5 py-2 font-semibold text-base whitespace-nowrap transition shadow-md md:ml-2" aria-label="Odebírat nabídky">
-              Chci nabídky
-            </button>
-            <div id="newsletter-success" class="hidden text-emerald-400 text-sm mt-2">Děkujeme za přihlášení k odběru!</div>
-          <script>
-          // Newsletter validace a potvrzení
-          document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('footer-newsletter');
-            if (form) {
-              form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = form.email.value.trim();
-                const success = document.getElementById('newsletter-success');
-                if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-                  form.reset();
-                  if (success) {
-                    success.classList.remove('hidden');
-                    setTimeout(() => success.classList.add('hidden'), 4000);
+        <div class="xl:order-4 w-full col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1 xl:col-span-1 flex flex-col items-center justify-center">
+          <div class="flex flex-col items-center justify-center w-full">
+            <div class="flex items-center gap-2 font-bold mb-4 text-emerald-400 justify-center">
+              <i data-lucide="mail-open" class="w-5 h-5"></i>
+              <span>Získejte exkluzivní nabídky</span>
+            </div>
+            <p class="text-sm text-white/60 mb-3 text-center">Zadejte svůj e-mail a jako první dostanete přístup k novým funkcím, slevám a speciálním nabídkám.</p>
+            <form id="footer-newsletter" class="flex flex-col sm:flex-row gap-2 mb-4 w-full md:max-w-xs md:w-auto justify-center items-center">
+              <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail pro nabídky" aria-label="Váš e-mail pro nabídky"
+                     class="flex-1 rounded-xl bg-white/10 border border-emerald-400/30 px-3 py-2 text-base placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition" />
+              <button type="submit" class="rounded-xl bg-emerald-500 hover:bg-emerald-600 px-5 py-2 font-semibold text-base whitespace-nowrap transition shadow-md md:ml-2" aria-label="Odebírat nabídky">
+                Chci nabídky
+              </button>
+              <div id="newsletter-success" class="hidden text-emerald-400 text-sm mt-2">Děkujeme za přihlášení k odběru!</div>
+            <script>
+            // Newsletter validace a potvrzení
+            document.addEventListener('DOMContentLoaded', function() {
+              const form = document.getElementById('footer-newsletter');
+              if (form) {
+                form.addEventListener('submit', function(e) {
+                  e.preventDefault();
+                  const email = form.email.value.trim();
+                  const success = document.getElementById('newsletter-success');
+                  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                    form.reset();
+                    if (success) {
+                      success.classList.remove('hidden');
+                      setTimeout(() => success.classList.add('hidden'), 4000);
+                    }
+                  } else {
+                    form.email.focus();
+                    form.email.classList.add('ring-2', 'ring-red-500');
+                    setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
                   }
-                } else {
-                  form.email.focus();
-                  form.email.classList.add('ring-2', 'ring-red-500');
-                  setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
-                }
-              });
-          });
-        </script>
-        </form>
-          <div class="text-xs text-white/40 italic mb-2">Odběr můžete kdykoliv zrušit.</div>
-          
+                });
+            });
+          </script>
+          </form>
+            <div class="text-xs text-white/40 italic mb-2 text-center">Odběr můžete kdykoliv zrušit.</div>
+          </div>
           <!-- Social Icons -->
-          <div class="flex items-center gap-4 sm:gap-2 justify-center mx-auto">
+          <div class="flex items-center gap-4 sm:gap-2 justify-center mx-auto mt-2">
             <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener" 
                class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
                aria-label="Facebook">
