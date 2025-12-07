@@ -8,11 +8,15 @@ export function getStoredUserRole() {
   let role = null;
   try {
     role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
-    if (role !== 'company' && role !== 'creator') role = null;
+    console.log('[USER-ROLE-UTILS] Čtení role ze storage:', role);
+    if (role !== 'company' && role !== 'creator' && role !== 'firma' && role !== 'influencer') role = null;
+    // Mapování starých hodnot na nové
+    if (role === 'firma') role = 'company';
+    if (role === 'influencer') role = 'creator';
   } catch (e) {
-    console.warn('USER-ROLE-UTILS: Nelze načíst roli ze storage:', e);
+    console.warn('[USER-ROLE-UTILS] Nelze načíst roli ze storage:', e);
   }
-  if (role) console.log('USER-ROLE-UTILS: Role ze storage:', role);
+  if (role) console.log('[USER-ROLE-UTILS] Role ze storage (mapped):', role);
   return role;
 }
 // user-role-utils.js
@@ -29,7 +33,7 @@ export async function getUserRoleAndProfile(userId, supabaseClient) {
   // 1. Zkusit roli ze storage
   const storedRole = getStoredUserRole();
   if (storedRole) {
-    console.log('USER-ROLE-UTILS: Vrací roli ze storage:', storedRole);
+    console.log('[USER-ROLE-UTILS] Vrací roli ze storage:', storedRole);
     return { role: storedRole, profile: null, allProfiles: { creator: null, company: null } };
   }
 
@@ -52,7 +56,7 @@ export async function getUserRoleAndProfile(userId, supabaseClient) {
   const creator = creatorResult.data || null;
   const company = firmResult.data || null;
 
-  console.log('USER-ROLE-UTILS DEBUG:', {
+  console.log('[USER-ROLE-UTILS] DEBUG DB:', {
     userId,
     creatorResult,
     firmResult,

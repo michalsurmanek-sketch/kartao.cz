@@ -2870,15 +2870,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           menuInstance.setUser(null, null, 'guest');
         }
+        console.log('[MENU INIT] Není přihlášený uživatel, menu guest');
         return;
       }
       const { role, profile, allProfiles } = await getUserRoleAndProfile(user.id, window.supabaseClient);
       let type = role || 'guest';
-      console.log('DEBUG getUserRoleAndProfile', { user, role, profile, allProfiles });
+      console.log('[MENU INIT] Výsledek getUserRoleAndProfile:', { user, role, profile, allProfiles });
       if (!menuInstance) {
         menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+        console.log('[MENU INIT] Vytvářím menuInstance:', { user, profile, type });
       } else {
         menuInstance.setUser(user, profile, type);
+        console.log('[MENU INIT] setUser:', { user, profile, type });
       }
     }
     document.addEventListener('DOMContentLoaded', initMenuRefactored);

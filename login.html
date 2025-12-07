@@ -527,30 +527,35 @@
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
-      // Určení role podle parametru v URL nebo localStorage
+      // Určení role podle parametru v URL nebo localStorage + DEBUG
       let role = null;
       try {
         const params = new URLSearchParams(window.location.search);
         role = params.get('role');
+        console.log('[LOGIN] Param role z URL:', role);
         if (role !== 'firma' && role !== 'influencer') {
           role = localStorage.getItem('userRole');
+          console.log('[LOGIN] Role z localStorage:', role);
         }
         if (role === 'firma' || role === 'influencer') {
           sessionStorage.setItem('userRole', role);
           localStorage.setItem('userRole', role);
           window.currentUserRole = role;
+          console.log('[LOGIN] Ukládám roli do storage:', role);
         } else {
           sessionStorage.removeItem('userRole');
+          console.log('[LOGIN] Role není platná, mažu ze storage');
         }
 
+        console.log('[LOGIN] Před voláním login, role v sessionStorage:', sessionStorage.getItem('userRole'));
         await window.kartaoAuth.login(email, password);
 
         // Úspěch - rovnou redirect
-        console.log('Login successful, redirecting...');
+        console.log('[LOGIN] Login successful, redirecting...');
         window.location.href = "index.html";
 
       } catch (err) {
-        console.error('Login error:', err);
+        console.error('[LOGIN] Login error:', err);
         setLoading(false);
 
         let msg = "Přihlášení se nezdařilo.";
