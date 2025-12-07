@@ -2856,28 +2856,26 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
   <!-- HAMBURGER MENU - pouze refactored verze (načítání až po všem) -->
   <script src="credits-header.js"></script>
-  <script src="hamburger-menu-refactored.js"></script>
-  <script>
-    // Nový hamburger menu systém
+  <script type="module">
+    import { getUserRoleAndProfile } from './user-role-utils.js';
+    import './hamburger-menu-refactored.js';
+    // Nový hamburger menu systém s detekcí role přes utilitu
     let menuInstance = null;
-    function initMenuRefactored() {
+    async function initMenuRefactored() {
       if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
       const user = window.kartaoAuth?.user;
-      const profile = window.kartaoAuth?.profile;
-      let type = 'guest';
-      if (user && profile) {
-        // Robustní detekce firemního profilu (boolean, číslo, string)
-        if (
-          profile.is_company === true ||
-          profile.is_company === 1 ||
-          profile.is_company === "true" ||
-          profile.is_company === "1"
-        ) {
-          type = 'company';
+      if (!user || !window.supabaseClient) {
+        // Guest
+        if (!menuInstance) {
+          menuInstance = new window.KartaoHamburgerMenu({ user: null, profile: null, type: 'guest' });
         } else {
-          type = 'creator';
+          menuInstance.setUser(null, null, 'guest');
         }
+        return;
       }
+      // Získej správný profil a roli
+      const { role, profile } = await getUserRoleAndProfile(user.id, window.supabaseClient);
+      let type = role || 'guest';
       if (!menuInstance) {
         menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
       } else {
