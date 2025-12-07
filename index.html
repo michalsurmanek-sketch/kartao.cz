@@ -2860,13 +2860,11 @@ document.addEventListener('DOMContentLoaded', () => {
   <script type="module">
     import { getUserRoleAndProfile } from './user-role-utils.js';
     import './hamburger-menu-refactored.js';
-    // Nový hamburger menu systém s detekcí role přes utilitu
     let menuInstance = null;
     async function initMenuRefactored() {
       if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
       const user = window.kartaoAuth?.user;
       if (!user || !window.supabaseClient) {
-        // Guest
         if (!menuInstance) {
           menuInstance = new window.KartaoHamburgerMenu({ user: null, profile: null, type: 'guest' });
         } else {
@@ -2874,7 +2872,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return;
       }
-      // Získej správný profil a roli
       const { role, profile, allProfiles } = await getUserRoleAndProfile(user.id, window.supabaseClient);
       let type = role || 'guest';
       console.log('DEBUG getUserRoleAndProfile', { user, role, profile, allProfiles });
