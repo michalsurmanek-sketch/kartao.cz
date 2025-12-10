@@ -142,9 +142,9 @@ class HamburgerMenu {
       ],
       company: [
         { href: 'moje-firma.html', icon: 'building-2', text: 'Moje Firma' },
-        { href: 'firma-prehled.html', icon: 'chart-bar', text: 'Přehled' },
-        { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'kampane-firma.html', icon: 'megaphone', text: 'Moje kampaně' },
+        { href: 'index.html', icon: 'chart-bar', text: 'Markrketplace' },
+        { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'ai-analytics-firmy.html', icon: 'trending-up', text: 'AI Analytics' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit se' }
