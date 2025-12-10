@@ -141,7 +141,7 @@ class HamburgerMenu {
         { action: 'logout', icon: 'log-out', text: 'Odhlásit se' }
       ],
       company: [
-        { href: 'firm-dashboard.html', icon: 'building-2', text: 'Dashboard' },
+        { href: 'moje-firma.html', icon: 'building-2', text: 'Moje Firma' },
         { href: 'firma-prehled.html', icon: 'chart-bar', text: 'Přehled' },
         { href: 'firma-credits.html', icon: 'coins', text: 'Kredity' },
         { href: 'firma-fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
