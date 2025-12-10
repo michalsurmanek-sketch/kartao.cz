@@ -143,7 +143,6 @@ class HamburgerMenu {
       company: [
         { href: 'moje-firma.html', icon: 'building-2', text: 'Moje Firma' },
         { href: 'firma-prehled.html', icon: 'chart-bar', text: 'Přehled' },
-       <!-- { href: 'firma-credits.html', icon: 'coins', text: 'Kredity' },-->
         { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'kampane-firma.html', icon: 'megaphone', text: 'Moje kampaně' },
         { href: 'ai-analytics-firmy.html', icon: 'trending-up', text: 'AI Analytics' },
