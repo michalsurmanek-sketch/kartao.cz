@@ -132,10 +132,9 @@ class HamburgerMenu {
       ],
       creator: [
         { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
-        { href: 'creator-dashboard.html', icon: 'layout-dashboard', text: 'Přehled' },
-        { href: 'credits-dashboard.html', icon: 'coins', text: 'Kredity' },
-        { href: 'earnings-management.html', icon: 'wallet', text: 'Výdělky' },
         { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně' },
+        { href: 'earnings-management.html', icon: 'wallet', text: 'Výdělky' },
+        { href: 'credits-dashboard.html', icon: 'coins', text: 'Kredity' },
         { href: 'kartao-magazin.html', icon: 'newspaper', text: 'Magazín' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
