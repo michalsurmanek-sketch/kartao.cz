@@ -128,17 +128,17 @@ class HamburgerMenu {
         { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně' },
         { href: 'kartao-pro-tvurce.html', icon: 'user-plus', text: 'Pro tvůrce' },
         { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },
-        { href: 'login.html', icon: 'log-in', text: 'Přihlásit se' }
+        { href: 'login.html', icon: 'log-in', text: 'Přihlásit' }
       ],
       creator: [
-        { href: 'luxus2.html', icon: 'sparkles', text: 'Dashboard' },
+        { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
         { href: 'creator-dashboard.html', icon: 'layout-dashboard', text: 'Přehled' },
         { href: 'credits-dashboard.html', icon: 'coins', text: 'Kredity' },
         { href: 'earnings-management.html', icon: 'wallet', text: 'Výdělky' },
         { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně' },
         { href: 'kartao-magazin.html', icon: 'newspaper', text: 'Magazín' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
-        { action: 'logout', icon: 'log-out', text: 'Odhlásit se' }
+        { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
       ],
       company: [
         { href: 'moje-firma.html', icon: 'building-2', text: 'Moje Firma' },
