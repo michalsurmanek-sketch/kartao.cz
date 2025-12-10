@@ -125,6 +125,9 @@ class HamburgerMenu {
     const links = {
       guest: [
         { href: 'index.html', icon: 'home', text: 'Domů' },
+        { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
+        { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
+        { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
         { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně' },
         { href: 'kartao-pro-tvurce.html', icon: 'user-plus', text: 'Pro tvůrce' },
         { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },
