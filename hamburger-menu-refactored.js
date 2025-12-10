@@ -127,10 +127,7 @@ class HamburgerMenu {
         { href: 'index.html', icon: 'home', text: 'Domů' },
         { href: 'kartao-marketplace.html', icon: 'briefcase', text: 'Kampaně' },
         { href: 'kartao-pro-tvurce.html', icon: 'user-plus', text: 'Pro tvůrce' },
-        { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },
-        
-        { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
-        
+        { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },  
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { action: 'login.html', icon: 'log-in', text: 'Přihlásit' }
       ],
