@@ -129,7 +129,7 @@ class HamburgerMenu {
         { href: 'kartao-pro-tvurce.html', icon: 'user-plus', text: 'Pro tvůrce' },
         { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
-        { href: 'login.html', icon: 'log-in', text: 'Přihlásit' },
+        { href: 'login.html', icon: 'log-in', text: 'Přihlásit' }
       ],
       creator: [
         { href: 'moje-karta.html', icon: 'sparkles', text: 'Moje Kartao' },
@@ -148,7 +148,7 @@ class HamburgerMenu {
         { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
-      ]
+      ],
     };
     const menu = links[this.type] || links.guest;
     return menu.map(item => {
