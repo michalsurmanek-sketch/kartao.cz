@@ -130,6 +130,7 @@ class HamburgerMenu {
         { href: 'kartao-pro-firmy.html', icon: 'building', text: 'Pro firmy' },
         { href: 'kartao-pro-firmy.html', icon: 'mail', text: 'Podpora' },
         { href: 'kontakt.html', icon: 'building', text: 'Podpora' },
+        { href: 'kontakt.html', icon: 'building', text: 'Podpora' },
         { action: 'login.html', icon: 'log-in', text: 'Přihlásit' }
       ],
       creator: [
