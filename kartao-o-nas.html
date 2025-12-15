@@ -331,17 +331,39 @@
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
   
-  <!-- Hamburger Menu Dependencies -->
+  <!-- Hamburger Menu -->
   <script src="credits-header.js"></script>
   <script src="user-role-utils.js"></script>
   <script src="hamburger-menu-refactored.js"></script>
+  <script>
+    let menuInstance = null;
+    async function initMenuRefactored() {
+      if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
+      const user = window.kartaoAuth?.user;
+      if (!user || !window.supabaseClient) {
+        if (!menuInstance) {
+          menuInstance = new window.KartaoHamburgerMenu({ user: null, profile: null, type: 'guest' });
+        } else {
+          menuInstance.setUser(null, null, 'guest');
+        }
+        return;
+      }
+      const { role, profile } = await getUserRoleAndProfile(user.id, window.supabaseClient);
+      let type = role || 'guest';
+      if (!menuInstance) {
+        menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+      } else {
+        menuInstance.setUser(user, profile, type);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initMenuRefactored);
+    window.addEventListener('kartao-auth-changed', initMenuRefactored);
+  </script>
   
   <script src="credits-system-supabase.js"></script>
-  
-  <!-- 4. Core Loader - orchestrates everything -->
   <script src="kartao-core-loader.js"></script>
   
-  <!-- 5. Initialize Lucide Icons -->
+  <!-- Initialize Lucide Icons -->
   <script>
     if (typeof lucide !== "undefined") {
       lucide.createIcons();

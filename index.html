@@ -2439,9 +2439,33 @@ document.addEventListener('DOMContentLoaded', () => {
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>
-  <!-- HAMBURGER MENU - inicializováno v header-loader.js -->
+  <!-- HAMBURGER MENU -->
   <script src="credits-header.js"></script>
   <script src="user-role-utils.js"></script>
   <script src="hamburger-menu-refactored.js"></script>
+  <script>
+    let menuInstance = null;
+    async function initMenuRefactored() {
+      if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
+      const user = window.kartaoAuth?.user;
+      if (!user || !window.supabaseClient) {
+        if (!menuInstance) {
+          menuInstance = new window.KartaoHamburgerMenu({ user: null, profile: null, type: 'guest' });
+        } else {
+          menuInstance.setUser(null, null, 'guest');
+        }
+        return;
+      }
+      const { role, profile } = await getUserRoleAndProfile(user.id, window.supabaseClient);
+      let type = role || 'guest';
+      if (!menuInstance) {
+        menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+      } else {
+        menuInstance.setUser(user, profile, type);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initMenuRefactored);
+    window.addEventListener('kartao-auth-changed', initMenuRefactored);
+  </script>
 </body>
 </html>
