@@ -26,7 +26,8 @@
     }
   </script>
   <!-- Lucide ikony - unified system -->
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="icons-loader.js"></script>
   <style>
     body { 
       background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%); 
@@ -705,8 +706,12 @@
     © 2025 Kartao.cz – Síť influencerů a tvůrců
   </footer>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>lucide.createIcons()</script>
+  <script>
+    // Inicializace Lucide ikon
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
 
   <script>
     // Hamburger menu
