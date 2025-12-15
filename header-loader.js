@@ -44,11 +44,6 @@ if (document.readyState === 'loading') {
 } else {
   loadHeader();
 }
-  } catch (error) {
-    console.error('[Header Loader] Chyba při načítání headeru:', error);
-    placeholder.innerHTML = '<div class="text-red-500 p-4">Chyba při načítání headeru</div>';
-  }
-}
 
 // Načíst header při načtení stránky
 if (document.readyState === 'loading') {

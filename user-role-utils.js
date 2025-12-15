@@ -4,7 +4,7 @@ console.log('USER-ROLE-UTILS MODULE LOADED');
  * Získá roli uživatele z sessionStorage/localStorage, pokud je uložená.
  * @returns {'company'|'creator'|null}
  */
-export function getStoredUserRole() {
+function getStoredUserRole() {
   let role = null;
   try {
     role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
@@ -29,7 +29,7 @@ export function getStoredUserRole() {
  * @param {object} supabaseClient - instance supabase klienta
  * @returns {Promise<{role: 'company'|'creator'|null, profile: object|null, allProfiles: {creator: object|null, company: object|null}}>} 
  */
-export async function getUserRoleAndProfile(userId, supabaseClient) {
+async function getUserRoleAndProfile(userId, supabaseClient) {
   // 1. Zkusit roli ze storage
   const storedRole = getStoredUserRole();
   if (storedRole) {
@@ -87,7 +87,7 @@ export async function getUserRoleAndProfile(userId, supabaseClient) {
  * @param {object} profile
  * @returns {'company'|'creator'|null}
  */
-export function detectRoleFromProfile(profile) {
+function detectRoleFromProfile(profile) {
   if (!profile) return null;
   if (
     profile.is_company === true ||
@@ -97,3 +97,8 @@ export function detectRoleFromProfile(profile) {
   ) return 'company';
   return 'creator';
 }
+
+// Exportovat globálně
+window.getStoredUserRole = getStoredUserRole;
+window.getUserRoleAndProfile = getUserRoleAndProfile;
+window.detectRoleFromProfile = detectRoleFromProfile;
