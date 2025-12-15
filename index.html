@@ -270,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- HLAVNÍ HEADER -->
   <div id="header-placeholder"></div>
-  <script src="header-loader.js"></script>
 
   <!-- ADMIN MODAL -->
   <div id="adminModal" class="hidden fixed inset-0 z-50">
@@ -2467,5 +2466,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('DOMContentLoaded', initMenuRefactored);
     window.addEventListener('kartao-auth-changed', initMenuRefactored);
   </script>
+  
+  <!-- Load header component -->
+  <script src="header-loader.js"></script>
 </body>
 </html>
