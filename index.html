@@ -35,9 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   caches.keys().then(keys => {
-      keys.forEach(key => caches.delete(key));
-    });
-  }
+    keys.forEach(key => caches.delete(key));
+  });
 
 });
 </script>
