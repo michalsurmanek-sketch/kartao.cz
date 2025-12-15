@@ -19,10 +19,17 @@ async function loadHeader() {
     const html = await response.text();
     placeholder.innerHTML = html;
     
-    // Inicializovat Lucide ikony po načtení headeru
-    if (window.lucide?.createIcons) {
-      lucide.createIcons();
+    // Počkat na načtení Lucide a pak inicializovat ikony
+    function initIcons() {
+      if (window.lucide?.createIcons) {
+        lucide.createIcons();
+        console.log('[Header Loader] Ikony inicializovány');
+      } else {
+        // Zkusit znovu za 50ms
+        setTimeout(initIcons, 50);
+      }
     }
+    initIcons();
     
     console.log('[Header Loader] Header úspěšně načten');
   } catch (error) {
