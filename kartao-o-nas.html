@@ -54,35 +54,6 @@
   <div id="header-placeholder"></div>
   <script src="header-loader.js"></script>
 
-  <!-- Mobilní menu -->
-  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
-    <div id="menuBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-    <div class="relative h-full svh flex flex-col items-stretch">
-      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm h-full bg-neutral-950/95 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="px-4 py-4 flex items-center justify-between border-b border-white/10">
-          <a href="index.html" class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-              <i data-lucide="crown" class="w-5 h-5 animate-crown-glow"></i>
-            </div>
-            <div>
-              <div class="font-extrabold">Kartao.cz</div>
-              <div class="text-xs text-white/60 -mt-0.5">Síť influencerů</div>
-            </div>
-          </a>
-          <div class="flex items-center gap-2">
-            <a href="vip.html" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-fuchsia-500/20 to-amber-400/20 border border-amber-400/30 hover:from-fuchsia-500/30 hover:to-amber-400/30 transition">
-              <i data-lucide="crown" class="w-5 h-5 text-amber-400 animate-crown-glow"></i>
-            </a>
-            <button id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-          </div>
-        </div>
-        <div id="menuContent"><!-- Menu bude vygenerováno JavaScriptem --></div>
-      </div>
-    </div>
-  </div>
-
   <!-- BREADCRUMBS -->
   <nav class="border-b border-white/10 bg-neutral-900/50" aria-label="breadcrumb">
     <div class="max-w-7xl mx-auto px-4 py-2">
@@ -359,9 +330,13 @@
   <!-- Supabase + Unified Auth -->
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
-  <!-- <script src="hamburger-menu.js"></script> -->
+  
+  <!-- Hamburger Menu Dependencies -->
+  <script src="credits-header.js"></script>
+  <script src="user-role-utils.js"></script>
+  <script src="hamburger-menu-refactored.js"></script>
+  
   <script src="credits-system-supabase.js"></script>
-  <!-- <script src="hamburger-menu.js"></script> -->
   
   <!-- 4. Core Loader - orchestrates everything -->
   <script src="kartao-core-loader.js"></script>
