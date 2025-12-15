@@ -2463,9 +2463,9 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
   <!-- HAMBURGER MENU - pouze refactored verze (načítání až po všem) -->
   <script src="credits-header.js"></script>
-  <script type="module">
-    import { getUserRoleAndProfile } from './user-role-utils.js';
-    import './hamburger-menu-refactored.js';
+  <script src="user-role-utils.js"></script>
+  <script src="hamburger-menu-refactored.js"></script>
+  <script>
     let menuInstance = null;
     async function initMenuRefactored() {
       if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
