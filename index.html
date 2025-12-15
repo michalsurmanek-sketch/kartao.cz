@@ -31,12 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.replace('moje-firma.html');
     } else {
       window.location.replace('moje-karta.html');
-                }
-              });
-            }
-          
+    }
+  }
 
-    caches.keys().then(keys => {
+  caches.keys().then(keys => {
       keys.forEach(key => caches.delete(key));
     });
   }
@@ -943,6 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
                   }
                 });
+              }
             });
           </script>
           </form>
