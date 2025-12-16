@@ -1,508 +1,672 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kartao.cz – Chat & zprávy</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – Chat</title>
+  <meta name="description" content="Chat na Kartao.cz – bezpečná komunikace mezi značkami a tvůrci přímo v platformě." />
+
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            night: {
-              900: '#050816',
-              950: '#02010a'
-            }
-          },
-          boxShadow: {
-            'card-soft': '0 22px 70px rgba(0,0,0,0.8)',
-            'glow-fuchsia': '0 0 35px rgba(217,70,239,0.45)',
-            'glow-amber': '0 0 35px rgba(251,191,36,0.45)'
-          }
-        }
-      }
-    };
-  </script>
-  
-  <!-- Ikony Lucide – unified system -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    .gradient-shell {
-      background:
-        radial-gradient(circle at top left, rgba(251,191,36,0.13), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(217,70,239,0.16), transparent 55%),
-        #020617;
-    }
-    .glass-panel {
-      background: rgba(15,23,42,0.9);
-      backdrop-filter: blur(18px);
-    }
-    .chat-bubble {
-      max-width: 80%;
-      word-wrap: break-word;
-      border-radius: 1.3rem;
-      padding: 0.65rem 0.9rem;
-      font-size: 0.875rem;
-      line-height: 1.35;
-    }
-    .chat-bubble.own {
-      margin-left: auto;
-      background: linear-gradient(135deg,#db58f6,#ffb347);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-      color: #020617;
-    }
-    .chat-bubble.other {
-      margin-right: auto;
-      background: rgba(31,41,55,0.95);
-      border: 1px solid rgba(148,163,184,0.4);
-    }
-    .pill {
-      border-radius: 9999px;
-    }
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
   </style>
 </head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
 
-<body class="min-h-screen gradient-shell text-white">
-  <!-- Supabase + Unified Auth -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="auth-unified.js"></script>
-  <!-- <script src="hamburger-menu.js"></script> -->
-  <script src="api-services.js"></script>
-  <script src="credits-system-supabase.js"></script>
-  <script src="supabase-compatibility.js"></script>
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
 
-  <!-- HORNÍ NAVBAR -->
-  <header class="border-b border-white/10 bg-gradient-to-b from-black/90 to-black/60 backdrop-blur">
+  <!-- HEADER / NAV (sjednocený) -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-            <i data-lucide="crown" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-semibold text-lg">Kartao.cz</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
-                Chat
-              </span>
-            </div>
-            <p class="text-[11px] text-white/60">Zprávy & komunikace</p>
-          </div>
-        </a>
-      </div>
 
-      <!-- Střední navigace -->
-      <nav class="hidden md:flex items-center gap-2 text-xs">
-        <a href="creator-dashboard.html" class="pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 transition flex items-center gap-1.5">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="moje-karta.html" class="pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 transition flex items-center gap-1.5">
-          <i data-lucide="id-card" class="w-4 h-4"></i>
-          <span>Moje karta</span>
-        </a>
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-recenze.html">Recenze</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
       </nav>
 
-      <!-- Pravá část – K-Coins + logout -->
-      <div class="flex items-center gap-2 text-xs">
-        <div class="hidden sm:flex items-center pill bg-black/60 border border-yellow-500/60 px-3 py-1.5 shadow-inner">
-          <span class="text-[10px] tracking-[0.16em] text-yellow-200/80 uppercase mr-2">K-Coins</span>
-          <span id="headerCredits" class="font-semibold text-yellow-300">—</span>
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobileMenu" class="lg:hidden hidden">
+      <div class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-recenze.html">Recenze</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
         </div>
-
-        <button id="logout" class="hidden md:inline-flex pill px-3 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 text-[11px] font-medium items-center gap-1.5">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          Odhlásit
-        </button>
-
-        <button id="logout-mobile" class="md:hidden pill px-2.5 py-1.5 bg-white/5 border border-white/15 hover:bg-white/10 text-[11px]">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-        </button>
       </div>
     </div>
   </header>
 
-  <!-- DROBEČKOVÁ NAVIGACE -->
-  <nav class="border-b border-white/10 bg-black/40" aria-label="breadcrumb">
-    <div class="max-w-6xl mx-auto px-4 py-2 text-xs text-slate-300 flex items-center gap-2">
-      <a href="index.html" class="hover:text-white transition flex items-center gap-1">
-        <i data-lucide="home" class="w-3 h-3"></i> Domů
-      </a>
-      <span class="text-slate-500">/</span>
-      <a href="creator-dashboard.html" class="hover:text-white transition">Dashboard</a>
-      <span class="text-slate-500">/</span>
-      <span class="text-white">Chat</span>
-    </div>
-  </nav>
+  <!-- CONTENT -->
+  <main class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-6">
 
-  <!-- HLAVNÍ LAYOUT -->
-  <main class="max-w-6xl mx-auto px-4 py-5">
-    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)] gap-5 h-[calc(100vh-170px)]">
-      
-      <!-- LEVÝ PANEL – seznam konverzací -->
-      <section class="glass-panel rounded-3xl border border-white/12 shadow-card-soft flex flex-col overflow-hidden">
-        <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-          <div>
-            <p class="text-[11px] uppercase tracking-wide text-slate-400 mb-0.5 flex items-center gap-1.5">
-              <i data-lucide="messages-square" class="w-3 h-3"></i>
-              Konverzace
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+      <div class="relative p-7 md:p-10">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div class="space-y-3 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="messages-square" class="h-4 w-4"></i>
+              <span>Chat</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">domluva bez chaosu v DMs</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Piš si přímo v Kartao</h1>
+            <p class="text-white/70 leading-relaxed">
+              Pro značky i tvůrce: jedna konverzace = jedna spolupráce. Přehled, historie, soubory (později) a méně nedorozumění.
+              Tohle je <b>demo bez backendu</b> – zprávy se ukládají jen do prohlížeče (LocalStorage).
             </p>
-            <h2 class="text-sm font-semibold">Chat se značkami a tvůrci</h2>
           </div>
-          <button id="newConvBtn" class="hidden text-[11px] pill px-3 py-1 bg-white/5 border border-white/15 hover:bg-white/10">
-            Nová zpráva
+
+          <!-- quick actions -->
+          <div class="w-full lg:w-[420px]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Rychlá akce</div>
+                <div class="text-xs text-white/50">demo</div>
+              </div>
+
+              <div class="grid gap-2">
+                <label class="text-xs text-white/60">Nová konverzace</label>
+                <div class="flex gap-2">
+                  <div class="relative flex-1">
+                    <i data-lucide="at-sign" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                    <input id="newChatName" type="text" placeholder="@tvurce nebo BrandXYZ" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+                  </div>
+                  <button id="newChatBtn" class="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                    <i data-lucide="plus" class="h-4 w-4"></i>
+                    Vytvořit
+                  </button>
+                </div>
+                <div class="text-xs text-white/50">Tip: napiš jméno profilu (např. <span class="text-white/70">@lucy.fit</span>).</div>
+              </div>
+
+              <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4 text-sm text-white/70">
+                <div class="flex items-start gap-2">
+                  <i data-lucide="shield" class="h-4 w-4 mt-0.5 text-white/70"></i>
+                  <div>
+                    <div class="font-semibold text-white">Bezpečnost</div>
+                    <div class="text-white/60">Neposílej hesla, ověřovací kódy ani platební údaje. Platby řeš přes kampaně / fakturaci.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT APP -->
+    <section class="grid lg:grid-cols-[320px_1fr_320px] gap-4">
+
+      <!-- left: conversations -->
+      <aside class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="p-4 border-b border-white/10">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-xs text-white/50">Konverzace</div>
+              <div class="font-extrabold text-lg">Zprávy</div>
+            </div>
+            <button id="seedBtn" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm" title="Načíst ukázkové chaty">
+              <i data-lucide="sparkles" class="h-4 w-4"></i>
+              Demo
+            </button>
+          </div>
+
+          <div class="mt-3 relative">
+            <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+            <input id="convSearch" type="text" placeholder="Hledat…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+          </div>
+        </div>
+
+        <div id="convList" class="max-h-[520px] lg:max-h-[640px] overflow-auto p-2"></div>
+
+        <!-- mobile: open panel button -->
+        <div class="lg:hidden p-3 border-t border-white/10">
+          <button id="openConvs" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="list" class="h-4 w-4"></i>
+            Otevřít seznam konverzací
           </button>
         </div>
+      </aside>
 
-        <div id="conversationsList" class="flex-1 overflow-y-auto">
-          <div class="p-8 text-center text-white/60">
-            <i data-lucide="message-circle" class="w-10 h-10 mx-auto mb-3 text-white/40"></i>
-            <div class="text-sm font-medium">Načítání konverzací...</div>
+      <!-- center: messages -->
+      <section class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden flex flex-col min-h-[520px] lg:min-h-[680px]">
+
+        <!-- top bar -->
+        <div class="p-4 border-b border-white/10 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-xs text-white/50">Aktivní chat</div>
+            <div id="activeTitle" class="font-extrabold text-lg truncate">Vyber konverzaci</div>
           </div>
-        </div>
-      </section>
-
-      <!-- PRAVÝ PANEL – samotný chat -->
-      <section class="glass-panel rounded-3xl border border-white/12 shadow-card-soft flex flex-col overflow-hidden">
-        <!-- Header chatu -->
-        <div id="chatHeader" class="px-4 py-3 border-b border-white/10 hidden">
-          <div class="flex items-center gap-3">
-            <img id="chatAvatar" src="" alt="Avatar uživatele" class="w-9 h-9 rounded-full object-cover bg-neutral-800 border border-white/15">
-            <div class="min-w-0">
-              <div id="chatName" class="font-semibold text-sm truncate">—</div>
-              <div id="chatStatus" class="text-[11px] text-emerald-300 flex items-center gap-1 mt-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                Online
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Oblast zpráv -->
-        <div id="messagesArea" class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-          <div class="h-full flex items-center justify-center text-white/60">
-            <div class="text-center max-w-xs">
-              <i data-lucide="message-square" class="w-14 h-14 mx-auto mb-3 text-white/30"></i>
-              <div class="text-base font-medium mb-1">Vyberte konverzaci</div>
-              <div class="text-xs text-slate-400">Vlevo klikni na libovolnou konverzaci nebo začni novou z profilu tvůrce či kampaně.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Input -->
-        <div id="messageInput" class="hidden px-4 py-3 border-t border-white/10 bg-black/40">
-          <div class="flex items-end gap-3">
-            <div class="flex-1">
-              <input
-                id="messageText"
-                type="text"
-                autocomplete="off"
-                placeholder="Napište zprávu..."
-                class="w-full bg-neutral-900/90 border border-white/20 rounded-2xl px-3.5 py-2.5 text-sm text-white placeholder:text-white/40 outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500/60"
-              >
-              <p class="text-[10px] text-slate-500 mt-1">Enter = odeslat. Shift + Enter = nový řádek.</p>
-            </div>
-            <button
-              id="sendMessage"
-              class="pill px-4 py-2.5 bg-gradient-to-r from-fuchsia-500 via-amber-400 to-yellow-400 text-black text-xs font-semibold shadow-glow-fuchsia hover:brightness-110 transition flex items-center justify-center gap-1.5"
-            >
-              <i data-lucide="send" class="w-4 h-4"></i>
-              <span>Odeslat</span>
+          <div class="flex items-center gap-2">
+            <button id="clearChat" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm" title="Smazat zprávy v aktivním chatu">
+              <i data-lucide="trash-2" class="h-4 w-4"></i>
+              Smazat
+            </button>
+            <button id="deleteChat" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm" title="Smazat konverzaci">
+              <i data-lucide="x" class="h-4 w-4"></i>
+              Zavřít
             </button>
           </div>
         </div>
+
+        <!-- messages -->
+        <div id="msgList" class="flex-1 overflow-auto p-4 space-y-3"></div>
+
+        <!-- composer -->
+        <div class="p-4 border-t border-white/10">
+          <div id="composerLock" class="hidden rounded-2xl border border-white/10 bg-neutral-950/40 p-4 text-sm text-white/70">
+            Vyber konverzaci vlevo. Potom můžeš psát zprávy.
+          </div>
+
+          <form id="sendForm" class="grid gap-2">
+            <div class="flex gap-2">
+              <select id="sender" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-3 outline-none focus:border-white/25">
+                <option value="me">Já</option>
+                <option value="them">Druhá strana (demo)</option>
+              </select>
+              <div class="relative flex-1">
+                <i data-lucide="message-square" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                <input id="msg" type="text" placeholder="Napiš zprávu…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" autocomplete="off" />
+              </div>
+              <button class="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" type="submit">
+                <i data-lucide="send" class="h-4 w-4"></i>
+                Odeslat
+              </button>
+            </div>
+            <div class="text-xs text-white/50">Demo: ukládá se do prohlížeče. Později napojíme na databázi + kampaně.</div>
+          </form>
+        </div>
+
       </section>
-    </div>
+
+      <!-- right: info -->
+      <aside class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden hidden lg:block">
+        <div class="p-4 border-b border-white/10">
+          <div class="text-xs text-white/50">Informace</div>
+          <div class="font-extrabold text-lg">Přehled</div>
+        </div>
+
+        <div class="p-4 space-y-4">
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                <i data-lucide="id-card" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <div class="font-semibold">Kontext spolupráce</div>
+                <div class="text-sm text-white/60">(později: kampaň, brief, termíny)</div>
+              </div>
+            </div>
+            <div class="mt-3 text-sm text-white/70">
+              Ideální je, když chat navážeme na kampaň – potom je jasné, o čem se jedná, kdo je kdo a co se má dodat.
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">Rychlé šablony</div>
+              <i data-lucide="clipboard" class="h-4 w-4 text-white/70"></i>
+            </div>
+            <div class="mt-3 grid gap-2">
+              <button data-template="Ahoj, můžeme si potvrdit termín a cenu?" class="tpl px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-left">Potvrdit termín a cenu</button>
+              <button data-template="Pošlu brief + požadavky. Jaké máš volné sloty?" class="tpl px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-left">Poslat brief</button>
+              <button data-template="Super, pošli prosím odkaz na výstup / náhled před publikací." class="tpl px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-left">Požádat o náhled</button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-start gap-2">
+              <i data-lucide="alert-triangle" class="h-4 w-4 mt-0.5 text-white/70"></i>
+              <div class="text-sm text-white/70">
+                <div class="font-semibold text-white">Pozdější upgrade</div>
+                Přidáme: přílohy, štítky, napojení na kampaně, „přečteno“, notifikace a blokaci spamu.
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </section>
+
   </main>
 
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Informace</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/podminky.html">Podmínky použití</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/faq.html">FAQ</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/cenik.html">Ceník</a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">chat.html</span></div>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    let chatService;
-    let currentUser = null;
-    let currentConversationId = null;
-    let messagesListener = null;
-    let conversationsListener = null;
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ikony
-    function refreshIcons() {
-      if (typeof lucide !== 'undefined') {
-        setTimeout(() => {
-          try { lucide.createIcons(); } catch (e) { console.warn('Lucide error:', e); }
-        }, 10);
-      }
-    }
-
-    // převod času
-    function toMillis(ts) {
-      if (!ts) return 0;
-      if (typeof ts.toMillis === 'function') return ts.toMillis();
-      if (ts instanceof Date) return ts.getTime();
-      return Number(ts) || 0;
-    }
-
-    // K-Coins v headeru
-    function updateHeaderCredits(userId) {
-      try {
-        if (typeof CreditsSystem === 'undefined') return;
-        const cs = new CreditsSystem(userId);
-        const credits = cs.getCredits ? cs.getCredits() : 0;
-        const el = document.getElementById('headerCredits');
-        if (el) el.textContent = (credits || 0).toLocaleString('cs-CZ');
-      } catch (e) {
-        console.warn('Chyba při načítání K-Coins v headeru:', e);
-      }
-    }
-
-    // Firebase auth
-    kartaoAuth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      currentUser = user;
-      if (typeof ChatService === 'undefined') {
-        console.error('ChatService není k dispozici (api-services.js).');
-        return;
-      }
-      chatService = new ChatService();
-
-      // 💰 K-Coins
-      updateHeaderCredits(currentUser.uid);
-
-      // první načtení konverzací
-      loadConversations();
-
-      // realtime listener
-      conversationsListener = chatService.listenToConversations(user.uid, (snapshot) => {
-        const conversations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderConversations(conversations);
-      });
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
     });
 
-    async function loadConversations() {
+    // --- CHAT DEMO (LocalStorage) ---
+    const LS_KEY = 'kartao_chat_demo_v1';
+    const state = {
+      activeId: null,
+      q: ''
+    };
+
+    function nowIso(){
+      return new Date().toISOString();
+    }
+
+    function safeText(s){
+      return String(s||'')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    function loadDb(){
       try {
-        const conversations = await chatService.getUserConversations(currentUser.uid);
-        renderConversations(conversations);
-      } catch (error) {
-        console.error('Chyba při načítání konverzací:', error);
-        const container = document.getElementById('conversationsList');
-        container.innerHTML = `
-          <div class="p-6 text-center text-red-300 text-sm">
-            Došlo k chybě při načítání konverzací. Zkuste stránku obnovit.
-          </div>
-        `;
-        refreshIcons();
+        return JSON.parse(localStorage.getItem(LS_KEY) || '{"convs":[]}');
+      } catch(e){
+        return { convs: [] };
       }
     }
 
-    function renderConversations(conversations) {
-      const container = document.getElementById('conversationsList');
+    function saveDb(db){
+      localStorage.setItem(LS_KEY, JSON.stringify(db));
+    }
 
-      if (!conversations || conversations.length === 0) {
-        container.innerHTML = `
-          <div class="p-8 text-center text-white/60">
-            <i data-lucide="message-circle" class="w-10 h-10 mx-auto mb-3 text-white/40"></i>
-            <div class="text-sm font-medium">Zatím žádné konverzace</div>
-            <div class="text-xs mt-1 text-slate-400">První zprávu můžete poslat z profilu tvůrce nebo z detailu kampaně.</div>
-          </div>
-        `;
-        refreshIcons();
-        return;
-      }
+    function upsertConv(db, conv){
+      const i = db.convs.findIndex(c => c.id === conv.id);
+      if (i >= 0) db.convs[i] = conv;
+      else db.convs.unshift(conv);
+      return db;
+    }
 
-      container.innerHTML = conversations.map(conv => {
-        const participants = conv.participants || [];
-        const otherUserId = participants.find(p => p !== currentUser.uid) || 'Uživatel';
-        const unreadCount = conv.unreadCount?.[currentUser.uid] || 0;
-        const lastMessage = conv.lastMessage;
+    function humanDate(iso){
+      if(!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleString('cs-CZ', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
 
+    function mkId(prefix='c'){
+      return prefix + Math.random().toString(16).slice(2) + Date.now().toString(16);
+    }
+
+    function seedDemo(){
+      const db = loadDb();
+      if (db.convs && db.convs.length) return;
+
+      const c1 = {
+        id: mkId('c'),
+        title: '@lucy.fit',
+        meta: { type: 'creator' },
+        msgs: [
+          { id: mkId('m'), from:'them', text:'Ahoj! Díky za oslovení 🙂 Jaký je cíl kampaně?', at: nowIso() },
+          { id: mkId('m'), from:'me', text:'Ahoj, chceme krátké Reels na produkt + 3 stories. Termín do 10 dnů.', at: nowIso() },
+          { id: mkId('m'), from:'them', text:'Super, pošli prosím brief a rozpočet, ať navrhnu cenu.', at: nowIso() }
+        ],
+        updatedAt: nowIso()
+      };
+
+      const c2 = {
+        id: mkId('c'),
+        title: 'BrandXYZ',
+        meta: { type: 'brand' },
+        msgs: [
+          { id: mkId('m'), from:'me', text:'Ahoj, mám nápad na spolupráci – můžu poslat media kit?', at: nowIso() },
+          { id: mkId('m'), from:'them', text:'Jasně, pošli. A napiš prosím i ceny za Reels/TikTok.', at: nowIso() }
+        ],
+        updatedAt: nowIso()
+      };
+
+      db.convs = [c1, c2];
+      saveDb(db);
+    }
+
+    const els = {
+      convList: document.getElementById('convList'),
+      msgList: document.getElementById('msgList'),
+      activeTitle: document.getElementById('activeTitle'),
+      convSearch: document.getElementById('convSearch'),
+      msg: document.getElementById('msg'),
+      sendForm: document.getElementById('sendForm'),
+      sender: document.getElementById('sender'),
+      composerLock: document.getElementById('composerLock'),
+      newChatName: document.getElementById('newChatName'),
+      newChatBtn: document.getElementById('newChatBtn'),
+      seedBtn: document.getElementById('seedBtn'),
+      clearChat: document.getElementById('clearChat'),
+      deleteChat: document.getElementById('deleteChat')
+    };
+
+    function getActiveConv(db){
+      return db.convs.find(c => c.id === state.activeId) || null;
+    }
+
+    function renderConvs(){
+      const db = loadDb();
+      const term = (state.q || '').trim().toLowerCase();
+
+      // sort by updatedAt
+      db.convs.sort((a,b) => String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
+
+      const filtered = !term ? db.convs : db.convs.filter(c =>
+        String(c.title||'').toLowerCase().includes(term) ||
+        (c.msgs||[]).some(m => String(m.text||'').toLowerCase().includes(term))
+      );
+
+      els.convList.innerHTML = filtered.map(c => {
+        const last = (c.msgs||[])[(c.msgs||[]).length-1];
+        const lastTxt = last ? last.text : '—';
+        const active = c.id === state.activeId;
         return `
-          <button
-            class="conversation-item w-full text-left px-4 py-3 border-b border-white/8 hover:bg-white/5 transition flex items-center gap-3"
-            data-conversation-id="${conv.id}"
-            data-other-id="${otherUserId}"
-          >
-            <img
-              src="https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(otherUserId)}"
-              alt="Avatar uživatele ${otherUserId}"
-              class="w-10 h-10 rounded-full object-cover bg-neutral-800 border border-white/15 flex-shrink-0"
-            >
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-2">
-                <div class="font-medium text-sm truncate">${otherUserId}</div>
-                ${unreadCount > 0 ? `<span class="bg-fuchsia-500 text-white text-[10px] rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">${unreadCount}</span>` : ''}
+          <button data-id="${c.id}" class="w-full text-left p-3 rounded-2xl border ${active ? 'border-white/20 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/10'} transition">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="font-semibold truncate">${safeText(c.title)}</div>
+                <div class="text-xs text-white/50 truncate mt-0.5">${safeText(lastTxt)}</div>
               </div>
-              <div class="text-xs text-white/60 truncate">
-                ${lastMessage ? lastMessage.text : 'Nová konverzace'}
-              </div>
-              <div class="text-[10px] text-white/35 mt-0.5">
-                ${lastMessage ? ChatService.formatMessageTime(lastMessage.createdAt) : ''}
-              </div>
+              <div class="text-[11px] text-white/40 shrink-0">${safeText(humanDate(c.updatedAt).slice(0,10))}</div>
             </div>
           </button>
         `;
-      }).join('');
+      }).join('') || `
+        <div class="p-4">
+          <div class="rounded-2xl border border-white/10 bg-neutral-950/40 p-4 text-sm text-white/70">
+            Nic nenalezeno. Zkus jiné hledání nebo vytvoř novou konverzaci.
+          </div>
+        </div>
+      `;
 
-      container.querySelectorAll('.conversation-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const convId = btn.dataset.conversationId;
-          const otherId = btn.dataset.otherId;
-          openConversation(convId, otherId);
+      // bind
+      els.convList.querySelectorAll('button[data-id]').forEach(b => {
+        b.addEventListener('click', () => {
+          state.activeId = b.getAttribute('data-id');
+          renderAll();
+          // na mobilu zavři menu konverzací
+          if (window.innerWidth < 1024) {
+            b.scrollIntoView({ behavior:'smooth', block:'nearest' });
+          }
         });
       });
-
-      refreshIcons();
     }
 
-    async function openConversation(conversationId, otherUserId) {
-      currentConversationId = conversationId;
+    function renderMessages(){
+      const db = loadDb();
+      const conv = getActiveConv(db);
 
-      try {
-        await chatService.markAsRead(conversationId, currentUser.uid);
-      } catch (err) {
-        console.warn('Nepovedlo se označit jako přečtené:', err);
-      }
-
-      document.getElementById('chatHeader').classList.remove('hidden');
-      document.getElementById('messageInput').classList.remove('hidden');
-
-      const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(otherUserId)}`;
-      document.getElementById('chatAvatar').src = avatarUrl;
-      document.getElementById('chatName').textContent = otherUserId;
-      document.getElementById('chatStatus').textContent = 'Online';
-
-      await loadMessages(conversationId);
-
-      if (messagesListener) messagesListener();
-      messagesListener = chatService.listenToMessages(conversationId, (snapshot) => {
-        const messages = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })).sort((a, b) => toMillis(a.createdAt) - toMillis(b.createdAt));
-        renderMessages(messages);
-      });
-
-      refreshIcons();
-    }
-
-    async function loadMessages(conversationId) {
-      try {
-        const messages = await chatService.getMessages(conversationId);
-        messages.sort((a, b) => toMillis(a.createdAt) - toMillis(b.createdAt));
-        renderMessages(messages);
-      } catch (error) {
-        console.error('Chyba při načítání zpráv:', error);
-        const container = document.getElementById('messagesArea');
-        container.innerHTML = `
-          <div class="h-full flex items-center justify-center text-red-300 text-sm">
-            Došlo k chybě při načítání zpráv. Zkuste to prosím znovu.
-          </div>
-        `;
-        refreshIcons();
-      }
-    }
-
-    function renderMessages(messages) {
-      const container = document.getElementById('messagesArea');
-
-      if (!messages || messages.length === 0) {
-        container.innerHTML = `
-          <div class="h-full flex items-center justify-center text-white/60">
-            <div class="text-center max-w-xs">
-              <i data-lucide="message-square" class="w-14 h-14 mx-auto mb-3 text-white/30"></i>
-              <div class="text-base font-medium mb-1">Začněte konverzaci</div>
-              <div class="text-xs text-slate-400">Napište první zprávu do pole dole.</div>
-            </div>
-          </div>
-        `;
-        refreshIcons();
-        return;
-      }
-
-      container.innerHTML = messages.map(message => {
-        const isOwn = message.senderId === currentUser.uid;
-        const timeLabel = ChatService.formatMessageTime(message.createdAt);
-        const readMark = isOwn ? (message.read ? ' ✓✓' : ' ✓') : '';
-
-        return `
-          <div class="flex ${isOwn ? 'justify-end' : 'justify-start'}">
-            <div class="chat-bubble ${isOwn ? 'own' : 'other'}">
-              <div>${message.text}</div>
-              <div class="text-[10px] opacity-70 mt-1 text-right">
-                ${timeLabel}${readMark}
+      if (!conv){
+        els.activeTitle.textContent = 'Vyber konverzaci';
+        els.msgList.innerHTML = `
+          <div class="h-full grid place-items-center">
+            <div class="max-w-md w-full">
+              <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-center">
+                <div class="mx-auto h-12 w-12 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                  <i data-lucide="messages-square" class="h-6 w-6"></i>
+                </div>
+                <div class="mt-4 font-extrabold text-xl">Zatím žádný chat</div>
+                <div class="mt-2 text-white/70">Vyber konverzaci vlevo, nebo si vytvoř novou nahoře v „Rychlá akce“.</div>
               </div>
             </div>
           </div>
         `;
-      }).join('');
-
-      container.scrollTop = container.scrollHeight;
-      refreshIcons();
-    }
-
-    // ODESLÁNÍ ZPRÁVY
-    const messageInputEl = document.getElementById('messageText');
-    const sendBtn = document.getElementById('sendMessage');
-
-    async function sendMessage() {
-      const text = messageInputEl.value.trim();
-      if (!text || !currentConversationId) return;
-
-      try {
-        sendBtn.disabled = true;
-        await chatService.sendMessage(currentConversationId, currentUser.uid, text);
-        messageInputEl.value = '';
-      } catch (error) {
-        console.error('Chyba při odesílání zprávy:', error);
-        alert('Zprávu se nepodařilo odeslat. Zkuste to znovu.');
-      } finally {
-        sendBtn.disabled = false;
-        messageInputEl.focus();
+        els.composerLock.classList.remove('hidden');
+        els.sendForm.classList.add('hidden');
+        lucide.createIcons();
+        return;
       }
+
+      els.activeTitle.textContent = conv.title;
+      els.composerLock.classList.add('hidden');
+      els.sendForm.classList.remove('hidden');
+
+      const msgs = conv.msgs || [];
+      els.msgList.innerHTML = msgs.map(m => {
+        const mine = m.from === 'me';
+        return `
+          <div class="flex ${mine ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[82%] md:max-w-[70%] rounded-3xl border ${mine ? 'border-white/10 bg-white text-neutral-950' : 'border-white/10 bg-white/5'} px-4 py-3">
+              <div class="text-[11px] ${mine ? 'text-neutral-950/60' : 'text-white/50'} flex items-center gap-2">
+                <span class="inline-flex items-center gap-1">${mine ? '<i data-lucide="user" class="h-3.5 w-3.5"></i>Ty' : '<i data-lucide="users" class="h-3.5 w-3.5"></i>Druhá strana'}</span>
+                <span class="opacity-60">•</span>
+                <span>${safeText(humanDate(m.at))}</span>
+              </div>
+              <div class="mt-1 text-sm leading-relaxed ${mine ? 'text-neutral-950' : 'text-white/80'}">${safeText(m.text)}</div>
+            </div>
+          </div>
+        `;
+      }).join('') || `
+        <div class="rounded-2xl border border-white/10 bg-neutral-950/40 p-4 text-sm text-white/70">Zatím žádné zprávy.</div>
+      `;
+
+      lucide.createIcons();
+      // autoscroll
+      els.msgList.scrollTop = els.msgList.scrollHeight;
     }
 
-    sendBtn.addEventListener('click', sendMessage);
-    messageInputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    function renderAll(){
+      renderConvs();
+      renderMessages();
+      lucide.createIcons();
+    }
+
+    // create new chat
+    function createChat(title){
+      const name = (title || '').trim();
+      if (!name) return;
+
+      const db = loadDb();
+
+      // pokud existuje, jen aktivovat
+      const existing = db.convs.find(c => String(c.title).toLowerCase() === name.toLowerCase());
+      if (existing){
+        state.activeId = existing.id;
+        renderAll();
+        return;
+      }
+
+      const conv = {
+        id: mkId('c'),
+        title: name,
+        meta: { type: name.startsWith('@') ? 'creator' : 'brand' },
+        msgs: [
+          { id: mkId('m'), from:'me', text:'Ahoj! 🙂', at: nowIso() }
+        ],
+        updatedAt: nowIso()
+      };
+
+      db.convs.unshift(conv);
+      saveDb(db);
+      state.activeId = conv.id;
+      renderAll();
+    }
+
+    // send msg
+    function sendMsg(text, from){
+      const t = (text || '').trim();
+      if (!t) return;
+
+      const db = loadDb();
+      const conv = getActiveConv(db);
+      if (!conv) return;
+
+      conv.msgs = conv.msgs || [];
+      conv.msgs.push({ id: mkId('m'), from: from || 'me', text: t, at: nowIso() });
+      conv.updatedAt = nowIso();
+
+      saveDb(db);
+      renderAll();
+    }
+
+    // events
+    els.convSearch.addEventListener('input', () => {
+      state.q = els.convSearch.value;
+      renderConvs();
+    });
+
+    els.newChatBtn.addEventListener('click', () => {
+      createChat(els.newChatName.value);
+      els.newChatName.value = '';
+      els.newChatName.focus();
+    });
+
+    els.newChatName.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter'){
         e.preventDefault();
-        sendMessage();
+        els.newChatBtn.click();
       }
     });
 
-    // Logout (desktop + mobil)
-    async function handleLogout() {
-      try {
-        await kartaoAuth.logout();
-        window.location.href = 'index.html';
-      } catch (error) {
-        console.error('Chyba při odhlašování:', error);
-      }
-    }
-
-    const logoutBtn = document.getElementById('logout');
-    const logoutMobileBtn = document.getElementById('logout-mobile');
-
-    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-    if (logoutMobileBtn) logoutMobileBtn.addEventListener('click', handleLogout);
-
-    // Úklid listenerů
-    window.addEventListener('beforeunload', () => {
-      if (messagesListener) messagesListener();
-      if (conversationsListener) conversationsListener();
+    els.seedBtn.addEventListener('click', () => {
+      seedDemo();
+      const db = loadDb();
+      if (!state.activeId && db.convs[0]) state.activeId = db.convs[0].id;
+      renderAll();
     });
 
-    // první vykreslení ikon
-    document.addEventListener('DOMContentLoaded', () => {
-      refreshIcons();
+    els.sendForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMsg(els.msg.value, els.sender.value);
+      els.msg.value = '';
+      els.msg.focus();
     });
+
+    // templates (right panel)
+    document.querySelectorAll('.tpl').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.getAttribute('data-template') || '';
+        els.msg.value = t;
+        els.msg.focus();
+      });
+    });
+
+    // clear messages in active chat
+    els.clearChat.addEventListener('click', () => {
+      const db = loadDb();
+      const conv = getActiveConv(db);
+      if (!conv) return;
+      conv.msgs = [];
+      conv.updatedAt = nowIso();
+      saveDb(db);
+      renderAll();
+    });
+
+    // delete whole chat
+    els.deleteChat.addEventListener('click', () => {
+      const db = loadDb();
+      if (!state.activeId) return;
+      db.convs = (db.convs || []).filter(c => c.id !== state.activeId);
+      saveDb(db);
+      state.activeId = db.convs[0]?.id || null;
+      renderAll();
+    });
+
+    // init
+    (function init(){
+      const db = loadDb();
+      state.activeId = db.convs[0]?.id || null;
+      renderAll();
+    })();
   </script>
 </body>
 </html>
