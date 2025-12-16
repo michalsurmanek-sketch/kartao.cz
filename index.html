@@ -2597,6 +2597,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Zablokovat scrollování pozadí
       document.body.style.overflow = 'hidden';
       
+      // Skrýt šipku nahoru při otevření detail panelu
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if (scrollBtn) scrollBtn.classList.add('hidden');
+      
       setTimeout(() => drawer.classList.add('active'), 0);
 
       loadCreatorReviews(id);
