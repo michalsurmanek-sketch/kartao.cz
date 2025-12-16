@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – AI Price Negotiation</title>
+  <meta name="description" content="AI vyjednávání ceny na Kartao.cz. Doporučené cenové rozpětí, protinávrhy, férovost, argumenty a export do chatu." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+    input[type="range"]{accent-color:#fff}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">AI vyjednávání</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/ai-price-negotiation-dashboard.html">AI vyjednávání ceny</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/intelligent-recommendation-dashboard.html">AI doporučení</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="lg:hidden hidden">
+      <div class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/ai-price-negotiation-dashboard.html">AI vyjednávání ceny</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/intelligent-recommendation-dashboard.html">AI doporučení</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+      <div class="relative p-8 md:p-12">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <div class="space-y-4 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="handshake" class="h-4 w-4"></i>
+              <span>AI Price Negotiation</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">férová cena, rychlá dohoda</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Vyjednej cenu chytře. Bez trapna.</h1>
+            <p class="text-white/70 leading-relaxed">
+              Zadej parametry spolupráce a AI ti navrhne <b class="text-white">doporučené rozpětí</b>,
+              <b class="text-white">protinávrh</b>, argumenty a kompromisy.
+              U každé částky uvidíš <b class="text-white">férovost (fairness)</b> – aby to dávalo smysl oběma stranám.
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+              <button id="tabBrand" class="tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="briefcase" class="h-4 w-4"></i>
+                Vyjednává firma
+              </button>
+              <button id="tabCreator" class="tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="video" class="h-4 w-4"></i>
+                Vyjednává tvůrce
+              </button>
+              <button id="openHelp" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+                <i data-lucide="info" class="h-4 w-4"></i>
+                Jak počítáme cenu
+              </button>
+            </div>
+          </div>
+
+          <div class="w-full lg:w-[420px]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Status</div>
+                <div class="text-xs text-white/50" id="modeBadge">Režim: Firma</div>
+              </div>
+              <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs text-white/60">Data & účty</div>
+                    <div class="font-semibold">Supabase-ready</div>
+                    <div class="text-xs text-white/50 mt-1">(demo běží lokálně; připravené na napojení)</div>
+                  </div>
+                  <div class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                    <i data-lucide="database" class="h-5 w-5"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+                  <div class="text-xs text-white/60">Doporučené</div>
+                  <div class="mt-1 text-lg font-extrabold" id="statRec">—</div>
+                </div>
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+                  <div class="text-xs text-white/60">Protinávrh</div>
+                  <div class="mt-1 text-lg font-extrabold" id="statCounter">—</div>
+                </div>
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+                  <div class="text-xs text-white/60">Férovost</div>
+                  <div class="mt-1 text-lg font-extrabold" id="statFair">—</div>
+                </div>
+              </div>
+              <div class="text-xs text-white/60 leading-relaxed">
+                Tip: Klikni na <b class="text-white">Vygenerovat protinávrh</b> a pak si exportuj zprávu do chatu.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section class="grid lg:grid-cols-[1.05fr_0.95fr] gap-4 items-start">
+
+      <!-- INPUTS -->
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-extrabold tracking-tight">Parametry spolupráce</h2>
+            <p class="text-white/70 mt-2">Zadej realitu. AI navrhne rozpětí a připraví argumenty pro dohodu.</p>
+          </div>
+          <div class="hidden md:flex h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 items-center justify-center">
+            <i data-lucide="sliders-horizontal" class="h-5 w-5"></i>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4">
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Typ spolupráce</span>
+              <select id="deliverable" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="reels">Instagram Reels</option>
+                <option value="stories">Instagram Stories (set 3×)</option>
+                <option value="tiktok">TikTok video</option>
+                <option value="youtube">YouTube integrace</option>
+                <option value="ugc">UGC video (bez publikace)</option>
+                <option value="bundle">Balíček (Reels + Stories)</option>
+              </select>
+            </label>
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Termín dodání</span>
+              <select id="deadline" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="normal">Standard (5–7 dní)</option>
+                <option value="fast">Rychle (2–4 dny)</option>
+                <option value="urgent">Urgent (do 48h)</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-4">
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Platforma</span>
+              <select id="platform" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+                <option value="youtube">YouTube</option>
+              </select>
+            </label>
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Kategorie</span>
+              <select id="topic" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="fitness">Fitness</option>
+                <option value="beauty">Beauty</option>
+                <option value="food">Food</option>
+                <option value="travel">Travel</option>
+                <option value="tech">Tech</option>
+                <option value="home">Home</option>
+                <option value="gaming">Gaming</option>
+                <option value="lifestyle">Lifestyle</option>
+              </select>
+            </label>
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Region</span>
+              <select id="region" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="cz">ČR</option>
+                <option value="sk">SK</option>
+                <option value="czsk">CZ/SK</option>
+                <option value="eu">EU</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-neutral-950/30 p-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-extrabold">Profil (pro výpočet)</div>
+                <div class="text-sm text-white/60">Zatím demo hodnoty – později se tahá ze Supabase.</div>
+              </div>
+              <button id="loadDemo" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+                <i data-lucide="sparkles" class="h-4 w-4"></i> Demo profil
+              </button>
+            </div>
+
+            <div class="mt-4 grid md:grid-cols-3 gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Followers</span>
+                <input id="followers" type="number" min="0" step="1000" value="85000" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Engagement (%)</span>
+                <input id="eng" type="number" min="0" max="25" step="0.1" value="4.6" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Rating (1–5)</span>
+                <input id="rating" type="number" min="1" max="5" step="0.1" value="4.7" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+            </div>
+
+            <div class="mt-4 grid md:grid-cols-2 gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Minimální cena tvůrce (Kč)</span>
+                <input id="creatorMin" type="number" min="0" step="100" value="6500" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Max rozpočet firmy (Kč)</span>
+                <input id="brandMax" type="number" min="0" step="100" value="11000" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+            </div>
+
+            <div class="mt-4 grid md:grid-cols-2 gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Exkluzivita</span>
+                <select id="exclusivity" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                  <option value="none">Bez exkluzivity</option>
+                  <option value="7">7 dní</option>
+                  <option value="14">14 dní</option>
+                  <option value="30">30 dní</option>
+                </select>
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Práva k použití obsahu</span>
+                <select id="usage" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                  <option value="organic">Jen organicky (bez reklam)</option>
+                  <option value="paid7">Paid ads 7 dní</option>
+                  <option value="paid30">Paid ads 30 dní</option>
+                  <option value="paid90">Paid ads 90 dní</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+            <div class="text-sm text-white/60">Klikni na “Spočítat” a vygeneruj nabídku nebo protinávrh.</div>
+            <div class="flex flex-wrap gap-2">
+              <button id="reset" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="rotate-ccw" class="h-4 w-4"></i> Reset
+              </button>
+              <button id="calc" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="calculator" class="h-4 w-4"></i> Spočítat
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <aside class="space-y-4">
+
+        <!-- Recommendation panel -->
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Výsledek</div>
+              <div class="font-extrabold text-lg">Doporučená cena</div>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <i data-lucide="badge-dollar-sign" class="h-5 w-5"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+            <div class="text-xs text-white/60">Doporučené rozpětí</div>
+            <div class="mt-2 text-2xl font-extrabold" id="range">—</div>
+            <div class="mt-2 text-sm text-white/70" id="rangeNote">Zadej parametry a dej „Spočítat“.</div>
+
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+                <div class="text-xs text-white/60">Kotva nabídky</div>
+                <div class="mt-1 font-extrabold" id="anchor">—</div>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+                <div class="text-xs text-white/60">Protinávrh</div>
+                <div class="mt-1 font-extrabold" id="counter">—</div>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-2xl bg-white/5 border border-white/10 p-4">
+              <div class="flex items-center justify-between">
+                <div class="text-xs text-white/60">Férovost dohody (0–100)</div>
+                <div class="text-sm font-extrabold" id="fair">—</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-white/10 overflow-hidden">
+                <div id="fairBar" class="h-full" style="width:0%;background:#fff"></div>
+              </div>
+              <div class="mt-2 text-xs text-white/50" id="fairHint">—</div>
+            </div>
+          </div>
+
+          <div class="mt-4 grid gap-2">
+            <button id="genOffer" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition w-full">
+              <i data-lucide="wand-2" class="h-4 w-4"></i>
+              Vygenerovat nabídku (text)
+            </button>
+            <button id="genCounter" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-full">
+              <i data-lucide="git-pull-request" class="h-4 w-4"></i>
+              Vygenerovat protinávrh (text)
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="exportMail" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="mail" class="h-4 w-4"></i>
+                E-mail
+              </button>
+              <button id="copy" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="copy" class="h-4 w-4"></i>
+                Kopírovat
+              </button>
+            </div>
+            <a href="/chat.html" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition w-full">
+              <i data-lucide="message-square" class="h-4 w-4"></i>
+              Přejít do chatu
+            </a>
+          </div>
+        </div>
+
+        <!-- Argument bank -->
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">AI argumenty</div>
+              <div class="font-extrabold text-lg">Co říct, aby to prošlo</div>
+            </div>
+            <i data-lucide="speech" class="h-5 w-5 text-white/70"></i>
+          </div>
+
+          <div class="mt-4 grid gap-3" id="arguments">
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-sm text-white/70">Zatím nic. Spočítej cenu.</div>
+          </div>
+        </div>
+
+      </aside>
+
+    </section>
+
+    <!-- NEGOTIATION TIMELINE -->
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold tracking-tight">Vyjednávací zprávy</h2>
+          <p class="text-white/70 mt-2">Sestav si krátkou, jasnou zprávu. Uloží se do prohlížeče (demo).</p>
+        </div>
+        <div class="hidden md:flex h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 items-center justify-center">
+          <i data-lucide="messages-square" class="h-5 w-5"></i>
+        </div>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-[1fr_380px] gap-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4 md:p-5">
+          <div id="thread" class="space-y-3"></div>
+          <div class="mt-4 flex gap-2">
+            <input id="msg" type="text" placeholder="Napiš zprávu…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+            <button id="send" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+              <i data-lucide="send" class="h-4 w-4"></i>
+              Odeslat
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-white/60">Rychlé šablony</div>
+              <div class="font-extrabold">Klikni a vlož</div>
+            </div>
+            <i data-lucide="zap" class="h-5 w-5 text-white/70"></i>
+          </div>
+
+          <div class="grid gap-2">
+            <button class="tpl" data-tpl="Zdravím! Díky za nabídku. Rád bych to posunul k dohodě – co říkáte na cenu {PRICE} Kč za {DEL}?">Zdvořile nabídka</button>
+            <button class="tpl" data-tpl="Rozumím rozpočtu. Umím nabídnout kompromis: {PRICE} Kč, ale bez exkluzivity / bez paid ads.">Kompromis</button>
+            <button class="tpl" data-tpl="Pro {DEL} je férové rozpětí {RANGE}. Můžeme to uzavřít dnes, pokud potvrdíte termín a podklady.">Argument „férové rozpětí“</button>
+            <button class="tpl" data-tpl="Když půjdeme na {PRICE} Kč, přidám navíc 1× story / krátký follow-up.">Hodnota navíc</button>
+          </div>
+
+          <div class="pt-2 grid grid-cols-2 gap-2">
+            <button id="saveDraft" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <i data-lucide="save" class="h-4 w-4"></i>
+              Uložit
+            </button>
+            <button id="clearThread" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <i data-lucide="trash-2" class="h-4 w-4"></i>
+              Vymazat
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- HELP MODAL -->
+  <div id="help" class="fixed inset-0 z-50 hidden">
+    <div id="helpBg" class="absolute inset-0 bg-black/70"></div>
+    <div class="absolute inset-0 overflow-y-auto">
+      <div class="min-h-full px-4 py-10 grid place-items-center">
+        <div class="w-full max-w-2xl rounded-3xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div class="p-6 md:p-7 border-b border-white/10 flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Jak počítáme cenu</div>
+              <div class="text-2xl font-extrabold">Price model (demo)</div>
+            </div>
+            <button id="helpClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+              <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+          </div>
+          <div class="p-6 md:p-7 space-y-4 text-white/70 leading-relaxed">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <div class="font-extrabold text-white">Základ</div>
+              <div class="mt-2 text-sm">
+                Cena se skládá z: <b class="text-white">typ výstupu</b> + <b class="text-white">velikost profilu</b> + <b class="text-white">engagement</b> + <b class="text-white">kvalita/rating</b> + <b class="text-white">rychlost dodání</b> + <b class="text-white">práva/usage</b> + <b class="text-white">exkluzivita</b>.
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="font-extrabold text-white">Férovost</div>
+                <div class="mt-2 text-sm">Sleduje, jak daleko je nabídka od doporučeného rozpětí a zároveň respektuje min. cenu tvůrce a max. rozpočet firmy.</div>
+              </div>
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="font-extrabold text-white">Protinávrh</div>
+                <div class="mt-2 text-sm">AI navrhne částku tak, aby zvedla šanci na dohodu. Když jsou strany mimo, navrhne kompromis (např. bez paid ads/exkluzivity).</div>
+              </div>
+            </div>
+            <div class="text-xs text-white/50">
+              Pozn.: Tohle je demo model pro UI/UX. V ostrém režimu se to napojí na reálné statistiky a historii kampaní v Supabase.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">AI nástroje</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/ai-analytics-dashboard.html">AI Analytics</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/intelligent-recommendation-dashboard.html">AI doporučení</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/ai-price-negotiation-dashboard.html">AI vyjednávání ceny</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">ai-price-negotiation-dashboard.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // icons
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // mode (brand / creator)
+    const modeBadge = document.getElementById('modeBadge');
+    const tabBrand = document.getElementById('tabBrand');
+    const tabCreator = document.getElementById('tabCreator');
+    let mode = 'brand';
+    function setMode(next){
+      mode = next;
+      modeBadge.textContent = `Režim: ${mode === 'brand' ? 'Firma' : 'Tvůrce'}`;
+      if (mode === 'brand') {
+        tabBrand.className = 'tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
+        tabCreator.className = 'tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
+      } else {
+        tabCreator.className = 'tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
+        tabBrand.className = 'tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
+      }
+      calcAndRender(true);
+    }
+    tabBrand.addEventListener('click', () => setMode('brand'));
+    tabCreator.addEventListener('click', () => setMode('creator'));
+
+    // help modal
+    const help = document.getElementById('help');
+    const helpBg = document.getElementById('helpBg');
+    const helpClose = document.getElementById('helpClose');
+    const openHelp = document.getElementById('openHelp');
+    function openHelpModal(){ help.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+    function closeHelpModal(){ help.classList.add('hidden'); document.body.style.overflow=''; }
+    openHelp.addEventListener('click', openHelpModal);
+    helpBg.addEventListener('click', closeHelpModal);
+    helpClose.addEventListener('click', closeHelpModal);
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelpModal(); });
+
+    // UI refs
+    const deliverable = document.getElementById('deliverable');
+    const deadline = document.getElementById('deadline');
+    const platform = document.getElementById('platform');
+    const topic = document.getElementById('topic');
+    const region = document.getElementById('region');
+
+    const followers = document.getElementById('followers');
+    const eng = document.getElementById('eng');
+    const rating = document.getElementById('rating');
+
+    const creatorMin = document.getElementById('creatorMin');
+    const brandMax = document.getElementById('brandMax');
+
+    const exclusivity = document.getElementById('exclusivity');
+    const usage = document.getElementById('usage');
+
+    const rangeEl = document.getElementById('range');
+    const rangeNote = document.getElementById('rangeNote');
+    const anchorEl = document.getElementById('anchor');
+    const counterEl = document.getElementById('counter');
+    const fairEl = document.getElementById('fair');
+    const fairBar = document.getElementById('fairBar');
+    const fairHint = document.getElementById('fairHint');
+
+    const statRec = document.getElementById('statRec');
+    const statCounter = document.getElementById('statCounter');
+    const statFair = document.getElementById('statFair');
+
+    const argumentsEl = document.getElementById('arguments');
+
+    const calcBtn = document.getElementById('calc');
+    const resetBtn = document.getElementById('reset');
+    const loadDemo = document.getElementById('loadDemo');
+
+    const genOffer = document.getElementById('genOffer');
+    const genCounter = document.getElementById('genCounter');
+    const exportMail = document.getElementById('exportMail');
+    const copyBtn = document.getElementById('copy');
+
+    // timeline
+    const thread = document.getElementById('thread');
+    const msg = document.getElementById('msg');
+    const send = document.getElementById('send');
+    const saveDraft = document.getElementById('saveDraft');
+    const clearThread = document.getElementById('clearThread');
+
+    // local storage keys
+    const LS_KEY = 'kartao_price_neg_v1';
+    const LS_THREAD = 'kartao_price_neg_thread_v1';
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+    function czk(n){
+      const x = Math.round(Number(n||0));
+      return x.toLocaleString('cs-CZ') + ' Kč';
+    }
+
+    function deliverableLabel(v){
+      return {
+        reels:'Instagram Reels',
+        stories:'Instagram Stories (3×)',
+        tiktok:'TikTok video',
+        youtube:'YouTube integrace',
+        ugc:'UGC video',
+        bundle:'Balíček (Reels + Stories)'
+      }[v] || v;
+    }
+
+    function basePriceByDeliverable(v){
+      // základní ceny pro střední profil – demo
+      return {
+        reels: 6500,
+        stories: 3200,
+        tiktok: 6800,
+        youtube: 12000,
+        ugc: 5500,
+        bundle: 8900,
+      }[v] || 6500;
+    }
+
+    function multiplierByDeadline(v){
+      return { normal:1.0, fast:1.12, urgent:1.28 }[v] || 1.0;
+    }
+
+    function multiplierByUsage(v){
+      return { organic:1.0, paid7:1.15, paid30:1.35, paid90:1.55 }[v] || 1.0;
+    }
+
+    function multiplierByExclusivity(v){
+      const d = Number(v||0);
+      if (!d) return 1.0;
+      if (d <= 7) return 1.10;
+      if (d <= 14) return 1.18;
+      return 1.30;
+    }
+
+    function multiplierByRegion(v){
+      return { cz:1.0, sk:0.95, czsk:1.05, eu:1.15 }[v] || 1.0;
+    }
+
+    function multiplierByPlatform(v){
+      return { instagram:1.0, tiktok:1.02, youtube:1.18 }[v] || 1.0;
+    }
+
+    function profileMultiplier(fol, engPct, ratingVal){
+      // followers: log růst, eng a rating lehce přidají
+      const f = Math.max(0, Number(fol||0));
+      const e = clamp(Number(engPct||0)/6, 0, 1.6); // 6% = 1
+      const r = clamp((Number(ratingVal||4.2)-3.5)/1.5, 0, 1); // 3.5->0, 5->1
+
+      const fM = 0.70 + Math.log10(1 + f/1000) * 0.18; // cca 0.9–1.35
+      const eM = 0.95 + clamp(e,0,1.6) * 0.12;        // 0.95–1.14
+      const rM = 0.95 + r * 0.10;                     // 0.95–1.05
+      return clamp(fM * eM * rM, 0.85, 1.75);
+    }
+
+    function computeRecommended(){
+      const base = basePriceByDeliverable(deliverable.value);
+      const m =
+        profileMultiplier(followers.value, eng.value, rating.value) *
+        multiplierByDeadline(deadline.value) *
+        multiplierByUsage(usage.value) *
+        multiplierByExclusivity(exclusivity.value) *
+        multiplierByRegion(region.value) *
+        multiplierByPlatform(platform.value);
+
+      const mid = base * m;
+      // rozpětí +- 12% (podle nejistoty)
+      const low = mid * 0.88;
+      const high = mid * 1.12;
+      return { low, mid, high, base, m };
+    }
+
+    function computeFairness(price, recLow, recHigh, minCreator, maxBrand){
+      // 0–100: 100 když cena v doporučeném rozpětí a zároveň respektuje min/max
+      let score = 100;
+
+      // penalizace mimo rozpětí
+      if (price < recLow){
+        const d = (recLow - price) / Math.max(recLow,1);
+        score -= d * 120;
+      }
+      if (price > recHigh){
+        const d = (price - recHigh) / Math.max(recHigh,1);
+        score -= d * 120;
+      }
+
+      // penalizace proti min/max
+      if (price < minCreator){
+        const d = (minCreator - price) / Math.max(minCreator,1);
+        score -= d * 160;
+      }
+      if (price > maxBrand){
+        const d = (price - maxBrand) / Math.max(maxBrand,1);
+        score -= d * 160;
+      }
+
+      return clamp(score, 0, 100);
+    }
+
+    function suggestAnchorAndCounter(rec){
+      const minC = Number(creatorMin.value||0);
+      const maxB = Number(brandMax.value||0);
+
+      // anchor: kdo vyjednává, ten kotví pro sebe výhodně (ale ne extrém)
+      let anchor;
+      if (mode === 'brand') {
+        // firma chce níž: u spodní hranice, ale ne pod min tvůrce
+        anchor = Math.max(rec.low, minC);
+      } else {
+        // tvůrce chce výš: u horní hranice, ale ne nad max rozpočet firmy o moc
+        anchor = Math.min(rec.high, maxB * 1.08);
+      }
+
+      // counter: kompromis – střed mezi anchor a hranou druhé strany
+      let counter;
+      if (mode === 'brand') {
+        // protinávrh tvůrce typicky míří k mid/high
+        counter = clamp((anchor + rec.mid) / 2 + (rec.high - rec.mid) * 0.15, minC, rec.high);
+      } else {
+        // protinávrh firmy míří k mid/low
+        counter = clamp((anchor + rec.mid) / 2 - (rec.mid - rec.low) * 0.15, rec.low, maxB);
+      }
+
+      // vždy respektuj hraniční limity, pokud to jde
+      counter = clamp(counter, minC, Math.max(minC, maxB));
+      anchor = clamp(anchor, minC, Math.max(minC, maxB*1.25));
+
+      return { anchor, counter };
+    }
+
+    function buildArguments(rec, anchor, counter){
+      const del = deliverableLabel(deliverable.value);
+      const usageText = {
+        organic:'použití pouze organicky (bez reklam)',
+        paid7:'paid ads 7 dní',
+        paid30:'paid ads 30 dní',
+        paid90:'paid ads 90 dní'
+      }[usage.value] || 'použití dle domluvy';
+
+      const ex = exclusivity.value === 'none' ? 'bez exkluzivity' : `exkluzivita ${exclusivity.value} dní`;
+      const dl = { normal:'standardní termín', fast:'rychlejší dodání', urgent:'urgent dodání' }[deadline.value] || 'termín dle domluvy';
+
+      const A = [];
+
+      // 1) férový rámec
+      A.push({
+        title: 'Férové rozpětí',
+        body: `Dle parametrů (${del}, ${usageText}, ${ex}, ${dl}) vychází férové rozpětí ${czk(rec.low)} – ${czk(rec.high)}.`
+      });
+
+      // 2) kompromis páky
+      if (mode === 'brand') {
+        A.push({
+          title: 'Kompromis výměnou za cenu',
+          body: `Když půjdeme na ${czk(anchor)}, držme ${usageText} a bez dalších práv. Pokud chcete vyšší cenu, můžeme to vyrovnat např. prodloužením usage nebo přidáním výstupu.`
+        });
+      } else {
+        A.push({
+          title: 'Hodnota navíc místo slevy',
+          body: `Jestli je potřeba vejít se do rozpočtu, umím nabídnout kompromis (např. bez paid ads / kratší usage) a držet cenu kolem ${czk(counter)}.`
+        });
+      }
+
+      // 3) rychlost / urgence
+      if (deadline.value !== 'normal') {
+        A.push({
+          title: 'Rychlost = příplatek',
+          body: `Rychlejší dodání zvyšuje náklady (plánování, schvalování, priority). Proto je rozumné držet cenu blíž horní hranici rozpětí.`
+        });
+      }
+
+      // 4) usage
+      if (usage.value !== 'organic') {
+        A.push({
+          title: 'Paid usage je licence',
+          body: `Paid ads nejsou „jen repost“. Je to licence na reklamní využití obsahu – proto má samostatnou hodnotu.`
+        });
+      }
+
+      // 5) jistota
+      A.push({
+        title: 'Rychlá dohoda',
+        body: `Když potvrdíme dnes, držím termín i cenu a posílám návrh výstupu + checklist podkladů.`
+      });
+
+      return A;
+    }
+
+    function renderArguments(list){
+      argumentsEl.innerHTML = list.map(x => `
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <div class="font-extrabold">${escapeHtml(x.title)}</div>
+          <div class="mt-2 text-sm text-white/70 leading-relaxed">${escapeHtml(x.body)}</div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(s){
+      return String(s||'')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    function fairnessHint(score, price, rec){
+      if (score >= 85) return 'Vypadá to férově. Šance na rychlou dohodu je vysoká.';
+      if (score >= 65) return 'Dá se vyjednat. Zvaž kompromis (usage/exkluzivita/bonus výstup).';
+      if (price < rec.low) return 'Cena je spíš nízko. Přidej hodnotu (bonus výstup) nebo zkrať usage.';
+      if (price > rec.high) return 'Cena je spíš vysoko. Zvaž slevu nebo přidej konkrétní garance a bonusy.';
+      return 'Je to mimo. Vrať se k rozpětí a vyber kompromis.';
+    }
+
+    function calcAndRender(silent){
+      const rec = computeRecommended();
+      const minC = Number(creatorMin.value||0);
+      const maxB = Number(brandMax.value||0);
+
+      const { anchor, counter } = suggestAnchorAndCounter(rec);
+      const fairA = computeFairness(anchor, rec.low, rec.high, minC, maxB);
+      const fairC = computeFairness(counter, rec.low, rec.high, minC, maxB);
+
+      // pick displayed fairness depending on mode (offer = anchor)
+      const fair = fairA;
+
+      rangeEl.textContent = `${czk(rec.low)} – ${czk(rec.high)}`;
+      rangeNote.textContent = `Střed: ${czk(rec.mid)} • multiplikátor: ${rec.m.toFixed(2)} (demo)`;
+      anchorEl.textContent = czk(anchor);
+      counterEl.textContent = czk(counter);
+
+      fairEl.textContent = String(Math.round(fair));
+      statRec.textContent = `${czk(rec.mid)}`;
+      statCounter.textContent = `${czk(counter)}`;
+      statFair.textContent = `${Math.round(fair)}`;
+
+      fairBar.style.width = `${Math.round(fair)}%`;
+      fairHint.textContent = fairnessHint(fair, anchor, rec);
+
+      renderArguments(buildArguments(rec, anchor, counter));
+
+      const snapshot = {
+        mode,
+        deliverable: deliverable.value,
+        deadline: deadline.value,
+        platform: platform.value,
+        topic: topic.value,
+        region: region.value,
+        followers: Number(followers.value||0),
+        eng: Number(eng.value||0),
+        rating: Number(rating.value||0),
+        creatorMin: Number(creatorMin.value||0),
+        brandMax: Number(brandMax.value||0),
+        exclusivity: exclusivity.value,
+        usage: usage.value,
+        rec,
+        anchor,
+        counter,
+        fair
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(snapshot));
+      if (!silent) toast('Spočítáno');
+      return snapshot;
+    }
+
+    // --- timeline ---
+    function loadThread(){
+      try { return JSON.parse(localStorage.getItem(LS_THREAD) || '[]') || []; }
+      catch(e){ return []; }
+    }
+    function saveThread(list){
+      localStorage.setItem(LS_THREAD, JSON.stringify(list || []));
+    }
+    function renderThread(){
+      const list = loadThread();
+      thread.innerHTML = list.map(x => {
+        const side = x.side === 'me';
+        return `
+          <div class="flex ${side ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[82%] rounded-3xl border border-white/10 ${side ? 'bg-white text-neutral-950' : 'bg-white/5 text-white'} px-4 py-3">
+              <div class="text-xs ${side ? 'text-neutral-950/60' : 'text-white/50'}">${escapeHtml(x.meta||'')}</div>
+              <div class="mt-1 text-sm leading-relaxed">${escapeHtml(x.text||'')}</div>
+            </div>
+          </div>
+        `;
+      }).join('') || '<div class="text-sm text-white/60">Zatím prázdné. Vygeneruj text nebo napiš zprávu.</div>';
+      lucide.createIcons();
+    }
+
+    function pushMessage(text, side='me', meta=''){ 
+      const list = loadThread();
+      list.push({ text, side, meta: meta || new Date().toLocaleString('cs-CZ') });
+      saveThread(list);
+      renderThread();
+    }
+
+    // template buttons
+    document.querySelectorAll('.tpl').forEach(b => {
+      b.className = 'tpl text-left px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-white/80 hover:text-white';
+      b.addEventListener('click', () => {
+        const snap = calcAndRender(true);
+        const price = mode === 'brand' ? snap.anchor : snap.counter;
+        const t = b.getAttribute('data-tpl') || '';
+        const out = t
+          .replaceAll('{PRICE}', String(Math.round(price)))
+          .replaceAll('{DEL}', deliverableLabel(deliverable.value))
+          .replaceAll('{RANGE}', `${czk(snap.rec.low)} – ${czk(snap.rec.high)}`);
+        msg.value = out;
+        msg.focus();
+      });
+    });
+
+    send.addEventListener('click', () => {
+      const t = (msg.value||'').trim();
+      if (!t) return;
+      pushMessage(t, 'me', mode === 'brand' ? 'Firma' : 'Tvůrce');
+      msg.value = '';
+    });
+    msg.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') send.click();
+    });
+
+    saveDraft.addEventListener('click', () => {
+      toast('Uloženo (thread je v LocalStorage)');
+    });
+
+    clearThread.addEventListener('click', () => {
+      localStorage.removeItem(LS_THREAD);
+      renderThread();
+      toast('Vymazáno');
+    });
+
+    // --- generate offer/counter text ---
+    function makeOfferText(kind='offer'){
+      const snap = calcAndRender(true);
+      const del = deliverableLabel(snap.deliverable);
+      const price = kind === 'offer' ? snap.anchor : snap.counter;
+      const side = mode === 'brand' ? 'firma' : 'tvůrce';
+
+      const usageText = {
+        organic:'organické použití (bez reklam)',
+        paid7:'paid ads 7 dní',
+        paid30:'paid ads 30 dní',
+        paid90:'paid ads 90 dní'
+      }[snap.usage] || 'použití dle domluvy';
+
+      const ex = snap.exclusivity === 'none' ? 'bez exkluzivity' : `exkluzivita ${snap.exclusivity} dní`;
+      const dl = { normal:'dodání 5–7 dní', fast:'dodání 2–4 dny', urgent:'dodání do 48h' }[snap.deadline] || 'termín dle domluvy';
+
+      const range = `${czk(snap.rec.low)} – ${czk(snap.rec.high)}`;
+      const fairness = Math.round(snap.fair);
+
+      if (kind === 'offer') {
+        return `Zdravím! Navrhuji spolupráci: ${del}. \n\nCena: ${czk(price)} \nPodmínky: ${usageText}, ${ex}, ${dl}. \n\nDle parametrů vychází férové rozpětí ${range} (fairness ${fairness}/100). \n\nPokud potvrdíme dnes, pošlu brief a checklist podkladů.`;
+      }
+
+      // counter
+      if (mode === 'brand') {
+        return `Díky za nabídku! Abychom se vešli do rozpočtu, dávám protinávrh: ${czk(price)} za ${del}. \n\nPodmínky: ${usageText}, ${ex}, ${dl}. \n\nFérové rozpětí dle parametrů vychází ${range}. Pokud potřebujete vyšší cenu, můžeme to vyrovnat přidáním rights/bonus výstupu.`;
+      }
+
+      return `Díky! Můj protinávrh je ${czk(price)} za ${del}. \n\nPodmínky: ${usageText}, ${ex}, ${dl}. \n\nDle parametrů vychází férové rozpětí ${range}. Když potřebujete slevu, umím to kompenzovat (např. kratší usage / bez paid ads).`;
+    }
+
+    genOffer.addEventListener('click', () => {
+      const text = makeOfferText('offer');
+      pushMessage(text, 'me', 'AI nabídka');
+      toast('Vygenerováno');
+    });
+
+    genCounter.addEventListener('click', () => {
+      const text = makeOfferText('counter');
+      pushMessage(text, 'me', 'AI protinávrh');
+      toast('Vygenerováno');
+    });
+
+    exportMail.addEventListener('click', () => {
+      const list = loadThread();
+      const body = list.map(x => `${x.meta}: ${x.text}`).join('\n\n');
+      const subject = encodeURIComponent('[Kartao.cz] Vyjednávání ceny – návrh');
+      const mailBody = encodeURIComponent(body || makeOfferText('offer'));
+      window.location.href = `mailto:info@kartao.cz?subject=${subject}&body=${mailBody}`;
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const list = loadThread();
+      const text = list.map(x => `${x.meta}: ${x.text}`).join('\n\n') || makeOfferText('offer');
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('Zkopírováno');
+      } catch(e){
+        toast('Nepodařilo se kopírovat');
+      }
+    });
+
+    // demo profile
+    loadDemo.addEventListener('click', () => {
+      followers.value = 128000;
+      eng.value = 6.2;
+      rating.value = 4.9;
+      creatorMin.value = 8900;
+      brandMax.value = 14900;
+      deliverable.value = 'bundle';
+      platform.value = 'instagram';
+      region.value = 'cz';
+      deadline.value = 'fast';
+      usage.value = 'paid30';
+      exclusivity.value = '14';
+      calcAndRender(false);
+    });
+
+    // reset
+    resetBtn.addEventListener('click', () => {
+      deliverable.value = 'reels';
+      deadline.value = 'normal';
+      platform.value = 'instagram';
+      topic.value = 'fitness';
+      region.value = 'cz';
+      followers.value = 85000;
+      eng.value = 4.6;
+      rating.value = 4.7;
+      creatorMin.value = 6500;
+      brandMax.value = 11000;
+      exclusivity.value = 'none';
+      usage.value = 'organic';
+      calcAndRender(false);
+    });
+
+    // calc
+    calcBtn.addEventListener('click', () => calcAndRender(false));
+    [deliverable,deadline,platform,topic,region,followers,eng,rating,creatorMin,brandMax,exclusivity,usage].forEach(el => {
+      el.addEventListener('input', () => calcAndRender(true));
+      el.addEventListener('change', () => calcAndRender(true));
+    });
+
+    // init: restore state
+    function init(){
+      // restore snapshot
+      try {
+        const snap = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+        if (snap){
+          setMode(snap.mode || 'brand');
+          deliverable.value = snap.deliverable || deliverable.value;
+          deadline.value = snap.deadline || deadline.value;
+          platform.value = snap.platform || platform.value;
+          topic.value = snap.topic || topic.value;
+          region.value = snap.region || region.value;
+          followers.value = snap.followers ?? followers.value;
+          eng.value = snap.eng ?? eng.value;
+          rating.value = snap.rating ?? rating.value;
+          creatorMin.value = snap.creatorMin ?? creatorMin.value;
+          brandMax.value = snap.brandMax ?? brandMax.value;
+          exclusivity.value = snap.exclusivity || exclusivity.value;
+          usage.value = snap.usage || usage.value;
+        }
+      } catch(e){}
+
+      calcAndRender(true);
+      renderThread();
+      lucide.createIcons();
+    }
+
+    // toast
+    let toastEl;
+    function toast(msg){
+      if (!toastEl){
+        toastEl = document.createElement('div');
+        toastEl.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-2xl bg-neutral-950/80 border border-white/10 backdrop-blur-xl text-sm text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        document.body.appendChild(toastEl);
+      }
+      toastEl.textContent = msg;
+      toastEl.style.opacity = '1';
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(() => { toastEl.style.opacity = '0'; }, 1800);
+    }
+
+    init();
+
+    // --- Supabase hook (placeholder) ---
+    // Později: načíst profil/kampaň a historii cen z Supabase.
+    // - Získat followers/eng/rating z tabulky profiles
+    // - Získat historické ceny z tabulky deals
+    // - Uložit thread do tabulky negotiations
+    // Sem nedávám žádné klíče.
+  </script>
+</body>
+</html>
