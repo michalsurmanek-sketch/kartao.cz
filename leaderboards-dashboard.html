@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – Leaderboards</title>
+  <meta name="description" content="Žebříčky Kartao.cz – top tvůrci, top značky, odznaky a výkony v čase." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV (sjednocený) -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-recenze.html">Recenze</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/mapa-webu.html">Mapa webu</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/leaderboards-dashboard.html">Leaderboards</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobileMenu" class="lg:hidden hidden">
+      <div class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-recenze.html">Recenze</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/mapa-webu.html">Mapa webu</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/leaderboards-dashboard.html">Leaderboards</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-12">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+      <div class="relative p-8 md:p-12">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <div class="space-y-4 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="trophy" class="h-4 w-4"></i>
+              <span>Leaderboards</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">žebříčky výkonu</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Top tvůrci a top značky</h1>
+            <p class="text-white/70 leading-relaxed">
+              Přehled nejvýkonnějších profilů v Kartao.cz. V budoucnu napojíme na reálná data (kampaně, recenze, odznaky, engagement).
+              Teď je to demo, ale UI je připravené.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <a href="#zebricek" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="list-ordered" class="h-4 w-4"></i>
+                Otevřít žebříček
+              </a>
+              <a href="#metriky" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="activity" class="h-4 w-4"></i>
+                Metriky
+              </a>
+              <a href="/badge-system-dashboard.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+                <i data-lucide="badge-check" class="h-4 w-4"></i>
+                Badge systém
+              </a>
+            </div>
+          </div>
+
+          <!-- ovladače -->
+          <div class="w-full lg:w-[440px]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Ovládání</div>
+                <div class="text-xs text-white/50">demo</div>
+              </div>
+
+              <div class="grid gap-3">
+                <div class="grid sm:grid-cols-2 gap-2">
+                  <button id="tabCreators" class="tabBtn active inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" type="button">
+                    <i data-lucide="video" class="h-4 w-4"></i>
+                    Tvůrci
+                  </button>
+                  <button id="tabBrands" class="tabBtn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" type="button">
+                    <i data-lucide="briefcase" class="h-4 w-4"></i>
+                    Značky
+                  </button>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-2">
+                  <label class="grid gap-2">
+                    <span class="text-xs text-white/60">Období</span>
+                    <select id="period" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                      <option value="week">Tento týden</option>
+                      <option value="month" selected>Tento měsíc</option>
+                      <option value="all">Celkem</option>
+                    </select>
+                  </label>
+                  <label class="grid gap-2">
+                    <span class="text-xs text-white/60">Řazení</span>
+                    <select id="metric" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                      <option value="score" selected>Score</option>
+                      <option value="eng">Engagement</option>
+                      <option value="deals">Spolupráce</option>
+                      <option value="rating">Recenze</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="relative">
+                  <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                  <input id="q" type="text" placeholder="Hledej v žebříčku…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  <button id="resetBtn" type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                    <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                    Reset
+                  </button>
+                  <button id="seedBtn" type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                    <i data-lucide="sparkles" class="h-4 w-4"></i>
+                    Načíst demo data
+                  </button>
+                  <button id="clearBtn" type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                    <i data-lucide="trash-2" class="h-4 w-4"></i>
+                    Smazat lokální
+                  </button>
+                </div>
+
+                <div class="text-xs text-white/50 leading-relaxed">
+                  Tip: až to napojíme na backend, bude se to plnit z kampaní, recenzí, badge systému a engagementu.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- METRIKY -->
+    <section id="metriky" class="grid lg:grid-cols-3 gap-4">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-white/60">Metrika</div>
+            <h2 class="text-xl font-extrabold">Score</h2>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="trophy" class="h-5 w-5"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-white/70">Souhrnné skóre (kombinace spoluprací, recenzí, výkonu a odznaků).</p>
+      </div>
+
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-white/60">Metrika</div>
+            <h2 class="text-xl font-extrabold">Engagement</h2>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="activity" class="h-5 w-5"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-white/70">Engagement rate / interakce – aby nevyhrával jen „největší účet“.</p>
+      </div>
+
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-white/60">Metrika</div>
+            <h2 class="text-xl font-extrabold">Recenze</h2>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="star" class="h-5 w-5"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-white/70">Průměrné hodnocení po spolupráci (pro tvůrce i značky).</p>
+      </div>
+    </section>
+
+    <!-- ZEBŘÍČEK -->
+    <section id="zebricek" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Žebříček</h2>
+          <p class="text-white/70 mt-2">Aktuálně zobrazeno: <span id="modeLbl" class="text-white font-semibold">Tvůrci</span> • <span id="periodLbl" class="text-white/80">Tento měsíc</span> • <span id="metricLbl" class="text-white/80">Score</span></p>
+        </div>
+        <div class="text-sm text-white/60"><span id="count">0</span> výsledků</div>
+      </div>
+
+      <!-- top3 cards -->
+      <div id="top3" class="grid md:grid-cols-3 gap-4"></div>
+
+      <!-- table -->
+      <div class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="list-ordered" class="h-4 w-4 text-white/70"></i>
+            <div class="font-semibold">Pořadí</div>
+          </div>
+          <div class="text-xs text-white/50">Klikni na řádek (demo)</div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-white/60">
+              <tr class="border-b border-white/10">
+                <th class="text-left font-semibold px-6 py-3">#</th>
+                <th class="text-left font-semibold px-6 py-3">Profil</th>
+                <th class="text-left font-semibold px-6 py-3">Kategorie</th>
+                <th class="text-right font-semibold px-6 py-3">Score</th>
+                <th class="text-right font-semibold px-6 py-3">Eng.</th>
+                <th class="text-right font-semibold px-6 py-3">Spol.</th>
+                <th class="text-right font-semibold px-6 py-3">Rec.</th>
+              </tr>
+            </thead>
+            <tbody id="rows" class="text-white/80"></tbody>
+          </table>
+        </div>
+
+        <div id="empty" class="hidden px-6 py-10 text-white/70">Nic nenalezeno. Zkus změnit filtr nebo vyhledávání.</div>
+      </div>
+
+      <!-- detail modal -->
+      <div id="modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-black/70" data-close></div>
+        <div class="absolute inset-0 grid place-items-center p-4">
+          <div class="w-full max-w-xl rounded-3xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <div class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                  <i data-lucide="trophy" class="h-5 w-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-white/60">Detail profilu (demo)</div>
+                  <div id="mTitle" class="font-extrabold text-lg">—</div>
+                </div>
+              </div>
+              <button class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít" data-close>
+                <i data-lucide="x" class="h-5 w-5"></i>
+              </button>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+                  <div class="text-xs text-white/60">Kategorie</div>
+                  <div id="mCat" class="font-semibold mt-1">—</div>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+                  <div class="text-xs text-white/60">Odznaky</div>
+                  <div id="mBadges" class="font-semibold mt-1">—</div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+                <div class="text-xs text-white/60">Výkon (aktuální filtr)</div>
+                <div class="grid grid-cols-4 gap-2 mt-3">
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Score</div>
+                    <div id="mScore" class="font-extrabold text-lg">—</div>
+                  </div>
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Eng.</div>
+                    <div id="mEng" class="font-extrabold text-lg">—</div>
+                  </div>
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Spol.</div>
+                    <div id="mDeals" class="font-extrabold text-lg">—</div>
+                  </div>
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Rec.</div>
+                    <div id="mRating" class="font-extrabold text-lg">—</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-xs text-white/50">Později sem dáme: odkaz na kartu, poslední kampaně, graf trendu, badge historii a ověřené statistiky.</div>
+
+              <div class="flex flex-wrap gap-2 pt-2">
+                <a href="/moje-karta.html" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                  <i data-lucide="id-card" class="h-4 w-4"></i>
+                  Otevřít kartu
+                </a>
+                <a href="/chat.html" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                  <i data-lucide="message-square" class="h-4 w-4"></i>
+                  Napsat
+                </a>
+                <button type="button" data-close class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                  <i data-lucide="x" class="h-4 w-4"></i>
+                  Zavřít
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CTA -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="space-y-2">
+          <div class="text-sm text-white/60">Chceš být v top?</div>
+          <div class="text-xl md:text-2xl font-extrabold">Zvedni skóre přes recenze, odznaky a kvalitní spolupráce.</div>
+          <div class="text-white/70">Pro tvůrce: vyplň kartu, drž termíny. Pro firmy: férový brief a rychlá zpětná vazba.</div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a href="/upravit-kartu.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <i data-lucide="pencil" class="h-4 w-4"></i>
+            Upravit kartu
+          </a>
+          <a href="/zadat-kampan.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="megaphone" class="h-4 w-4"></i>
+            Zadat kampaň
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Informace</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/podminky.html">Podmínky použití</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/faq.html">FAQ</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/cenik.html">Ceník</a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">leaderboards-dashboard.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // --- DEMO DATA ---
+    const LS_KEY = 'kartao_leaderboards_demo_v1';
+
+    const seed = {
+      creators: [
+        { id:'c1', name:'@lucy.fit', category:'Fitness', badges:['Gold','Verified'], week:{score:980, eng:7.2, deals:9, rating:4.9}, month:{score:3820, eng:6.4, deals:22, rating:4.8}, all:{score:12840, eng:5.9, deals:104, rating:4.8} },
+        { id:'c2', name:'@adam.tech', category:'Tech', badges:['Silver'], week:{score:910, eng:5.8, deals:7, rating:4.7}, month:{score:3440, eng:5.4, deals:19, rating:4.6}, all:{score:11010, eng:5.1, deals:86, rating:4.6} },
+        { id:'c3', name:'@kaja.daily', category:'Lifestyle', badges:['Gold'], week:{score:870, eng:8.1, deals:6, rating:4.8}, month:{score:3330, eng:7.5, deals:18, rating:4.8}, all:{score:9900, eng:6.9, deals:73, rating:4.7} },
+        { id:'c4', name:'@martin.travel', category:'Travel', badges:['Verified'], week:{score:740, eng:6.9, deals:5, rating:4.5}, month:{score:2890, eng:6.3, deals:14, rating:4.6}, all:{score:9050, eng:6.1, deals:62, rating:4.6} },
+        { id:'c5', name:'@eva.food', category:'Gastro', badges:['Bronze'], week:{score:690, eng:4.9, deals:5, rating:4.6}, month:{score:2610, eng:4.7, deals:13, rating:4.6}, all:{score:8010, eng:4.5, deals:55, rating:4.6} },
+        { id:'c6', name:'@daniel.cars', category:'Auto', badges:['Silver','Verified'], week:{score:640, eng:4.6, deals:4, rating:4.7}, month:{score:2490, eng:4.4, deals:11, rating:4.7}, all:{score:7200, eng:4.1, deals:49, rating:4.6} },
+        { id:'c7', name:'@vera.beauty', category:'Beauty', badges:['Gold'], week:{score:620, eng:6.0, deals:4, rating:4.9}, month:{score:2410, eng:5.8, deals:10, rating:4.9}, all:{score:7600, eng:5.4, deals:52, rating:4.8} },
+        { id:'c8', name:'@petr.gaming', category:'Gaming', badges:['Bronze'], week:{score:590, eng:3.8, deals:3, rating:4.4}, month:{score:2180, eng:3.6, deals:9, rating:4.5}, all:{score:6900, eng:3.5, deals:44, rating:4.4} }
+      ],
+      brands: [
+        { id:'b1', name:'TechStore', category:'E-shop', badges:['Top Brand','Fast Pay'], week:{score:940, eng:0, deals:8, rating:4.8}, month:{score:3610, eng:0, deals:21, rating:4.8}, all:{score:12110, eng:0, deals:96, rating:4.7} },
+        { id:'b2', name:'Coffee&Co', category:'Gastro', badges:['Top Brand'], week:{score:860, eng:0, deals:7, rating:4.7}, month:{score:3320, eng:0, deals:19, rating:4.7}, all:{score:10840, eng:0, deals:82, rating:4.7} },
+        { id:'b3', name:'HotelNova', category:'Cestování', badges:['Verified'], week:{score:820, eng:0, deals:6, rating:4.6}, month:{score:3180, eng:0, deals:17, rating:4.6}, all:{score:9800, eng:0, deals:71, rating:4.6} },
+        { id:'b4', name:'BrandXYZ', category:'Lifestyle', badges:['Fast Brief'], week:{score:760, eng:0, deals:6, rating:4.9}, month:{score:2990, eng:0, deals:16, rating:4.8}, all:{score:10410, eng:0, deals:79, rating:4.8} },
+        { id:'b5', name:'FitSupps', category:'Fitness', badges:['Top Brand'], week:{score:710, eng:0, deals:5, rating:4.5}, month:{score:2700, eng:0, deals:14, rating:4.6}, all:{score:9050, eng:0, deals:66, rating:4.6} },
+        { id:'b6', name:'AutoDetail Pro', category:'Auto', badges:['Verified'], week:{score:640, eng:0, deals:4, rating:4.6}, month:{score:2430, eng:0, deals:11, rating:4.6}, all:{score:7900, eng:0, deals:50, rating:4.6} },
+        { id:'b7', name:'BeautyBox', category:'Beauty', badges:['Fast Pay'], week:{score:620, eng:0, deals:4, rating:4.7}, month:{score:2350, eng:0, deals:10, rating:4.7}, all:{score:7600, eng:0, deals:48, rating:4.7} },
+        { id:'b8', name:'GameHub', category:'Gaming', badges:['Bronze'], week:{score:590, eng:0, deals:3, rating:4.4}, month:{score:2100, eng:0, deals:9, rating:4.5}, all:{score:6900, eng:0, deals:43, rating:4.4} }
+      ]
+    };
+
+    function loadData(){
+      const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+      if (!saved) return { creators: [], brands: [] };
+      return saved;
+    }
+
+    function saveData(data){
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+    }
+
+    function moneyLike(n){
+      // použijeme jen formát pro čísla, bez měn
+      return new Intl.NumberFormat('cs-CZ').format(n);
+    }
+
+    function escapeHtml(s){
+      return String(s || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    function badgePill(txt){
+      return `<span class="text-[11px] px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">${escapeHtml(txt)}</span>`;
+    }
+
+    function medal(rank){
+      if (rank === 1) return '🥇';
+      if (rank === 2) return '🥈';
+      if (rank === 3) return '🥉';
+      return '';
+    }
+
+    // --- UI state ---
+    let mode = 'creators';
+
+    const tabCreators = document.getElementById('tabCreators');
+    const tabBrands = document.getElementById('tabBrands');
+    const periodSel = document.getElementById('period');
+    const metricSel = document.getElementById('metric');
+    const qInp = document.getElementById('q');
+
+    const modeLbl = document.getElementById('modeLbl');
+    const periodLbl = document.getElementById('periodLbl');
+    const metricLbl = document.getElementById('metricLbl');
+    const countLbl = document.getElementById('count');
+
+    const top3 = document.getElementById('top3');
+    const rows = document.getElementById('rows');
+    const empty = document.getElementById('empty');
+
+    function setTab(active){
+      const isCreators = active === 'creators';
+      mode = active;
+
+      // button styles
+      tabCreators.classList.toggle('bg-white', isCreators);
+      tabCreators.classList.toggle('text-neutral-950', isCreators);
+      tabCreators.classList.toggle('font-semibold', isCreators);
+      tabCreators.classList.toggle('border', !isCreators);
+      tabCreators.classList.toggle('border-white/10', !isCreators);
+      tabCreators.classList.toggle('bg-white/5', !isCreators);
+
+      tabBrands.classList.toggle('bg-white', !isCreators);
+      tabBrands.classList.toggle('text-neutral-950', !isCreators);
+      tabBrands.classList.toggle('font-semibold', !isCreators);
+      tabBrands.classList.toggle('border', isCreators);
+      tabBrands.classList.toggle('border-white/10', isCreators);
+      tabBrands.classList.toggle('bg-white/5', isCreators);
+
+      modeLbl.textContent = isCreators ? 'Tvůrci' : 'Značky';
+      render();
+    }
+
+    function periodLabel(p){
+      if (p === 'week') return 'Tento týden';
+      if (p === 'month') return 'Tento měsíc';
+      return 'Celkem';
+    }
+
+    function metricLabel(m){
+      if (m === 'score') return 'Score';
+      if (m === 'eng') return 'Engagement';
+      if (m === 'deals') return 'Spolupráce';
+      if (m === 'rating') return 'Recenze';
+      return 'Score';
+    }
+
+    function getList(){
+      const data = loadData();
+      const list = (mode === 'creators' ? data.creators : data.brands) || [];
+      return Array.isArray(list) ? list : [];
+    }
+
+    function getPeriodObj(item, period){
+      return item?.[period] || { score:0, eng:0, deals:0, rating:0 };
+    }
+
+    function getMetricVal(item, period, metric){
+      const p = getPeriodObj(item, period);
+      return Number(p?.[metric] || 0);
+    }
+
+    function render(){
+      const list0 = getList();
+      const period = periodSel.value;
+      const metric = metricSel.value;
+      const q = (qInp.value || '').trim().toLowerCase();
+
+      periodLbl.textContent = periodLabel(period);
+      metricLbl.textContent = metricLabel(metric);
+
+      let list = list0.slice();
+
+      // search
+      if (q) {
+        list = list.filter(x =>
+          String(x.name||'').toLowerCase().includes(q) ||
+          String(x.category||'').toLowerCase().includes(q) ||
+          (Array.isArray(x.badges) ? x.badges.join(' ').toLowerCase().includes(q) : false)
+        );
+      }
+
+      // sort
+      list.sort((a,b) => {
+        const av = getMetricVal(a, period, metric);
+        const bv = getMetricVal(b, period, metric);
+        if (metric === 'rating') return bv - av; // rating desc
+        return bv - av;
+      });
+
+      countLbl.textContent = String(list.length);
+
+      // top3 cards
+      const top = list.slice(0,3);
+      top3.innerHTML = top.map((x, idx) => {
+        const r = idx + 1;
+        const p = getPeriodObj(x, period);
+        const badges = (x.badges||[]).slice(0,3).map(badgePill).join(' ');
+        const isFirst = r === 1;
+        return `
+          <article class="relative overflow-hidden rounded-3xl border border-white/10 ${isFirst ? 'bg-gradient-to-br from-amber-500/15 via-white/5 to-fuchsia-500/10' : 'bg-white/5'} p-6">
+            <div class="absolute -top-24 -right-24 h-56 w-56 rounded-full ${isFirst ? 'bg-amber-500/20' : 'bg-fuchsia-600/15'} blur-[60px]"></div>
+            <div class="relative">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-xs text-white/60">Top ${r}</div>
+                  <div class="mt-1 flex items-center gap-2">
+                    <div class="text-2xl">${medal(r)}</div>
+                    <div class="font-extrabold text-lg">${escapeHtml(x.name)}</div>
+                  </div>
+                  <div class="text-sm text-white/60 mt-1">${escapeHtml(x.category || '—')}</div>
+                </div>
+                <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                  <i data-lucide="trophy" class="h-5 w-5"></i>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-4 gap-2">
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                  <div class="text-[11px] text-white/60">Score</div>
+                  <div class="font-extrabold">${moneyLike(p.score||0)}</div>
+                </div>
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                  <div class="text-[11px] text-white/60">Eng.</div>
+                  <div class="font-extrabold">${p.eng ? String(p.eng).replace('.',',') : '—'}</div>
+                </div>
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                  <div class="text-[11px] text-white/60">Spol.</div>
+                  <div class="font-extrabold">${moneyLike(p.deals||0)}</div>
+                </div>
+                <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                  <div class="text-[11px] text-white/60">Rec.</div>
+                  <div class="font-extrabold">${p.rating ? String(p.rating).replace('.',',') : '—'}</div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-wrap gap-2">${badges || '<span class="text-xs text-white/40">Bez odznaků</span>'}</div>
+
+              <button type="button" class="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" data-open="${escapeHtml(x.id)}">
+                <i data-lucide="info" class="h-4 w-4"></i>
+                Detail
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // table rows
+      rows.innerHTML = list.map((x, idx) => {
+        const rank = idx + 1;
+        const p = getPeriodObj(x, period);
+        const bad = (x.badges||[]).slice(0,2).map(badgePill).join(' ');
+        const engCell = p.eng ? String(p.eng).replace('.',',') : '—';
+        const ratingCell = p.rating ? String(p.rating).replace('.',',') : '—';
+        return `
+          <tr class="border-b border-white/10 hover:bg-white/5 cursor-pointer" data-open="${escapeHtml(x.id)}">
+            <td class="px-6 py-4 font-semibold text-white">${rank}</td>
+            <td class="px-6 py-4">
+              <div class="font-semibold">${escapeHtml(x.name)}</div>
+              <div class="text-xs text-white/50 mt-1">${bad || ''}</div>
+            </td>
+            <td class="px-6 py-4 text-white/70">${escapeHtml(x.category || '—')}</td>
+            <td class="px-6 py-4 text-right font-semibold">${moneyLike(p.score||0)}</td>
+            <td class="px-6 py-4 text-right">${engCell}</td>
+            <td class="px-6 py-4 text-right">${moneyLike(p.deals||0)}</td>
+            <td class="px-6 py-4 text-right">${ratingCell}</td>
+          </tr>
+        `;
+      }).join('');
+
+      empty.classList.toggle('hidden', list.length !== 0);
+      document.querySelector('table')?.classList.toggle('hidden', list.length === 0);
+
+      lucide.createIcons();
+      bindOpenHandlers();
+    }
+
+    // --- MODAL ---
+    const modal = document.getElementById('modal');
+    const mTitle = document.getElementById('mTitle');
+    const mCat = document.getElementById('mCat');
+    const mBadges = document.getElementById('mBadges');
+    const mScore = document.getElementById('mScore');
+    const mEng = document.getElementById('mEng');
+    const mDeals = document.getElementById('mDeals');
+    const mRating = document.getElementById('mRating');
+
+    function openModal(item){
+      const period = periodSel.value;
+      const p = getPeriodObj(item, period);
+      mTitle.textContent = item.name || '—';
+      mCat.textContent = item.category || '—';
+      mBadges.textContent = (item.badges && item.badges.length) ? item.badges.join(', ') : '—';
+      mScore.textContent = moneyLike(p.score||0);
+      mEng.textContent = p.eng ? String(p.eng).replace('.',',') : '—';
+      mDeals.textContent = moneyLike(p.deals||0);
+      mRating.textContent = p.rating ? String(p.rating).replace('.',',') : '—';
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+
+    function closeModal(){
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function bindOpenHandlers(){
+      document.querySelectorAll('[data-open]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const id = el.getAttribute('data-open');
+          const list = getList();
+          const found = list.find(x => String(x.id) === String(id));
+          if (!found) return;
+          openModal(found);
+        }, { once: true });
+      });
+    }
+
+    modal?.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t && (t.hasAttribute('data-close') || t.closest('[data-close]'))) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+
+    // --- buttons ---
+    tabCreators.addEventListener('click', () => setTab('creators'));
+    tabBrands.addEventListener('click', () => setTab('brands'));
+
+    function ensureSeed(){
+      const cur = loadData();
+      if (!cur || (!cur.creators?.length && !cur.brands?.length)) {
+        saveData(seed);
+      }
+    }
+
+    document.getElementById('seedBtn').addEventListener('click', () => {
+      saveData(seed);
+      render();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      localStorage.removeItem(LS_KEY);
+      render();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      qInp.value = '';
+      periodSel.value = 'month';
+      metricSel.value = 'score';
+      setTab('creators');
+      render();
+    });
+
+    periodSel.addEventListener('change', render);
+    metricSel.addEventListener('change', render);
+    qInp.addEventListener('input', render);
+
+    // init
+    ensureSeed();
+    setTab('creators');
+    render();
+  </script>
+</body>
+</html>
