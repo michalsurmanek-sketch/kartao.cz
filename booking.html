@@ -250,7 +250,15 @@
         }
         
         // Fill creator info
-        document.getElementById('creatorAvatar').src = selectedCreator.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${selectedCreator.name}`;
+        const avatarEl = document.getElementById('creatorAvatar');
+        const avatarUrl = selectedCreator.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedCreator.name)}&background=db58f6&color=fff&size=128`;
+        avatarEl.src = avatarUrl;
+        
+        // Fallback pokud se obrázek nenačte
+        avatarEl.onerror = function() {
+          this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedCreator.name)}&background=db58f6&color=fff&size=128`;
+        };
+        
         document.getElementById('creatorName').textContent = selectedCreator.name;
         document.getElementById('creatorCategory').textContent = selectedCreator.category + ' • ' + selectedCreator.handle;
         document.getElementById('creatorRating').textContent = selectedCreator.rating || '4.5';
