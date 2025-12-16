@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – Reels kampaní</title>
+  <meta name="description" content="Reels feed kampaní pro influencery – swipe, rychlé informace, CTA nabídka, uložení a filtry." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase (ostré napojení) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+
+    /* snap reels */
+    .snap-y-mandatory{scroll-snap-type:y mandatory}
+    .snap-start{scroll-snap-align:start}
+
+    /* shimmer */
+    .shine{position:relative;overflow:hidden}
+    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.12) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
+    @keyframes shine{0%{transform:translateX(-40%)}60%{transform:translateX(40%)}100%{transform:translateX(40%)}}
+
+    /* safe-area pro mobile */
+    .pb-safe{padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
+    .pt-safe{padding-top:calc(1rem + env(safe-area-inset-top))}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">reels kampaní</span>
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-marketplace.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/kampane-reels.html">Reels kampaní</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button id="openSaved" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" title="Uložené kampaně">
+          <i data-lucide="bookmark" class="h-4 w-4"></i>
+          <span class="text-sm">Uložené</span>
+          <span id="savedCount" class="ml-1 text-xs px-2 py-0.5 rounded-full bg-white/10 border border-white/10">0</span>
+        </button>
+
+        <a href="/zadat-kampan.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <i data-lucide="megaphone" class="h-4 w-4"></i>
+          <span class="text-sm">Zadat kampaň</span>
+        </a>
+
+        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="xl:hidden hidden">
+      <div class="max-w-7xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-marketplace.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/kampane-reels.html">Reels kampaní</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white text-neutral-950 font-semibold" href="/zadat-kampan.html">Zadat kampaň</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- TOP PANEL: filtry + info -->
+  <section class="max-w-7xl mx-auto px-4 pt-6 md:pt-8">
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-4 md:p-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="clapperboard" class="h-5 w-5"></i>
+          </div>
+          <div>
+            <div class="text-sm text-white/60">Influencer režim</div>
+            <div class="text-xl md:text-2xl font-extrabold">Reels kampaní</div>
+            <div class="text-sm text-white/70 mt-1">Swipe dolů = další kampaň. Vpravo máš rychlé CTA (nabídka / uložit / sdílet).</div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 w-full lg:w-auto">
+          <label class="relative">
+            <i data-lucide="search" class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/60"></i>
+            <input id="q" type="text" placeholder="Hledat (např. fitness, Praha, IG…)" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-10 pr-3 py-2.5 outline-none focus:border-white/25" />
+          </label>
+          <select id="plat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
+            <option value="all">Platforma: vše</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="youtube">YouTube</option>
+          </select>
+          <select id="cat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
+            <option value="all">Kategorie: vše</option>
+            <option value="fitness">Fitness</option>
+            <option value="beauty">Beauty</option>
+            <option value="auta">Auto</option>
+            <option value="gaming">Gaming</option>
+            <option value="travel">Cestování</option>
+            <option value="food">Jídlo</option>
+            <option value="tech">Tech</option>
+          </select>
+          <select id="sort" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
+            <option value="best">Řazení: doporučené</option>
+            <option value="new">Nejnovější</option>
+            <option value="pay">Nejvyšší rozpočet</option>
+            <option value="fast">Nejrychlejší deadline</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-4 grid sm:grid-cols-3 gap-3">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
+          <div class="text-xs text-white/60">Výsledků</div>
+          <div id="statResults" class="mt-1 text-2xl font-extrabold">0</div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
+          <div class="text-xs text-white/60">Uložené</div>
+          <div id="statSaved" class="mt-1 text-2xl font-extrabold">0</div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
+          <div class="text-xs text-white/60">Nabídky (demo)</div>
+          <div id="statOffers" class="mt-1 text-2xl font-extrabold">0</div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+        <button class="chip" data-chip="instagram">Instagram</button>
+        <button class="chip" data-chip="tiktok">TikTok</button>
+        <button class="chip" data-chip="youtube">YouTube</button>
+        <button class="chip" data-chip="fitness">Fitness</button>
+        <button class="chip" data-chip="beauty">Beauty</button>
+        <button class="chip" data-chip="auta">Auta</button>
+        <button class="chip" data-chip="gaming">Gaming</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REELS WRAP -->
+  <main class="max-w-7xl mx-auto px-4 py-6 md:py-8">
+
+    <div id="loading" class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70 hidden">Načítám kampaně…</div>
+
+    <!-- Reel stack (snap) -->
+    <div id="reels" class="h-[calc(100vh-220px)] md:h-[calc(100vh-240px)] overflow-y-auto snap-y-mandatory rounded-3xl border border-white/10 bg-white/5">
+      <!-- JS render -->
+    </div>
+
+    <div id="empty" class="hidden mt-4 rounded-3xl border border-white/10 bg-neutral-950/40 p-8 text-white/70">
+      Nic nenalezeno. Zkus upravit filtry.
+    </div>
+
+  </main>
+
+  <!-- MODAL: poslat nabídku -->
+  <div id="offerModal" class="fixed inset-0 z-50 hidden">
+    <div id="offerBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="absolute inset-0 overflow-y-auto">
+      <div class="min-h-full px-4 py-10 grid place-items-center">
+        <div class="w-full max-w-2xl rounded-3xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div class="p-6 md:p-7 border-b border-white/10">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm text-white/60">Poslat nabídku</div>
+                <div class="text-2xl font-extrabold" id="oTitle">—</div>
+                <div class="text-white/70 mt-2" id="oSub">—</div>
+              </div>
+              <button id="closeOffer" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+                <i data-lucide="x" class="h-5 w-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-6 md:p-7 grid gap-4">
+            <div class="grid md:grid-cols-2 gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Cena (Kč)</span>
+                <input id="oPrice" type="number" min="0" step="100" placeholder="např. 7900" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm text-white/70">Dodání do</span>
+                <input id="oDays" type="number" min="1" step="1" placeholder="např. 7" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+              </label>
+            </div>
+
+            <label class="grid gap-2">
+              <span class="text-sm text-white/70">Zpráva pro značku</span>
+              <textarea id="oMsg" rows="4" placeholder="Co nabídneš, co je tvůj styl, reference, návrh konceptu…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25"></textarea>
+            </label>
+
+            <div id="oErr" class="hidden rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-white/80">
+              <div class="flex items-start gap-2">
+                <i data-lucide="alert-triangle" class="h-4 w-4 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold">Zkontroluj nabídku</div>
+                  <div id="oErrTxt" class="text-white/70 mt-1">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <button id="sendOffer" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition flex-1">
+                <i data-lucide="send" class="h-4 w-4"></i>
+                Odeslat nabídku
+              </button>
+              <button id="saveDraft" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition flex-1">
+                <i data-lucide="save" class="h-4 w-4"></i>
+                Uložit koncept
+              </button>
+            </div>
+
+            <div class="text-xs text-white/50">Demo: nabídky ukládáme do LocalStorage. V ostrém režimu se to napojí na Supabase tabulku <span class="text-white/70">campaign_offers</span>.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER: uložené -->
+  <div id="drawer" class="fixed inset-0 z-50 hidden">
+    <div id="drawerBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-neutral-950/92 backdrop-blur-xl border-l border-white/10 shadow-[0_30px_120px_rgba(0,0,0,0.7)]">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-sm text-white/60">Uložené kampaně</div>
+          <div class="text-xl font-extrabold">Shortlist</div>
+        </div>
+        <button id="drawerClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 overflow-y-auto h-[calc(100%-76px)]">
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex items-start gap-3">
+          <i data-lucide="lightbulb" class="h-5 w-5 text-white/70 mt-0.5"></i>
+          <div class="text-sm text-white/70">Ulož si kampaně, které chceš řešit později. Založíš si tím vlastní pipeline.</div>
+        </div>
+
+        <div id="drawerList" class="grid gap-3"></div>
+
+        <div id="drawerEmpty" class="hidden rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70">Zatím tu nic není.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10 pb-safe">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">kampane-reels.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // helpers
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    // year
+    $('#year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = $('#menuBtn');
+    const mobileMenu = $('#mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // chips style
+    $$('.chip').forEach(b => {
+      b.className = 'chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+    });
+
+    // ---- Supabase config (OSTRÝ REŽIM) ----
+    const SUPABASE_URL = window.__SUPABASE_URL || 'PASTE_SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY || 'PASTE_SUPABASE_ANON_KEY_HERE';
+    const sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    // Data contract (doporučení): VIEW `campaign_reels`
+    // columns: id, title, brand, goal, category, region, platforms(text[]), budget_min(int), budget_max(int), currency(text), start_date(date), deadline(date), hook(text), description(text), deliverables(text), tags(text[]), media_url(text), created_at(timestamp)
+
+    const LS_SAVED = 'kartao_campaign_reels_saved_v1';
+    const LS_OFFERS = 'kartao_campaign_reels_offers_v1';
+    const saved = new Set(JSON.parse(localStorage.getItem(LS_SAVED) || '[]'));
+
+    const state = {
+      q: '',
+      plat: 'all',
+      cat: 'all',
+      sort: 'best',
+      offers: JSON.parse(localStorage.getItem(LS_OFFERS) || '[]')
+    };
+
+    function persist(){
+      localStorage.setItem(LS_SAVED, JSON.stringify(Array.from(saved)));
+      localStorage.setItem(LS_OFFERS, JSON.stringify(state.offers));
+      $('#savedCount').textContent = String(saved.size);
+      $('#statSaved').textContent = String(saved.size);
+      $('#statOffers').textContent = String(state.offers.length);
+    }
+
+    function moneyRange(min, max, cur){
+      const c = cur || 'CZK';
+      const fmt = (n) => Number(n||0).toLocaleString('cs-CZ');
+      if (min && max) return `${fmt(min)}–${fmt(max)} ${c}`;
+      if (min && !max) return `od ${fmt(min)} ${c}`;
+      if (!min && max) return `do ${fmt(max)} ${c}`;
+      return 'dle domluvy';
+    }
+
+    function humanDate(d){
+      if (!d) return '—';
+      try{ return new Date(d).toLocaleDateString('cs-CZ'); }catch(e){ return String(d); }
+    }
+
+    function esc(s){
+      return String(s||'')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    function pill(txt){
+      return `<span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/80">${esc(txt)}</span>`;
+    }
+
+    function score(it){
+      let s = 0;
+      // vyšší budget = vyšší score
+      const b = Number(it.budget_min || 0) + Number(it.budget_max || 0);
+      s += Math.min(50, b/1500);
+      // rychlá deadline = plus (ale ne extrém)
+      if (it.deadline){
+        const dd = Math.max(0, (new Date(it.deadline).getTime() - Date.now())/86400000);
+        s += Math.max(0, 20 - dd);
+      }
+      // tags
+      s += (Array.isArray(it.tags) ? it.tags.length : 0);
+      return s;
+    }
+
+    async function loadReels(){
+      // fallback demo data
+      const demo = [
+        {
+          id: 'r1',
+          title: 'UGC Reel – Protein tyčinky',
+          brand: 'FitFuel',
+          goal: 'Prodeje',
+          category: 'fitness',
+          region: 'cz',
+          platforms: ['instagram','tiktok'],
+          budget_min: 5000,
+          budget_max: 18000,
+          currency: 'CZK',
+          start_date: new Date(Date.now()+86400000*3).toISOString(),
+          deadline: new Date(Date.now()+86400000*10).toISOString(),
+          hook: 'Chceme autentické UGC, žádná reklama na sílu.',
+          description: 'Hledáme tvůrce pro 1× Reel + 3× Stories. Produkt dodáme. Ideálně fitness lifestyle. Důraz na chuť + benefit.',
+          deliverables: '1× Reel (20–35s) + 3× Stories, CTA link, mention @fitfuel',
+          tags: ['ugc','fitness','rychle'],
+          media_url: ''
+        },
+        {
+          id: 'r2',
+          title: 'TikTok challenge – Auto detailing',
+          brand: 'ShinePro',
+          goal: 'Dosah',
+          category: 'auta',
+          region: 'cz',
+          platforms: ['tiktok'],
+          budget_min: 8000,
+          budget_max: 30000,
+          currency: 'CZK',
+          start_date: new Date(Date.now()+86400000*5).toISOString(),
+          deadline: new Date(Date.now()+86400000*14).toISOString(),
+          hook: 'Before/After efekt – wow moment je povinný.',
+          description: '1× TikTok video (15–25s). Může být i seriál 2 videí. Značku a produkt pošleme. Přesné pokyny v briefu.',
+          deliverables: '1× TikTok video, 1× thumbnail, popisek s hashtagy',
+          tags: ['beforeafter','auta','tiktok'],
+          media_url: ''
+        },
+        {
+          id: 'r3',
+          title: 'Beauty UGC – krém na ruce',
+          brand: 'Glow&Go',
+          goal: 'Obsah',
+          category: 'beauty',
+          region: 'sk',
+          platforms: ['instagram'],
+          budget_min: 3500,
+          budget_max: 12000,
+          currency: 'CZK',
+          start_date: new Date(Date.now()+86400000*2).toISOString(),
+          deadline: new Date(Date.now()+86400000*9).toISOString(),
+          hook: 'Clean estetika + detail textury. Bez filtrů.',
+          description: 'Hledáme 2–3 tvůrce. Ideálně beauty rutina / lifestyle. Videa použijeme do reklamních knihoven.',
+          deliverables: '2× UGC video (10–20s) + 5 fotek produktu',
+          tags: ['beauty','ugc','clean'],
+          media_url: ''
+        }
+      ];
+
+      if (!sb || !SUPABASE_URL || SUPABASE_URL.includes('PASTE_')){
+        return demo;
+      }
+
+      try{
+        let q = sb.from('campaign_reels').select('*').limit(200);
+
+        // server-side filtry
+        if (state.cat !== 'all') q = q.eq('category', state.cat);
+        if (state.plat !== 'all') q = q.overlaps('platforms', [state.plat]);
+        if (state.q && state.q.trim()){
+          const s = state.q.trim().replaceAll('%','');
+          q = q.or(`title.ilike.%${s}%,brand.ilike.%${s}%,hook.ilike.%${s}%,description.ilike.%${s}%`);
+        }
+
+        // order
+        if (state.sort === 'new') q = q.order('created_at', {ascending:false});
+        else if (state.sort === 'pay') q = q.order('budget_max', {ascending:false});
+        else if (state.sort === 'fast') q = q.order('deadline', {ascending:true});
+        else q = q.order('created_at', {ascending:false});
+
+        const { data, error } = await q;
+        if (error) throw error;
+
+        return (data || []).map(x => ({
+          ...x,
+          platforms: Array.isArray(x.platforms) ? x.platforms : [],
+          tags: Array.isArray(x.tags) ? x.tags : []
+        }));
+      }catch(e){
+        console.error('Supabase campaign_reels error:', e);
+        return demo;
+      }
+    }
+
+    function applySort(items){
+      const out = (items||[]).slice();
+      if (state.sort === 'best') out.sort((a,b)=> score(b)-score(a));
+      return out;
+    }
+
+    function mediaBlock(it){
+      // když nemáš video, uděláme „fake reel“ panel
+      const bg = 'bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.24),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(255,180,0,0.18),transparent_45%)]';
+      if (it.media_url){
+        return `
+          <div class="relative w-full h-full">
+            <video class="w-full h-full object-cover" src="${esc(it.media_url)}" muted playsinline loop></video>
+            <div class="absolute inset-0 ${bg}"></div>
+          </div>
+        `;
+      }
+      return `
+        <div class="relative w-full h-full ${bg}">
+          <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+          <div class="absolute inset-0 grid place-items-center">
+            <div class="text-center px-6">
+              <div class="text-5xl">🎬</div>
+              <div class="mt-3 text-lg font-extrabold">${esc(it.title || 'Kampaň')}</div>
+              <div class="mt-2 text-sm text-white/70">${esc(it.hook || 'Rychlý brief a CTA – pošli nabídku.')}</div>
+              <div class="mt-4 inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80">
+                <i data-lucide="sparkles" class="h-4 w-4"></i>
+                <span>Swipe dolů pro další</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function reelCard(it, idx, total){
+      const isSaved = saved.has(it.id);
+      const badge = it.goal ? pill(it.goal) : '';
+      const cat = it.category ? pill(it.category) : '';
+      const reg = it.region ? pill((it.region||'').toUpperCase()) : '';
+      const plats = (it.platforms||[]).slice(0,4).map(p => pill(p)).join('');
+      const tags = (it.tags||[]).slice(0,4).map(t => pill('#'+t)).join('');
+
+      const btxt = moneyRange(it.budget_min, it.budget_max, it.currency);
+      const start = humanDate(it.start_date);
+      const ddl = humanDate(it.deadline);
+
+      return `
+        <section class="snap-start min-h-[calc(100vh-220px)] md:min-h-[calc(100vh-240px)] relative border-b border-white/10">
+
+          <div class="grid lg:grid-cols-[1.35fr_.65fr] min-h-[calc(100vh-220px)] md:min-h-[calc(100vh-240px)]">
+
+            <!-- MEDIA -->
+            <div class="relative">
+              <div class="absolute inset-0">${mediaBlock(it)}</div>
+
+              <!-- top-left progress -->
+              <div class="absolute left-4 top-4 pt-safe">
+                <div class="text-xs text-white/70 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur">${idx+1} / ${total}</div>
+              </div>
+
+              <!-- bottom gradient -->
+              <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-neutral-950/90 to-transparent"></div>
+
+              <!-- bottom info -->
+              <div class="absolute inset-x-0 bottom-0 pb-safe p-4 md:p-6">
+                <div class="max-w-2xl space-y-3">
+                  <div class="flex flex-wrap gap-2">${badge}${cat}${reg}${plats}</div>
+                  <div class="text-2xl md:text-3xl font-extrabold tracking-tight">${esc(it.title || 'Kampaň')}</div>
+                  <div class="text-white/70">Značka: <span class="text-white">${esc(it.brand || '—')}</span></div>
+                  <div class="flex flex-wrap gap-2 text-xs">${tags}</div>
+                </div>
+              </div>
+
+              <!-- right-side actions (mobile on media) -->
+              <div class="lg:hidden absolute right-3 bottom-28 pb-safe flex flex-col gap-2">
+                <button class="actBtn" data-act="offer" data-id="${esc(it.id)}" title="Poslat nabídku">
+                  <i data-lucide="send" class="h-5 w-5"></i>
+                </button>
+                <button class="actBtn" data-act="save" data-id="${esc(it.id)}" title="Uložit">
+                  <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" class="h-5 w-5"></i>
+                </button>
+                <button class="actBtn" data-act="share" data-id="${esc(it.id)}" title="Sdílet">
+                  <i data-lucide="share-2" class="h-5 w-5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- SIDE PANEL (detail / CTA) -->
+            <aside class="border-t lg:border-t-0 lg:border-l border-white/10 bg-neutral-950/55 backdrop-blur-xl p-5 md:p-6 space-y-4">
+
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-sm text-white/60">Rozpočet</div>
+                    <div class="text-xl font-extrabold">${esc(btxt)}</div>
+                  </div>
+                  <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                    <i data-lucide="wallet" class="h-5 w-5"></i>
+                  </div>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Start</div>
+                    <div class="font-semibold">${esc(start)}</div>
+                  </div>
+                  <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+                    <div class="text-xs text-white/60">Deadline</div>
+                    <div class="font-semibold">${esc(ddl)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="font-bold">Brief (rychle)</div>
+                <div class="mt-2 text-sm text-white/70 leading-relaxed">${esc(it.description || it.hook || '—')}</div>
+              </div>
+
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="font-bold">Požadované výstupy</div>
+                <div class="mt-2 text-sm text-white/70 leading-relaxed">${esc(it.deliverables || '—')}</div>
+              </div>
+
+              <div class="grid gap-2">
+                <button class="shine ctaBtn" data-act="offer" data-id="${esc(it.id)}">
+                  <i data-lucide="send" class="h-4 w-4"></i>
+                  Poslat nabídku
+                </button>
+                <div class="grid grid-cols-2 gap-2">
+                  <button class="ghostBtn" data-act="save" data-id="${esc(it.id)}">
+                    <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" class="h-4 w-4"></i>
+                    ${isSaved ? 'Uloženo' : 'Uložit'}
+                  </button>
+                  <button class="ghostBtn" data-act="share" data-id="${esc(it.id)}">
+                    <i data-lucide="share-2" class="h-4 w-4"></i>
+                    Sdílet
+                  </button>
+                </div>
+              </div>
+
+              <div class="text-xs text-white/50">Tip: Ulož si 5 kampaní → vybereš si nejlepší, pošleš nabídky a jedeš.</div>
+
+            </aside>
+
+          </div>
+        </section>
+      `;
+    }
+
+    // button styles injected after render
+    function styleButtons(){
+      $$('.ctaBtn').forEach(b => {
+        b.className = 'ctaBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
+      });
+      $$('.ghostBtn').forEach(b => {
+        b.className = 'ghostBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
+      });
+      $$('.actBtn').forEach(b => {
+        b.className = 'actBtn h-11 w-11 rounded-2xl bg-black/40 border border-white/10 backdrop-blur hover:bg-black/55 transition grid place-items-center';
+      });
+    }
+
+    // drawer
+    const drawer = $('#drawer');
+    const drawerBackdrop = $('#drawerBackdrop');
+    const drawerClose = $('#drawerClose');
+
+    function openDrawer(){
+      const items = currentItems.filter(x => saved.has(x.id));
+      const list = $('#drawerList');
+      list.innerHTML = items.map(it => `
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs text-white/60">${esc(it.brand || '—')} • ${(it.platforms||[]).join(', ')}</div>
+              <div class="mt-1 font-extrabold">${esc(it.title || 'Kampaň')}</div>
+              <div class="text-sm text-white/70 mt-1">${esc(moneyRange(it.budget_min,it.budget_max,it.currency))}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" onclick="window.__jump('${esc(it.id)}')" title="Přejít">
+                <i data-lucide="arrow-up-right" class="h-5 w-5"></i>
+              </button>
+              <button class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" onclick="window.__unsave('${esc(it.id)}')" title="Odebrat">
+                <i data-lucide="trash-2" class="h-5 w-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      $('#drawerEmpty').classList.toggle('hidden', items.length !== 0);
+      drawer.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+
+    function closeDrawer(){
+      drawer.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    drawerBackdrop.onclick = closeDrawer;
+    drawerClose.onclick = closeDrawer;
+
+    // offer modal
+    const offerModal = $('#offerModal');
+    const offerBackdrop = $('#offerBackdrop');
+    const closeOffer = $('#closeOffer');
+
+    function openOffer(it){
+      $('#oTitle').textContent = it.title || 'Kampaň';
+      $('#oSub').textContent = `${it.brand || '—'} • ${(it.platforms||[]).join(', ')} • ${moneyRange(it.budget_min,it.budget_max,it.currency)}`;
+      offerModal.classList.remove('hidden');
+      offerModal.dataset.id = it.id;
+      document.body.style.overflow = 'hidden';
+      hideOfferErr();
+      $('#oPrice').value = '';
+      $('#oDays').value = '';
+      $('#oMsg').value = '';
+      lucide.createIcons();
+    }
+
+    function closeOfferModal(){
+      offerModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function showOfferErr(msg){
+      $('#oErrTxt').textContent = msg;
+      $('#oErr').classList.remove('hidden');
+    }
+    function hideOfferErr(){
+      $('#oErr').classList.add('hidden');
+    }
+
+    closeOffer.onclick = closeOfferModal;
+    offerBackdrop.onclick = closeOfferModal;
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape') { closeOfferModal(); closeDrawer(); }
+    });
+
+    $('#saveDraft').onclick = () => {
+      const id = offerModal.dataset.id;
+      const it = currentItems.find(x => x.id === id);
+      if (!it) return;
+      const draft = {
+        id: 'd' + Date.now(),
+        campaign_id: id,
+        campaign_title: it.title,
+        price: Number($('#oPrice').value || 0),
+        days: Number($('#oDays').value || 0),
+        msg: ($('#oMsg').value || '').trim(),
+        created_at: new Date().toISOString(),
+        status: 'draft'
+      };
+      state.offers.unshift(draft);
+      persist();
+      toast('Koncept uložen');
+    };
+
+    $('#sendOffer').onclick = () => {
+      hideOfferErr();
+      const id = offerModal.dataset.id;
+      const it = currentItems.find(x => x.id === id);
+      if (!it) return;
+
+      const price = Number($('#oPrice').value || 0);
+      const days = Number($('#oDays').value || 0);
+      const msg = ($('#oMsg').value || '').trim();
+
+      if (price <= 0) return showOfferErr('Zadej cenu větší než 0.');
+      if (days <= 0) return showOfferErr('Zadej dodání (počet dní).');
+      if (!msg || msg.length < 10) return showOfferErr('Napiš krátkou zprávu (min. 10 znaků).');
+
+      const offer = {
+        id: 'o' + Date.now(),
+        campaign_id: id,
+        campaign_title: it.title,
+        price,
+        days,
+        msg,
+        created_at: new Date().toISOString(),
+        status: 'sent'
+      };
+
+      // TODO: Supabase insert do campaign_offers
+      // await sb.from('campaign_offers').insert({ campaign_id: id, price, days, message: msg, status: 'sent' })
+
+      state.offers.unshift(offer);
+      persist();
+      toast('Nabídka odeslaná (demo)');
+      closeOfferModal();
+    };
+
+    // toast
+    let toastT;
+    function toast(msg){
+      let el = $('#toast');
+      if (!el){
+        el = document.createElement('div');
+        el.id = 'toast';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = '1';
+      clearTimeout(toastT);
+      toastT = setTimeout(() => { el.style.opacity = '0'; }, 1800);
+    }
+
+    // current items (after filter+sort)
+    let currentItems = [];
+
+    function bindActions(){
+      $$('[data-act]').forEach(b => {
+        b.onclick = async () => {
+          const act = b.dataset.act;
+          const id = b.dataset.id;
+          const it = currentItems.find(x => x.id === id);
+
+          if (act === 'offer'){
+            if (!it) return;
+            openOffer(it);
+          }
+          if (act === 'save'){
+            if (saved.has(id)) saved.delete(id); else saved.add(id);
+            persist();
+            render();
+            toast(saved.has(id) ? 'Uloženo' : 'Odebráno');
+          }
+          if (act === 'share'){
+            // share link – může být /kampane-reels.html#id
+            const url = `${location.origin}${location.pathname}#${encodeURIComponent(id)}`;
+            try{
+              await navigator.clipboard.writeText(url);
+              toast('Odkaz zkopírován');
+            }catch(e){
+              toast(url);
+            }
+          }
+        };
+      });
+
+      // click chips
+      $$('.chip').forEach(b => {
+        b.onclick = () => {
+          const v = b.dataset.chip;
+          if (['instagram','tiktok','youtube'].includes(v)) $('#plat').value = v;
+          else $('#cat').value = v;
+          state.plat = $('#plat').value;
+          state.cat = $('#cat').value;
+          reload();
+        };
+      });
+
+      // open drawer
+      $('#openSaved').onclick = openDrawer;
+
+      lucide.createIcons();
+    }
+
+    function render(){
+      const el = $('#reels');
+      el.innerHTML = currentItems.map((it, idx) => reelCard(it, idx, currentItems.length)).join('');
+      styleButtons();
+      bindActions();
+
+      $('#empty').classList.toggle('hidden', currentItems.length !== 0);
+      $('#statResults').textContent = String(currentItems.length);
+
+      // jump to #hash
+      const hash = decodeURIComponent((location.hash || '').slice(1));
+      if (hash){
+        const target = document.getElementById('reel-'+hash);
+        // neřešíme id elementu (rychlejší) – posuneme scroll podle indexu
+        const i = currentItems.findIndex(x => x.id === hash);
+        if (i >= 0){
+          const child = el.children[i];
+          if (child) child.scrollIntoView({behavior:'auto', block:'start'});
+        }
+      }
+    }
+
+    function setLoading(on){
+      $('#loading').classList.toggle('hidden', !on);
+    }
+
+    let reloadT;
+    async function reload(){
+      clearTimeout(reloadT);
+      reloadT = setTimeout(async () => {
+        setLoading(true);
+        const items = await loadReels();
+        setLoading(false);
+        currentItems = applySort(items);
+        persist();
+        render();
+      }, 180);
+    }
+
+    // top filters
+    $('#q').oninput = (e) => { state.q = e.target.value || ''; reload(); };
+    $('#plat').onchange = (e) => { state.plat = e.target.value; reload(); };
+    $('#cat').onchange = (e) => { state.cat = e.target.value; reload(); };
+    $('#sort').onchange = (e) => { state.sort = e.target.value; reload(); };
+
+    // expose jump/unsave
+    window.__jump = (id) => {
+      closeDrawer();
+      const el = $('#reels');
+      const i = currentItems.findIndex(x => x.id === id);
+      if (i >= 0){
+        el.children[i]?.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    };
+    window.__unsave = (id) => {
+      saved.delete(id);
+      persist();
+      openDrawer();
+      render();
+    };
+
+    // init
+    persist();
+    reload();
+  </script>
+</body>
+</html>
