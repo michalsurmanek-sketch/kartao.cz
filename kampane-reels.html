@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kartao.cz – Reels kampaní</title>
- 
+
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -32,9 +32,13 @@
     .pb-safe{padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
     .pt-safe{padding-top:calc(1rem + env(safe-area-inset-top))}
 
-    /* lepší výška reels na mobilech (dvh) */
-    .reelsH{height:calc(100dvh - 220px)}
-    @media (min-width: 768px){ .reelsH{height:calc(100dvh - 240px)} }
+    /* edge-to-edge reels výška (počítá se z výšky headeru) */
+    .reelsFull{height:calc(100dvh - var(--hdr,72px))}
+    @supports not (height: 100dvh){ .reelsFull{height:calc(100vh - var(--hdr,72px))} }
+
+    /* výška jedné stránky (reelu) – doplní JS přes --reelsH */
+    .reelPage{min-height:var(--reelsH, 70vh)}
+    .reelGrid{min-height:var(--reelsH, 70vh)}
 
     /* mini progress bar */
     .pbar{height:3px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
@@ -78,6 +82,10 @@
       </nav>
 
       <div class="flex items-center gap-2">
+        <button id="openFilters" class="inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" title="Filtry" aria-label="Filtry">
+          <i data-lucide="sliders-horizontal" class="h-5 w-5"></i>
+        </button>
+
         <button id="openSaved" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" title="Uložené kampaně">
           <i data-lucide="bookmark" class="h-4 w-4"></i>
           <span class="text-sm">Uložené</span>
@@ -116,90 +124,18 @@
     </div>
   </header>
 
-  <!-- TOP PANEL: filtry + info -->
-  <section class="max-w-7xl mx-auto px-4 pt-6 md:pt-8">
-    <div class="rounded-3xl border border-white/10 bg-white/5 p-4 md:p-5">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div class="flex items-start gap-3">
-          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
-            <i data-lucide="clapperboard" class="h-5 w-5"></i>
-          </div>
-          <div>
-            <div class="text-sm text-white/60">Influencer režim</div>
-            <div class="text-xl md:text-2xl font-extrabold">Reels kampaní</div>
-            <div class="text-sm text-white/70 mt-1">Swipe dolů = další kampaň. Vpravo máš rychlé CTA (nabídka / uložit / sdílet).</div>
-          </div>
-        </div>
-
-        <div class="grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 w-full lg:w-auto">
-          <label class="relative">
-            <i data-lucide="search" class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/60"></i>
-            <input id="q" type="text" placeholder="Hledat (např. fitness, Praha, IG…)" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-10 pr-3 py-2.5 outline-none focus:border-white/25" />
-          </label>
-          <select id="plat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
-            <option value="all">Platforma: vše</option>
-            <option value="instagram">Instagram</option>
-            <option value="tiktok">TikTok</option>
-            <option value="youtube">YouTube</option>
-          </select>
-          <select id="cat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
-            <option value="all">Kategorie: vše</option>
-            <option value="fitness">Fitness</option>
-            <option value="beauty">Beauty</option>
-            <option value="auta">Auto</option>
-            <option value="gaming">Gaming</option>
-            <option value="travel">Cestování</option>
-            <option value="food">Jídlo</option>
-            <option value="tech">Tech</option>
-          </select>
-          <select id="sort" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-2.5 outline-none focus:border-white/25">
-            <option value="best">Řazení: doporučené</option>
-            <option value="new">Nejnovější</option>
-            <option value="pay">Nejvyšší rozpočet</option>
-            <option value="fast">Nejrychlejší deadline</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
-          <div class="text-xs text-white/60">Výsledků</div>
-          <div id="statResults" class="mt-1 text-2xl font-extrabold">0</div>
-        </div>
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
-          <div class="text-xs text-white/60">Uložené</div>
-          <div id="statSaved" class="mt-1 text-2xl font-extrabold">0</div>
-        </div>
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
-          <div class="text-xs text-white/60">Nabídky (demo)</div>
-          <div id="statOffers" class="mt-1 text-2xl font-extrabold">0</div>
-        </div>
-      </div>
-
-      <div class="mt-4 flex flex-wrap gap-2 text-xs">
-        <button class="chip" data-chip="instagram">Instagram</button>
-        <button class="chip" data-chip="tiktok">TikTok</button>
-        <button class="chip" data-chip="youtube">YouTube</button>
-        <button class="chip" data-chip="fitness">Fitness</button>
-        <button class="chip" data-chip="beauty">Beauty</button>
-        <button class="chip" data-chip="auta">Auta</button>
-        <button class="chip" data-chip="gaming">Gaming</button>
-      </div>
-    </div>
-  </section>
-
   <!-- REELS WRAP -->
-  <main class="max-w-7xl mx-auto px-4 py-6 md:py-8">
+  <main class="max-w-7xl mx-auto px-0 sm:px-4 py-0 sm:py-5">
 
-    <div id="loading" class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70 hidden">Načítám kampaně…</div>
+    <div id="loading" class="sm:mx-4 mx-0 sm:rounded-3xl rounded-none sm:border border-white/10 bg-neutral-950/40 p-6 text-white/70 hidden">Načítám kampaně…</div>
 
     <!-- Reel stack (snap) -->
-    <div id="reels" class="reelsH overflow-y-auto snap-y-mandatory rounded-3xl border border-white/10 bg-white/5">
+    <div id="reels" class="reelsFull overflow-y-auto snap-y-mandatory sm:rounded-3xl rounded-none sm:border border-white/10 bg-white/5">
       <!-- JS render -->
     </div>
 
-    <div id="empty" class="hidden mt-4 rounded-3xl border border-white/10 bg-neutral-950/40 p-8 text-white/70">
-      Nic nenalezeno. Zkus upravit filtry.
+    <div id="empty" class="hidden sm:mx-4 mx-0 mt-0 sm:mt-4 sm:rounded-3xl rounded-none sm:border border-white/10 bg-neutral-950/40 p-8 text-white/70">
+      Nic nenalezeno. Otevři filtry a zkus jiné nastavení.
     </div>
 
   </main>
@@ -269,6 +205,110 @@
     </div>
   </div>
 
+  <!-- DRAWER: FILTRY (edge-to-edge režim) -->
+  <div id="filterDrawer" class="fixed inset-0 z-50 hidden">
+    <div id="filterBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="absolute inset-x-0 bottom-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:top-0 sm:bottom-0 w-full sm:w-[560px] bg-neutral-950/92 backdrop-blur-xl border-t sm:border-t-0 sm:border-l border-white/10 shadow-[0_30px_120px_rgba(0,0,0,0.7)]">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-sm text-white/60">Filtry</div>
+          <div class="text-xl font-extrabold">Reels kampaní</div>
+        </div>
+        <button id="filterClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 overflow-y-auto h-[calc(100%-76px)]">
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
+          <div class="flex items-start gap-3">
+            <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <i data-lucide="clapperboard" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <div class="text-sm text-white/60">Influencer režim</div>
+              <div class="text-xl font-extrabold">Reels kampaní</div>
+              <div class="text-xs text-white/60 mt-1">Swipe dolů = další kampaň. CTA jsou přímo na reel.</div>
+            </div>
+          </div>
+
+          <label class="relative block mt-4">
+            <i data-lucide="search" class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/60"></i>
+            <input id="q" type="text" placeholder="Hledat (např. fitness, Praha, IG…)" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-10 pr-3 py-3 outline-none focus:border-white/25" />
+          </label>
+
+          <div class="mt-3 grid grid-cols-2 gap-2">
+            <select id="plat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-3 outline-none focus:border-white/25">
+              <option value="all">Platforma: vše</option>
+              <option value="instagram">Instagram</option>
+              <option value="tiktok">TikTok</option>
+              <option value="youtube">YouTube</option>
+            </select>
+            <select id="cat" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-3 outline-none focus:border-white/25">
+              <option value="all">Kategorie: vše</option>
+              <option value="fitness">Fitness</option>
+              <option value="beauty">Beauty</option>
+              <option value="auta">Auto</option>
+              <option value="gaming">Gaming</option>
+              <option value="travel">Cestování</option>
+              <option value="food">Jídlo</option>
+              <option value="tech">Tech</option>
+            </select>
+          </div>
+
+          <div class="mt-2">
+            <select id="sort" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-3 py-3 outline-none focus:border-white/25">
+              <option value="best">Řazení: doporučené</option>
+              <option value="new">Nejnovější</option>
+              <option value="pay">Nejvyšší rozpočet</option>
+              <option value="fast">Nejrychlejší deadline</option>
+            </select>
+          </div>
+
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <div class="rounded-2xl border border-white/10 bg-neutral-950/40 p-3">
+              <div class="text-xs text-white/60">Výsledků</div>
+              <div id="statResults" class="mt-1 text-xl font-extrabold">0</div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-neutral-950/40 p-3">
+              <div class="text-xs text-white/60">Uložené</div>
+              <div id="statSaved" class="mt-1 text-xl font-extrabold">0</div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-neutral-950/40 p-3">
+              <div class="text-xs text-white/60">Nabídky</div>
+              <div id="statOffers" class="mt-1 text-xl font-extrabold">0</div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2 text-xs">
+            <button class="chip" data-chip="instagram">Instagram</button>
+            <button class="chip" data-chip="tiktok">TikTok</button>
+            <button class="chip" data-chip="youtube">YouTube</button>
+            <button class="chip" data-chip="fitness">Fitness</button>
+            <button class="chip" data-chip="beauty">Beauty</button>
+            <button class="chip" data-chip="auta">Auta</button>
+            <button class="chip" data-chip="gaming">Gaming</button>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <button id="resetFilters" class="ghostBtn">
+              <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+              Reset
+            </button>
+            <button id="applyFilters" class="ctaBtn">
+              <i data-lucide="check" class="h-4 w-4"></i>
+              Použít
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+          Filtry jsou schované, aby reels působily jako appka (TikTok/IG). Otevři je kdykoliv ikonou v hlavičce.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DRAWER: uložené -->
   <div id="drawer" class="fixed inset-0 z-50 hidden">
     <div id="drawerBackdrop" class="absolute inset-0 bg-black/70"></div>
@@ -307,14 +347,57 @@
   </footer>
 
   <script>
-    lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+  (function(){
+    'use strict';
+
+    // --- robustní error handler (pomůže odhalit "Script error" bez stacku) ---
+    window.addEventListener('error', (e) => {
+      try{
+        console.error('Global error:', e?.message, e?.error);
+        toast('Chyba skriptu (viz konzole)');
+      }catch(_){/* noop */}
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      try{
+        console.error('Unhandled rejection:', e?.reason);
+        toast('Chyba (Promise) – viz konzole');
+      }catch(_){/* noop */}
+    });
 
     // helpers
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
+    // safe icons render
+    function renderIcons(){
+      try{
+        if (window.lucide && typeof window.lucide.createIcons === 'function'){
+          window.lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+        }
+      }catch(e){
+        console.warn('Lucide render failed:', e);
+      }
+    }
+
+    // toast (musí existovat dřív než error handler něco zavolá)
+    let toastT;
+    function toast(msg){
+      let el = $('#toast');
+      if (!el){
+        el = document.createElement('div');
+        el.id = 'toast';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = '1';
+      clearTimeout(toastT);
+      toastT = setTimeout(() => { el.style.opacity = '0'; }, 1800);
+    }
+
     // year
-    $('#year').textContent = new Date().getFullYear();
+    const yearEl = $('#year');
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
     // mobile menu
     const menuBtn = $('#menuBtn');
@@ -326,16 +409,72 @@
     });
 
     // chips style
-    $$('.chip').forEach(b => {
-      b.className = 'chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
-    });
+    function styleChips(){
+      $$('.chip').forEach(b => {
+        b.className = 'chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      });
+    }
+
+    // button styles injected after render
+    function styleButtons(){
+      $$('.ctaBtn').forEach(b => {
+        b.className = 'ctaBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
+      });
+      $$('.ghostBtn').forEach(b => {
+        b.className = 'ghostBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
+      });
+      $$('.actBtn').forEach(b => {
+        b.className = 'actBtn h-11 w-11 rounded-2xl bg-black/40 border border-white/10 backdrop-blur hover:bg-black/55 transition grid place-items-center';
+      });
+      $$('.miniBtn').forEach(b => {
+        b.className = 'miniBtn inline-flex items-center gap-2 text-xs px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      });
+    }
+
+    // header height -> CSS var
+    function syncHdr(){
+      const h = document.querySelector('header')?.offsetHeight || 72;
+      document.documentElement.style.setProperty('--hdr', h + 'px');
+    }
+
+    // reels height -> CSS var (1 reel = přesně 1 stránka)
+    function syncReelsH(){
+      const reels = $('#reels');
+      if (!reels) return;
+      document.documentElement.style.setProperty('--reelsH', reels.clientHeight + 'px');
+    }
+
+    syncHdr();
+    syncReelsH();
+    window.addEventListener('resize', () => { syncHdr(); syncReelsH(); });
+
+    styleChips();
+    renderIcons();
 
     // ---- Supabase config (OSTRÝ REŽIM) ----
+    // POZN.: v sandboxu (nebo bez vložených proměnných) musí stránka běžet i bez Supabase.
     const SUPABASE_URL = window.__SUPABASE_URL || 'PASTE_SUPABASE_URL_HERE';
     const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY || 'PASTE_SUPABASE_ANON_KEY_HERE';
-    const sb = (window.supabase && window.supabase.createClient)
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
+
+    function isValidUrl(u){
+      try{
+        const x = new URL(u);
+        return !!x.protocol && !!x.host;
+      }catch(e){
+        return false;
+      }
+    }
+
+    const canUseSupabase = (
+      !!window.supabase &&
+      typeof window.supabase.createClient === 'function' &&
+      !!SUPABASE_ANON_KEY &&
+      isValidUrl(SUPABASE_URL) &&
+      !String(SUPABASE_URL).includes('PASTE_') &&
+      !String(SUPABASE_ANON_KEY).includes('PASTE_')
+    );
+
+    const sb = canUseSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     // Data contract (doporučení): VIEW `campaign_reels`
     // columns: id, title, brand, goal, category, region, platforms(text[]), budget_min(int), budget_max(int), currency(text), start_date(date), deadline(date), hook(text), description(text), deliverables(text), tags(text[]), media_url(text), created_at(timestamp)
@@ -355,9 +494,9 @@
     function persist(){
       localStorage.setItem(LS_SAVED, JSON.stringify(Array.from(saved)));
       localStorage.setItem(LS_OFFERS, JSON.stringify(state.offers));
-      $('#savedCount').textContent = String(saved.size);
-      $('#statSaved').textContent = String(saved.size);
-      $('#statOffers').textContent = String(state.offers.length);
+      const sc = $('#savedCount'); if (sc) sc.textContent = String(saved.size);
+      const ss = $('#statSaved'); if (ss) ss.textContent = String(saved.size);
+      const so = $('#statOffers'); if (so) so.textContent = String(state.offers.length);
     }
 
     function moneyRange(min, max, cur){
@@ -389,21 +528,85 @@
 
     function score(it){
       let s = 0;
-      // vyšší budget = vyšší score
       const b = Number(it.budget_min || 0) + Number(it.budget_max || 0);
       s += Math.min(50, b/1500);
-      // rychlá deadline = plus (ale ne extrém)
       if (it.deadline){
         const dd = Math.max(0, (new Date(it.deadline).getTime() - Date.now())/86400000);
         s += Math.max(0, 20 - dd);
       }
-      // tags
       s += (Array.isArray(it.tags) ? it.tags.length : 0);
       return s;
     }
 
+    // --- filter drawer ---
+    const filterDrawer = $('#filterDrawer');
+    const filterBackdrop = $('#filterBackdrop');
+    const filterClose = $('#filterClose');
+
+    function openFilters(){
+      // sync UI hodnoty
+      const q = $('#q'); if (q) q.value = state.q;
+      const plat = $('#plat'); if (plat) plat.value = state.plat;
+      const cat = $('#cat'); if (cat) cat.value = state.cat;
+      const sort = $('#sort'); if (sort) sort.value = state.sort;
+
+      filterDrawer?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      styleButtons();
+      styleChips();
+      renderIcons();
+    }
+
+    function closeFilters(){
+      filterDrawer?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // robustní binding
+    const openFiltersBtn = $('#openFilters');
+    if (openFiltersBtn){
+      openFiltersBtn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openFilters(); });
+      openFiltersBtn.onclick = (e)=>{ e?.preventDefault?.(); e?.stopPropagation?.(); openFilters(); };
+    }
+    document.addEventListener('click', (e)=>{
+      const btn = e.target?.closest?.('#openFilters');
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openFilters();
+    }, { capture:true });
+
+    filterBackdrop?.addEventListener('click', closeFilters);
+    filterClose?.addEventListener('click', closeFilters);
+
+    $('#applyFilters')?.addEventListener('click', () => {
+      state.q = ($('#q')?.value || '').trim();
+      state.plat = $('#plat')?.value || 'all';
+      state.cat = $('#cat')?.value || 'all';
+      state.sort = $('#sort')?.value || 'best';
+      closeFilters();
+      reload();
+    });
+
+    $('#resetFilters')?.addEventListener('click', () => {
+      state.q = '';
+      state.plat = 'all';
+      state.cat = 'all';
+      state.sort = 'best';
+      if ($('#q')) $('#q').value = '';
+      if ($('#plat')) $('#plat').value = 'all';
+      if ($('#cat')) $('#cat').value = 'all';
+      if ($('#sort')) $('#sort').value = 'best';
+      reload();
+    });
+
+    // filtry (v draweru) – fungují i „live“
+    $('#q')?.addEventListener('input', (e) => { state.q = e.target.value || ''; reload(); });
+    $('#plat')?.addEventListener('change', (e) => { state.plat = e.target.value; reload(); });
+    $('#cat')?.addEventListener('change', (e) => { state.cat = e.target.value; reload(); });
+    $('#sort')?.addEventListener('change', (e) => { state.sort = e.target.value; reload(); });
+
     async function loadReels(){
-      // fallback demo data
       const demo = [
         {
           id: 'r1',
@@ -464,15 +667,13 @@
         }
       ];
 
-      // když nemáme Supabase (nebo není vyplněno), filtrujeme demo lokálně
-      if (!sb || !SUPABASE_URL || SUPABASE_URL.includes('PASTE_')){
+      // Bez Supabase: filtrujeme demo lokálně
+      if (!sb){
         return clientFilter(demo);
       }
 
       try{
         let q = sb.from('campaign_reels').select('*').limit(200);
-
-        // server-side filtry
         if (state.cat !== 'all') q = q.eq('category', state.cat);
         if (state.plat !== 'all') q = q.overlaps('platforms', [state.plat]);
         if (state.q && state.q.trim()){
@@ -480,7 +681,6 @@
           q = q.or(`title.ilike.%${s}%,brand.ilike.%${s}%,hook.ilike.%${s}%,description.ilike.%${s}%`);
         }
 
-        // order
         if (state.sort === 'new') q = q.order('created_at', {ascending:false});
         else if (state.sort === 'pay') q = q.order('budget_max', {ascending:false});
         else if (state.sort === 'fast') q = q.order('deadline', {ascending:true});
@@ -496,6 +696,7 @@
         }));
       }catch(e){
         console.error('Supabase campaign_reels error:', e);
+        toast('Nepodařilo se načíst Supabase – jedu demo');
         return demo;
       }
     }
@@ -503,15 +704,9 @@
     function clientFilter(items){
       let out = (items||[]).slice();
 
-      // plat
-      if (state.plat !== 'all'){
-        out = out.filter(x => (x.platforms||[]).includes(state.plat));
-      }
-      // cat
-      if (state.cat !== 'all'){
-        out = out.filter(x => (x.category||'') === state.cat);
-      }
-      // q
+      if (state.plat !== 'all') out = out.filter(x => (x.platforms||[]).includes(state.plat));
+      if (state.cat !== 'all') out = out.filter(x => (x.category||'') === state.cat);
+
       if (state.q && state.q.trim()){
         const q = state.q.trim().toLowerCase();
         out = out.filter(x =>
@@ -539,7 +734,6 @@
     }
 
     function mediaBlock(it){
-      // když nemáš video, uděláme „fake reel“ panel
       const bg = 'bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.24),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(255,180,0,0.18),transparent_45%)]';
       if (it.media_url){
         return `
@@ -580,9 +774,8 @@
       const ddl = humanDate(it.deadline);
 
       return `
-        <section id="reel-${esc(it.id)}" class="snap-start min-h-[calc(100dvh-220px)] md:min-h-[calc(100dvh-240px)] relative border-b border-white/10">
-
-          <div class="grid lg:grid-cols-[1.35fr_.65fr] min-h-[calc(100vh-220px)] md:min-h-[calc(100vh-240px)]">
+        <section id="reel-${esc(it.id)}" class="snap-start reelPage relative border-b border-white/10">
+          <div class="grid lg:grid-cols-[1.35fr_.65fr] reelGrid">
 
             <!-- MEDIA -->
             <div class="relative">
@@ -691,22 +884,6 @@
       `;
     }
 
-    // button styles injected after render
-    function styleButtons(){
-      $$('.ctaBtn').forEach(b => {
-        b.className = 'ctaBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
-      });
-      $$('.ghostBtn').forEach(b => {
-        b.className = 'ghostBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
-      });
-      $$('.actBtn').forEach(b => {
-        b.className = 'actBtn h-11 w-11 rounded-2xl bg-black/40 border border-white/10 backdrop-blur hover:bg-black/55 transition grid place-items-center';
-      });
-      $$('.miniBtn').forEach(b => {
-        b.className = 'miniBtn inline-flex items-center gap-2 text-xs px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
-      });
-    }
-
     // drawer
     const drawer = $('#drawer');
     const drawerBackdrop = $('#drawerBackdrop');
@@ -738,7 +915,7 @@
       $('#drawerEmpty').classList.toggle('hidden', items.length !== 0);
       drawer.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+      renderIcons();
     }
 
     function closeDrawer(){
@@ -764,7 +941,7 @@
       $('#oPrice').value = '';
       $('#oDays').value = '';
       $('#oMsg').value = '';
-      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+      renderIcons();
     }
 
     function closeOfferModal(){
@@ -783,7 +960,7 @@
     closeOffer.onclick = closeOfferModal;
     offerBackdrop.onclick = closeOfferModal;
     document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Escape') { closeOfferModal(); closeDrawer(); }
+      if (e.key === 'Escape') { closeOfferModal(); closeDrawer(); closeFilters(); }
     });
 
     $('#saveDraft').onclick = () => {
@@ -830,30 +1007,11 @@
         status: 'sent'
       };
 
-      // TODO: Supabase insert do campaign_offers
-      // await sb.from('campaign_offers').insert({ campaign_id: id, price, days, message: msg, status: 'sent' })
-
       state.offers.unshift(offer);
       persist();
       toast('Nabídka odeslaná (demo)');
       closeOfferModal();
     };
-
-    // toast
-    let toastT;
-    function toast(msg){
-      let el = $('#toast');
-      if (!el){
-        el = document.createElement('div');
-        el.id = 'toast';
-        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
-        document.body.appendChild(el);
-      }
-      el.textContent = msg;
-      el.style.opacity = '1';
-      clearTimeout(toastT);
-      toastT = setTimeout(() => { el.style.opacity = '0'; }, 1800);
-    }
 
     // current items (after filter+sort)
     let currentItems = [];
@@ -868,15 +1026,18 @@
           if (act === 'offer'){
             if (!it) return;
             openOffer(it);
+            return;
           }
+
           if (act === 'save'){
             if (saved.has(id)) saved.delete(id); else saved.add(id);
             persist();
             render();
             toast(saved.has(id) ? 'Uloženo' : 'Odebráno');
+            return;
           }
+
           if (act === 'share'){
-            // share link – /kampane-reels.html#id
             const url = `${location.origin}${location.pathname}#${encodeURIComponent(id)}`;
             try{
               await navigator.clipboard.writeText(url);
@@ -884,40 +1045,26 @@
             }catch(e){
               toast(url);
             }
+            return;
           }
+
           if (act === 'copy'){
             if (!it) return;
-            const txt = `Kampaň: ${it.title||''}
-Značka: ${it.brand||''}
-Platformy: ${(it.platforms||[]).join(', ')}
-Rozpočet: ${moneyRange(it.budget_min,it.budget_max,it.currency)}
-Deadline: ${humanDate(it.deadline)}
-
-Brief:
-${it.description||it.hook||''}
-
-Výstupy:
-${it.deliverables||''}`;
+            const txt = `Kampaň: ${it.title||''}\nZnačka: ${it.brand||''}\nPlatformy: ${(it.platforms||[]).join(', ')}\nRozpočet: ${moneyRange(it.budget_min,it.budget_max,it.currency)}\nDeadline: ${humanDate(it.deadline)}\n\nBrief:\n${it.description||it.hook||''}\n\nVýstupy:\n${it.deliverables||''}`;
             try{ await navigator.clipboard.writeText(txt); toast('Brief zkopírován'); }
             catch(e){ toast('Nepodařilo se zkopírovat'); }
+            return;
           }
+
           if (act === 'mute'){
-            // mute/unmute jen aktuální reel video (pokud existuje)
             const sec = document.getElementById('reel-'+CSS.escape(id));
             const v = sec?.querySelector('video[data-video]');
             if (!v){ toast('Tahle kampaň nemá video'); return; }
             v.muted = !v.muted;
-            // přepnout ikonku
             const icon = b.querySelector('[data-lucide]');
             if (icon) icon.setAttribute('data-lucide', v.muted ? 'volume-x' : 'volume-2');
-            lucide.createIcons({ attrs: { stroke: 'currentColor' } });
-          }${location.pathname}#${encodeURIComponent(id)}`;
-            try{
-              await navigator.clipboard.writeText(url);
-              toast('Odkaz zkopírován');
-            }catch(e){
-              toast(url);
-            }
+            renderIcons();
+            return;
           }
         };
       });
@@ -935,12 +1082,18 @@ ${it.deliverables||''}`;
       });
 
       // open drawer
-      $('#openSaved').onclick = openDrawer;
+      $('#openSaved')?.addEventListener('click', openDrawer);
 
-      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+      renderIcons();
+    }
+
+    function setLoading(on){
+      $('#loading').classList.toggle('hidden', !on);
     }
 
     function render(){
+      try{ syncReelsH(); }catch(_){/*noop*/}
+
       const el = $('#reels');
       el.innerHTML = currentItems.map((it, idx) => reelCard(it, idx, currentItems.length)).join('');
       styleButtons();
@@ -948,23 +1101,17 @@ ${it.deliverables||''}`;
       setupVideoObserver();
 
       $('#empty').classList.toggle('hidden', currentItems.length !== 0);
-      $('#statResults').textContent = String(currentItems.length);
+      const sr = $('#statResults'); if (sr) sr.textContent = String(currentItems.length);
 
       // jump to #hash
       const hash = decodeURIComponent((location.hash || '').slice(1));
       if (hash){
-        const target = document.getElementById('reel-'+hash);
-        // neřešíme id elementu (rychlejší) – posuneme scroll podle indexu
         const i = currentItems.findIndex(x => x.id === hash);
         if (i >= 0){
           const child = el.children[i];
           if (child) child.scrollIntoView({behavior:'auto', block:'start'});
         }
       }
-    }
-
-    function setLoading(on){
-      $('#loading').classList.toggle('hidden', !on);
     }
 
     let reloadT;
@@ -974,19 +1121,12 @@ ${it.deliverables||''}`;
         setLoading(true);
         const items = await loadReels();
         setLoading(false);
-        // supabase už může vracet filtrované, ale pro jistotu ještě lokální filtr
         const filtered = clientFilter(items);
         currentItems = applySort(filtered);
         persist();
         render();
       }, 180);
     }
-
-    // top filters
-    $('#q').oninput = (e) => { state.q = e.target.value || ''; reload(); };
-    $('#plat').onchange = (e) => { state.plat = e.target.value; reload(); };
-    $('#cat').onchange = (e) => { state.cat = e.target.value; reload(); };
-    $('#sort').onchange = (e) => { state.sort = e.target.value; reload(); };
 
     // expose jump/unsave
     window.__jump = (id) => {
@@ -1017,7 +1157,6 @@ ${it.deliverables||''}`;
           const v = en.target;
           if (!v) return;
           if (en.isIntersecting && en.intersectionRatio >= 0.6){
-            // play jen když je v sekci, aby se to nechovalo chaoticky
             v.play?.().catch(()=>{});
           } else {
             try{ v.pause?.(); }catch(e){}
@@ -1028,9 +1167,21 @@ ${it.deliverables||''}`;
       vids.forEach(v => io.observe(v));
     }
 
+    // --- mini self-tests (console) ---
+    // Tyhle testy nesmí shodit stránku; jen logují do konzole.
+    (function tests(){
+      try{
+        console.assert(typeof esc('x') === 'string', 'esc() should return string');
+        console.assert(moneyRange(1000,2000,'CZK').includes('CZK'), 'moneyRange should include currency');
+        console.assert(Array.isArray(applySort([{budget_max:2},{budget_max:1}])), 'applySort should return array');
+        console.assert(typeof openFilters === 'function' && typeof closeFilters === 'function', 'filters handlers exist');
+      }catch(e){ console.warn('tests failed:', e); }
+    })();
+
     // init
     persist();
     reload();
+  })();
   </script>
 </body>
 </html>
