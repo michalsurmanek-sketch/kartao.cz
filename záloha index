@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- EMERGENCY: Vymazat Service Worker -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- Redirect logika ---
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get('redirect') === '1' && !sessionStorage.getItem('kartaoRedirected')) {
+    
+    let role =
+      window.currentUserRole ||
+      localStorage.getItem('userRole') ||
+      sessionStorage.getItem('kartaoRole') ||
+      'influencer';
+
+    // Pokud je role v session -> přesun do localStorage
+    if (sessionStorage.getItem('kartaoRole')) {
+      localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
+      role = sessionStorage.getItem('kartaoRole');
+    }
+
+    sessionStorage.setItem('kartaoRedirected', '1');
+
+    if (role === 'firma') {
+      window.location.replace('moje-firma.html');
+    } else {
+      window.location.replace('moje-karta.html');
+    }
+  }
+
+  caches.keys().then(keys => {
+    keys.forEach(key => caches.delete(key));
+  });
+
+});
+</script>
+
+  
+  <title>Kartao.cz – síť influencerů</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- Popis pro vyhledávače -->
+  <meta name="description" content="Kartao.cz – síť influencerů a tvůrců. Propojujeme značky a tvůrce. Najdi influencera rychle a chytře.">
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kartao.cz – síť influencerů" />
+  <meta property="og:description" content="Propojujeme značky a tvůrce. Najdi influencera rychle a chytře." />
+  <meta property="og:image" content="https://www.kartao.cz/og-image-placeholder.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.kartao.cz/" />
+  <meta property="og:locale" content="cs_CZ" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kartao.cz">
+  
+  <link rel="canonical" href="https://www.kartao.cz/" />
+  
+  <!-- SUPABASE SDK - pouze jednou -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- KONFIGURACE -->
+  <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
+  
+  <!-- UNIFIED AUTH - JEDINÝ AUTH SYSTÉM -->
+  <script src="auth-unified.js"></script>
+  
+  <!-- HAMBURGER MENU - pouze refactored verze (přesunuto na konec body) -->
+  
+  <!-- CREDITS SYSTEM -->
+  <script src="credits-system-supabase.js"></script>
+
+  <!-- Structured Data - Organization -->
+  <script type="application/ld+json"></script>
+
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="dns-prefetch" href="https://hrmrgudiindtnfaaiyyg.supabase.co" />
+  
+  <!-- Preload kritických zdrojů -->
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script" />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" as="script" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide ikony - UNIFIED -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Tailwind konfigurace -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            neutral: tailwind.colors.neutral,
+            fuchsia: tailwind.colors.fuchsia,
+            amber: tailwind.colors.amber,
+            sky: tailwind.colors.sky,
+            emerald: tailwind.colors.emerald
+          },
+          boxShadow: {
+            soft: "0 8px 30px rgb(0 0 0 / 0.25)",
+          },
+          keyframes: {
+            crownPulse: {
+              '0%, 100%': { color: '#f59e0b' },
+              '50%': { color: '#db58f6' },
+            }
+          },
+          animation: {
+            'crown-glow': 'crownPulse 1.6s ease-in-out infinite',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .logo-badge {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform .3s ease, filter .3s ease;
+    }
+    .logo-badge svg {
+      filter: drop-shadow(0 2px 6px rgba(255,255,255,.08));
+      transition: transform .3s ease;
+    }
+    .logo-badge:hover {
+      transform: translateY(-1px) scale(1.02);
+    }
+    .logo-badge:hover svg {
+      transform: translateY(-.5px) rotate(-2deg);
+    }
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      pointer-events: none;
+      opacity: .18;
+      background: conic-gradient(from 0deg, transparent 0 72%, #fff 73% 76%, transparent 77%);
+      animation: spinShine 6s linear infinite;
+    }
+    @keyframes spinShine {
+      to { transform: rotate(360deg); }
+    }
+    .logo-badge.pulse::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgba(251,191,36,.35);
+      animation: softPulse 2.8s ease-out infinite;
+    }
+    @keyframes softPulse {
+      0% { box-shadow: 0 0 0 0 rgba(251,191,36,.35); }
+      100% { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
+    }
+    .icon-badge {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.75rem;
+      background-image: linear-gradient(135deg, #db58f6, #ffb347);
+      box-shadow: 0 4px 12px rgba(219,88,246,.2), inset 0 0 0 1px rgba(255,255,255,.1);
+      transition: all .3s;
+    }
+    .icon-badge:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .backdrop-blur {
+      backdrop-filter: blur(8px);
+    }
+    .shadow-soft {
+      box-shadow: 0 10px 30px rgba(236,72,153,.15);
+    }
+    .card {
+      background-color: rgba(23,23,23,.6);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 1rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem .75rem;
+      border-radius: .75rem;
+    }
+    .btn-primary {
+      background: #db58f6;
+    }
+    .btn-primary:hover {
+      background: #e879f9;
+    }
+    .btn-light {
+      background: #fff;
+      color: #111;
+    }
+    .btn-light:hover {
+      background: #f3f3f3;
+    }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border: 1px solid rgba(255,255,255,.1);
+      padding: .25rem .5rem;
+      border-radius: .5rem;
+      background: rgba(38,38,38,.9);
+    }
+    .modal-enter {
+      transform: translateX(100%);
+      opacity: .5;
+    }
+    .modal-enter.active {
+      transform: translateX(0);
+      opacity: 1;
+      transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s;
+    }
+    .crown-glow {
+      animation: crownGlow 1.8s ease-in-out infinite;
+    }
+    @keyframes crownGlow {
+      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+      40% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      60% { color: #ffffff; filter: drop-shadow(0 0 18px #ffffff); }
+      80% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+    }
+    .svh { height: 100svh; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    
+    /* Plynulý přechod pro pokročilé filtry */
+    #advancedWrap {
+      transition: all 0.3s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+    #advancedWrap:not(.hidden) {
+      max-height: 500px;
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-neutral-950 text-white">
+
+  <!-- HLAVNÍ HEADER -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-lg">Kartao.cz</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
+              Marketplace
+            </span>
+          </div>
+          <p class="text-[11px] text-white/60">Síť influencerů a tvůrců</p>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-6">
+        <!-- Hlavní funkce dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>Platformy</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <!-- SOCIÁLNÍ SÍŤ KARTAO – hlavní feed & komunita -->
+              <a href="luxus2.html"
+                class="col-span-2 flex items-center gap-3 px-4 py-3 rounded-xl transition
+                      bg-gradient-to-br from-blue-500/20 via-cyan-400/15 to-sky-500/20
+                      border border-blue-300/30 hover:border-blue-300/60
+                      hover:shadow-[0_0_12px_rgba(59,130,246,0.45)]"
+                data-requires-auth="true">
+
+                <div class="w-10 h-10 rounded-lg grid place-items-center
+                            bg-gradient-to-tr from-blue-400 to-cyan-300
+                            text-neutral-900 shadow-[0_0_6px_rgba(59,130,246,0.5)]">
+                  <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
+
+                <div class="flex flex-col leading-tight">
+                  <span class="text-base font-bold text-blue-200">Sociální síť Kartao</span>
+                  <span class="text-xs text-blue-100/70">Feed, Stories, Komunita & Chat</span>
+                </div>
+              </a>
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3 mt-3">Základní systémy</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <!-- 1) Moje karta – centrální ovládání profilu influencera -->
+                <a id="userCardLink" href="#"
+                  class="flex items-center gap-3 px-3 py-2 rounded-xl transition
+                        bg-gradient-to-br from-yellow-500/20 via-yellow-400/15 to-amber-500/20
+                        border border-yellow-300/30 hover:border-yellow-300/60
+                        hover:shadow-[0_0_12px_rgba(255,215,0,0.45)]">
+
+                  <div id="userCardIcon" class="w-8 h-8 rounded-lg grid place-items-center
+                              bg-gradient-to-tr from-yellow-300 to-amber-200
+                              text-neutral-900 shadow-[0_0_6px_rgba(255,220,0,0.5)]">
+                    <!-- Ikona se mění podle role -->
+                  </div>
+
+                  <div class="flex flex-col leading-tight">
+                    <span id="userCardTitle" class="text-sm font-semibold text-yellow-200">Moje karta</span>
+                    <span id="userCardSubtitle" class="text-[11px] text-yellow-100/70">Profil &amp; ovládání účtu</span>
+                  </div>
+                </a>
+
+                <!-- 2) KREDITY – GAMIFIKACE -->
+                <a href="credits-dashboard.html"
+                  class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3"
+                  data-requires-auth="true">
+                  <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Kredity</div>
+                    <div class="text-xs text-white/60">Gamifikace</div>
+                  </div>
+                </a>
+
+                <!-- 3) Odznaky -->
+                <a href="badge-system-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                    <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Odznaky</div>
+                    <div class="text-xs text-white/60">Achievements</div>
+                  </div>
+                </a>
+
+                <!-- 4) Žebříčky -->
+                <a href="leaderboards-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <i data-lucide="trophy" class="w-4 h-4 text-purple-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Žebříčky</div>
+                    <div class="text-xs text-white/60">Rankings</div>
+                  </div>
+                </a>
+              </div>
+
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">AI &amp; Pokročilé</div>
+              <div class="grid grid-cols-2 gap-2">
+                <a href="ai-pricing-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="brain" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Pricing</div>
+                    <div class="text-xs text-white/60">Smart ceny</div>
+                  </div>
+                </a>
+                <a href="ai-analytics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <i data-lucide="bar-chart" class="w-4 h-4 text-orange-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Analytics</div>
+                    <div class="text-xs text-white/60">Analýzy</div>
+                  </div>
+                </a>
+                <a href="intelligent-recommendation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Doporučení</div>
+                    <div class="text-xs text-white/60">ML systém</div>
+                  </div>
+                </a>
+                <a href="ai-price-negotiation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <i data-lucide="handshake" class="w-4 h-4 text-amber-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Vyjednávání</div>
+                    <div class="text-xs text-white/60">AI negotiation</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business systémy dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            <span>Business</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Business nástroje</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <a href="comments-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Komentáře</div>
+                    <div class="text-xs text-white/60">Feedback</div>
+                  </div>
+                </a>
+                <a href="ecommerce-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">E-shop</div>
+                    <div class="text-xs text-white/60">Prodej</div>
+                  </div>
+                </a>
+                <a href="world-class-statistics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Statistiky</div>
+                    <div class="text-xs text-white/60">Real-time</div>
+                  </div>
+                </a>
+                <a href="company-mini-websites-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                    <i data-lucide="globe" class="w-4 h-4 text-violet-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Mini Weby</div>
+                    <div class="text-xs text-white/60">Website builder</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a href="kartao-marketplace.html" class="text-white/80 hover:text-white transition flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně</a>
+        <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
+        <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
+        <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
+        <a href="vip.html" class="lg:hidden inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
+          <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
+          <span class="font-bold">VIP</span>
+        </a>
+      </nav>
+
+      <div class="hidden md:flex items-center gap-3">
+  <!-- Desktop auth button (přihlášení/odhlášení) -->
+  <button id="desktopAuthBtn" class="btn btn-primary text-sm md:inline-flex flex items-center gap-2">
+    <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
+    <span id="desktopAuthText">Přihlásit se</span>
+  </button>
+</div>
+
+<div class="md:hidden flex items-center gap-2">
+  <!-- User menu mobile - přihlášen -->
+  <a id="userMenuMobile"
+     data-auth="in"
+     href="kartao-muj-ucet.html"
+     class="hidden items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition user-menu-mobile-hide">
+    <i data-lucide="user" class="w-5 h-5"></i>
+    <span class="sr-only">Můj účet</span>
+  </a>
+
+  <!-- Login button mobile - nepřihlášen -->
+  <div data-auth="out">
+    <a id="loginBtnMobile"
+      href="login.html"
+      class="hidden">
+      <i data-lucide="log-in" class="w-5 h-5"></i>
+      <span class="sr-only">Přihlásit se</span>
+    </a>
+  </div>
+
+  <!-- VIP tlačítko na mobilu odstraněno -->
+  <button id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+    <i data-lucide="menu" class="w-6 h-6"></i>
+    <span class="sr-only">Otevřít menu</span>
+  </button>
+</div>
+
+    </div>
+  <style>
+    @media (max-width: 767px) {
+      .user-menu-mobile-hide {
+        display: none !important;
+      }
+    }
+  </style>
+  </header>
+  
+  <!-- Mobilní menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+
+    <div class="relative h-full svh flex flex-col items-stretch">
+      <div id="menuPanel" class="mr-auto w-[92%] max-w-sm min-h-0 flex flex-col bg-neutral-950/95 border-r border-white/10 shadow-soft -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="px-4 py-4 flex items-center justify-end border-b border-white/10">
+          <button id="menuClose" class="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 ml-auto">
+            <i data-lucide="x" class="w-5 h-5"></i>
+            <span class="sr-only">Zavřít</span>
+          </button>
+        </div>
+
+        <!-- Dynamický obsah menu -->
+        <div id="menuContent"></div>
+        <!-- Injektováno na konec body -->
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/70" data-close></div>
+    <div class="relative max-w-sm mx-auto mt-24 bg-neutral-900 border border-white/10 rounded-xl p-5">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="text-lg font-semibold">Přihlášení administrátora</h3>
+        <button class="text-white/70 hover:text-white" data-close aria-label="Zavřít">✕</button>
+      </div>
+      <p class="text-sm text-white/70 mt-2">Zadej admin klíč a potvrď.</p>
+      <input id="adminKeyInput" type="password" placeholder="Admin klíč"
+             class="mt-3 w-full p-2 rounded bg-neutral-800 border border-white/20" />
+      <div class="text-[11px] text-white/45 mt-1">
+        Pro lokální test: <code class="bg-white/10 px-1.5 py-0.5 rounded">kartao-dev</code>
+      </div>
+      <button id="adminLoginBtn"
+              class="mt-4 w-full bg-fuchsia-500 hover:bg-fuchsia-600 px-4 py-2 rounded">
+        Přihlásit admin
+      </button>
+    </div>
+  </div>
+
+  <!-- HLAVNÍ OBSAH -->
+
+  <!-- HERO + SEARCH -->
+  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Najdi toho pravého influencera. <span class="text-fuchsia-400">Rychle a chytře.</span></h1>
+      <p class="mt-3 text-white/70 max-w-2xl">Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.</p>
+
+      <div class="mt-6 grid gap-3 md:grid-cols-8 items-stretch">
+        <div class="md:col-span-3">
+          <div class="relative">
+            <input id="q" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full pl-10 pr-3 py-2 rounded-xl bg-neutral-900 border border-white/10 text-white placeholder:text-white/40 outline-none"/>
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/50"></i>
+          </div>
+        </div>
+
+        <select id="platform" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
+          <option value="all">Vše</option>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+          <option value="pinterest">Pinterest</option>
+        </select>
+
+        <select id="mode" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
+          <option value="sum">Součet (Σ)</option>
+          <option value="max">Maximum (MAX)</option>
+        </select>
+
+        <select id="category" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
+          <option value="all">Vše</option>
+          <option>Fashion</option>
+          <option>Beauty</option>
+          <option>Fitness</option>
+          <option>Lifestyle</option>
+          <option>Gaming</option>
+          <option>Tech</option>
+          <option>Food</option>
+          <option>Travel</option>
+          <option>Auto</option>
+          <option>Music</option>
+        </select>
+
+        <select id="city" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
+          <option value="all">Celá ČR</option>
+          <!-- Hlavní města -->
+          <option value="Praha">Praha</option>
+          <option value="Brno">Brno</option>
+          <option value="Ostrava">Ostrava</option>
+          <option value="Plzeň">Plzeň</option>
+          <option value="Liberec">Liberec</option>
+          <option value="Olomouc">Olomouc</option>
+          <option value="Zlín">Zlín</option>
+          <option value="Hradec Králové">Hradec Králové</option>
+          <option value="České Budějovice">České Budějovice</option>
+          <option value="Pardubice">Pardubice</option>
+          <!-- Další města se doplní dynamicky z databáze -->
+        </select>
+
+        <select id="sort" class="rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
+          <option value="relevance">Relevance</option>
+          <option value="followers">Nejvíc followerů</option>
+          <option value="priceLow">Nejnižší cena</option>
+          <option value="priceHigh">Nejvyšší cena</option>
+          <option value="rating">Nejlepší hodnocení</option>
+          <option value="newest">Nejnovější</option>
+        </select>
+
+        <button id="advancedBtn" class="btn btn-primary md:col-span-1"><i data-lucide="filter" class="w-4 h-4 mr-1.5"></i> Pokročilé</button>
+      </div>
+
+      <!-- Pokročilé filtry -->
+      <div class="mt-3 grid gap-3 md:grid-cols-6 hidden" id="advancedWrap">
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Rozpočet (Kč)</label>
+          <select id="priceRange" class="w-full rounded-xl bg-neutral-900 border border-white/10 pl-3 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500">
+            <option value="all">Jakýkoliv</option>
+            <option value="0-1500">0 - 1 500 Kč</option>
+            <option value="1501-3000">1 501 - 3 000 Kč</option>
+            <option value="3001-5000">3 001 - 5 000 Kč</option>
+            <option value="5001-10000">5 001 - 10 000 Kč</option>
+            <option value="10001-20000">10 001 - 20 000 Kč</option>
+            <option value="20001-50000">20 001 - 50 000 Kč</option>
+            <option value="50001-999999">50 001+ Kč</option>
+          </select>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Min. hodnocení</label>
+          <select id="minRating" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
+            <option value="0">Jakékoliv</option>
+            <option value="3">3+ hvězdy</option>
+            <option value="4">4+ hvězdy</option>
+            <option value="4.5">4.5+ hvězdy</option>
+          </select>
+        </div>
+        
+        <div class="relative space-y-2">
+          <label class="text-xs text-white/70">Min. followeři</label>
+          <input id="minFollowers" type="number" min="0" placeholder="Počet" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm disabled:opacity-50" />
+          <div class="text-xs text-white/50" id="minFollowersHint" style="display:none">Filtr se uplatní jen při výběru konkrétní platformy</div>
+        </div>
+        
+        <div class="flex flex-col gap-2 justify-center">
+          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
+            <input id="premiumOnly" type="checkbox" class="accent-fuchsia-500" />
+            Pouze ověřené
+          </label>
+          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
+            <input id="infinite" type="checkbox" class="accent-fuchsia-500" />
+            Infinite scroll
+          </label>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="text-xs text-white/70">Výsledky na stránku</label>
+          <select id="pageSize" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
+            <option value="12">12</option>
+            <option value="24">24</option>
+            <option value="48">48</option>
+          </select>
+        </div>
+        
+        <div class="flex items-end">
+          <button id="resetFilters" class="w-full px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 transition text-sm">
+            <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>Vymazat
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Nadpis sekce tvůrců -->
+      <div class="mb-6">
+        <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-fuchsia-300/90 mb-2">
+          <span class="inline-flex h-6 items-center rounded-full bg-fuchsia-500/10 px-3">
+            <i data-lucide="users" class="w-3 h-3 mr-1"></i>Portfolio tvůrců
+          </span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Tvůrci <span class="text-fuchsia-400">a influenceři</span></h2>
+        <p class="text-white/70 text-sm md:text-base mt-1">Procházej profily ověřených tvůrců. Najdi partnera pro svou kampaň a začni spolupracovat.</p>
+      </div>
+      
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2 text-white/70 text-sm">
+          <i data-lucide="users" class="w-4 h-4"></i> <span>Nalezeno</span> <span id="total" class="font-semibold text-white">0</span>
+          <span>tvůrců</span>
+          <span id="modeBadge" class="ml-2 inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
+        </div>
+        <div class="hidden md:flex items-center gap-2 text-xs">
+          <span class="tag" data-platform="all">
+            <i data-lucide="layers" class="w-3.5 h-3.5"></i> Vše
+          </span>
+          <span class="tag" data-platform="facebook">
+            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Facebook
+          </span>
+          <span class="tag" data-platform="instagram">
+            <i data-lucide="instagram" class="w-3.5 h-3.5"></i> Instagram
+          </span>
+          <span class="tag" data-platform="tiktok">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i> TikTok
+          </span>
+          <span class="tag" data-platform="youtube">
+            <i data-lucide="youtube" class="w-3.5 h-3.5"></i> YouTube
+          </span>
+          <span class="tag" data-platform="pinterest">
+            <i data-lucide="pin" class="w-3.5 h-3.5"></i> Pinterest
+          </span>
+        </div>
+      </div>
+
+      <div id="grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      
+      <!-- Loading indikátor -->
+      <div id="loading" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
+        <div class="animate-spin w-8 h-8 mx-auto mb-3">
+          <i data-lucide="loader-2" class="w-8 h-8 text-fuchsia-400"></i>
+        </div>
+        <div class="font-semibold">Načítám tvůrce...</div>
+        <div class="text-white/60 text-sm mt-1">Chvilku strpení, prosím</div>
+      </div>
+      
+      <div id="empty" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
+        <i data-lucide="sparkles" class="w-6 h-6 mx-auto"></i>
+        <div class="font-semibold mt-2">Zkuste upravit filtry</div>
+        <div class="text-white/60 text-sm">Nenašli jsme žádné tvůrce pro zadaná kritéria.</div>
+      </div>
+
+      <div id="pagination" class="mt-8 flex items-center justify-between"></div>
+      <div id="sentinel" class="h-10 mt-6 grid place-items-center text-white/60 text-sm"></div>
+    </div>
+  </section>
+
+  <!-- PRO FIRMY (promo) -->
+  <section class="border-t border-white/10 bg-neutral-900/30 mt-8">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Pro firmy a agentury</h2>
+        <p class="text-white/70 mt-2">Zadejte kampaň a získejte nabídky od vhodných tvůrců během hodin. Kurátorské seznamy, ověřené statistiky a escrow platby.</p>
+        <div class="flex gap-2 mt-4">
+          <span class="tag"><i data-lucide="badge-check" class="w-3 h-3 text-fuchsia-400"></i> Ověření tvůrci</span>
+          <span class="tag"><i data-lucide="trending-up" class="w-3 h-3 text-emerald-500"></i> Záruka výkonu</span>
+        </div>
+        <div class="mt-6 flex gap-3">
+          <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Zadat kampaň</a>
+          <a class="btn btn-light" href="index.html">Vybrat Tvůrce</a>
+          <a class="btn btn-light flex items-center gap-2" href="vip.html">
+            <i data-lucide="crown" class="w-5 h-5 text-amber-400 crown-glow"></i>
+            <span class="font-bold">VIP</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="card overflow-hidden p-4">
+          <div class="font-semibold mb-2 flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5 text-amber-400"></i> Proč Kartao</div>
+          <div class="space-y-2 text-sm text-white/80">
+            <div class="flex items-start gap-2"><i data-lucide="badge-check" class="w-4 h-4 mt-0.5 text-fuchsia-300"></i> Ověření tvůrců a metriky</div>
+            <div class="flex items-start gap-2"><i data-lucide="star" class="w-4 h-4 mt-0.5 text-amber-300"></i> Recenze po dokončení spolupráce</div>
+            <div class="flex items-start gap-2"><i data-lucide="globe" class="w-4 h-4 mt-0.5 text-sky-300"></i> Multiplatformní profily a odkazy</div>
+            <div class="flex items-start gap-2"><i data-lucide="users" class="w-4 h-4 mt-0.5 text-emerald-300"></i> Kurátorské výběry a top karty týdne</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40 font-sans text-[15px]">
+    <div class="max-w-7xl mx-auto px-4">
+      
+      <!-- Main Footer Content -->
+      <div class="py-10 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-2 gap-y-0 justify-center">
+        
+        <!-- Informace -->
+        <div class="mb-6 sm:mb-0">
+          <div class="flex items-center gap-2 font-semibold mb-4 text-lg" style="color:#38bdf8; letter-spacing:0.01em;">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <span class="text-base sm:text-lg">Informace</span>
+          </div>
+          <ul id="footer-section-1" class="space-y-2 text-[15px] text-sky-100/90 mb-4">
+            <style>
+              /* Informace - modrá */
+              #footer-section-1 a:hover,
+              #footer-section-1 a:focus,
+              #footer-section-1 a:active {
+                color: #38bdf8 !important;
+              }
+              #footer-section-2 a:hover,
+              #footer-section-2 a:focus,
+              #footer-section-2 a:active {
+                color: #fbbf24 !important;
+              }
+              #footer-section-3 a:hover,
+              #footer-section-3 a:focus,
+              #footer-section-3 a:active {
+                color: #e879f9 !important;
+              }
+            </style>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-o-nas.html">
+              <i data-lucide="info" class="w-4 h-4"></i>O nás
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kontakt.html">
+              <i data-lucide="mail" class="w-4 h-4"></i>Kontakt
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-recenze.html">
+              <i data-lucide="star" class="w-4 h-4"></i>Recenze
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="mapa-webu.html">
+              <i data-lucide="map" class="w-4 h-4"></i>Mapa webu
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Pro firmy -->
+        <div class="mb-6 sm:mb-0">
+          <div class="flex items-center gap-2 font-semibold mb-4 text-lg" style="color:#fbbf24; letter-spacing:0.01em;">
+            <i data-lucide="building" class="w-5 h-5"></i>
+            <span class="text-base sm:text-lg">Pro firmy</span>
+          </div>
+          <ul id="footer-section-2" class="space-y-2 text-[15px] text-amber-100/90 mb-4">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-firmy.html">
+              <i data-lucide="megaphone" class="w-4 h-4"></i>Zadat kampaň
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-marketplace.html">
+              <i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="vip.html">
+              <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>VIP tvůrci
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-faq.html">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>FAQ
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Pro tvůrce -->
+        <div class="mb-6 sm:mb-0">
+          <div class="flex items-center gap-2 font-semibold mb-4 text-lg" style="color:#e879f9; letter-spacing:0.01em;">
+            <i data-lucide="camera" class="w-5 h-5"></i>
+            <span class="text-base sm:text-lg">Pro tvůrce</span>
+          </div>
+          <ul id="footer-section-3" class="space-y-2 text-[15px] text-fuchsia-100/90 mb-4">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-pro-tvurce.html">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>Začít jako tvůrce
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="moje-karta.html">
+              <i data-lucide="user" class="w-4 h-4"></i>Moje karta
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="zalozit-kartu.html">
+              <i data-lucide="edit" class="w-4 h-4"></i>Upravit kartu
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-cenik.html">
+              <i data-lucide="tag" class="w-4 h-4"></i>Ceník
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="kartao-faq.html">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>FAQ
+            </a></li>
+          </ul>
+        </div>
+        <!-- Kartao partneři - mobil i desktop -->
+        <div class="mb-6 xl:order-5 xl:ml-0">
+          <div class="flex items-center gap-2 font-semibold mb-4 text-lg" style="color:#a3e635; letter-spacing:0.01em;">
+            <i data-lucide="handshake" class="w-5 h-5"></i>
+            <span class="text-base">Kartao partneři</span>
+          </div>
+          <ul class="space-y-2 text-[15px] text-lime-100/90 mb-4">
+            <li><a class="hover:text-white transition flex items-center gap-2" href="vip-partner.html">
+              <i data-lucide="star" class="w-4 h-4"></i>VIP partner
+            </a></li>
+            <li><a class="hover:text-white transition flex items-center gap-2" href="influencer-partner.html">
+              <i data-lucide="users" class="w-4 h-4"></i>Influencer partneři
+            </a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter / Nabídky -->
+        <div class="order-last xl:order-5 w-full col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1 xl:col-span-1 flex flex-col items-center justify-center">
+          <div class="flex flex-col items-center justify-center w-full">
+            <div class="flex items-center gap-2 font-bold mb-4 text-emerald-400 justify-center">
+              <i data-lucide="mail-open" class="w-5 h-5"></i>
+              <span>Získejte exkluzivní nabídky</span>
+            </div>
+            <p class="text-sm text-white/60 mb-3 text-center">Zadejte svůj e-mail a jako první dostanete přístup k novým funkcím, slevám a speciálním nabídkám.</p>
+            <form id="footer-newsletter" class="flex flex-col sm:flex-row gap-2 mb-4 w-full md:max-w-xs md:w-auto justify-center items-center">
+              <input type="email" name="email" required autocomplete="email" placeholder="Váš e-mail pro nabídky" aria-label="Váš e-mail pro nabídky"
+                     class="flex-1 rounded-xl bg-white/10 border border-emerald-400/30 px-3 py-2 text-base placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition" />
+              <button type="submit" class="rounded-xl bg-emerald-500 hover:bg-emerald-600 px-5 py-2 font-semibold text-base whitespace-nowrap transition shadow-md md:ml-2" aria-label="Odebírat nabídky">
+                Chci nabídky
+              </button>
+              <div id="newsletter-success" class="hidden text-emerald-400 text-sm mt-2">Děkujeme za přihlášení k odběru!</div>
+            <script>
+            // Newsletter validace a potvrzení
+            document.addEventListener('DOMContentLoaded', function() {
+              const form = document.getElementById('footer-newsletter');
+              if (form) {
+                form.addEventListener('submit', function(e) {
+                  e.preventDefault();
+                  const email = form.email.value.trim();
+                  const success = document.getElementById('newsletter-success');
+                  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                    form.reset();
+                    if (success) {
+                      success.classList.remove('hidden');
+                      setTimeout(() => success.classList.add('hidden'), 4000);
+                    }
+                  } else {
+                    form.email.focus();
+                    form.email.classList.add('ring-2', 'ring-red-500');
+                    setTimeout(() => form.email.classList.remove('ring-2', 'ring-red-500'), 2000);
+                  }
+                });
+              }
+            });
+          </script>
+          </form>
+            <div class="text-xs text-white/40 italic mb-2 text-center">Odběr můžete kdykoliv zrušit.</div>
+          </div>
+          <!-- Social Icons -->
+          <div class="flex items-center gap-4 sm:gap-2 justify-center mx-auto mt-2">
+            <a href="https://facebook.com/kartao.cz" target="_blank" rel="noopener" 
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Facebook">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+            <a href="https://instagram.com/kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Instagram">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="https://youtube.com/@kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="YouTube">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
+            </a>
+            <a href="https://tiktok.com/@kartao.cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="TikTok">
+              <i data-lucide="music" class="w-4 h-4"></i>
+            </a>
+            <a href="https://pinterest.com/kartao_cz" target="_blank" rel="noopener"
+               class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 grid place-items-center transition"
+               aria-label="Pinterest">
+              <i data-lucide="image" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar odstraněn dle požadavku -->
+
+    </div>
+  </footer>
+
+  <!-- DETAIL SLIDEOVER -->
+  <div id="overlay" class="fixed inset-0 z-50 hidden">
+    <div id="overlayBg" class="absolute inset-0 bg-black/70"></div>
+    <aside id="drawer" class="absolute right-0 top-0 h-full w-full sm:w-[560px] bg-neutral-950 border-l border-white/10 overflow-y-auto modal-enter">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between sticky top-0 bg-neutral-950/80 backdrop-blur">
+        <div class="font-bold">Karta influencera</div>
+        <button id="closeDrawer" class="btn btn-light">Zavřít</button>
+      </div>
+      <div id="drawerBody" class="p-4"></div>
+    </aside>
+  </div>
+
+  <!-- ŠIPKA NAHORU - KARTAO STYLE -->
+  <button id="scrollTopBtn"
+    class="hidden fixed bottom-4 right-4 w-9 h-9 rounded-xl bg-black/70 text-white shadow-md hover:bg-black/90 transition flex items-center justify-center z-50 border border-white/10">
+    <i data-lucide="arrow-up" class="w-4 h-4 opacity-80"></i>
+  </button>
+     <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
+
+  <!-- Supabase SDK - odstraněno duplicitní načítání -->
+
+  <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
+  <script src="database-init.js"></script>
+  <!-- api-services.js zakomentováno, není načítáno -->
+
+  <!-- Advanced Systems -->
+  <script src="notification-system.js"></script>
+  <!-- live-chat-system.js zakomentováno, není načítáno -->
+  <script src="advanced-analytics.js"></script>
+  <script src="security-manager.js"></script>
+  <script src="internationalization-system.js"></script>
+
+  <!-- Marketplace logika -->
+  <script>
+    /* ==========================
+       KONSTANTY A POMOCNÉ FUNKCE
+    ========================== */
+    const PLATFORMS = [
+
+    { id: 'facebook', label: 'Facebook', icon: 'thumbs-up' },
+      { id: 'instagram', label: 'Instagram', icon: 'instagram' },
+      { id: 'tiktok', label: 'TikTok', icon: 'video' },
+      { id: 'youtube', label: 'YouTube', icon: 'youtube' },
+      { id: 'pinterest', label: 'Pinterest', icon: 'pin' }
+    ];
+
+    // ====== DEFAULT OBRÁZKY (fallback) ======
+    const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300&h=300&fit=crop&crop=faces";
+    const DEFAULT_COVER  = "https://images.unsplash.com/photo-1526481280695-3c687fd543c8?w=800&h=320&fit=crop&crop=center";
+    const DEFAULT_GALLERY = [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop&crop=center"
+    ];
+
+    function safeImage(url, fallback) {
+      if (!url || typeof url !== "string") return fallback;
+      return url.startsWith("http") ? url : fallback;
+    }
+
+    // DATA HELPERS - musí být před použitím!
+    const DataHelpers = {
+      formatFollowers(n) {
+        if (typeof n !== 'number') return '0';
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+        return n.toString();
+      },
+      
+      calculateTotalFollowers(metrics, mode = 'sum') {
+        if (!metrics || typeof metrics !== 'object') return 0;
+        
+        const values = Object.values(metrics)
+          .filter(m => m && m.connected && typeof m.followers === 'number')
+          .map(m => m.followers);
+        
+        if (values.length === 0) return 0;
+        
+        if (mode === 'max') {
+          return Math.max(...values);
+        } else {
+          // sum
+          return values.reduce((sum, val) => sum + val, 0);
+        }
+      }
+    };
+
+    // Inicializace služeb
+    let creatorService;
+    let userService;
+
+    // Globální cache
+    let allCreators = [];
+    let isLoading = false;
+
+    // Stav filtrů + URL sync
+    const state = {
+      q: '',
+      platform: 'all',
+      mode: 'sum',
+      category: 'all',
+      city: 'all',
+      sort: 'relevance',
+      priceRange: 'all',
+      minRating: 0,
+      minFollowers: null,
+      premiumOnly: false,
+      page: 1,
+      pageSize: 12,
+      infinite: false
+    };
+
+    function fmtFollowers(n) {
+      return DataHelpers.formatFollowers(n);
+    }
+
+    function platformFollowers(item, pid, mode = 'sum') {
+      if (pid === 'all') {
+        return DataHelpers.calculateTotalFollowers(item.metrics, mode);
+      }
+      const m = item.metrics?.[pid];
+      return m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+    }
+
+    /* ==========================
+       ČTENÍ A ZÁPIS QUERY STRINGU
+    ========================== */
+    function readQS() {
+      const qs = new URLSearchParams(location.search);
+
+      if (qs.get('q')) state.q = qs.get('q');
+
+      const pf = qs.get('platform');
+      if (['all', 'facebook', 'instagram', 'tiktok', 'youtube', 'pinterest'].includes(pf)) {
+        state.platform = pf;
+      }
+
+      const md = qs.get('mode');
+      if (['sum', 'max'].includes(md)) state.mode = md;
+
+      const cat = qs.get('category');
+      if (['all', 'Fashion', 'Beauty', 'Fitness', 'Lifestyle', 'Gaming', 'Tech', 'Food', 'Travel', 'Auto', 'Music'].includes(cat)) {
+        state.category = cat;
+      }
+
+      const city = qs.get('city');
+      // Akceptujeme jakékoliv město z URL (budou načtena dynamicky z DB)
+      if (city) {
+        state.city = city;
+      }
+
+      const sort = qs.get('sort');
+      if (['relevance', 'followers', 'priceLow', 'priceHigh', 'rating', 'newest'].includes(sort)) {
+        state.sort = sort;
+      }
+
+      const priceRange = qs.get('priceRange');
+      if (priceRange) {
+        state.priceRange = priceRange;
+      }
+      
+      if (qs.get('minRating') !== null) {
+        state.minRating = qs.get('minRating') ? Number(qs.get('minRating')) : 0;
+      }
+      if (qs.get('minFollowers') !== null) {
+        state.minFollowers = qs.get('minFollowers') ? Number(qs.get('minFollowers')) : null;
+      }
+
+      state.premiumOnly = qs.get('premium') === '1';
+      state.page = Math.max(1, parseInt(qs.get('page') || '1', 10));
+
+      const ps = parseInt(qs.get('pageSize') || '12', 10);
+      if ([12, 24, 48].includes(ps)) state.pageSize = ps;
+
+      state.infinite = qs.get('infinite') === '1';
+    }
+
+    function writeQS() {
+      const qs = new URLSearchParams();
+
+      if (state.q) qs.set('q', state.q);
+      if (state.platform !== 'all') qs.set('platform', state.platform);
+      if (state.mode !== 'sum') qs.set('mode', state.mode);
+      if (state.category !== 'all') qs.set('category', state.category);
+      if (state.city !== 'all') qs.set('city', state.city);
+      if (state.sort !== 'relevance') qs.set('sort', state.sort);
+      if (state.priceRange !== 'all') qs.set('priceRange', state.priceRange);
+      if (state.minRating > 0) qs.set('minRating', String(state.minRating));
+      if (state.minFollowers != null && state.platform !== 'all') {
+        qs.set('minFollowers', String(state.minFollowers));
+      }
+      if (state.premiumOnly) qs.set('premium', '1');
+      if (state.page > 1) qs.set('page', String(state.page));
+      if (state.pageSize !== 12) qs.set('pageSize', String(state.pageSize));
+      if (state.infinite) qs.set('infinite', '1');
+
+      const next = location.pathname + (qs.toString() ? '?' + qs.toString() : '');
+      history.replaceState({}, '', next);
+    }
+
+    /* ==========================
+       NAČTENÍ TVŮRCŮ ZE SUPABASE
+    ========================== */
+    /* ==========================
+       MĚSTA - HARDCODED (MAXIMÁLNÍ RYCHLOST)
+    ========================== */
+    // Města jsou přímo v HTML - žádné načítání z DB potřeba!
+
+    /* ==========================
+       INLINE SERVICES PRO SUPABASE
+       (Náhrada za Firebase verze z api-services.js)
+    ========================== */
+    
+    // ReviewService - Supabase verze
+    const ReviewServiceSupabase = {
+      async getCreatorReviews(creatorId, limit = 10) {
+        if (!window.supabaseClient) {
+          console.warn('Supabase není inicializováno');
+          return [];
+        }
+        
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .select('*')
+            .eq('creator_id', creatorId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+          
+          if (error) {
+            console.error('Chyba při načítání recenzí:', error);
+            return [];
+          }
+          
+          return (data || []).map(review => ({
+            id: review.id,
+            companyName: review.company_name || 'Anonymní firma',
+            companyLogo: review.company_logo || null,
+            rating: review.rating || 0,
+            title: review.title || '',
+            comment: review.comment || '',
+            verified: review.verified || false,
+            helpful: review.helpful_count || 0,
+            createdAt: review.created_at
+          }));
+        } catch (err) {
+          console.error('Neočekávaná chyba při načítání recenzí:', err);
+          return [];
+        }
+      },
+      
+      renderStars(rating) {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+          if (i <= rating) {
+            stars.push('<i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400"></i>');
+          } else {
+            stars.push('<i data-lucide="star" class="w-3 h-3 text-white/20"></i>');
+          }
+        }
+        return stars.join('');
+      },
+      
+      formatDate(dateString) {
+        if (!dateString) return '—';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('cs-CZ', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+    };
+    
+    // ChatService - Supabase verze
+    const ChatServiceSupabase = {
+      async getOrCreateConversation(userId, creatorId) {
+        if (!window.supabaseClient) {
+          console.warn('Supabase není inicializováno');
+          return null;
+        }
+        
+        try {
+          // Zkusit najít existující konverzaci
+          const { data: existing, error: findError } = await window.supabaseClient
+            .from('conversations')
+            .select('*')
+            .or(`and(user1_id.eq.${userId},user2_id.eq.${creatorId}),and(user1_id.eq.${creatorId},user2_id.eq.${userId})`)
+            .maybeSingle();
+          
+          if (existing) {
+            return existing;
+          }
+          
+          // Vytvořit novou konverzaci
+          const { data: newConv, error: createError } = await window.supabaseClient
+            .from('conversations')
+            .insert({
+              user1_id: userId,
+              user2_id: creatorId,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          
+          if (createError) {
+            console.error('Chyba při vytváření konverzace:', createError);
+            return null;
+          }
+          
+          return newConv;
+        } catch (err) {
+          console.error('Neočekávaná chyba při práci s konverzací:', err);
+          return null;
+        }
+      }
+    };
+
+    async function loadAllCreators(retryCount = 0) {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 1000;
+      
+      if (isLoading) {
+        console.log('⏳ Už načítám, přeskakuji...');
+        return;
+      }
+      
+      console.log('🔍 Kontrola Supabase:', typeof window.supabaseClient);
+      
+      // Čekání na Supabase client s timeoutem
+      if (typeof window.supabaseClient === 'undefined') {
+        if (retryCount < MAX_RETRIES) {
+          console.log(`⏳ Supabase ještě není připraven, čekám... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return loadAllCreators(retryCount + 1);
+        } else {
+          console.error('❌ Supabase se nepodařilo inicializovat po', MAX_RETRIES, 'pokusech');
+          allCreators = [];
+          isLoading = false;
+          
+          // Zobrazit chybovou hlášku uživateli
+          const grid = document.getElementById('grid');
+          const loading = document.getElementById('loading');
+          if (loading) loading.classList.add('hidden');
+          if (grid) {
+            grid.innerHTML = `
+              <div class="col-span-full p-8 text-center border border-red-500/20 rounded-xl bg-red-500/10">
+                <i data-lucide="alert-circle" class="w-12 h-12 mx-auto mb-3 text-red-400"></i>
+                <h3 class="text-lg font-bold mb-2">Nepodařilo se načíst databázi</h3>
+                <p class="text-white/70 mb-4">Zkuste prosím obnovit stránku</p>
+                <button onclick="location.reload()" class="btn btn-primary">
+                  <i data-lucide="refresh-cw" class="w-4 h-4"></i> Obnovit stránku
+                </button>
+              </div>
+            `;
+            if (window.lucide?.createIcons) lucide.createIcons();
+          }
+          return;
+        }
+      }
+
+      isLoading = true;
+      const startTime = performance.now();
+      
+      console.log('📥 Načítám tvůrce z databáze...');
+      
+      // Zobrazit loading indikátor
+      const loading = document.getElementById('loading');
+      if (loading) loading.classList.remove('hidden');
+
+      try {
+        console.log('📡 Dotaz do Supabase...');
+        
+        const { data, error } = await window.supabaseClient
+          .from('creators')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        console.log('📦 Odpověď z databáze:', { data: data?.length, error });
+
+        if (error) {
+          console.error('❌ Chyba při načítání tvůrců ze Supabase:', error);
+          
+          // Retry při síťové chybě
+          if (retryCount < MAX_RETRIES && (error.code === 'PGRST301' || error.message.includes('network'))) {
+            console.log(`🔄 Opakuji dotaz... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+            isLoading = false;
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return loadAllCreators(retryCount + 1);
+          }
+          
+          allCreators = [];
+        } else {
+          // Mapujeme Supabase strukturu na očekávaný formát
+          allCreators = (data || []).map(creator => ({
+            id: creator.id,
+            name: creator.name || '',
+            handle: creator.handle || '',
+            bio: creator.bio || '',
+            avatar: creator.avatar_url || '',
+            cover: creator.cover_url || '',
+            gallery: creator.gallery_urls || [],
+            category: creator.category || '',
+            city: creator.city || '',
+            price: creator.price || 0,
+            rating: creator.rating || 0,
+            engagement: creator.engagement || 0,
+            verified: creator.verified || false,
+            premium: creator.premium || false,
+            platforms: creator.platforms || [],
+            metrics: {
+              facebook: {
+                connected: creator.facebook_connected || false,
+                followers: creator.facebook_followers || 0,
+                updatedAt: creator.facebook_updated_at || null
+              },
+              instagram: {
+                connected: creator.instagram_connected || false,
+                followers: creator.instagram_followers || 0,
+                updatedAt: creator.instagram_updated_at || null
+              },
+              youtube: {
+                connected: creator.youtube_connected || false,
+                followers: creator.youtube_followers || 0,
+                updatedAt: creator.youtube_updated_at || null
+              },
+              tiktok: {
+                connected: creator.tiktok_connected || false,
+                followers: creator.tiktok_followers || 0,
+                updatedAt: creator.tiktok_updated_at || null
+              },
+              pinterest: {
+                connected: creator.pinterest_connected || false,
+                followers: creator.pinterest_followers || 0,
+                updatedAt: creator.pinterest_updated_at || null
+              }
+            },
+            createdAt: creator.created_at ? new Date(creator.created_at).getTime() : Date.now()
+          }));
+          console.log('✅ Načteno tvůrců ze Supabase:', allCreators.length);
+          const loadTime = (performance.now() - startTime).toFixed(2);
+          console.log(`⚡ Rychlost načítání: ${loadTime}ms`);
+          
+          // Pokud databáze je prázdná, zobrazit varování
+          if (allCreators.length === 0) {
+            console.warn('⚠️ Databáze neobsahuje žádné tvůrce');
+            const grid = document.getElementById('grid');
+            if (grid) {
+              grid.innerHTML = `
+                <div class="col-span-full p-8 text-center border border-amber-500/20 rounded-xl bg-amber-500/10">
+                  <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 text-amber-400"></i>
+                  <h3 class="text-lg font-bold mb-2">Databáze je prázdná</h3>
+                  <p class="text-white/70 mb-4">Momentálně nemáme žádné tvůrce v databázi.</p>
+                  <p class="text-white/60 text-sm">Zkuste to prosím později.</p>
+                </div>
+              `;
+              if (window.lucide?.createIcons) lucide.createIcons();
+            }
+          }
+        }
+      } catch (error) {
+        console.error('💥 Neočekávaná chyba při načítání tvůrců:', error);
+        
+        // Retry při neočekávané chybě
+        if (retryCount < MAX_RETRIES) {
+          console.log(`🔄 Opakuji po neočekávané chybě... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
+          isLoading = false;
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return loadAllCreators(retryCount + 1);
+        }
+        
+        allCreators = [];
+        
+        // Zobrazit error uživateli
+        const grid = document.getElementById('grid');
+        if (grid) {
+          grid.innerHTML = `
+            <div class="col-span-full p-8 text-center border border-red-500/20 rounded-xl bg-red-500/10">
+              <i data-lucide="x-circle" class="w-12 h-12 mx-auto mb-3 text-red-400"></i>
+              <h3 class="text-lg font-bold mb-2">Chyba při načítání dat</h3>
+              <p class="text-white/70 mb-4">${error.message || 'Neznámá chyba'}</p>
+              <button onclick="location.reload()" class="btn btn-primary">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Zkusit znovu
+              </button>
+            </div>
+          `;
+          if (window.lucide?.createIcons) lucide.createIcons();
+        }
+      } finally {
+        isLoading = false;
+        const loading = document.getElementById('loading');
+        if (loading) loading.classList.add('hidden');
+        console.log('✅ Načítání dokončeno');
+      }
+    }
+
+    /* ==========================
+       FILTRACE A ŘAZENÍ
+    ========================== */
+    function applyFilters() {
+      if (!allCreators.length) {
+        return [];
+      }
+
+      let list = [...allCreators];
+
+      const searchTerm = state.q.trim().toLowerCase();
+      if (searchTerm) {
+        list = list.filter(creator =>
+          creator.name?.toLowerCase().includes(searchTerm) ||
+          creator.handle?.toLowerCase().includes(searchTerm) ||
+          creator.city?.toLowerCase().includes(searchTerm) ||
+          creator.category?.toLowerCase().includes(searchTerm) ||
+          (creator.bio && creator.bio.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Filtr ceny - parsování rozsahu
+      if (state.priceRange !== 'all') {
+        const [min, max] = state.priceRange.split('-').map(Number);
+        list = list.filter(c => {
+          const price = c.price || 0;
+          return price >= min && price <= max;
+        });
+      }
+      
+      if (state.minRating > 0) {
+        list = list.filter(c => typeof c.rating === 'number' && c.rating >= state.minRating);
+      }
+      if (state.premiumOnly) {
+        list = list.filter(c => c.premium === true);
+      }
+      if (state.minFollowers != null) {
+        list = list.filter(c => {
+          const total = platformFollowers(c, state.platform, state.mode);
+          return total >= state.minFollowers;
+        });
+      }
+      if (state.category !== 'all') {
+        list = list.filter(c => c.category === state.category);
+      }
+      if (state.city !== 'all') {
+        list = list.filter(c => c.city === state.city);
+      }
+
+      // Řazení
+      if (state.sort === 'followers') {
+        list.sort((a, b) => {
+          const aFollowers = DataHelpers.calculateTotalFollowers(a.metrics, state.mode);
+          const bFollowers = DataHelpers.calculateTotalFollowers(b.metrics, state.mode);
+          return bFollowers - aFollowers;
+        });
+      } else if (state.sort === 'priceLow') {
+        list.sort((a, b) => (a.price || 0) - (b.price || 0));
+      } else if (state.sort === 'priceHigh') {
+        list.sort((a, b) => (b.price || 0) - (a.price || 0));
+      } else if (state.sort === 'rating') {
+        list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      } else if (state.sort === 'newest') {
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      }
+
+      return list;
+    }
+
+    /* ==========================
+       RENDER GRIDU A UI
+    ========================== */
+    function btn(label, onClick, disabled) {
+      const b = document.createElement('button');
+      b.textContent = label;
+      if (onClick) b.addEventListener('click', onClick);
+      if (disabled) {
+        b.disabled = true;
+        b.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+      return b;
+    }
+
+    function pickFollowers(data) {
+      // vytáhneme si metrics z objektu data
+      const { metrics } = data;
+
+      if (state.platform === 'all') {
+        const parts = ['facebook', 'instagram', 'youtube', 'tiktok', 'pinterest'].map(pid => {
+          const m = metrics?.[pid];
+          const val = m && m.connected && typeof m.followers === 'number' ? m.followers : 0;
+          return { pid, val, connected: !!m?.connected, updatedAt: m?.updatedAt };
+        });
+
+        const sum = parts.reduce((s, p) => s + p.val, 0);
+        const max = parts.reduce((m, p) => Math.max(m, p.val), 0);
+
+        const top = parts.reduce(
+          (best, p) => (p.val > best.val ? { pid: p.pid, val: p.val } : best),
+          { pid: null, val: 0 }
+        );
+
+        const updatedAt = parts
+          .map(p => (p.updatedAt ? new Date(p.updatedAt).getTime() : 0))
+          .reduce((a, b) => Math.max(a, b), 0);
+
+        const val = state.mode === 'max' ? max : sum;
+        const topLabel = PLATFORMS.find(p => p.id === top.pid)?.label || top.pid;
+
+        return {
+          mode: state.mode,
+          parts,
+          val,
+          updatedAt: updatedAt ? new Date(updatedAt).toISOString() : null,
+          topPid: top.pid,
+          topLabel
+        };
+      }
+
+      // jen jedna konkrétní platforma
+      const m = metrics?.[state.platform];
+      if (m && m.connected && typeof m.followers === 'number') {
+        const icon = PLATFORMS.find(p => p.id === state.platform)?.icon || 'camera';
+        return {
+          mode: 'single',
+          pid: state.platform,
+          icon,
+          val: m.followers,
+          updatedAt: m.updatedAt
+        };
+      }
+
+      // když nic nemáme
+      return { mode: 'none', pid: null, val: null, updatedAt: null };
+    }
+
+    function card(data) {
+      const el = document.createElement('div');
+      el.className = 'card overflow-hidden';
+
+      // vytáhneme pole z objektu data
+      const {
+        id,
+        name,
+        handle,
+        city,
+        category,
+        bio,
+        cover,
+        avatar,
+        gallery = [],
+        rating,
+        engagement,
+        price,
+        verified,
+        platforms = [],
+        metrics = {}
+      } = data;
+
+      const safeCover  = safeImage(cover,  DEFAULT_COVER);
+      const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
+      const followersObj   = pickFollowers(data);
+      const followersLabel = followersObj.val != null ? fmtFollowers(followersObj.val) : null;
+      const aggregateBadge =
+        state.mode === 'max'
+          ? '<span class="inline-flex items-center justify-center px-1.5 h-4 text-[10px] font-bold rounded bg-white/10">MAX</span>'
+          : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
+
+      el.innerHTML = `
+        <div class="h-32 bg-cover bg-center" style="background-image:url('${safeCover}')"></div>
+        <div class="p-4">
+          <div class="flex items-start gap-3 -mt-10">
+            <img src="${safeAvatar}" alt="Profil ${name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-lg leading-tight">${name}</h3>
+                ${
+                  verified
+                    ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
+                    : ''
+                }
+              </div>
+              <div class="text-white/60 text-sm">${handle} • ${category}</div>
+              <div class="flex items-center gap-3 mt-2 text-sm text-white/70">
+                ${
+                  followersLabel
+                    ? `
+                  <span class="flex items-center gap-1">
+                    ${
+                      followersObj.mode === 'single'
+                        ? `<i data-lucide="${followersObj.icon}" class="w-4 h-4"></i>`
+                        : aggregateBadge
+                    }
+                    ${followersLabel}${
+                      state.mode === 'max' &&
+                      followersObj.mode !== 'single' &&
+                      followersObj.topPid
+                        ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`
+                        : ''
+                    }
+                  </span>
+                `
+                    : `
+                  <span class="tag text-white/60 cursor-pointer">
+                    <i data-lucide="plug-zap" class="w-3.5 h-3.5"></i>
+                    ${
+                      state.platform !== 'all'
+                        ? (PLATFORMS.find(p => p.id === state.platform)?.label || 'Platforma') + ' nepřipojen'
+                        : 'Účty nepřipojeny'
+                    }
+                  </span>
+                `
+                }
+                <span class="flex items-center gap-1">
+                  <i data-lucide="star" class="w-4 h-4"></i>${rating ?? '—'}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-4 h-4"></i>${city ?? '—'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p class="text-white/70 text-sm mt-3 line-clamp-2">${bio ?? ''}</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            ${
+              Array.isArray(platforms)
+                ? platforms
+                    .map(
+                      p => `
+              <span class="tag">
+                <i data-lucide="${PLATFORMS.find(x => x.id === p)?.icon || 'camera'}" class="w-4 h-4"></i>
+                ${PLATFORMS.find(x => x.id === p)?.label || p}
+              </span>
+            `
+                    )
+                    .join('')
+                : ''
+            }
+          </div>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="text-sm text-white/70">
+              od <span class="text-white font-semibold">${(price || 0).toLocaleString('cs-CZ')} Kč</span> / post
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-light js-open">
+                Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+              <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Chci spolupráci</a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const openBtn = el.querySelector('.js-open');
+      if (openBtn) {
+        openBtn.addEventListener('click', () => {
+          // Pokud existuje handle, použij ho, jinak použij ID
+          const identifier = handle || id;
+          if (identifier) {
+            window.location.href = `karta.html?handle=${encodeURIComponent(identifier)}`;
+          } else {
+            console.warn('Chybí handle i ID pro kartu:', data);
+          }
+        });
+      }
+
+      return el;
+    }
+
+    function render() {
+      const grid = document.getElementById('grid');
+      const empty = document.getElementById('empty');
+      const loading = document.getElementById('loading');
+      const totalEl = document.getElementById('total');
+      const pagination = document.getElementById('pagination');
+      const sentinel = document.getElementById('sentinel');
+      const modeBadge = document.getElementById('modeBadge');
+
+      if (!grid || !totalEl) return;
+      
+      if (loading) loading.classList.add('hidden');
+
+      const all = applyFilters();
+      totalEl.textContent = String(all.length);
+      modeBadge.textContent = 'Režim: ' + (state.mode === 'max' ? 'MAX' : 'Σ Součet');
+
+      const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
+      state.page = Math.min(Math.max(1, state.page), pageCount);
+      const start = (state.page - 1) * state.pageSize;
+      const end = start + state.pageSize;
+      const slice = state.infinite ? all.slice(0, end) : all.slice(start, end);
+
+      grid.innerHTML = '';
+      slice.forEach(i => grid.appendChild(card(i)));
+      empty.classList.toggle('hidden', slice.length > 0);
+
+      pagination.innerHTML = '';
+      sentinel.textContent = '';
+      if (!state.infinite) {
+        const left = btn(
+          'Předchozí',
+          () => {
+            if (state.page > 1) {
+              state.page--;
+              writeQS();
+              render();
+            }
+          },
+          state.page === 1
+        );
+        left.classList.add('btn', 'btn-outline');
+
+        const right = btn(
+          'Další',
+          () => {
+            if (state.page < pageCount) {
+              state.page++;
+              writeQS();
+              render();
+            }
+          },
+          state.page === pageCount
+        );
+        right.classList.add('btn', 'btn-outline');
+
+        const info = document.createElement('div');
+        info.className = 'text-sm text-white/60';
+        info.innerHTML = `Zobrazuji <span class="text-white">${Math.min(
+          end,
+          all.length
+        )}</span> z <span class="text-white">${all.length}</span>`;
+
+        const pager = document.createElement('div');
+        pager.className = 'flex items-center gap-2';
+        pager.appendChild(left);
+
+        const maxButtons = Math.min(pageCount, 7);
+        for (let p = 1; p <= maxButtons; p++) {
+          const b = btn(String(p), () => {
+            state.page = p;
+            writeQS();
+            render();
+          });
+          if (p === state.page) {
+            b.classList.add('btn-primary');
+          } else {
+            b.classList.add('btn', 'btn-outline');
+          }
+          pager.appendChild(b);
+        }
+
+        if (pageCount > 7) {
+          const dots = document.createElement('span');
+          dots.className = 'px-2 text-white/60';
+          dots.textContent = '…';
+          pager.appendChild(dots);
+        }
+
+        pager.appendChild(right);
+        pagination.appendChild(info);
+        pagination.appendChild(pager);
+      } else {
+        sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
+      }
+
+      // Aktualizuj zvýraznění platform tagů
+      document.querySelectorAll('[data-platform]').forEach(tag => {
+        const platform = tag.getAttribute('data-platform');
+        if (platform === state.platform) {
+          tag.classList.add('ring-2', 'ring-fuchsia-500');
+        } else {
+          tag.classList.remove('ring-2', 'ring-fuchsia-500');
+        }
+      });
+    }
+
+    /* ==========================
+       DETAIL MODAL
+    ========================== */
+    function stat(label, value) {
+      return `
+        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+          <div class="text-white/60 text-xs">${label}</div>
+          <div class="font-semibold">${value}</div>
+        </div>
+      `;
+    }
+
+    // OPRAVA: používáme metricsObj z parametru, ne globální proměnnou
+    function platformRow(pid, label, metricsObj) {
+      const m = metricsObj?.[pid] || {};
+      const val = typeof m.followers === 'number' ? fmtFollowers(m.followers) : '—';
+      const connected = !!m.connected;
+      const updatedAt = connected
+        ? m.updatedAt
+          ? new Date(m.updatedAt).toLocaleString('cs-CZ')
+          : '—'
+        : 'Nepřipojeno';
+      const icon = PLATFORMS.find(p => p.id === pid)?.icon || 'camera';
+
+      return `
+        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/50">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-white/70 text-xs flex items-center gap-2">
+                <i data-lucide="${icon}" class="w-4 h-4"></i> ${label}
+              </div>
+              <div class="text-lg font-bold">${val}</div>
+              <div class="text-xs text-white/50">${connected ? 'Aktualizováno: ' + updatedAt : 'Nepřipojeno'}</div>
+            </div>
+            <div class="flex gap-2">
+              ${
+                !connected
+                  ? `<span class="tag text-white/60"><i data-lucide="plug-zap" class="w-3.5 h-3.5"></i> Účet není připojen</span>`
+                  : `<span class="tag" style="background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.3);color:#86efac">
+                      <i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno
+                    </span>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadCreatorReviews(creatorId) {
+      try {
+        const reviews = await ReviewServiceSupabase.getCreatorReviews(creatorId, 5);
+
+        const loading = document.getElementById('reviewsLoading');
+        const reviewsList = document.getElementById('reviewsList');
+        if (loading) loading.style.display = 'none';
+
+        if (!reviewsList) return;
+
+        if (!reviews.length) {
+          reviewsList.innerHTML =
+            '<div class="text-white/60 text-sm text-center py-4">Zatím žádné recenze</div>';
+          return;
+        }
+
+        reviewsList.innerHTML = reviews
+          .map(
+            review => `
+          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+            <div class="flex items-start gap-3">
+              <img src="${
+                review.companyLogo ||
+                'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=40&h=40&fit=crop&crop=center'
+              }" 
+                   alt="Logo ${review.companyName}" class="w-10 h-10 rounded-lg object-cover"/>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-semibold text-sm">${review.companyName}</div>
+                  <div class="flex items-center gap-1">
+                    ${ReviewServiceSupabase.renderStars(review.rating)}
+                  </div>
+                </div>
+                ${
+                  review.title
+                    ? `<div class="font-medium text-sm mb-1">${review.title}</div>`
+                    : ''
+                }
+                <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
+                <div class="flex items-center justify-between mt-2 text-xs text-white/50">
+                  <span>${ReviewServiceSupabase.formatDate(review.createdAt)}</span>
+                  <div class="flex items-center gap-3">
+                    ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
+                    <span>${review.helpful || 0} užitečné</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+
+        if (window.lucide?.createIcons) lucide.createIcons();
+      } catch (error) {
+        console.error('Chyba při načítání recenzí:', error);
+        const loading = document.getElementById('reviewsLoading');
+        if (loading) loading.style.display = 'none';
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList) {
+          reviewsList.innerHTML =
+            '<div class="text-red-400 text-sm text-center py-4">Chyba při načítání recenzí</div>';
+        }
+      }
+    }
+
+    async function startChat(creatorId) {
+      // Zkontrolovat přihlášení přes Supabase
+      if (!window.supabaseClient) {
+        alert('Systém není připraven, zkuste to prosím později');
+        return;
+      }
+      
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      
+      if (!user) {
+        alert('Pro psaní zpráv se musíte přihlásit');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const conversation = await ChatServiceSupabase.getOrCreateConversation(user.id, creatorId);
+
+        if (conversation) {
+          window.location.href = `chat.html?conversation=${conversation.id}&user=${creatorId}`;
+        } else {
+          alert('Chyba při vytváření konverzace');
+        }
+      } catch (error) {
+        console.error('Chyba při spuštění chatu:', error);
+        alert('Chyba při spuštění chatu');
+      }
+    }
+
+    // OPRAVA: openDetail si vytáhne hodnoty z data a používá safeImage
+    async function openDetail(data) {
+      const ov = document.getElementById('overlay');
+      const body = document.getElementById('drawerBody');
+      const drawer = document.getElementById('drawer');
+
+      if (!ov || !body || !drawer) return;
+
+      const {
+        id,
+        name,
+        handle,
+        city,
+        category,
+        bio,
+        cover,
+        avatar,
+        gallery = [],
+        rating,
+        engagement,
+        verified,
+        metrics = {}
+      } = data;
+
+      const safeCover  = safeImage(cover,  DEFAULT_COVER);
+      const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
+
+      body.innerHTML = `
+        <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:url('${safeCover}')"></div>
+        <div class="flex items-start gap-3 -mt-10 p-2">
+          <img src="${safeAvatar}" alt="Avatar ${name}" 
+               class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900"/>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-xl leading-tight">${name}</h3>
+              ${
+                verified
+                  ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
+                  : ''
+              }
+            </div>
+            <div class="text-white/60 text-sm">${handle} • ${category} • ${city}</div>
+          </div>
+        </div>
+        <p class="text-white/80 text-sm mt-2">${bio ?? ''}</p>
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          ${
+            Array.isArray(gallery)
+              ? gallery
+                  .map(
+                    (src, i) =>
+                      `<img src="${safeImage(src, DEFAULT_GALLERY[0])}" alt="Portfolio ${name} - obrázek ${
+                        i + 1
+                      }" class="rounded-lg object-cover w-full h-28"/>`
+                  )
+                  .join('')
+              : ''
+          }
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+          ${stat('Hodnocení', rating ?? '—')}
+          ${stat('Engagement', (engagement ?? 0) + '%')}
+          ${stat('Město', city ?? '—')}
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-3">
+          ${platformRow('facebook','Facebook followers', metrics)}
+          ${platformRow('instagram','Instagram followers', metrics)}
+          ${platformRow('youtube','YouTube subscribers', metrics)}
+          ${platformRow('tiktok','TikTok followers', metrics)}
+          ${platformRow('pinterest','Pinterest followers', metrics)}
+        </div>
+        
+        <div class="mt-6">
+          <h4 class="font-semibold mb-3 flex items-center gap-2">
+            <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
+            Recenze
+            <div id="reviewsLoading" class="animate-spin">
+              <i data-lucide="loader-2" class="w-4 h-4"></i>
+            </div>
+          </h4>
+          <div id="reviewsList" class="space-y-3"></div>
+        </div>
+        
+        <div class="mt-6 flex items-center justify-end gap-2">
+          <button onclick="startChat('${id}')" class="btn btn-outline">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Napsat zprávu
+          </button>
+          <a href="booking.html?creator=${id}" class="btn btn-outline">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Rezervovat termín
+          </a>
+          <a href="kartao-pro-firmy.html#brief" class="btn btn-primary">
+            <i data-lucide="mail" class="w-4 h-4"></i> Poptejte spolupráci
+          </a>
+        </div>
+      `;
+
+      if (window.lucide?.createIcons) lucide.createIcons();
+      ov.classList.remove('hidden');
+      setTimeout(() => drawer.classList.add('active'), 0);
+
+      loadCreatorReviews(id);
+    }
+
+    function closeDetail() {
+      const ov = document.getElementById('overlay');
+      const drawer = document.getElementById('drawer');
+      if (!ov || !drawer) return;
+
+      drawer.classList.remove('active');
+      setTimeout(() => ov.classList.add('hidden'), 200);
+    }
+
+    function syncInputsFromState() {
+      if (!window.q) return;
+
+      q.value = state.q;
+      platform.value = state.platform;
+      mode.value = state.mode;
+      category.value = state.category;
+      city.value = state.city;
+      sort.value = state.sort;
+      pageSize.value = String(state.pageSize);
+
+      const priceRangeInput = document.getElementById('priceRange');
+      const minRatingInput = document.getElementById('minRating');
+      const minFollowersInput = document.getElementById('minFollowers');
+      const premiumOnlyInput = document.getElementById('premiumOnly');
+      const infiniteInput = document.getElementById('infinite');
+      const minFollowersHint = document.getElementById('minFollowersHint');
+
+      if (priceRangeInput) priceRangeInput.value = state.priceRange;
+      if (minRatingInput) minRatingInput.value = String(state.minRating);
+      if (minFollowersInput) {
+        minFollowersInput.value = state.minFollowers || '';
+        minFollowersInput.disabled = state.platform === 'all';
+      }
+      if (minFollowersHint) {
+        minFollowersHint.style.display = state.platform === 'all' ? '' : 'none';
+      }
+      if (premiumOnlyInput) premiumOnlyInput.checked = state.premiumOnly;
+      if (infiniteInput) infiniteInput.checked = state.infinite;
+    }
+
+    async function resetPageAndRender() {
+      state.page = 1;
+      writeQS();
+      render();
+    }
+
+    /* ==========================
+       START – DOMContentLoaded
+    ========================== */
+    document.addEventListener('DOMContentLoaded', async () => {
+      readQS();
+
+      window.q = document.getElementById('q');
+      window.platform = document.getElementById('platform');
+      window.mode = document.getElementById('mode');
+      window.category = document.getElementById('category');
+      window.city = document.getElementById('city');
+      window.sort = document.getElementById('sort');
+      window.pageSize = document.getElementById('pageSize');
+      window.priceRange = document.getElementById('priceRange');
+      window.minFollowers = document.getElementById('minFollowers');
+      window.premiumOnly = document.getElementById('premiumOnly');
+      window.infinite = document.getElementById('infinite');
+
+      syncInputsFromState();
+      writeQS();
+      
+      // ==========================================
+      // DŮLEŽITÉ: Event listeners MUSÍ být PŘED await loadAllCreators()
+      // Jinak se nespustí pokud načítání dat trvá dlouho nebo selže!
+      // ==========================================
+
+      if (q) {
+        q.addEventListener('input', async e => {
+          state.q = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (platform) {
+        platform.addEventListener('change', async e => {
+          state.platform = e.target.value;
+          syncInputsFromState();
+          await resetPageAndRender();
+        });
+      }
+      if (mode) {
+        mode.addEventListener('change', async e => {
+          state.mode = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (category) {
+        category.addEventListener('change', async e => {
+          state.category = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (city) {
+        city.addEventListener('change', async e => {
+          state.city = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (sort) {
+        sort.addEventListener('change', async e => {
+          state.sort = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (pageSize) {
+        pageSize.addEventListener('change', async e => {
+          state.pageSize = Number(e.target.value);
+          await resetPageAndRender();
+        });
+      }
+
+      const priceRangeSelect = document.getElementById('priceRange');
+      const minRating = document.getElementById('minRating');
+      const minFollowersInput = document.getElementById('minFollowers');
+      const premiumOnlyInput = document.getElementById('premiumOnly');
+      const infiniteInput = document.getElementById('infinite');
+
+      if (priceRangeSelect) {
+        priceRangeSelect.addEventListener('change', async e => {
+          state.priceRange = e.target.value;
+          await resetPageAndRender();
+        });
+      }
+      if (minRating) {
+        minRating.addEventListener('change', async e => {
+          state.minRating = Number(e.target.value);
+          await resetPageAndRender();
+        });
+      }
+      if (minFollowersInput) {
+        // Validace - pouze kladná čísla
+        minFollowersInput.addEventListener('input', async e => {
+          const v = e.target.value.trim();
+          let numValue = v ? Number(v) : null;
+          
+          // Validace
+          if (numValue !== null) {
+            if (numValue < 0) {
+              numValue = 0;
+              e.target.value = '0';
+            } else if (numValue > 100000000) {
+              // Max 100M
+              numValue = 100000000;
+              e.target.value = '100000000';
+            }
+          }
+          
+          state.minFollowers = numValue;
+          await resetPageAndRender();
+        });
+        
+        // Zabránit nečíselným znakům
+        minFollowersInput.addEventListener('keypress', (e) => {
+          if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+            e.preventDefault();
+          }
+        });
+      }
+      if (premiumOnlyInput) {
+        premiumOnlyInput.addEventListener('change', async e => {
+          state.premiumOnly = e.target.checked;
+          await resetPageAndRender();
+        });
+      }
+      if (infiniteInput) {
+        infiniteInput.addEventListener('change', async e => {
+          state.infinite = e.target.checked;
+          await resetPageAndRender();
+        });
+      }
+
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', async () => {
+          state.q = '';
+          state.platform = 'all';
+          state.category = 'all';
+          state.city = 'all';
+          state.sort = 'relevance';
+          state.priceRange = 'all';
+          state.minRating = 0;
+          state.minFollowers = null;
+          state.premiumOnly = false;
+          state.infinite = false;
+          state.pageSize = 12;
+          state.page = 1;
+
+          syncInputsFromState();
+          await resetPageAndRender();
+        });
+      }
+
+      const advancedBtn = document.getElementById('advancedBtn');
+      const advancedWrap = document.getElementById('advancedWrap');
+      
+      console.log('🔍 Pokročilé filtry - inicializace:', { 
+        btnExists: !!advancedBtn, 
+        wrapExists: !!advancedWrap,
+        btnElement: advancedBtn,
+        wrapElement: advancedWrap
+      });
+      
+      if (advancedBtn && advancedWrap) {
+        console.log('✅ Pokročilé filtry - přidávám event listener');
+        
+        advancedBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('🎯 Pokročilé filtry - kliknuto!');
+          
+          const isHidden = advancedWrap.classList.contains('hidden');
+          console.log('📊 Pokročilé filtry - stav:', { isHidden });
+          
+          advancedWrap.classList.toggle('hidden');
+          
+          // Změna textu a ikony tlačítka
+          const icon = advancedBtn.querySelector('i');
+          const text = isHidden ? 'Skrýt' : 'Pokročilé';
+          const iconName = isHidden ? 'chevron-up' : 'filter';
+          
+          advancedBtn.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 mr-1.5"></i> ${text}`;
+          if (window.lucide?.createIcons) lucide.createIcons();
+          
+          // Focus na rozpočet když se otevře
+          if (isHidden) {
+            const priceRange = document.getElementById('priceRange');
+            if (priceRange) setTimeout(() => priceRange.focus(), 100);
+          }
+        });
+      } else {
+        console.error('❌ Pokročilé filtry - elementy nenalezeny!', {
+          advancedBtn,
+          advancedWrap,
+          allButtons: document.querySelectorAll('button'),
+          allDivs: document.querySelectorAll('div[id]')
+        });
+      }
+
+      const overlayBg = document.getElementById('overlayBg');
+      if (overlayBg) overlayBg.addEventListener('click', closeDetail);
+      const closeDrawerBtn = document.getElementById('closeDrawer');
+      if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDetail);
+
+      const sent = document.getElementById('sentinel');
+      if (sent) {
+        const io = new IntersectionObserver(
+          entries => {
+            if (!state.infinite) return;
+            if (entries.some(e => e.isIntersecting)) {
+              const all = applyFilters();
+              const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
+              if (state.page < pageCount) {
+                state.page++;
+                writeQS();
+                render();
+              }
+            }
+          },
+          { rootMargin: '200px' }
+        );
+        io.observe(sent);
+      }
+
+      // ==========================================
+      // NAČTENÍ DAT - až po inicializaci všech listenerů
+      // ==========================================
+      console.log('🚀 UI inicializováno, načítám tvůrce...');
+      await loadAllCreators();
+      render();
+    });
+
+    /* ==========================
+       AUTH LISTENER – TVŮRCI (SUPABASE)
+    ========================== */
+    // Služby se načítají inline, není potřeba externe inicializace
+  </script>
+
+  <!-- Tlačítko založit kartu - funkce + desktop auth blok -->
+  <script>
+    async function goToCreateCard() {
+      try {
+        if (window.supabaseClient) {
+          const { data: { user } } = await window.supabaseClient.auth.getUser();
+          if (user) {
+            window.location.href = 'zalozit-kartu.html';
+            return;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      window.location.href = 'login.html';
+    }
+
+    if (window.supabaseClient) {
+      let userDataCache = null;
+      
+      // Auth state listener
+      window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        const notLoggedIn = document.getElementById('desktop-not-logged-in');
+        const loggedIn = document.getElementById('desktop-logged-in');
+        const user = session?.user;
+
+        if (user) {
+          if (notLoggedIn) notLoggedIn.classList.add('hidden');
+          if (loggedIn) loggedIn.classList.remove('hidden');
+
+          const userName = document.getElementById('desktop-user-name');
+          const userEmail = document.getElementById('desktop-user-email');
+          const userAvatar = document.getElementById('desktop-user-avatar');
+
+          // Okamžitě zobraz email, pak načti jméno
+          const emailName = user.email?.split('@')[0] || 'Uživatel';
+          if (userName) userName.textContent = emailName;
+          if (userEmail) userEmail.textContent = user.email || '';
+          if (userAvatar) {
+            const initial = emailName[0].toUpperCase();
+            userAvatar.textContent = initial;
+          }
+
+          // Načti creator data v pozadí (jen pokud není v cache)
+          if (!userDataCache || userDataCache.id !== user.id) {
+            const { data: creator } = await window.supabaseClient
+              .from('creators')
+              .select('name')
+              .eq('user_id', user.id)
+              .maybeSingle();
+            
+            if (creator?.name) {
+              userDataCache = { id: user.id, name: creator.name };
+              if (userName) userName.textContent = creator.name;
+              if (userAvatar) userAvatar.textContent = creator.name[0].toUpperCase();
+            }
+          } else if (userDataCache.name) {
+            if (userName) userName.textContent = userDataCache.name;
+            if (userAvatar) userAvatar.textContent = userDataCache.name[0].toUpperCase();
+          }
+        } else {
+          userDataCache = null;
+          if (notLoggedIn) notLoggedIn.classList.remove('hidden');
+          if (loggedIn) loggedIn.classList.add('hidden');
+        }
+      });
+
+      // Auth is now handled by auth-unified.js
+    }
+  </script>
+
+  <!-- Pricing toggle (pokud je na stránce ceník sekce) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const billing = document.getElementById('billingToggle');
+      if (!billing) return;
+
+      const btnM = document.getElementById('billMonthly');
+      const btnY = document.getElementById('billYearly');
+
+      function setBilling(mode) {
+        billing.dataset.state = mode;
+        const monthly = mode === 'monthly';
+
+        if (btnM && btnY) {
+          btnM.classList.toggle('btn-light', monthly);
+          btnM.classList.toggle('btn-outline', !monthly);
+          btnY.classList.toggle('btn-light', !monthly);
+          btnY.classList.toggle('btn-outline', monthly);
+        }
+
+        document.querySelectorAll('.js-price').forEach(el => {
+          const val = monthly ? el.dataset.monthly : el.dataset.yearly;
+          el.textContent = Number(val).toLocaleString('cs-CZ');
+        });
+        document.querySelectorAll('.js-period').forEach(el => {
+          el.textContent = monthly ? ' / měs.' : ' / rok';
+        });
+      }
+
+      btnM?.addEventListener('click', () => setBilling('monthly'));
+      btnY?.addEventListener('click', () => setBilling('yearly'));
+      setBilling('monthly');
+    });
+  </script>
+
+  <!-- ŠIPKA NAHORU + Auth pro header (TVŮJ PŮVODNÍ KÓD) -->
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if (!scrollBtn) return;
+      if (window.scrollY > 200) {
+        scrollBtn.classList.remove('hidden');
+      } else {
+        scrollBtn.classList.add('hidden');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if (scrollBtn) {
+        scrollBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      if (window.lucide?.createIcons) window.lucide.createIcons();
+
+
+      // Auth is now handled by auth-unified.js
+    });
+  </script>
+
+  <!-- Footer collapsible (TVŮJ KÓD) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = document.querySelectorAll('footer button[aria-controls]');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('aria-controls');
+          const panel = document.getElementById(id);
+          const open = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!open));
+          if (panel) panel.classList.toggle('hidden');
+          const icon = btn.querySelector('[data-lucide="chevron-down"]');
+          if (icon) icon.style.transform = open ? '' : 'rotate(180deg)';
+        });
+      });
+    });
+  </script>
+
+  </script>
+
+  <!-- Admin login tlačítko -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+      if (adminLoginBtn) {
+        adminLoginBtn.addEventListener('click', () => {
+          window.location.href = 'login.html';
+        });
+      }
+    });
+  </script>
+
+  <!-- Dynamická změna podle role (TVŮJ KÓD) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Role je určující, email nerozhoduje
+      let role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
+      // Pokud je role v sessionStorage, synchronizuj ji do localStorage
+      if (sessionStorage.getItem('kartaoRole')) {
+        localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
+        role = sessionStorage.getItem('kartaoRole');
+      }
+
+      const linkEl = document.getElementById('userCardLink');
+      const titleEl = document.getElementById('userCardTitle');
+      const subtitleEl = document.getElementById('userCardSubtitle');
+      const iconEl = document.getElementById('userCardIcon');
+
+      if (!linkEl || !titleEl || !subtitleEl || !iconEl) return;
+
+      if (role === 'firma') {
+        titleEl.textContent = 'Moje firma';
+        subtitleEl.textContent = 'Firemní profil & správa';
+        linkEl.href = 'moje-firma.html';
+        iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
+        if (window.lucide?.createIcons) window.lucide.createIcons();
+      } else {
+        titleEl.textContent = 'Moje karta';
+        subtitleEl.textContent = 'Profil & ovládání účtu';
+        linkEl.href = 'moje-karta.html';
+        iconEl.innerHTML = '<i data-lucide="id-card" class="w-4 h-4"></i>';
+        if (window.lucide?.createIcons) window.lucide.createIcons();
+      }
+    });
+  </script>
+
+  <script>
+  // Dočasná funkce – vytvoří první kartu tvůrce z aktuálně přihlášeného uživatele
+  async function createMyCreatorProfile() {
+    try {
+      if (!window.supabaseClient) {
+        alert('Supabase není inicializovaný – zkontroluj supabase-init.js');
+        return;
+      }
+
+      const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
+      
+      if (authError || !user) {
+        alert('Nejdřív se přihlas, pak zkus znovu.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const email = user.email || '';
+      const baseHandle = (email ? email.split('@')[0] : 'influencer')
+        .toLowerCase()
+        .replace(/[^a-z0-9._]/g, '');
+
+      // Zkontroluj, jestli už profil existuje
+      const { data: existing } = await window.supabaseClient
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        alert('✅ Tvoje karta už existuje!');
+        window.location.reload();
+        return;
+      }
+
+      const now = new Date().toISOString();
+
+      await docRef.set(
+        {
+          // ZÁKLADNÍ INFO
+          name: user.displayName || 'První influencer',
+          handle: '@' + baseHandle,
+          city: 'Brno',               // můžeš pak změnit v DB
+          category: 'Lifestyle',      // můžeš pak změnit v DB
+          bio: 'Zakladatel projektu Kartao.cz. Testovací profil pro ověření marketplace.',
+
+          // VZHLED KARTY
+          avatar:
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center',
+          cover:
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop&crop=center',
+          gallery: [
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&h=400&fit=crop&crop=center',
+            'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=400&fit=crop&crop=center'
+          ],
+
+          // PARAMETRY PRO FILTRY / ŘAZENÍ
+          price: 1500,        // od kolik Kč / post – kdyžtak si upravíš
+          rating: 4.9,        // testovací rating
+          engagement: 7.5,    // v %
+          premium: true,      // aby šel filtrovat jako „premium“
+          verified: true,     // ať se ukáže štítek „Ověřeno“
+
+          // PLATFORMY
+          platforms: ['instagram', 'tiktok'],
+
+          metrics: {
+            instagram: {
+              connected: true,
+              followers: 12500,
+              updatedAt: now
+            },
+            tiktok: {
+              connected: true,
+              followers: 8700,
+              updatedAt: now
+            },
+            facebook: {
+              connected: false
+            },
+            youtube: {
+              connected: false
+            },
+            pinterest: {
+              connected: false
+            }
+          },
+
+          // ČAS
+          createdAt: now
+        },
+        { merge: true } // kdyby dokument už existoval, jen doplní/aktualizuje
+      );
+
+      alert('✅ Tvoje karta tvůrce byla vytvořena. Obnov stránku (F5), aby se načetla do marketplace.');
+      console.log('Karta tvůrce vytvořena pro ID:', user.id);
+      
+      setTimeout(() => window.location.reload(), 1000);
+      
+    } catch (err) {
+      console.error('Chyba při vytváření první karty:', err);
+      alert('❌ Chyba při vytváření karty – koukni do konzole (F12 → Console).');
+    }
+  }
+
+  // Pro pohodlí – aby šla volat z konzole
+  window.createMyCreatorProfile = createMyCreatorProfile;
+  </script>
+
+  <!-- ==========================================
+       CORE SCRIPTS - LOADED IN HEAD
+       ========================================== -->
+
+    <footer class="relative z-10 border-t border-slate-800/80 bg-black/40">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-[11px] text-slate-500">
+        <span>© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="podminky.html" class="hover:text-slate-300 inline-flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="inline-block align-text-bottom"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 2v4M16 2v4M4 10h16"/></svg>
+            Podmínky použití
+          </a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  <!-- HAMBURGER MENU -->
+  <script src="credits-header.js"></script>
+  <script src="user-role-utils.js"></script>
+  <script src="hamburger-menu-refactored.js"></script>
+  <script>
+    let menuInstance = null;
+    async function initMenuRefactored() {
+      if (!window.KartaoHamburgerMenu) return setTimeout(initMenuRefactored, 50);
+      const user = window.kartaoAuth?.user;
+      if (!user || !window.supabaseClient) {
+        if (!menuInstance) {
+          menuInstance = new window.KartaoHamburgerMenu({ user: null, profile: null, type: 'guest' });
+        } else {
+          menuInstance.setUser(null, null, 'guest');
+        }
+        return;
+      }
+      const { role, profile } = await getUserRoleAndProfile(user.id, window.supabaseClient);
+      let type = role || 'guest';
+      if (!menuInstance) {
+        menuInstance = new window.KartaoHamburgerMenu({ user, profile, type });
+      } else {
+        menuInstance.setUser(user, profile, type);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initMenuRefactored);
+    window.addEventListener('kartao-auth-changed', initMenuRefactored);
+  </script>
+</body>
+</html>
