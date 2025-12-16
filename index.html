@@ -2594,6 +2594,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Scroll nahoru při otevření (důležité pro mobil)
       drawer.scrollTop = 0;
       
+      // Zablokovat scrollování pozadí
+      document.body.style.overflow = 'hidden';
+      
       setTimeout(() => drawer.classList.add('active'), 0);
 
       loadCreatorReviews(id);
@@ -2603,6 +2606,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const ov = document.getElementById('overlay');
       const drawer = document.getElementById('drawer');
       if (!ov || !drawer) return;
+
+      // Obnovit scrollování pozadí
+      document.body.style.overflow = '';
 
       drawer.classList.remove('active');
       setTimeout(() => ov.classList.add('hidden'), 200);
