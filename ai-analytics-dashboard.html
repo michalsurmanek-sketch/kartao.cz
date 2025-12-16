@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – AI Analytics Dashboard</title>
+  <meta name="description" content="AI Analytics Dashboard Kartao.cz – přehled výkonu, KPI, kampaně, tvůrci a AI insighty. Připravené na Supabase." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase (volitelné; pokud nenastavíš URL+KEY, jede demo data) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+
+    /* jemné animace */
+    @keyframes pop { from{transform:translateY(6px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .anim-pop{animation:pop .26s ease-out both}
+
+    /* malé utility pro chip */
+    .chip{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem .8rem;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);color:rgba(255,255,255,.78);transition:.15s}
+    .chip:hover{background:rgba(255,255,255,.10);color:#fff}
+    .chip[data-active="1"]{background:#fff;color:#0a0a0a;border-color:#fff}
+
+    /* jednoduchý "sparkle" přejezd */
+    .shine{position:relative;overflow:hidden}
+    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.12) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
+    @keyframes shine{0%{transform:translateX(-40%)}60%{transform:translateX(40%)}100%{transform:translateX(40%)}}
+
+    /* pro sticky filtr panel */
+    @media (min-width: 1024px){ .sticky-col{position:sticky;top:92px} }
+  </style>
+</head>
+
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV (sjednocený) -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">AI analytics</span>
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/ai-analytics-dashboard.html">AI Analytics</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/badge-system-dashboard.html">Badges</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+
+        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="xl:hidden hidden">
+      <div class="max-w-7xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/ai-analytics-dashboard.html">AI Analytics</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/badge-system-dashboard.html">Badges</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_90px_rgba(0,0,0,0.58)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_12%_18%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_84%_72%,rgba(255,180,0,0.18),transparent_48%)]"></div>
+      <div class="relative p-8 md:p-12">
+        <div class="grid lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
+          <div class="space-y-5">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="brain" class="h-4 w-4"></i>
+              <span>AI Analytics Dashboard</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">KPI, kampaně, tvůrci, insighty</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              Výkon v číslech.
+              <span class="text-white/70">A rozhodnutí podle dat.</span>
+            </h1>
+            <p class="text-white/70 leading-relaxed max-w-2xl">
+              Přehled metrik za období, porovnání kampaní a AI návrhy, co zlepšit. Stránka je připravená na
+              <b class="text-white">Supabase</b> (events/sessions/campaigns). Pokud nenastavíš klíče, běží demo.
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+              <button id="btnRefresh" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="refresh-ccw" class="h-4 w-4"></i>
+                Aktualizovat data
+              </button>
+              <button id="btnExport" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="download" class="h-4 w-4"></i>
+                Export CSV (demo)
+              </button>
+              <button id="btnResetDemo" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+                <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                Reset demo
+              </button>
+            </div>
+
+            <div class="text-xs text-white/50">
+              Pozn.: do ostrého režimu jen doplníš <span class="text-white/70">SUPABASE_URL</span> a <span class="text-white/70">SUPABASE_ANON_KEY</span> + názvy tabulek.
+            </div>
+          </div>
+
+          <!-- Connection card -->
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-white/60">Zdroj dat</div>
+                <div class="text-xl font-extrabold">Supabase / Demo</div>
+              </div>
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="database" class="h-5 w-5"></i>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Stav připojení</div>
+                <span id="connPill" class="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">DEMO</span>
+              </div>
+              <div class="mt-2 text-sm text-white/60">Tabulky (doporučeno):</div>
+              <ul class="mt-2 text-sm text-white/70 space-y-1">
+                <li class="flex items-center gap-2"><i data-lucide="dot" class="h-5 w-5"></i><span><b class="text-white">events</b> (page_view, click, lead, purchase…)</span></li>
+                <li class="flex items-center gap-2"><i data-lucide="dot" class="h-5 w-5"></i><span><b class="text-white">campaigns</b> (rozpočet, status, cíl…)</span></li>
+                <li class="flex items-center gap-2"><i data-lucide="dot" class="h-5 w-5"></i><span><b class="text-white">profiles</b> (tvůrci/firma + segmenty)</span></li>
+              </ul>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+              <button id="btnDemoSeed" class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">Nahrát demo vzorek</button>
+              <a href="/badge-system-dashboard.html" class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-center">Badges</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYOUT: filters + dashboard -->
+    <section class="grid lg:grid-cols-[360px_1fr] gap-6 items-start">
+
+      <!-- FILTERS -->
+      <aside class="rounded-3xl border border-white/10 bg-white/5 p-6 sticky-col" id="filters">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-white/60">Nastavení</div>
+            <h2 class="text-xl font-extrabold">Filtry</h2>
+          </div>
+          <button id="btnClear" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+            <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-5 grid gap-4">
+          <div class="grid gap-2">
+            <div class="text-sm text-white/70">Období</div>
+            <select id="range" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <option value="7">Posledních 7 dní</option>
+              <option value="14">Posledních 14 dní</option>
+              <option value="30" selected>Posledních 30 dní</option>
+              <option value="90">Posledních 90 dní</option>
+            </select>
+          </div>
+
+          <div class="grid gap-2">
+            <div class="text-sm text-white/70">Segment</div>
+            <div class="flex flex-wrap gap-2">
+              <button class="chip" data-seg="all" data-active="1"><i data-lucide="layers" class="h-4 w-4"></i>Vše</button>
+              <button class="chip" data-seg="fitness"><i data-lucide="dumbbell" class="h-4 w-4"></i>Fitness</button>
+              <button class="chip" data-seg="beauty"><i data-lucide="sparkles" class="h-4 w-4"></i>Beauty</button>
+              <button class="chip" data-seg="auto"><i data-lucide="car" class="h-4 w-4"></i>Auta</button>
+              <button class="chip" data-seg="gaming"><i data-lucide="gamepad-2" class="h-4 w-4"></i>Gaming</button>
+              <button class="chip" data-seg="food"><i data-lucide="utensils" class="h-4 w-4"></i>Jídlo</button>
+            </div>
+          </div>
+
+          <div class="grid gap-2">
+            <div class="text-sm text-white/70">Platforma</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button class="chip" data-plat="instagram"><i data-lucide="instagram" class="h-4 w-4"></i>Instagram</button>
+              <button class="chip" data-plat="tiktok"><i data-lucide="video" class="h-4 w-4"></i>TikTok</button>
+              <button class="chip" data-plat="youtube"><i data-lucide="youtube" class="h-4 w-4"></i>YouTube</button>
+              <button class="chip" data-plat="twitch"><i data-lucide="tv" class="h-4 w-4"></i>Twitch</button>
+            </div>
+          </div>
+
+          <div class="grid gap-2">
+            <div class="text-sm text-white/70">Kampaň</div>
+            <select id="campaign" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <option value="all">Vše</option>
+            </select>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+            <div class="flex items-start gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                <i data-lucide="wand-2" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <div class="font-bold">AI režim</div>
+                <div class="text-sm text-white/60 mt-1">Nech AI navrhnout kroky podle dat.</div>
+                <label class="mt-3 inline-flex items-center gap-2 text-sm text-white/70">
+                  <input id="aiMode" type="checkbox" class="h-4 w-4" checked />
+                  Zapnout insighty
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button id="btnRun" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition w-full">
+            <i data-lucide="sparkles" class="h-4 w-4"></i>
+            Vyhodnotit
+          </button>
+
+          <div class="text-xs text-white/50">
+            Tip: V ostrém režimu se filtry propsnou do SQL dotazu (created_at BETWEEN …).
+          </div>
+        </div>
+      </aside>
+
+      <!-- DASHBOARD -->
+      <section class="space-y-6">
+
+        <!-- KPI -->
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4" id="kpi">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 anim-pop">
+            <div class="text-xs text-white/60">Návštěvy</div>
+            <div class="mt-1 text-2xl font-extrabold" id="kVisits">—</div>
+            <div class="mt-2 text-xs text-white/50" id="kVisitsHint">page_view</div>
+          </div>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 anim-pop" style="animation-delay:40ms">
+            <div class="text-xs text-white/60">Leady</div>
+            <div class="mt-1 text-2xl font-extrabold" id="kLeads">—</div>
+            <div class="mt-2 text-xs text-white/50" id="kLeadsHint">lead_submit</div>
+          </div>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 anim-pop" style="animation-delay:80ms">
+            <div class="text-xs text-white/60">Konverze</div>
+            <div class="mt-1 text-2xl font-extrabold" id="kCR">—</div>
+            <div class="mt-2 text-xs text-white/50">leady / návštěvy</div>
+          </div>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 anim-pop" style="animation-delay:120ms">
+            <div class="text-xs text-white/60">Prům. cena leadu</div>
+            <div class="mt-1 text-2xl font-extrabold" id="kCPL">—</div>
+            <div class="mt-2 text-xs text-white/50">rozpočet / leady</div>
+          </div>
+        </div>
+
+        <!-- CHARTS + AI -->
+        <div class="grid xl:grid-cols-3 gap-4">
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6 xl:col-span-2">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-sm text-white/60">Trend</div>
+                <h2 class="text-xl font-extrabold">Návštěvy vs. leady</h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="btnChart" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+                  <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
+                  Překreslit
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-5 rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
+              <canvas id="chart" height="180" class="w-full"></canvas>
+              <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70"><span class="h-2 w-2 rounded-full bg-white"></span>Návštěvy</span>
+                <span class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70"><span class="h-2 w-2 rounded-full bg-white/60"></span>Leady</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-sm text-white/60">AI Insighty</div>
+                <h2 class="text-xl font-extrabold">Doporučení</h2>
+              </div>
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="brain-circuit" class="h-5 w-5"></i>
+              </div>
+            </div>
+
+            <div class="mt-5 space-y-3" id="aiBox">
+              <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4 text-sm text-white/70">
+                Zapni filtr, klikni <b class="text-white">Vyhodnotit</b> a dostaneš konkrétní kroky.
+              </div>
+            </div>
+
+            <button id="btnAiSummary" class="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition w-full">
+              <i data-lucide="file-text" class="h-4 w-4"></i>
+              Vygenerovat shrnutí (demo)
+            </button>
+
+            <div class="mt-3 text-xs text-white/50">Demo AI = heuristiky. V ostrém režimu napojíme na váš AI backend.</div>
+          </div>
+
+        </div>
+
+        <!-- TABLES -->
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-white/60">Top kampaně</div>
+                <h3 class="text-xl font-extrabold">Výkon podle kampaní</h3>
+              </div>
+              <i data-lucide="megaphone" class="h-5 w-5 text-white/70"></i>
+            </div>
+            <div class="mt-4 overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-white/60">
+                  <tr>
+                    <th class="text-left font-semibold py-2">Kampaň</th>
+                    <th class="text-right font-semibold py-2">Leady</th>
+                    <th class="text-right font-semibold py-2">CR</th>
+                    <th class="text-right font-semibold py-2">CPL</th>
+                  </tr>
+                </thead>
+                <tbody id="tblCampaigns" class="text-white/80"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-white/60">Top profily</div>
+                <h3 class="text-xl font-extrabold">Tvůrci podle leadů</h3>
+              </div>
+              <i data-lucide="users" class="h-5 w-5 text-white/70"></i>
+            </div>
+            <div class="mt-4 overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-white/60">
+                  <tr>
+                    <th class="text-left font-semibold py-2">Profil</th>
+                    <th class="text-left font-semibold py-2">Platforma</th>
+                    <th class="text-right font-semibold py-2">Leady</th>
+                    <th class="text-right font-semibold py-2">Eng</th>
+                  </tr>
+                </thead>
+                <tbody id="tblProfiles" class="text-white/80"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- EVENT STREAM -->
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Události</div>
+              <h3 class="text-xl font-extrabold">Event stream</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnSim" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+                <i data-lucide="activity" class="h-4 w-4"></i>
+                Simulovat event
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 grid gap-2" id="events"></div>
+          <div class="mt-3 text-xs text-white/50">V ostrém režimu: live feed (realtime) ze Supabase.</div>
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Informace</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/registrace.html">Registrace</a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">ai-analytics-dashboard.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI SUMMARY MODAL -->
+  <div id="sumModal" class="fixed inset-0 z-50 hidden">
+    <div id="sumBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="absolute inset-0 overflow-y-auto">
+      <div class="min-h-full px-4 py-10 grid place-items-center">
+        <div class="w-full max-w-2xl rounded-3xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div class="p-6 border-b border-white/10 flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs text-white/60">AI shrnutí</div>
+              <div class="text-2xl font-extrabold">Co z toho plyne</div>
+              <div class="text-sm text-white/70 mt-1">Připraveno pro kopírování do reportu.</div>
+            </div>
+            <button id="sumClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+              <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-white/80 whitespace-pre-line" id="sumText">—</div>
+            <button id="sumCopy" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition w-full">
+              <i data-lucide="copy" class="h-4 w-4"></i>
+              Kopírovat
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------------
+    // INIT
+    // ---------------------------------
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // ---------------------------------
+    // SUPABASE CONFIG (doplníš)
+    // ---------------------------------
+    const SUPABASE_URL = ""; // např. https://xxxxx.supabase.co
+    const SUPABASE_ANON_KEY = ""; // anon key
+
+    // Tabulky (doporučení)
+    const TBL_EVENTS = "events";
+    const TBL_CAMPAIGNS = "campaigns";
+    const TBL_PROFILES = "profiles";
+
+    const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+    const connPill = document.getElementById('connPill');
+    connPill.textContent = hasSupabase ? 'SUPABASE' : 'DEMO';
+
+    let sb = null;
+    if (hasSupabase) {
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // ---------------------------------
+    // DEMO STORAGE
+    // ---------------------------------
+    const LS = {
+      demoSeeded: 'kartao_ai_demo_seeded_v1',
+      events: 'kartao_ai_events_v1',
+      campaigns: 'kartao_ai_campaigns_v1',
+      profiles: 'kartao_ai_profiles_v1'
+    };
+
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+    function human(n){
+      const v = Number(n||0);
+      if (v >= 1000000) return (v/1000000).toFixed(1).replace('.',',')+'M';
+      if (v >= 1000) return Math.round(v/1000)+'k';
+      return String(v);
+    }
+    function money(n){
+      const v = Number(n||0);
+      return v ? v.toLocaleString('cs-CZ') + ' Kč' : '—';
+    }
+
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+    function loadJSON(key, fallback){
+      try{ return JSON.parse(localStorage.getItem(key) || '') ?? fallback; }catch(e){ return fallback; }
+    }
+    function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+    function isoDaysAgo(d){
+      const t = new Date();
+      t.setDate(t.getDate()-d);
+      return t.toISOString();
+    }
+
+    function seedDemo(){
+      const demoCampaigns = [
+        { id:'cmp_1', name:'Black Friday – TechStore', budget: 65000, segment:'gaming' },
+        { id:'cmp_2', name:'Káva – Coffee&Co UGC', budget: 24000, segment:'food' },
+        { id:'cmp_3', name:'Fitness drop – FitBrand', budget: 38000, segment:'fitness' },
+        { id:'cmp_4', name:'Beauty launch – Glow', budget: 52000, segment:'beauty' },
+        { id:'cmp_5', name:'Auto test – AutoHub', budget: 41000, segment:'auto' }
+      ];
+
+      const demoProfiles = [
+        { id:'p1', handle:'@lucy.fit', platform:'instagram', segment:'fitness', eng: 6.2 },
+        { id:'p2', handle:'@adam.tech', platform:'youtube', segment:'gaming', eng: 4.1 },
+        { id:'p3', handle:'@kaja.daily', platform:'instagram', segment:'beauty', eng: 5.4 },
+        { id:'p4', handle:'@martin.travel', platform:'youtube', segment:'food', eng: 3.7 },
+        { id:'p5', handle:'@auto.david', platform:'tiktok', segment:'auto', eng: 7.1 }
+      ];
+
+      // events: page_view + lead
+      const events = [];
+      const platforms = ['instagram','tiktok','youtube','twitch'];
+      const pages = ['/index.html','/kartao-marketplace.html','/zadat-kampan.html','/vip.html','/kontakt.html'];
+
+      for (let d=0; d<90; d++){
+        const day = isoDaysAgo(d);
+        const baseViews = rand(160, 520) * (d<7 ? 1.2 : 1);
+        const views = Math.floor(baseViews);
+
+        for (let i=0;i<views;i++){
+          const camp = demoCampaigns[rand(0, demoCampaigns.length-1)];
+          const prof = demoProfiles[rand(0, demoProfiles.length-1)];
+          const plat = platforms[rand(0, platforms.length-1)];
+          events.push({
+            id: `e_${d}_${i}`,
+            type: 'page_view',
+            created_at: new Date(new Date(day).getTime() + rand(0, 86399)*1000).toISOString(),
+            platform: plat,
+            segment: camp.segment,
+            campaign_id: camp.id,
+            profile_id: prof.id,
+            page: pages[rand(0, pages.length-1)]
+          });
+        }
+
+        // lead rate varies by segment
+        const leadRate = {
+          fitness: 0.020,
+          beauty: 0.017,
+          gaming: 0.014,
+          food: 0.019,
+          auto: 0.012
+        };
+        const daySegment = demoCampaigns[rand(0, demoCampaigns.length-1)].segment;
+        const leads = Math.max(1, Math.floor(views * (leadRate[daySegment] || 0.015) * (d<7 ? 1.1 : 1)));
+
+        for (let i=0;i<leads;i++){
+          const camp = demoCampaigns[rand(0, demoCampaigns.length-1)];
+          const prof = demoProfiles[rand(0, demoProfiles.length-1)];
+          const plat = prof.platform;
+          events.push({
+            id: `l_${d}_${i}`,
+            type: 'lead_submit',
+            created_at: new Date(new Date(day).getTime() + rand(0, 86399)*1000).toISOString(),
+            platform: plat,
+            segment: camp.segment,
+            campaign_id: camp.id,
+            profile_id: prof.id,
+            page: '/zadat-kampan.html'
+          });
+        }
+      }
+
+      saveJSON(LS.campaigns, demoCampaigns);
+      saveJSON(LS.profiles, demoProfiles);
+      saveJSON(LS.events, events);
+      localStorage.setItem(LS.demoSeeded, '1');
+    }
+
+    function ensureDemo(){
+      if (!localStorage.getItem(LS.demoSeeded)) seedDemo();
+    }
+
+    // ---------------------------------
+    // FETCH (Supabase / Demo)
+    // ---------------------------------
+    async function fetchData(){
+      if (!hasSupabase){
+        ensureDemo();
+        return {
+          campaigns: loadJSON(LS.campaigns, []),
+          profiles: loadJSON(LS.profiles, []),
+          events: loadJSON(LS.events, [])
+        };
+      }
+
+      // POZN: názvy sloupců si uprav dle DB (minimální: created_at, type)
+      const days = Number($('#range').value || 30);
+      const since = new Date();
+      since.setDate(since.getDate()-days);
+
+      const { data: campaigns, error: cErr } = await sb.from(TBL_CAMPAIGNS).select('*').limit(500);
+      const { data: profiles, error: pErr } = await sb.from(TBL_PROFILES).select('*').limit(2000);
+      const { data: events, error: eErr } = await sb
+        .from(TBL_EVENTS)
+        .select('*')
+        .gte('created_at', since.toISOString())
+        .limit(100000);
+
+      if (cErr || pErr || eErr){
+        console.warn('Supabase error:', cErr || pErr || eErr);
+        toast('Chyba Supabase – padám do DEMO');
+        ensureDemo();
+        return {
+          campaigns: loadJSON(LS.campaigns, []),
+          profiles: loadJSON(LS.profiles, []),
+          events: loadJSON(LS.events, [])
+        };
+      }
+
+      return { campaigns: campaigns || [], profiles: profiles || [], events: events || [] };
+    }
+
+    // ---------------------------------
+    // FILTER STATE
+    // ---------------------------------
+    const state = {
+      seg: 'all',
+      plats: new Set(),
+      campaign: 'all'
+    };
+
+    function syncChips(){
+      $$('#filters [data-seg]').forEach(b => {
+        b.dataset.active = (b.dataset.seg === state.seg) ? '1' : '0';
+      });
+      $$('#filters [data-plat]').forEach(b => {
+        b.dataset.active = state.plats.has(b.dataset.plat) ? '1' : '0';
+      });
+    }
+
+    // ---------------------------------
+    // AGG
+    // ---------------------------------
+    function applyFilters(data){
+      const days = Number($('#range').value || 30);
+      const since = new Date();
+      since.setDate(since.getDate()-days);
+      const sinceTs = since.getTime();
+
+      let events = (data.events||[]).filter(e => new Date(e.created_at).getTime() >= sinceTs);
+
+      if (state.seg !== 'all') events = events.filter(e => (e.segment || '').toLowerCase() === state.seg);
+      if (state.plats.size) events = events.filter(e => state.plats.has((e.platform || '').toLowerCase()));
+      if (state.campaign !== 'all') events = events.filter(e => String(e.campaign_id) === String(state.campaign));
+
+      return { ...data, events };
+    }
+
+    function computeKpi(data){
+      const events = data.events || [];
+      const visits = events.filter(e => e.type === 'page_view').length;
+      const leads = events.filter(e => e.type === 'lead_submit').length;
+      const cr = visits ? (leads / visits) : 0;
+
+      const campMap = new Map((data.campaigns||[]).map(c => [String(c.id), c]));
+      // budget sum: když je zvolená kampaň, vezmi její budget, jinak sum
+      let budget = 0;
+      if (state.campaign !== 'all'){
+        budget = Number((campMap.get(String(state.campaign))||{}).budget || 0);
+      } else {
+        budget = (data.campaigns||[])
+          .filter(c => state.seg==='all' ? true : (String(c.segment||'').toLowerCase()===state.seg))
+          .reduce((a,c) => a + Number(c.budget||0), 0);
+      }
+
+      const cpl = leads ? (budget / leads) : 0;
+      return { visits, leads, cr, cpl, budget };
+    }
+
+    function groupByCampaign(data){
+      const events = data.events || [];
+      const campaigns = data.campaigns || [];
+      const campMap = new Map(campaigns.map(c => [String(c.id), c]));
+
+      const map = new Map();
+      for (const e of events){
+        const id = String(e.campaign_id || 'unknown');
+        if (!map.has(id)) map.set(id, { id, visits:0, leads:0 });
+        const row = map.get(id);
+        if (e.type === 'page_view') row.visits++;
+        if (e.type === 'lead_submit') row.leads++;
+      }
+
+      const out = Array.from(map.values()).map(r => {
+        const c = campMap.get(r.id) || { name: r.id === 'unknown' ? 'Neznámá' : r.id, budget: 0 };
+        const cr = r.visits ? (r.leads / r.visits) : 0;
+        const cpl = r.leads ? (Number(c.budget||0) / r.leads) : 0;
+        return { name: c.name || r.id, leads: r.leads, cr, cpl };
+      }).sort((a,b) => (b.leads||0) - (a.leads||0)).slice(0, 8);
+
+      return out;
+    }
+
+    function groupByProfile(data){
+      const events = data.events || [];
+      const profiles = data.profiles || [];
+      const profMap = new Map(profiles.map(p => [String(p.id), p]));
+
+      const map = new Map();
+      for (const e of events){
+        const id = String(e.profile_id || 'unknown');
+        if (!map.has(id)) map.set(id, { id, leads:0 });
+        const row = map.get(id);
+        if (e.type === 'lead_submit') row.leads++;
+      }
+
+      const out = Array.from(map.values()).map(r => {
+        const p = profMap.get(r.id) || { handle: r.id === 'unknown' ? 'Neznámý' : r.id, platform:'—', eng: 0 };
+        return { handle: p.handle || p.name || r.id, platform: (p.platform||'—'), leads: r.leads, eng: Number(p.eng||0) };
+      }).sort((a,b) => (b.leads||0) - (a.leads||0)).slice(0, 8);
+
+      return out;
+    }
+
+    function buildSeries(data){
+      // denní agregace (návštěvy/leady)
+      const days = Number($('#range').value || 30);
+      const buckets = [];
+      for (let i=days-1;i>=0;i--){
+        const d = new Date();
+        d.setHours(0,0,0,0);
+        d.setDate(d.getDate()-i);
+        buckets.push({
+          key: d.toISOString().slice(0,10),
+          ts: d.getTime(),
+          visits: 0,
+          leads: 0
+        });
+      }
+      const idx = new Map(buckets.map((b,i)=>[b.key,i]));
+
+      for (const e of (data.events||[])){
+        const k = String(e.created_at||'').slice(0,10);
+        const i = idx.get(k);
+        if (i == null) continue;
+        if (e.type === 'page_view') buckets[i].visits++;
+        if (e.type === 'lead_submit') buckets[i].leads++;
+      }
+      return buckets;
+    }
+
+    // ---------------------------------
+    // RENDER
+    // ---------------------------------
+    function renderCampaignSelect(campaigns){
+      const sel = $('#campaign');
+      const current = state.campaign;
+      sel.innerHTML = '<option value="all">Vše</option>' + (campaigns||[]).map(c => {
+        const name = escapeHtml(c.name || c.title || c.id);
+        return `<option value="${escapeHtml(String(c.id))}">${name}</option>`;
+      }).join('');
+      sel.value = String(current);
+    }
+
+    function renderKpi(k){
+      $('#kVisits').textContent = human(k.visits);
+      $('#kLeads').textContent = human(k.leads);
+      $('#kCR').textContent = (k.cr*100).toFixed(2).replace('.',',') + '%';
+      $('#kCPL').textContent = k.leads ? money(k.cpl) : '—';
+
+      $('#kVisitsHint').textContent = state.campaign === 'all' ? 'Součet (filtr)' : 'Jen vybraná kampaň (filtr)';
+      $('#kLeadsHint').textContent = state.seg === 'all' ? 'Leady celkem' : `Leady: segment ${state.seg}`;
+    }
+
+    function renderTables(rowsC, rowsP){
+      $('#tblCampaigns').innerHTML = rowsC.map(r => {
+        return `
+          <tr class="border-t border-white/10">
+            <td class="py-3 pr-3">
+              <div class="font-semibold">${escapeHtml(r.name)}</div>
+            </td>
+            <td class="py-3 text-right">${human(r.leads)}</td>
+            <td class="py-3 text-right">${(r.cr*100).toFixed(2).replace('.',',')}%</td>
+            <td class="py-3 text-right">${r.leads ? money(r.cpl) : '—'}</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td class="py-3 text-white/60" colspan="4">Žádná data.</td></tr>`;
+
+      $('#tblProfiles').innerHTML = rowsP.map(r => {
+        return `
+          <tr class="border-t border-white/10">
+            <td class="py-3 pr-3"><div class="font-semibold">${escapeHtml(r.handle)}</div></td>
+            <td class="py-3">${escapeHtml(String(r.platform||'—'))}</td>
+            <td class="py-3 text-right">${human(r.leads)}</td>
+            <td class="py-3 text-right">${String(r.eng||0).toString().replace('.',',')}%</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td class="py-3 text-white/60" colspan="4">Žádná data.</td></tr>`;
+
+      lucide.createIcons();
+    }
+
+    function renderEventsFeed(events){
+      const list = (events||[])
+        .slice()
+        .sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 10);
+
+      $('#events').innerHTML = list.map(e => {
+        const t = new Date(e.created_at);
+        const time = `${String(t.getDate()).padStart(2,'0')}.${String(t.getMonth()+1).padStart(2,'0')} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+        const label = e.type === 'lead_submit' ? 'Lead' : (e.type === 'page_view' ? 'Visit' : e.type);
+        return `
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-xs text-white/60">${escapeHtml(time)} • ${escapeHtml(String(e.platform||'—'))} • ${escapeHtml(String(e.segment||'—'))}</div>
+              <div class="mt-1 font-semibold">${escapeHtml(label)} <span class="text-white/50">→</span> <span class="text-white/70">${escapeHtml(String(e.page||'—'))}</span></div>
+              <div class="text-xs text-white/50 mt-1">Kampaň: ${escapeHtml(String(e.campaign_id||'—'))} • Profil: ${escapeHtml(String(e.profile_id||'—'))}</div>
+            </div>
+            <div class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+              <i data-lucide="${e.type==='lead_submit' ? 'mail-check' : 'mouse-pointer-click'}" class="h-5 w-5"></i>
+            </div>
+          </div>
+        `;
+      }).join('') || `<div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70">Žádné eventy.</div>`;
+
+      lucide.createIcons();
+    }
+
+    function drawChart(series){
+      const c = document.getElementById('chart');
+      const ctx = c.getContext('2d');
+
+      // resize to device pixels
+      const rect = c.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      c.width = Math.max(320, Math.floor(rect.width * dpr));
+      c.height = Math.floor(180 * dpr);
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = 180;
+
+      ctx.clearRect(0,0,w,h);
+
+      // background grid
+      ctx.globalAlpha = 0.18;
+      for (let i=0;i<=6;i++){
+        const y = (h-18) - (i*(h-28)/6);
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(w,y);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      const maxV = Math.max(10, ...series.map(s => s.visits));
+      const maxL = Math.max(5, ...series.map(s => s.leads));
+
+      function x(i){
+        if (series.length<=1) return 12;
+        return 12 + (i*(w-24)/(series.length-1));
+      }
+      function yVisits(v){
+        return (h-18) - (v/maxV)*(h-34);
+      }
+      function yLeads(v){
+        return (h-18) - (v/maxL)*(h-34);
+      }
+
+      // line visits
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      series.forEach((s,i)=>{
+        const px = x(i);
+        const py = yVisits(s.visits);
+        if (i===0) ctx.moveTo(px,py);
+        else ctx.lineTo(px,py);
+      });
+      ctx.stroke();
+
+      // line leads (lighter)
+      ctx.globalAlpha = 0.65;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      series.forEach((s,i)=>{
+        const px = x(i);
+        const py = yLeads(s.leads);
+        if (i===0) ctx.moveTo(px,py);
+        else ctx.lineTo(px,py);
+      });
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // dots
+      series.forEach((s,i)=>{
+        const px = x(i);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(px, yVisits(s.visits), 2.6, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.65;
+        ctx.beginPath();
+        ctx.arc(px, yLeads(s.leads), 2.6, 0, Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    function aiInsights(kpi, rowsC, rowsP, series){
+      if (!$('#aiMode').checked){
+        $('#aiBox').innerHTML = `
+          <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4 text-sm text-white/70">
+            AI režim je vypnutý.
+          </div>
+        `;
+        return;
+      }
+
+      const tips = [];
+      const cr = kpi.cr;
+      const cpl = kpi.leads ? kpi.cpl : 0;
+
+      // trend posledních 7 dní vs předchozích 7 dní
+      const last7 = series.slice(-7);
+      const prev7 = series.slice(-14, -7);
+      const sum = (arr, key) => arr.reduce((a,x)=>a+(x[key]||0),0);
+      const v1 = sum(last7,'visits');
+      const v0 = Math.max(1, sum(prev7,'visits'));
+      const l1 = sum(last7,'leads');
+      const l0 = Math.max(1, sum(prev7,'leads'));
+      const vDelta = (v1 - v0)/v0;
+      const lDelta = (l1 - l0)/l0;
+
+      if (vDelta > 0.15 && lDelta < 0.05){
+        tips.push({
+          icon:'alert-triangle',
+          title:'Roste návštěvnost, nerostou leady',
+          text:'Zkontroluj CTA na Marketplace / kampaních. Doporučení: přidat 1 jasné tlačítko „Poptat“ nad přehyb a zkrátit formulář o 1 krok.'
+        });
+      }
+
+      if (cr < 0.012){
+        tips.push({
+          icon:'mouse-pointer-click',
+          title:'Nízká konverze',
+          text:'Zvaž A/B test: jiné copy na hero, důvěryhodnost (ověření, recenze), a „shortlist“ funkci víc tlačit do popředí.'
+        });
+      } else if (cr > 0.02){
+        tips.push({
+          icon:'badge-check',
+          title:'Dobrá konverze',
+          text:'Konverze je nad průměrem. Zaměř se na škálování: přidat více traffic zdrojů a rozšířit kurátorské kolekce.'
+        });
+      }
+
+      if (kpi.leads && cpl > 1200){
+        tips.push({
+          icon:'wallet',
+          title:'Vysoká cena leadu',
+          text:'Buď je rozpočet moc široký, nebo leady málo kvalitní. Doporučení: zúžit segmenty, přidat kvalifikační otázky a rozdělit kampaně podle platformy.'
+        });
+      }
+
+      const topCamp = rowsC[0];
+      if (topCamp && topCamp.leads >= 10){
+        tips.push({
+          icon:'trophy',
+          title:'Top kampaň',
+          text:`Nejvíc leadů dává „${topCamp.name}“. Udělej z ní šablonu: stejný brief, pricing a výběr tvůrců.`
+        });
+      }
+
+      const topProfile = rowsP[0];
+      if (topProfile && topProfile.leads >= 5){
+        tips.push({
+          icon:'user-star',
+          title:'Top tvůrce',
+          text:`Profil ${topProfile.handle} přináší nejvíc leadů. Zvaž VIP zvýraznění, vyšší cenu a „rychlé dodání“ badge.`
+        });
+      }
+
+      if (!tips.length){
+        tips.push({
+          icon:'sparkles',
+          title:'Stabilní výkon',
+          text:'Data jsou vyrovnaná. Další krok: přidat měření kvality leadu (SQL: status, hodnota, uzavření) a optimalizovat podle toho.'
+        });
+      }
+
+      $('#aiBox').innerHTML = tips.slice(0,4).map(t => `
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
+          <div class="flex items-start gap-3">
+            <div class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+              <i data-lucide="${t.icon}" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <div class="font-semibold">${escapeHtml(t.title)}</div>
+              <div class="text-sm text-white/70 mt-1">${escapeHtml(t.text)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function escapeHtml(s){
+      return String(s || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // ---------------------------------
+    // MAIN RUN
+    // ---------------------------------
+    let lastData = { campaigns:[], profiles:[], events:[] };
+    let lastFiltered = { campaigns:[], profiles:[], events:[] };
+    let lastKpi = null;
+    let lastSeries = [];
+
+    async function run(){
+      syncChips();
+      const data = await fetchData();
+      lastData = data;
+
+      // campaign select list from full campaigns (not filtered)
+      renderCampaignSelect(data.campaigns||[]);
+
+      const filtered = applyFilters(data);
+      lastFiltered = filtered;
+
+      const k = computeKpi(filtered);
+      lastKpi = k;
+      renderKpi(k);
+
+      const rowsC = groupByCampaign(filtered);
+      const rowsP = groupByProfile(filtered);
+      renderTables(rowsC, rowsP);
+
+      const series = buildSeries(filtered);
+      lastSeries = series;
+      drawChart(series);
+
+      aiInsights(k, rowsC, rowsP, series);
+      renderEventsFeed(filtered.events);
+
+      lucide.createIcons();
+    }
+
+    // ---------------------------------
+    // ACTIONS
+    // ---------------------------------
+    // chips segment
+    $$('#filters [data-seg]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.seg = b.dataset.seg;
+        $$('#filters [data-seg]').forEach(x => x.dataset.active = (x===b ? '1' : '0'));
+        run();
+      });
+    });
+
+    // platform chips
+    $$('#filters [data-plat]').forEach(b => {
+      b.addEventListener('click', () => {
+        const p = b.dataset.plat;
+        if (state.plats.has(p)) state.plats.delete(p); else state.plats.add(p);
+        b.dataset.active = state.plats.has(p) ? '1' : '0';
+        run();
+      });
+    });
+
+    $('#range').addEventListener('change', run);
+    $('#campaign').addEventListener('change', (e) => { state.campaign = e.target.value; run(); });
+
+    $('#btnClear').addEventListener('click', () => {
+      state.seg = 'all';
+      state.plats.clear();
+      state.campaign = 'all';
+      $('#campaign').value = 'all';
+      syncChips();
+      run();
+      toast('Filtry resetovány');
+    });
+
+    $('#btnRun').addEventListener('click', run);
+    $('#btnRefresh').addEventListener('click', run);
+    $('#btnChart').addEventListener('click', () => drawChart(lastSeries || []));
+
+    $('#btnDemoSeed').addEventListener('click', () => {
+      seedDemo();
+      run();
+      toast('Demo data nahrána');
+    });
+
+    $('#btnResetDemo').addEventListener('click', () => {
+      Object.values(LS).forEach(k => localStorage.removeItem(k));
+      run();
+      toast('Demo reset');
+    });
+
+    // simulate event (demo)
+    $('#btnSim').addEventListener('click', () => {
+      ensureDemo();
+      const events = loadJSON(LS.events, []);
+      const camps = loadJSON(LS.campaigns, []);
+      const profs = loadJSON(LS.profiles, []);
+
+      const camp = camps[rand(0, camps.length-1)];
+      const prof = profs[rand(0, profs.length-1)];
+      const type = Math.random() < 0.22 ? 'lead_submit' : 'page_view';
+      const page = type === 'lead_submit' ? '/zadat-kampan.html' : ['/index.html','/kartao-marketplace.html','/vip.html'][rand(0,2)];
+
+      events.push({
+        id: 'sim_' + Date.now(),
+        type,
+        created_at: new Date().toISOString(),
+        platform: prof.platform,
+        segment: camp.segment,
+        campaign_id: camp.id,
+        profile_id: prof.id,
+        page
+      });
+
+      saveJSON(LS.events, events);
+      run();
+      toast('Event přidán');
+    });
+
+    // export csv (demo)
+    $('#btnExport').addEventListener('click', () => {
+      const rows = (lastFiltered.events || []).slice(0, 2000);
+      if (!rows.length){ toast('Nemáš co exportovat'); return; }
+      const cols = ['created_at','type','platform','segment','campaign_id','profile_id','page'];
+      const csv = [cols.join(';')].concat(rows.map(r => cols.map(c => String(r[c] ?? '')).replaceAll(';',',')).join(';'))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kartao_ai_analytics_export.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV export hotov');
+    });
+
+    // AI summary modal
+    const sumModal = $('#sumModal');
+    const sumBackdrop = $('#sumBackdrop');
+    const sumClose = $('#sumClose');
+    const sumText = $('#sumText');
+    const sumCopy = $('#sumCopy');
+
+    function openSum(txt){
+      sumText.textContent = txt;
+      sumModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+    function closeSum(){
+      sumModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    sumBackdrop.addEventListener('click', closeSum);
+    sumClose.addEventListener('click', closeSum);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSum(); });
+
+    $('#btnAiSummary').addEventListener('click', () => {
+      if (!lastKpi){ toast('Nejdřív vyhodnoť'); return; }
+      const k = lastKpi;
+      const days = Number($('#range').value || 30);
+
+      const rowsC = groupByCampaign(lastFiltered);
+      const rowsP = groupByProfile(lastFiltered);
+      const topC = rowsC[0];
+      const topP = rowsP[0];
+
+      const txt =
+        `AI report (${days} dní)\n`+
+        `- Návštěvy: ${human(k.visits)}\n`+
+        `- Leady: ${human(k.leads)}\n`+
+        `- Konverze: ${(k.cr*100).toFixed(2).replace('.',',')}%\n`+
+        `- Prům. CPL: ${k.leads ? money(k.cpl) : '—'}\n\n`+
+        `TOP kampaň: ${topC ? topC.name : '—'}\n`+
+        `TOP profil: ${topP ? topP.handle : '—'}\n\n`+
+        `Doporučené kroky:\n`+
+        `1) Ověřit CTA a zkrátit cestu k poptávce (1 klik = formulář).\n`+
+        `2) Vytvořit kurátorské seznamy podle segmentu a platformy.\n`+
+        `3) Přidat měření kvality leadu (status, hodnota, uzavření) a optimalizovat podle toho.\n`;
+
+      openSum(txt);
+    });
+
+    sumCopy.addEventListener('click', async () => {
+      try{
+        await navigator.clipboard.writeText(sumText.textContent || '');
+        toast('Zkopírováno');
+      }catch(e){
+        toast('Nešlo zkopírovat');
+      }
+    });
+
+    // toast
+    let toastT;
+    function toast(msg){
+      let el = $('#toast');
+      if (!el){
+        el = document.createElement('div');
+        el.id = 'toast';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = '1';
+      clearTimeout(toastT);
+      toastT = setTimeout(() => { el.style.opacity = '0'; }, 1800);
+    }
+
+    // first run
+    syncChips();
+    run();
+    window.addEventListener('resize', () => { if (lastSeries?.length) drawChart(lastSeries); });
+  </script>
+</body>
+</html>
