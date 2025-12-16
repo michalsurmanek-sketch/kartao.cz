@@ -2481,12 +2481,24 @@ document.addEventListener('DOMContentLoaded', () => {
           ${stat('Engagement', (engagement ?? 0) + '%')}
           ${stat('Město', city ?? '—')}
         </div>
-        <div class="mt-4 grid grid-cols-1 gap-3">
-          ${platformRow('facebook','Facebook followers', metrics)}
-          ${platformRow('instagram','Instagram followers', metrics)}
-          ${platformRow('youtube','YouTube subscribers', metrics)}
-          ${platformRow('tiktok','TikTok followers', metrics)}
-          ${platformRow('pinterest','Pinterest followers', metrics)}
+        
+        <!-- Expandable Sociální sítě -->
+        <div class="mt-4">
+          <button id="toggleSocialBtn" class="w-full flex items-center justify-between p-3 rounded-xl border border-white/10 bg-neutral-900/40 hover:bg-neutral-900/60 transition">
+            <div class="flex items-center gap-2">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span class="font-semibold">Sociální sítě</span>
+            </div>
+            <i data-lucide="chevron-down" id="socialChevron" class="w-4 h-4 transition-transform"></i>
+          </button>
+          
+          <div id="socialNetworksContent" class="hidden mt-3 grid grid-cols-1 gap-3">
+            ${platformRow('facebook','Facebook followers', metrics)}
+            ${platformRow('instagram','Instagram followers', metrics)}
+            ${platformRow('youtube','YouTube subscribers', metrics)}
+            ${platformRow('tiktok','TikTok followers', metrics)}
+            ${platformRow('pinterest','Pinterest followers', metrics)}
+          </div>
         </div>
         
         <div class="mt-6">
@@ -2558,6 +2570,25 @@ document.addEventListener('DOMContentLoaded', () => {
       // Inicializovat Lucide ikony v obsahu
       if (window.lucide?.createIcons) {
         lucide.createIcons();
+      }
+      
+      // Event listener pro toggle sociálních sítí
+      const toggleSocialBtn = document.getElementById('toggleSocialBtn');
+      const socialContent = document.getElementById('socialNetworksContent');
+      const socialChevron = document.getElementById('socialChevron');
+      
+      if (toggleSocialBtn && socialContent && socialChevron) {
+        toggleSocialBtn.addEventListener('click', () => {
+          const isHidden = socialContent.classList.contains('hidden');
+          
+          if (isHidden) {
+            socialContent.classList.remove('hidden');
+            socialChevron.style.transform = 'rotate(180deg)';
+          } else {
+            socialContent.classList.add('hidden');
+            socialChevron.style.transform = 'rotate(0deg)';
+          }
+        });
       }
       
       setTimeout(() => drawer.classList.add('active'), 0);
