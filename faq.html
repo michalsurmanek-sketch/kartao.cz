@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – FAQ</title>
+  <meta name="description" content="Často kladené otázky – Kartao.cz. Ověření, VIP, kampaně, platby, spolupráce a bezpečnost." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase (volitelně – pro ostrý režim načítání FAQ z DB) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+
+    .shine{position:relative;overflow:hidden}
+    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.12) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
+    @keyframes shine{0%{transform:translateX(-40%)}60%{transform:translateX(40%)}100%{transform:translateX(40%)}}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">FAQ</span>
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-marketplace.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane-reels.html">Reels kampaní</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/faq.html">FAQ</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/zadat-kampan.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <i data-lucide="megaphone" class="h-4 w-4"></i>
+          <span class="text-sm">Zadat kampaň</span>
+        </a>
+
+        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="xl:hidden hidden">
+      <div class="max-w-7xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-marketplace.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane-reels.html">Reels kampaní</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/faq.html">FAQ</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white text-neutral-950 font-semibold" href="/zadat-kampan.html">Zadat kampaň</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-8">
+
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/25 via-neutral-950 to-amber-700/18 shadow-[0_20px_90px_rgba(0,0,0,0.58)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_12%_18%,rgba(255,0,170,0.30),transparent_40%),radial-gradient(circle_at_84%_72%,rgba(255,180,0,0.22),transparent_48%)]"></div>
+      <div class="relative p-8 md:p-12">
+        <div class="grid lg:grid-cols-[1.35fr_1fr] gap-10 items-center">
+          <div class="space-y-5">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="help-circle" class="h-4 w-4"></i>
+              <span>FAQ</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">rychlé odpovědi</span>
+            </div>
+
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              Často kladené otázky
+              <span class="text-white/70">o Kartao.cz</span>
+            </h1>
+
+            <p class="text-white/70 leading-relaxed max-w-2xl">
+              Přehledně a bez omáčky. Pokud tu něco chybí, napiš nám přes kontakt a doplníme to.
+            </p>
+
+            <!-- Search -->
+            <div class="rounded-3xl border border-white/10 bg-neutral-950/35 p-3">
+              <div class="relative">
+                <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                <input id="q" type="text" placeholder="Hledej v FAQ… (např. ověření, VIP, platba, nabídka)" class="w-full rounded-2xl bg-neutral-950/60 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+              </div>
+              <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                <button class="chip" data-chip="ověření">Ověření</button>
+                <button class="chip" data-chip="vip">VIP</button>
+                <button class="chip" data-chip="kampaň">Kampaň</button>
+                <button class="chip" data-chip="platba">Platby</button>
+                <button class="chip" data-chip="bezpečnost">Bezpečnost</button>
+                <button class="chip" data-chip="supabase">Supabase</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick cards -->
+          <div class="grid gap-3">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div class="text-xs text-white/60">Nejčastější</div>
+              <div class="mt-1 text-xl font-extrabold">Jak funguje ověření?</div>
+              <div class="mt-2 text-white/70 text-sm">Ověření je proces, který potvrzuje, že profil a jeho data patří konkrétnímu tvůrci / firmě.</div>
+              <button class="mt-4 ghostBtn" data-jump="verifikace">Přejít na odpověď</button>
+            </div>
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div class="text-xs text-white/60">Pro firmy</div>
+              <div class="mt-1 text-xl font-extrabold">Jak zadám kampaň?</div>
+              <div class="mt-2 text-white/70 text-sm">Zadat kampaň jde přes formulář a pak se zobrazí influencerům v marketplace / reels.</div>
+              <a class="mt-4 ctaBtn" href="/zadat-kampan.html">Zadat kampaň</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT GRID -->
+    <section class="grid lg:grid-cols-[360px_1fr] gap-6 items-start">
+
+      <!-- SIDENAV -->
+      <aside class="rounded-3xl border border-white/10 bg-white/5 p-6 lg:sticky lg:top-[92px]">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm text-white/60">Sekce</div>
+            <div class="text-xl font-extrabold">FAQ</div>
+          </div>
+          <button id="expandAll" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+            <i data-lucide="unfold-vertical" class="h-4 w-4"></i>
+            Rozbalit
+          </button>
+        </div>
+
+        <div class="mt-5 grid gap-2 text-sm">
+          <button class="navBtn" data-nav="zacatek"><i data-lucide="sparkles" class="h-4 w-4"></i><span>Začínáme</span></button>
+          <button class="navBtn" data-nav="verifikace"><i data-lucide="shield-check" class="h-4 w-4"></i><span>Ověření & data</span></button>
+          <button class="navBtn" data-nav="marketplace"><i data-lucide="store" class="h-4 w-4"></i><span>Marketplace</span></button>
+          <button class="navBtn" data-nav="kampane"><i data-lucide="megaphone" class="h-4 w-4"></i><span>Kampaně</span></button>
+          <button class="navBtn" data-nav="vip"><i data-lucide="crown" class="h-4 w-4"></i><span>VIP & partneři</span></button>
+          <button class="navBtn" data-nav="platby"><i data-lucide="credit-card" class="h-4 w-4"></i><span>Platby</span></button>
+          <button class="navBtn" data-nav="bezpecnost"><i data-lucide="lock" class="h-4 w-4"></i><span>Bezpečnost</span></button>
+          <button class="navBtn" data-nav="technicke"><i data-lucide="database" class="h-4 w-4"></i><span>Technické</span></button>
+        </div>
+
+        <div class="mt-5 rounded-3xl border border-white/10 bg-neutral-950/35 p-5">
+          <div class="flex items-start gap-3">
+            <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+              <i data-lucide="message-circle" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <div class="font-bold">Stále nevíš?</div>
+              <div class="text-sm text-white/60 mt-1">Napiš nám a my odpovíme. A FAQ pak doplníme.</div>
+              <a class="mt-3 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" href="/kontakt.html">
+                <i data-lucide="send" class="h-4 w-4"></i>
+                Kontakt
+              </a>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- FAQ LIST -->
+      <section class="space-y-6">
+
+        <div id="meta" class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Položek ve FAQ</div>
+              <div class="text-2xl font-extrabold" id="count">0</div>
+            </div>
+            <div class="flex gap-2">
+              <button id="collapseAll" class="ghostBtn"><i data-lucide="fold-vertical" class="h-4 w-4"></i>Sbalit</button>
+              <button id="reset" class="ghostBtn"><i data-lucide="rotate-ccw" class="h-4 w-4"></i>Reset filtru</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- sections rendered here -->
+        <div id="faqWrap" class="space-y-8"></div>
+
+        <!-- bottom CTA -->
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="space-y-2">
+              <div class="text-sm text-white/60">Nechceš řešit detail?</div>
+              <div class="text-xl md:text-2xl font-extrabold">Zadej kampaň a my ti pomůžeme s nastavením.</div>
+              <div class="text-white/70">V prvním kroku stačí cíl a rozpočet. Zbytek doladíme.</div>
+            </div>
+            <a class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" href="/zadat-kampan.html">
+              <i data-lucide="megaphone" class="h-4 w-4"></i>
+              Zadat kampaň
+            </a>
+          </div>
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">faq.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // --- helpers ---
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    $('#year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = $('#menuBtn');
+    const mobileMenu = $('#mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // button styles
+    function styleButtons(){
+      $$('.chip').forEach(b => {
+        b.className = 'chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      });
+      $$('.navBtn').forEach(b => {
+        b.className = 'navBtn w-full inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      });
+      $$('.ghostBtn').forEach(b => {
+        b.className = 'ghostBtn inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition';
+      });
+      $$('.ctaBtn').forEach(b => {
+        b.className = 'ctaBtn inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition';
+      });
+    }
+
+    function esc(s){
+      return String(s||'')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // --- Supabase optional (ostrý režim) ---
+    // doporučení: tabulka / view `faq_items`
+    // columns: id, section, question, answer, tags(text[]), sort(int), is_active(bool)
+    const SUPABASE_URL = window.__SUPABASE_URL || 'PASTE_SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY || 'PASTE_SUPABASE_ANON_KEY_HERE';
+    const sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    // --- Data (demo) ---
+    const demo = [
+      // Začínáme
+      {id:'z1', section:'zacatek', question:'Co je Kartao.cz?', answer:'Kartao.cz je interaktivní síť influencerů a firem. Propojuje tvůrce se značkami, dává přehledná data a zjednodušuje spolupráce.', tags:['zacatek','kartao','platforma']},
+      {id:'z2', section:'zacatek', question:'Pro koho je Kartao.cz?', answer:'Pro influencery (tvůrce) i firmy. Tvůrci získají nabídky a nástroje, firmy rychle najdou vhodné profily a mohou zadat kampaň.', tags:['zacatek','influencer','firma']},
+      {id:'z3', section:'zacatek', question:'Musím se registrovat?', answer:'Na prohlížení veřejných částí ne. Pro tvorbu karty, ukládání, posílání nabídek a práci s kampaněmi je registrace potřeba.', tags:['registrace','zacatek']},
+
+      // Ověření
+      {id:'v1', section:'verifikace', question:'Jak funguje ověření profilu?', answer:'Ověření znamená, že profil (karta) patří konkrétnímu tvůrci nebo firmě a data jsou důvěryhodnější. Cíl: méně podvodů, víc transparentnosti.', tags:['ověření','verifikace','data']},
+      {id:'v2', section:'verifikace', question:'Co znamená „ověřené statistiky“?', answer:'Že dosah/engagement není jen text, ale data jsou získaná z napojení nebo doložených podkladů. V praxi: vyšší důvěra pro značky.', tags:['ověření','statistiky','data']},
+      {id:'v3', section:'verifikace', question:'Můžu mít neověřený profil?', answer:'Ano. Neověřený profil může fungovat, jen bude mít nižší důvěryhodnost v očích firem a někde může mít omezené funkce.', tags:['ověření','profil']},
+
+      // Marketplace
+      {id:'m1', section:'marketplace', question:'Co je Marketplace?', answer:'Výpis profilů a (později) i firem s filtry – platformy, témata, region, engagement, rozpočet. Uložíš shortlist a pošleš poptávku.', tags:['marketplace','filtry','shortlist']},
+      {id:'m2', section:'marketplace', question:'Jak fungují uložené (shortlist)?', answer:'Uložíš si profily/kampaně a vrátíš se k nim později. Teď je to běžně LocalStorage (demo), v ostrém režimu Supabase.', tags:['uložené','shortlist','supabase']},
+
+      // Kampaně
+      {id:'k1', section:'kampane', question:'Jak zadám kampaň jako firma?', answer:'Přes stránku „Zadat kampaň“. Vyplníš cíl, platformu, rozpočet, deadline a deliverables. Pak se kampaň zobrazí tvůrcům.', tags:['kampaň','firma','zadat']},
+      {id:'k2', section:'kampane', question:'Co je Reels kampaní?', answer:'Swipe feed kampaní pro influencery. Rychlý brief, rozpočet, deadline, CTA „Poslat nabídku“, uložit a sdílet.', tags:['reels','kampaň','influencer']},
+      {id:'k3', section:'kampane', question:'Jak pošlu nabídku?', answer:'Klikneš „Poslat nabídku“, napíšeš cenu, dodání a zprávu. V demo režimu se ukládá lokálně, v ostrém režimu do Supabase tabulky.', tags:['nabídka','kampaň','supabase']},
+
+      // VIP
+      {id:'vip1', section:'vip', question:'Co je VIP a k čemu je?', answer:'VIP zvýrazní tvůj profil, přidá prioritu ve výpisech a může odemknout pokročilé nástroje. Cíl: víc poptávek, lepší konverze.', tags:['vip','influencer']},
+      {id:'vip2', section:'vip', question:'Jak fungují partneři?', answer:'VIP partneři mohou mít speciální pozici (badge, zvýraznění, landing sekce). Je to vhodné pro značky i influencery.', tags:['vip','partner']},
+
+      // Platby
+      {id:'p1', section:'platby', question:'Jak probíhá platba za spolupráci?', answer:'Standardně doporučujeme smluvní rámec: objednávka / smlouva, fakturace nebo dohoda. Kartao může řešit escrow později.', tags:['platba','fakturace']},
+      {id:'p2', section:'platby', question:'Bere si Kartao provizi?', answer:'Záleží na zvoleném modelu (VIP, partnerství, případně provize z transakcí). Konkrétní nastavení bude na ceníku.', tags:['platba','provize','ceník']},
+
+      // Bezpečnost
+      {id:'b1', section:'bezpecnost', question:'Jak chráníte před podvody?', answer:'Ověřením, transparentností dat, historií spoluprací a report systémem. Cíl je minimalizovat fake profily a neférové nabídky.', tags:['bezpečnost','ověření','podvody']},
+      {id:'b2', section:'bezpecnost', question:'Kdo vidí moje kontakty?', answer:'Kontakty můžeš nastavit. Ve výchozím režimu jsou citlivé údaje omezené, aby se omezil spam. (Dolaďuje se podle role.)', tags:['bezpečnost','kontakty']},
+
+      // Technické
+      {id:'t1', section:'technicke', question:'Používáte Supabase?', answer:'Ano. Supabase je backend (auth + databáze). Na webu jsou některé části v demo režimu (LocalStorage), ale počítá se s ostrým napojením.', tags:['supabase','technické']},
+      {id:'t2', section:'technicke', question:'Můžu si načítat FAQ z databáze?', answer:'Ano. Tato stránka umí volitelně načíst data z view/tabulky `faq_items` v Supabase. Když klíče nejsou, jede demo obsah.', tags:['supabase','faq','technické']},
+    ];
+
+    const sectionMeta = {
+      zacatek: { title:'Začínáme', icon:'sparkles', desc:'Základní orientace a jak to celé funguje.' },
+      verifikace: { title:'Ověření & data', icon:'shield-check', desc:'Důvěryhodnost, statistiky a transparentnost.' },
+      marketplace: { title:'Marketplace', icon:'store', desc:'Vyhledávání, filtry a shortlist profily.' },
+      kampane: { title:'Kampaně', icon:'megaphone', desc:'Zadání kampaně, nabídky, reels.' },
+      vip: { title:'VIP & partneři', icon:'crown', desc:'Zvýraznění, výhody a partnerství.' },
+      platby: { title:'Platby', icon:'credit-card', desc:'Fakturace, provize, platby.' },
+      bezpecnost: { title:'Bezpečnost', icon:'lock', desc:'Ochrana, reporting, soukromí.' },
+      technicke: { title:'Technické', icon:'database', desc:'Backend, Supabase, integrace.' },
+    };
+
+    let items = [];
+    const state = { q:'', expanded:false };
+
+    async function loadFaq(){
+      // když není supabase, jedeme demo
+      if (!sb || !SUPABASE_URL || SUPABASE_URL.includes('PASTE_')){
+        return demo;
+      }
+      try{
+        const { data, error } = await sb
+          .from('faq_items')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort', {ascending:true});
+        if (error) throw error;
+
+        return (data || []).map(x => ({
+          id: x.id,
+          section: x.section,
+          question: x.question,
+          answer: x.answer,
+          tags: Array.isArray(x.tags) ? x.tags : []
+        }));
+      }catch(e){
+        console.error('Supabase faq_items error:', e);
+        return demo;
+      }
+    }
+
+    function matches(it, q){
+      if (!q) return true;
+      const s = q.toLowerCase();
+      return (
+        (it.question||'').toLowerCase().includes(s) ||
+        (it.answer||'').toLowerCase().includes(s) ||
+        (it.section||'').toLowerCase().includes(s) ||
+        (Array.isArray(it.tags) ? it.tags.join(' ') : '').toLowerCase().includes(s)
+      );
+    }
+
+    function buildAccordion(it){
+      return `
+        <article class="faqItem rounded-3xl border border-white/10 bg-white/5 overflow-hidden" data-section="${esc(it.section)}" data-search="${esc([it.question,it.answer,(it.tags||[]).join(' ')].join(' '))}">
+          <button class="faqBtn w-full text-left p-5 md:p-6 flex items-start justify-between gap-4 hover:bg-white/[0.06] transition" aria-expanded="false">
+            <div>
+              <div class="text-sm text-white/60">${esc(sectionMeta[it.section]?.title || it.section)}</div>
+              <h3 class="mt-1 text-lg md:text-xl font-extrabold">${esc(it.question)}</h3>
+            </div>
+            <span class="shrink-0 h-10 w-10 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </span>
+          </button>
+          <div class="faqBody hidden px-5 md:px-6 pb-6">
+            <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+              <p class="text-white/75 leading-relaxed">${esc(it.answer)}</p>
+              ${Array.isArray(it.tags) && it.tags.length ? `
+                <div class="mt-4 flex flex-wrap gap-2 text-xs">
+                  ${(it.tags||[]).slice(0,8).map(t => `<span class="px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">#${esc(t)}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function render(){
+      const q = (state.q||'').trim();
+      const filtered = items.filter(it => matches(it, q));
+      $('#count').textContent = String(filtered.length);
+
+      // group by section
+      const groups = {};
+      filtered.forEach(it => {
+        const s = it.section || 'zacatek';
+        if (!groups[s]) groups[s] = [];
+        groups[s].push(it);
+      });
+
+      const order = ['zacatek','verifikace','marketplace','kampane','vip','platby','bezpecnost','technicke'];
+      const html = order
+        .filter(k => groups[k] && groups[k].length)
+        .map(k => {
+          const meta = sectionMeta[k] || {title:k, icon:'help-circle', desc:''};
+          return `
+            <section id="sec-${esc(k)}" class="scroll-mt-28">
+              <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-7">
+                <div class="flex items-start justify-between gap-4">
+                  <div class="flex items-start gap-3">
+                    <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
+                      <i data-lucide="${esc(meta.icon)}" class="h-5 w-5"></i>
+                    </div>
+                    <div>
+                      <h2 class="text-xl md:text-2xl font-extrabold">${esc(meta.title)}</h2>
+                      <p class="text-white/70 mt-1">${esc(meta.desc||'')}</p>
+                    </div>
+                  </div>
+                  <button class="secToggle ghostBtn" data-toggle="${esc(k)}">
+                    <i data-lucide="chevrons-down" class="h-4 w-4"></i>
+                    Rozbalit sekci
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 grid gap-3">
+                ${groups[k].map(buildAccordion).join('')}
+              </div>
+            </section>
+          `;
+        }).join('');
+
+      $('#faqWrap').innerHTML = html || `
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-8 text-white/70">Nic nenalezeno. Zkus jiné slovo.</div>
+      `;
+
+      // bind accordions
+      $$('.faqBtn').forEach(btn => {
+        btn.onclick = () => {
+          const wrap = btn.closest('.faqItem');
+          const body = wrap.querySelector('.faqBody');
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!expanded));
+          body.classList.toggle('hidden');
+          // rotate icon
+          const icon = btn.querySelector('[data-lucide="chevron-down"]');
+          if (icon) icon.classList.toggle('rotate-180');
+        };
+      });
+
+      // section toggle
+      $$('.secToggle').forEach(b => {
+        b.onclick = () => {
+          const key = b.dataset.toggle;
+          const sec = document.getElementById('sec-'+key);
+          if (!sec) return;
+          const isAnyClosed = Array.from(sec.querySelectorAll('.faqBody')).some(x => x.classList.contains('hidden'));
+          // když je něco sbalené, rozbal vše, jinak sbal vše
+          sec.querySelectorAll('.faqItem').forEach(it => {
+            const btn = it.querySelector('.faqBtn');
+            const body = it.querySelector('.faqBody');
+            if (!btn || !body) return;
+            btn.setAttribute('aria-expanded', String(isAnyClosed));
+            body.classList.toggle('hidden', !isAnyClosed);
+            const icon = btn.querySelector('[data-lucide="chevron-down"]');
+            if (icon) icon.classList.toggle('rotate-180', isAnyClosed);
+          });
+        };
+      });
+
+      // jump from quick cards
+      $$('[data-jump]').forEach(b => {
+        b.onclick = () => {
+          const key = b.dataset.jump;
+          document.getElementById('sec-'+key)?.scrollIntoView({behavior:'smooth', block:'start'});
+        };
+      });
+
+      // nav
+      $$('.navBtn').forEach(b => {
+        b.onclick = () => {
+          const key = b.dataset.nav;
+          document.getElementById('sec-'+key)?.scrollIntoView({behavior:'smooth', block:'start'});
+        };
+      });
+
+      // global expand/collapse
+      $('#expandAll').onclick = () => setAll(true);
+      $('#collapseAll').onclick = () => setAll(false);
+
+      function setAll(open){
+        $$('.faqItem').forEach(it => {
+          const btn = it.querySelector('.faqBtn');
+          const body = it.querySelector('.faqBody');
+          if (!btn || !body) return;
+          btn.setAttribute('aria-expanded', String(open));
+          body.classList.toggle('hidden', !open);
+          const icon = btn.querySelector('[data-lucide="chevron-down"]');
+          if (icon) icon.classList.toggle('rotate-180', open);
+        });
+      }
+
+      styleButtons();
+      lucide.createIcons();
+    }
+
+    // search
+    $('#q').oninput = (e) => {
+      state.q = e.target.value || '';
+      render();
+    };
+
+    // chips
+    $$('.chip').forEach(b => {
+      b.onclick = () => {
+        const v = b.dataset.chip;
+        const q = $('#q');
+        q.value = v;
+        state.q = v;
+        render();
+      };
+    });
+
+    // reset
+    $('#reset').onclick = () => {
+      $('#q').value = '';
+      state.q = '';
+      render();
+    };
+
+    // init
+    (async () => {
+      styleButtons();
+      items = await loadFaq();
+      // ensure stable order in demo
+      items = items.map((x,i) => ({...x, _i:i}));
+      $('#count').textContent = String(items.length);
+      render();
+    })();
+  </script>
+</body>
+</html>
