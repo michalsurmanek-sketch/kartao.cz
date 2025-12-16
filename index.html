@@ -1755,6 +1755,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return { mode: 'none', pid: null, val: null, updatedAt: null };
     }
 
+    function getSocialUrl(platform, handle) {
+      // Odstraníme @ pokud existuje
+      const cleanHandle = handle?.replace('@', '') || '';
+      
+      const urls = {
+        'facebook': `https://facebook.com/${cleanHandle}`,
+        'instagram': `https://instagram.com/${cleanHandle}`,
+        'tiktok': `https://tiktok.com/@${cleanHandle}`,
+        'youtube': `https://youtube.com/@${cleanHandle}`,
+        'pinterest': `https://pinterest.com/${cleanHandle}`,
+        'twitter': `https://twitter.com/${cleanHandle}`,
+        'x': `https://x.com/${cleanHandle}`,
+        'linkedin': `https://linkedin.com/in/${cleanHandle}`
+      };
+      
+      return urls[platform] || '#';
+    }
+
     function card(data) {
       const el = document.createElement('div');
       el.className = 'card overflow-hidden';
@@ -1856,12 +1874,18 @@ document.addEventListener('DOMContentLoaded', () => {
               Array.isArray(platforms)
                 ? platforms
                     .map(
-                      p => `
-              <span class="tag">
-                <i data-lucide="${PLATFORMS.find(x => x.id === p)?.icon || 'camera'}" class="w-4 h-4"></i>
-                ${PLATFORMS.find(x => x.id === p)?.label || p}
-              </span>
-            `
+                      p => {
+                        const platformData = PLATFORMS.find(x => x.id === p);
+                        const label = platformData?.label || p;
+                        const icon = platformData?.icon || 'camera';
+                        const socialUrl = getSocialUrl(p, handle);
+                        return `
+              <a href="${socialUrl}" target="_blank" rel="noopener noreferrer" class="relative group w-8 h-8 rounded-lg border border-white/10 bg-neutral-900/40 flex items-center justify-center hover:bg-white/10 transition cursor-pointer">
+                <i data-lucide="${icon}" class="w-4 h-4"></i>
+                <span class="absolute bottom-full mb-2 px-2 py-1 bg-neutral-900 border border-white/20 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">${label}</span>
+              </a>
+            `;
+                      }
                     )
                     .join('')
                 : ''
@@ -2021,6 +2045,11 @@ document.addEventListener('DOMContentLoaded', () => {
           tag.classList.remove('ring-2', 'ring-fuchsia-500');
         }
       });
+      
+      // Inicializovat ikony po renderování karet
+      if (window.lucide?.createIcons) {
+        lucide.createIcons();
+      }
     }
 
     /* ==========================
