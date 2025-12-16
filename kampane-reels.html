@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kartao.cz – Reels kampaní</title>
-  <meta name="description" content="Reels feed kampaní pro influencery – swipe, rychlé informace, CTA nabídka, uložení a filtry." />
-
+ 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -32,6 +31,17 @@
     /* safe-area pro mobile */
     .pb-safe{padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
     .pt-safe{padding-top:calc(1rem + env(safe-area-inset-top))}
+
+    /* lepší výška reels na mobilech (dvh) */
+    .reelsH{height:calc(100dvh - 220px)}
+    @media (min-width: 768px){ .reelsH{height:calc(100dvh - 240px)} }
+
+    /* mini progress bar */
+    .pbar{height:3px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+    .pbar > i{display:block;height:100%;width:0%;background:rgba(255,255,255,.65)}
+
+    /* clamp bez pluginu */
+    .clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
@@ -151,7 +161,7 @@
         </div>
       </div>
 
-      <div class="mt-4 grid sm:grid-cols-3 gap-3">
+      <div class="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
         <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-4">
           <div class="text-xs text-white/60">Výsledků</div>
           <div id="statResults" class="mt-1 text-2xl font-extrabold">0</div>
@@ -184,7 +194,7 @@
     <div id="loading" class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70 hidden">Načítám kampaně…</div>
 
     <!-- Reel stack (snap) -->
-    <div id="reels" class="h-[calc(100vh-220px)] md:h-[calc(100vh-240px)] overflow-y-auto snap-y-mandatory rounded-3xl border border-white/10 bg-white/5">
+    <div id="reels" class="reelsH overflow-y-auto snap-y-mandatory rounded-3xl border border-white/10 bg-white/5">
       <!-- JS render -->
     </div>
 
@@ -297,7 +307,7 @@
   </footer>
 
   <script>
-    lucide.createIcons();
+    lucide.createIcons({ attrs: { stroke: 'currentColor' } });
 
     // helpers
     const $ = (s, r=document) => r.querySelector(s);
@@ -454,8 +464,9 @@
         }
       ];
 
+      // když nemáme Supabase (nebo není vyplněno), filtrujeme demo lokálně
       if (!sb || !SUPABASE_URL || SUPABASE_URL.includes('PASTE_')){
-        return demo;
+        return clientFilter(demo);
       }
 
       try{
@@ -489,9 +500,41 @@
       }
     }
 
+    function clientFilter(items){
+      let out = (items||[]).slice();
+
+      // plat
+      if (state.plat !== 'all'){
+        out = out.filter(x => (x.platforms||[]).includes(state.plat));
+      }
+      // cat
+      if (state.cat !== 'all'){
+        out = out.filter(x => (x.category||'') === state.cat);
+      }
+      // q
+      if (state.q && state.q.trim()){
+        const q = state.q.trim().toLowerCase();
+        out = out.filter(x =>
+          (x.title||'').toLowerCase().includes(q) ||
+          (x.brand||'').toLowerCase().includes(q) ||
+          (x.hook||'').toLowerCase().includes(q) ||
+          (x.description||'').toLowerCase().includes(q) ||
+          (x.region||'').toLowerCase().includes(q) ||
+          (x.category||'').toLowerCase().includes(q) ||
+          (Array.isArray(x.platforms) ? x.platforms.join(' ') : '').toLowerCase().includes(q) ||
+          (Array.isArray(x.tags) ? x.tags.join(' ') : '').toLowerCase().includes(q)
+        );
+      }
+
+      return out;
+    }
+
     function applySort(items){
       const out = (items||[]).slice();
-      if (state.sort === 'best') out.sort((a,b)=> score(b)-score(a));
+      if (state.sort === 'new') out.sort((a,b)=> (new Date(b.created_at||b.start_date||0).getTime()) - (new Date(a.created_at||a.start_date||0).getTime()));
+      else if (state.sort === 'pay') out.sort((a,b)=> Number(b.budget_max||0) - Number(a.budget_max||0));
+      else if (state.sort === 'fast') out.sort((a,b)=> (new Date(a.deadline||0).getTime()) - (new Date(b.deadline||0).getTime()));
+      else out.sort((a,b)=> score(b)-score(a));
       return out;
     }
 
@@ -501,7 +544,7 @@
       if (it.media_url){
         return `
           <div class="relative w-full h-full">
-            <video class="w-full h-full object-cover" src="${esc(it.media_url)}" muted playsinline loop></video>
+            <video class="w-full h-full object-cover" data-video="1" preload="metadata" src="${esc(it.media_url)}" muted playsinline loop></video>
             <div class="absolute inset-0 ${bg}"></div>
           </div>
         `;
@@ -537,7 +580,7 @@
       const ddl = humanDate(it.deadline);
 
       return `
-        <section class="snap-start min-h-[calc(100vh-220px)] md:min-h-[calc(100vh-240px)] relative border-b border-white/10">
+        <section id="reel-${esc(it.id)}" class="snap-start min-h-[calc(100dvh-220px)] md:min-h-[calc(100dvh-240px)] relative border-b border-white/10">
 
           <div class="grid lg:grid-cols-[1.35fr_.65fr] min-h-[calc(100vh-220px)] md:min-h-[calc(100vh-240px)]">
 
@@ -545,9 +588,10 @@
             <div class="relative">
               <div class="absolute inset-0">${mediaBlock(it)}</div>
 
-              <!-- top-left progress -->
-              <div class="absolute left-4 top-4 pt-safe">
+              <!-- top-left progress + bar -->
+              <div class="absolute left-4 top-4 pt-safe space-y-2">
                 <div class="text-xs text-white/70 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur">${idx+1} / ${total}</div>
+                <div class="pbar w-40 bg-black/30 border border-white/10"><i style="width:${total ? Math.round(((idx+1)/total)*100) : 0}%"></i></div>
               </div>
 
               <!-- bottom gradient -->
@@ -565,6 +609,9 @@
 
               <!-- right-side actions (mobile on media) -->
               <div class="lg:hidden absolute right-3 bottom-28 pb-safe flex flex-col gap-2">
+                <button class="actBtn" data-act="mute" data-id="${esc(it.id)}" title="Zvuk / ticho">
+                  <i data-lucide="volume-x" class="h-5 w-5"></i>
+                </button>
                 <button class="actBtn" data-act="offer" data-id="${esc(it.id)}" title="Poslat nabídku">
                   <i data-lucide="send" class="h-5 w-5"></i>
                 </button>
@@ -603,8 +650,14 @@
               </div>
 
               <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <div class="font-bold">Brief (rychle)</div>
-                <div class="mt-2 text-sm text-white/70 leading-relaxed">${esc(it.description || it.hook || '—')}</div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="font-bold">Brief (rychle)</div>
+                  <button class="miniBtn" data-act="copy" data-id="${esc(it.id)}" title="Zkopírovat brief">
+                    <i data-lucide="copy" class="h-4 w-4"></i>
+                    Kopírovat
+                  </button>
+                </div>
+                <div class="mt-2 text-sm text-white/70 leading-relaxed clamp2">${esc(it.description || it.hook || '—')}</div>
               </div>
 
               <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
@@ -649,6 +702,9 @@
       $$('.actBtn').forEach(b => {
         b.className = 'actBtn h-11 w-11 rounded-2xl bg-black/40 border border-white/10 backdrop-blur hover:bg-black/55 transition grid place-items-center';
       });
+      $$('.miniBtn').forEach(b => {
+        b.className = 'miniBtn inline-flex items-center gap-2 text-xs px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      });
     }
 
     // drawer
@@ -682,7 +738,7 @@
       $('#drawerEmpty').classList.toggle('hidden', items.length !== 0);
       drawer.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-      lucide.createIcons();
+      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
     }
 
     function closeDrawer(){
@@ -708,7 +764,7 @@
       $('#oPrice').value = '';
       $('#oDays').value = '';
       $('#oMsg').value = '';
-      lucide.createIcons();
+      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
     }
 
     function closeOfferModal(){
@@ -820,8 +876,42 @@
             toast(saved.has(id) ? 'Uloženo' : 'Odebráno');
           }
           if (act === 'share'){
-            // share link – může být /kampane-reels.html#id
+            // share link – /kampane-reels.html#id
             const url = `${location.origin}${location.pathname}#${encodeURIComponent(id)}`;
+            try{
+              await navigator.clipboard.writeText(url);
+              toast('Odkaz zkopírován');
+            }catch(e){
+              toast(url);
+            }
+          }
+          if (act === 'copy'){
+            if (!it) return;
+            const txt = `Kampaň: ${it.title||''}
+Značka: ${it.brand||''}
+Platformy: ${(it.platforms||[]).join(', ')}
+Rozpočet: ${moneyRange(it.budget_min,it.budget_max,it.currency)}
+Deadline: ${humanDate(it.deadline)}
+
+Brief:
+${it.description||it.hook||''}
+
+Výstupy:
+${it.deliverables||''}`;
+            try{ await navigator.clipboard.writeText(txt); toast('Brief zkopírován'); }
+            catch(e){ toast('Nepodařilo se zkopírovat'); }
+          }
+          if (act === 'mute'){
+            // mute/unmute jen aktuální reel video (pokud existuje)
+            const sec = document.getElementById('reel-'+CSS.escape(id));
+            const v = sec?.querySelector('video[data-video]');
+            if (!v){ toast('Tahle kampaň nemá video'); return; }
+            v.muted = !v.muted;
+            // přepnout ikonku
+            const icon = b.querySelector('[data-lucide]');
+            if (icon) icon.setAttribute('data-lucide', v.muted ? 'volume-x' : 'volume-2');
+            lucide.createIcons({ attrs: { stroke: 'currentColor' } });
+          }${location.pathname}#${encodeURIComponent(id)}`;
             try{
               await navigator.clipboard.writeText(url);
               toast('Odkaz zkopírován');
@@ -847,7 +937,7 @@
       // open drawer
       $('#openSaved').onclick = openDrawer;
 
-      lucide.createIcons();
+      lucide.createIcons({ attrs: { stroke: 'currentColor' } });
     }
 
     function render(){
@@ -855,6 +945,7 @@
       el.innerHTML = currentItems.map((it, idx) => reelCard(it, idx, currentItems.length)).join('');
       styleButtons();
       bindActions();
+      setupVideoObserver();
 
       $('#empty').classList.toggle('hidden', currentItems.length !== 0);
       $('#statResults').textContent = String(currentItems.length);
@@ -883,7 +974,9 @@
         setLoading(true);
         const items = await loadReels();
         setLoading(false);
-        currentItems = applySort(items);
+        // supabase už může vracet filtrované, ale pro jistotu ještě lokální filtr
+        const filtered = clientFilter(items);
+        currentItems = applySort(filtered);
         persist();
         render();
       }, 180);
@@ -910,6 +1003,30 @@
       openDrawer();
       render();
     };
+
+    // --- auto play/pause videí podle viditelnosti ---
+    let io;
+    function setupVideoObserver(){
+      try{ io?.disconnect(); }catch(e){}
+      const root = $('#reels');
+      const vids = $$('video[data-video]');
+      if (!vids.length) return;
+
+      io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          const v = en.target;
+          if (!v) return;
+          if (en.isIntersecting && en.intersectionRatio >= 0.6){
+            // play jen když je v sekci, aby se to nechovalo chaoticky
+            v.play?.().catch(()=>{});
+          } else {
+            try{ v.pause?.(); }catch(e){}
+          }
+        });
+      }, { root, threshold: [0,0.25,0.6,0.85,1] });
+
+      vids.forEach(v => io.observe(v));
+    }
 
     // init
     persist();
