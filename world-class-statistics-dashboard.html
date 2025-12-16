@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – World‑class Statistics Dashboard</title>
+  <meta name="description" content="World‑class statistický dashboard pro Kartao.cz – přehled výkonu, tvůrců, značek a kampaní." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Charts (Chart.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+
+    /* jemný skeleton */
+    .skeleton{position:relative;overflow:hidden}
+    .skeleton:after{content:"";position:absolute;inset:0;transform:translateX(-60%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:shimmer 1.3s infinite}
+    @keyframes shimmer{100%{transform:translateX(60%)}}
+
+    /* tab underline */
+    .tab-active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+
+    /* focus ring */
+    :focus{outline:none}
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV (sjednocený) -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobileMenu" class="lg:hidden hidden">
+      <div class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-8">
+
+    <!-- HERO / TOPBAR -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.22),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.16),transparent_45%)]"></div>
+      <div class="relative p-6 md:p-10">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div class="space-y-3 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
+              <span>Statistics Dashboard</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">world‑class analytics</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Přehled výkonu Kartao.cz</h1>
+            <p class="text-white/70 leading-relaxed">
+              Všechny klíčové metriky na jednom místě: růst, výkon kampaní, kvalita tvůrců, úspěšnost nabídek a finance.
+              (Zatím demo data – připravené na napojení na Firebase/DB.)
+            </p>
+
+            <!-- tabs -->
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button data-tab="overview" class="tabBtn tab-active inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Přehled
+              </button>
+              <button data-tab="creators" class="tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                <i data-lucide="video" class="h-4 w-4"></i> Tvůrci
+              </button>
+              <button data-tab="brands" class="tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                <i data-lucide="briefcase" class="h-4 w-4"></i> Značky
+              </button>
+              <button data-tab="campaigns" class="tabBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition">
+                <i data-lucide="megaphone" class="h-4 w-4"></i> Kampaně
+              </button>
+            </div>
+          </div>
+
+          <!-- controls -->
+          <div class="w-full lg:w-[460px]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Filtry</div>
+                <div class="text-xs text-white/50">demo</div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-3">
+                <label class="grid gap-2">
+                  <span class="text-xs text-white/60">Období</span>
+                  <select id="range" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                    <option value="7">Posledních 7 dní</option>
+                    <option value="30" selected>Posledních 30 dní</option>
+                    <option value="90">Posledních 90 dní</option>
+                    <option value="365">Posledních 12 měsíců</option>
+                  </select>
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-xs text-white/60">Segment</span>
+                  <select id="segment" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                    <option value="all" selected>Vše</option>
+                    <option value="ig">Instagram</option>
+                    <option value="tt">TikTok</option>
+                    <option value="yt">YouTube</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-3">
+                <label class="grid gap-2">
+                  <span class="text-xs text-white/60">Výpis</span>
+                  <select id="mode" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                    <option value="live" selected>Živá data (demo)</option>
+                    <option value="weekly">Týdenní souhrn</option>
+                    <option value="monthly">Měsíční souhrn</option>
+                  </select>
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-xs text-white/60">Porovnání</span>
+                  <select id="compare" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                    <option value="none" selected>Bez porovnání</option>
+                    <option value="prev">Předchozí období</option>
+                    <option value="yoy">Minulý rok</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-2">
+                <button id="refresh" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                  <i data-lucide="refresh-ccw" class="h-4 w-4"></i>
+                  Aktualizovat
+                </button>
+                <button id="exportCsv" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                  <i data-lucide="download" class="h-4 w-4"></i>
+                  Export CSV
+                </button>
+                <button id="share" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+                  <i data-lucide="share-2" class="h-4 w-4"></i>
+                  Sdílet
+                </button>
+              </div>
+
+              <div class="text-xs text-white/50 leading-relaxed">
+                Tip: později sem přidáme „Role: admin/brand/creator“ a podle toho uvidíš jen to, co smíš.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI ROW -->
+    <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" id="kpis">
+      <!-- injected by JS -->
+    </section>
+
+    <!-- MAIN GRID -->
+    <section class="grid lg:grid-cols-[1.45fr_1fr] gap-4 items-start">
+
+      <!-- left: big chart + insights -->
+      <div class="space-y-4">
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+          <div class="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Trend</div>
+              <div class="text-xl font-extrabold">Růst platformy</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button data-metric="users" class="metricBtn px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm transition">Uživatelé</button>
+              <button data-metric="leads" class="metricBtn px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm transition">Poptávky</button>
+              <button data-metric="revenue" class="metricBtn px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm transition">Tržby</button>
+              <button data-metric="quality" class="metricBtn px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm transition">Kvalita</button>
+            </div>
+          </div>
+          <div class="px-5 pb-5">
+            <div class="h-[320px] rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+              <canvas id="trendChart" class="w-full h-full"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm text-white/60">Insight</div>
+                <div class="text-lg font-extrabold">Co teď funguje</div>
+              </div>
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="sparkles" class="h-5 w-5"></i>
+              </div>
+            </div>
+            <ul id="insightsGood" class="mt-4 space-y-3 text-sm text-white/70">
+              <!-- JS -->
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm text-white/60">Alert</div>
+                <div class="text-lg font-extrabold">Na co si dát bacha</div>
+              </div>
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="alert-triangle" class="h-5 w-5"></i>
+              </div>
+            </div>
+            <ul id="insightsBad" class="mt-4 space-y-3 text-sm text-white/70">
+              <!-- JS -->
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- right: donuts + quick cards -->
+      <aside class="space-y-4">
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-white/60">Mix</div>
+              <div class="text-lg font-extrabold">Příspěvky podle sítě</div>
+            </div>
+            <div class="text-xs text-white/50">demo</div>
+          </div>
+          <div class="mt-4 h-[240px] rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+            <canvas id="platformChart"></canvas>
+          </div>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
+            <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+              <div class="text-white/60">IG</div>
+              <div id="igPct" class="font-bold text-white"></div>
+            </div>
+            <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+              <div class="text-white/60">TT</div>
+              <div id="ttPct" class="font-bold text-white"></div>
+            </div>
+            <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3">
+              <div class="text-white/60">YT</div>
+              <div id="ytPct" class="font-bold text-white"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">Funnel</div>
+              <div class="text-lg font-extrabold">Nabídky → spolupráce</div>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <i data-lucide="route" class="h-5 w-5"></i>
+            </div>
+          </div>
+          <div class="mt-4 space-y-3" id="funnel"></div>
+          <div class="mt-4 text-xs text-white/50">Později přidáme rozpad dle kategorií a rozpočtů.</div>
+        </div>
+
+      </aside>
+    </section>
+
+    <!-- TABLE + SEARCH -->
+    <section class="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+      <div class="p-6 md:p-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <div class="text-sm text-white/60">Tabulka</div>
+            <h2 class="text-2xl font-extrabold tracking-tight">Top výkon (ukázka)</h2>
+            <p class="text-white/70 mt-2">Klikni na hlavičku pro řazení. Hledání filtruje okamžitě.</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+            <div class="relative flex-1 min-w-[240px]">
+              <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+              <input id="tableQ" type="text" placeholder="Hledat (profil, kampaň, značka)…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+            </div>
+            <select id="tableType" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <option value="all" selected>Vše</option>
+              <option value="creator">Tvůrci</option>
+              <option value="brand">Značky</option>
+              <option value="campaign">Kampaně</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-white/10 overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-neutral-950/40">
+            <tr class="text-left text-white/70">
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="name">Položka</th>
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="type">Typ</th>
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="reach">Dosah</th>
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="eng">Engagement</th>
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="cr">Konverze</th>
+              <th class="px-6 py-4 font-semibold cursor-pointer select-none" data-sort="rev">Tržby</th>
+              <th class="px-6 py-4 font-semibold">Stav</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-white/10"></tbody>
+        </table>
+      </div>
+
+      <div class="p-5 md:p-6 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">Zobrazeno: <span id="tableCount" class="text-white/80 font-semibold">0</span></div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">world-class-statistics-dashboard.html</span></div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="space-y-2">
+          <div class="text-sm text-white/60">Další krok</div>
+          <div class="text-xl md:text-2xl font-extrabold">Chceš to napojit na reálná data?</div>
+          <div class="text-white/70">Napojíme Firebase/Firestore, role a práva + exporty pro účetnictví a reporting.</div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a href="/kontakt.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <i data-lucide="mail" class="h-4 w-4"></i>
+            Kontakt
+          </a>
+          <a href="/zadat-kampan.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="megaphone" class="h-4 w-4"></i>
+            Zadat kampaň
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">world-class-statistics-dashboard.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- init ---
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // --- demo data generator (stabilní podle seed) ---
+    function mulberry32(a){
+      return function(){
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+    }
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+    function fmtInt(n){
+      const x = Math.round(Number(n||0));
+      return x.toLocaleString('cs-CZ');
+    }
+    function fmtMoney(n){
+      const x = Math.round(Number(n||0));
+      return x.toLocaleString('cs-CZ') + ' Kč';
+    }
+    function fmtPct(n){
+      const x = Number(n||0);
+      return (Math.round(x*10)/10).toLocaleString('cs-CZ') + ' %';
+    }
+
+    function makeSeries(days, seed, base, drift, noise){
+      const rand = mulberry32(seed);
+      const labels = [];
+      const vals = [];
+      let v = base;
+      const now = new Date();
+      for(let i=days-1;i>=0;i--){
+        const d = new Date(now);
+        d.setDate(now.getDate()-i);
+        labels.push(d.toLocaleDateString('cs-CZ', { day:'2-digit', month:'2-digit' }));
+        const n = (rand()-0.5) * noise;
+        v = Math.max(0, v + drift + n);
+        vals.push(Math.round(v));
+      }
+      return { labels, vals };
+    }
+
+    function getDemoState(){
+      const range = Number(document.getElementById('range').value || 30);
+      const segment = document.getElementById('segment').value;
+      const mode = document.getElementById('mode').value;
+      const compare = document.getElementById('compare').value;
+
+      const segFactor = segment === 'ig' ? 1.08 : segment === 'tt' ? 1.12 : segment === 'yt' ? 0.92 : 1.0;
+      const modeFactor = mode === 'weekly' ? 0.95 : mode === 'monthly' ? 1.03 : 1.0;
+      const seed = 1337 + range + (segment==='all'?0:segment==='ig'?1:segment==='tt'?2:3) + (mode==='live'?0:mode==='weekly'?10:20) + (compare==='none'?0:compare==='prev'?100:200);
+
+      // base metrics
+      const users = Math.round( 4820 * segFactor * modeFactor + range*18 );
+      const creators = Math.round( 1240 * segFactor * 0.98 + range*4 );
+      const brands = Math.round( 420 * segFactor * 1.02 + range*1.2 );
+      const campaigns = Math.round( 86 * segFactor * 1.05 + range*0.35 );
+      const leads = Math.round( 420 * segFactor * modeFactor + range*3.4 );
+      const deals = Math.round( leads * (0.23 + (segFactor-1)*0.15) );
+      const revenue = Math.round( deals * (3800 + (seed%7)*220) );
+      const quality = clamp( 78 + (segFactor-1)*25 + (range>90?3:0) + (mode==='weekly'?1:0), 60, 98 );
+
+      // platform mix
+      const rand = mulberry32(seed);
+      let ig = 0.48 + (rand()-0.5)*0.08;
+      let tt = 0.34 + (rand()-0.5)*0.08;
+      let yt = 1 - ig - tt;
+      if (yt < 0.12) { yt = 0.12; const rest = 0.88; const sum = ig+tt; ig = ig/sum*rest; tt = tt/sum*rest; }
+
+      // funnel
+      const offers = Math.round(leads * 3.1);
+      const shortlisted = Math.round(offers * (0.42 + (rand()-0.5)*0.06));
+      const negotiated = Math.round(shortlisted * (0.58 + (rand()-0.5)*0.06));
+      const completed = Math.round(deals * (0.74 + (rand()-0.5)*0.06));
+
+      // trend series
+      const sUsers = makeSeries(range, seed+1, 2400*segFactor, 18*segFactor, 90);
+      const sLeads = makeSeries(range, seed+2, 140*segFactor, 1.2*segFactor, 8);
+      const sRevenue = makeSeries(range, seed+3, 12000*segFactor, 220*segFactor, 1900);
+      const sQuality = makeSeries(range, seed+4, 72*segFactor, 0.08*segFactor, 1.1);
+
+      return {
+        range, segment, mode, compare, seed,
+        kpis: { users, creators, brands, campaigns, leads, deals, revenue, quality },
+        mix: { ig, tt, yt },
+        funnel: { offers, shortlisted, negotiated, deals, completed },
+        series: { users:sUsers, leads:sLeads, revenue:sRevenue, quality:sQuality }
+      };
+    }
+
+    // --- KPIs render ---
+    function kpiCard(icon, title, value, hint, delta){
+      const deltaUp = delta >= 0;
+      const deltaTxt = (Math.abs(delta)).toLocaleString('cs-CZ', { maximumFractionDigits: 1 }) + (title.includes('%') ? ' p.b.' : ' %');
+      const deltaCls = deltaUp ? 'text-emerald-200' : 'text-rose-200';
+      const deltaIcon = deltaUp ? 'trending-up' : 'trending-down';
+      return `
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm text-white/60">${escapeHtml(title)}</div>
+              <div class="text-2xl font-extrabold mt-1">${escapeHtml(value)}</div>
+              <div class="text-xs text-white/50 mt-2">${escapeHtml(hint)}</div>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <i data-lucide="${icon}" class="h-5 w-5"></i>
+            </div>
+          </div>
+          <div class="mt-4 inline-flex items-center gap-2 text-xs ${deltaCls}">
+            <i data-lucide="${deltaIcon}" class="h-4 w-4"></i>
+            <span class="font-semibold">${deltaUp ? '+' : '-'}${deltaTxt}</span>
+            <span class="text-white/40">vs. srovnání</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderKpis(state){
+      const r = mulberry32(state.seed + 999);
+      const k = state.kpis;
+
+      const items = [
+        kpiCard('users', 'Aktivní uživatelé', fmtInt(k.users), 'Celkem aktivních účtů v období', (r()-0.35)*18),
+        kpiCard('video', 'Aktivní tvůrci', fmtInt(k.creators), 'Tvůrci s aktivitou (karta/obsah)', (r()-0.35)*18),
+        kpiCard('briefcase', 'Aktivní značky', fmtInt(k.brands), 'Značky, které zadaly poptávku', (r()-0.35)*18),
+        kpiCard('coins', 'Tržby', fmtMoney(k.revenue), 'Odhad z dokončených spoluprací', (r()-0.35)*18),
+      ];
+
+      document.getElementById('kpis').innerHTML = items.join('');
+      lucide.createIcons();
+    }
+
+    // --- insights ---
+    function renderInsights(state){
+      const k = state.kpis;
+      const mix = state.mix;
+
+      const good = [
+        `Konverze nabídek je <b class="text-white">${fmtPct((k.deals / Math.max(1,k.leads))*100)}</b> – drží stabilně.` ,
+        `Průměrná kvalita profilu je <b class="text-white">${fmtInt(k.quality)}/100</b> (ovlivňuje důvěru & recenze).`,
+        `Nejsilnější síť je teď <b class="text-white">${mix.ig>mix.tt && mix.ig>mix.yt ? 'Instagram' : (mix.tt>mix.yt ? 'TikTok' : 'YouTube')}</b> – doporučujeme tomu přizpůsobit briefy.`
+      ];
+
+      const bad = [
+        `U kampaní s krátkým termínem roste riziko <b class="text-white">posunů</b> a nižších ratingů.` ,
+        `U části tvůrců chybí <b class="text-white">ověření statistik</b> – zaveď „Verified“ filtr.`,
+        `Nízká míra odpovědí u některých značek → přidej <b class="text-white">SLA</b> a automatické připomínky.`
+      ];
+
+      document.getElementById('insightsGood').innerHTML = good.map(x => `<li class="flex gap-2"><span class="mt-0.5 text-emerald-200">•</span><span>${x}</span></li>`).join('');
+      document.getElementById('insightsBad').innerHTML = bad.map(x => `<li class="flex gap-2"><span class="mt-0.5 text-rose-200">•</span><span>${x}</span></li>`).join('');
+      lucide.createIcons();
+    }
+
+    // --- funnel ---
+    function funnelRow(label, value, max){
+      const pct = clamp((value / Math.max(1,max))*100, 0, 100);
+      return `
+        <div class="grid gap-2">
+          <div class="flex items-center justify-between text-sm">
+            <div class="text-white/70">${escapeHtml(label)}</div>
+            <div class="text-white font-semibold">${fmtInt(value)}</div>
+          </div>
+          <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+            <div class="h-full bg-white" style="width:${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFunnel(state){
+      const f = state.funnel;
+      const max = f.offers;
+      document.getElementById('funnel').innerHTML = [
+        funnelRow('Nabídky', f.offers, max),
+        funnelRow('Shortlist', f.shortlisted, max),
+        funnelRow('Vyjednávání', f.negotiated, max),
+        funnelRow('Dohody', f.deals, max),
+        funnelRow('Dokončeno', f.completed, max),
+      ].join('');
+    }
+
+    // --- charts ---
+    let trendChart, platformChart;
+    let currentMetric = 'users';
+
+    function destroyCharts(){
+      try { trendChart?.destroy(); } catch(e){}
+      try { platformChart?.destroy(); } catch(e){}
+      trendChart = null;
+      platformChart = null;
+    }
+
+    function chartCommon(){
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.parsed?.y ?? ctx.parsed;
+                if (currentMetric === 'revenue') return ' ' + fmtMoney(v);
+                if (currentMetric === 'quality') return ' ' + fmtInt(v) + '/100';
+                return ' ' + fmtInt(v);
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: 'rgba(255,255,255,.55)' }, grid: { color: 'rgba(255,255,255,.06)' } },
+          y: { ticks: { color: 'rgba(255,255,255,.55)' }, grid: { color: 'rgba(255,255,255,.06)' } }
+        }
+      };
+    }
+
+    function renderTrend(state){
+      const map = {
+        users: { title:'Uživatelé', series: state.series.users },
+        leads: { title:'Poptávky', series: state.series.leads },
+        revenue: { title:'Tržby', series: state.series.revenue },
+        quality: { title:'Kvalita', series: state.series.quality }
+      };
+
+      const cfg = map[currentMetric];
+      const ctx = document.getElementById('trendChart');
+      trendChart?.destroy();
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: cfg.series.labels,
+          datasets: [{
+            data: cfg.series.vals,
+            borderColor: 'rgba(255,255,255,.85)',
+            backgroundColor: 'rgba(255,255,255,.10)',
+            fill: true,
+            tension: 0.35,
+            pointRadius: 0,
+            borderWidth: 2
+          }]
+        },
+        options: chartCommon()
+      });
+    }
+
+    function renderPlatform(state){
+      const ctx = document.getElementById('platformChart');
+      platformChart?.destroy();
+
+      const ig = Math.round(state.mix.ig * 100);
+      const tt = Math.round(state.mix.tt * 100);
+      const yt = Math.max(0, 100 - ig - tt);
+
+      document.getElementById('igPct').textContent = ig + '%';
+      document.getElementById('ttPct').textContent = tt + '%';
+      document.getElementById('ytPct').textContent = yt + '%';
+
+      platformChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Instagram','TikTok','YouTube'],
+          datasets: [{
+            data: [ig, tt, yt],
+            backgroundColor: ['rgba(255,255,255,.90)','rgba(255,255,255,.55)','rgba(255,255,255,.25)'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: { color: 'rgba(255,255,255,.75)', boxWidth: 10, boxHeight: 10 }
+            }
+          },
+          cutout: '68%'
+        }
+      });
+    }
+
+    // --- table ---
+    const tableSeed = [
+      { type:'creator', name:'@lucy.fit', reach: 184000, eng: 5.8, cr: 1.9, rev: 38200, status:'Verified' },
+      { type:'creator', name:'@adam.tech', reach: 126000, eng: 4.3, cr: 1.2, rev: 21700, status:'Pro' },
+      { type:'brand', name:'BrandXYZ', reach: 92000, eng: 3.1, cr: 2.6, rev: 54100, status:'VIP' },
+      { type:'campaign', name:'Black Friday 2025', reach: 312000, eng: 4.9, cr: 3.2, rev: 128900, status:'Hot' },
+      { type:'campaign', name:'Fitness Reels', reach: 201000, eng: 6.2, cr: 2.1, rev: 73600, status:'Top' },
+      { type:'brand', name:'Coffee&Co', reach: 54000, eng: 2.8, cr: 1.7, rev: 16400, status:'Standard' },
+      { type:'creator', name:'@martin.travel', reach: 98000, eng: 3.9, cr: 0.9, rev: 11800, status:'Watch' },
+      { type:'campaign', name:'Podzimní launch', reach: 156000, eng: 4.1, cr: 1.5, rev: 28900, status:'Done' },
+    ];
+
+    let tableSort = { key: 'rev', dir: 'desc' };
+
+    function statusBadge(s){
+      const map = {
+        Verified: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200',
+        Pro: 'bg-white/5 border-white/10 text-white/80',
+        VIP: 'bg-amber-500/10 border-amber-500/30 text-amber-200',
+        Hot: 'bg-rose-500/10 border-rose-500/30 text-rose-200',
+        Top: 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-200',
+        Standard: 'bg-white/5 border-white/10 text-white/70',
+        Watch: 'bg-amber-500/10 border-amber-500/30 text-amber-200',
+        Done: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+      };
+      const cls = map[s] || 'bg-white/5 border-white/10 text-white/70';
+      return `<span class="inline-flex items-center px-2.5 py-1 rounded-full border ${cls} text-xs">${escapeHtml(s)}</span>`;
+    }
+
+    function typeLabel(t){
+      return t === 'creator' ? 'Tvůrce' : t === 'brand' ? 'Značka' : 'Kampaň';
+    }
+
+    function renderTable(state){
+      const q = (document.getElementById('tableQ').value || '').trim().toLowerCase();
+      const t = document.getElementById('tableType').value;
+
+      // rozšíříme demo o pár řádků podle seed
+      const rand = mulberry32(state.seed + 2025);
+      const extra = Array.from({length: 10}, (_,i) => {
+        const types = ['creator','brand','campaign'];
+        const type = types[Math.floor(rand()*types.length)];
+        const name = type === 'creator'
+          ? '@creator_' + (100 + i)
+          : type === 'brand'
+            ? 'Brand_' + (10 + i)
+            : 'Kampaň #' + (10 + i);
+        const reach = Math.round( 25000 + rand()*320000 );
+        const eng = Math.round((1.8 + rand()*6.2)*10)/10;
+        const cr = Math.round((0.4 + rand()*3.6)*10)/10;
+        const rev = Math.round( 2200 + rand()*140000 );
+        const status = rand() > 0.82 ? 'Verified' : rand()>0.66 ? 'VIP' : rand()>0.5 ? 'Pro' : 'Standard';
+        return { type, name, reach, eng, cr, rev, status };
+      });
+
+      let data = [...tableSeed, ...extra];
+
+      if (t !== 'all') data = data.filter(x => x.type === t);
+      if (q) {
+        data = data.filter(x => (x.name||'').toLowerCase().includes(q) || typeLabel(x.type).toLowerCase().includes(q));
+      }
+
+      data.sort((a,b) => {
+        const k = tableSort.key;
+        const dir = tableSort.dir === 'asc' ? 1 : -1;
+        const av = a[k], bv = b[k];
+        if (typeof av === 'string') return av.localeCompare(bv) * dir;
+        return (Number(av)-Number(bv)) * dir;
+      });
+
+      document.getElementById('tableCount').textContent = String(data.length);
+
+      const rows = data.map(x => `
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4">
+            <div class="font-semibold">${escapeHtml(x.name)}</div>
+            <div class="text-xs text-white/50">${x.type==='creator' ? 'Profil tvůrce' : x.type==='brand' ? 'Profil značky' : 'Kampaň / brief'}</div>
+          </td>
+          <td class="px-6 py-4 text-white/70">${escapeHtml(typeLabel(x.type))}</td>
+          <td class="px-6 py-4 text-white/70">${fmtInt(x.reach)}</td>
+          <td class="px-6 py-4 text-white/70">${fmtPct(x.eng)}</td>
+          <td class="px-6 py-4 text-white/70">${fmtPct(x.cr)}</td>
+          <td class="px-6 py-4 text-white font-semibold">${fmtMoney(x.rev)}</td>
+          <td class="px-6 py-4">${statusBadge(x.status)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('tableBody').innerHTML = rows;
+    }
+
+    // table sorting
+    document.querySelectorAll('thead th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.getAttribute('data-sort');
+        if (!key) return;
+        if (tableSort.key === key) tableSort.dir = (tableSort.dir === 'asc') ? 'desc' : 'asc';
+        else tableSort = { key, dir: 'desc' };
+        refreshAll();
+      });
+    });
+
+    document.getElementById('tableQ').addEventListener('input', () => refreshAll());
+    document.getElementById('tableType').addEventListener('change', () => refreshAll());
+
+    // metric buttons
+    document.querySelectorAll('.metricBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentMetric = btn.getAttribute('data-metric') || 'users';
+        // visual selected
+        document.querySelectorAll('.metricBtn').forEach(b => b.classList.remove('bg-white','text-neutral-950','font-semibold'));
+        btn.classList.add('bg-white','text-neutral-950','font-semibold');
+        refreshAll();
+      });
+    });
+    // default selected
+    document.querySelector('.metricBtn[data-metric="users"]')?.classList.add('bg-white','text-neutral-950','font-semibold');
+
+    // tabs (zatím jen UI + budoucí hook)
+    document.querySelectorAll('.tabBtn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.tabBtn').forEach(x => x.classList.remove('tab-active'));
+        b.classList.add('tab-active');
+        // v1: jen drobná změna textu v table podle tabu
+        const tab = b.getAttribute('data-tab');
+        const sel = document.getElementById('tableType');
+        if (tab === 'creators') sel.value = 'creator';
+        else if (tab === 'brands') sel.value = 'brand';
+        else if (tab === 'campaigns') sel.value = 'campaign';
+        else sel.value = 'all';
+        refreshAll();
+      });
+    });
+
+    // filters
+    ['range','segment','mode','compare'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => refreshAll());
+    });
+
+    // buttons
+    document.getElementById('refresh').addEventListener('click', () => refreshAll(true));
+
+    document.getElementById('share').addEventListener('click', async () => {
+      const url = location.href;
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: 'Kartao.cz – Statistics Dashboard', url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          toast('Odkaz zkopírován do schránky.');
+        }
+      } catch(e){
+        // ignore
+      }
+    });
+
+    document.getElementById('exportCsv').addEventListener('click', () => {
+      // exportuje aktuální tabulku (to, co je zobrazené)
+      const rows = Array.from(document.querySelectorAll('#tableBody tr')).map(tr =>
+        Array.from(tr.querySelectorAll('td')).slice(0,6).map(td => td.innerText.replace(/\s+/g,' ').trim())
+      );
+      const header = ['Položka','Typ','Dosah','Engagement','Konverze','Tržby'];
+      const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
+      const blob = new Blob(["\uFEFF" + csv], { type:'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'kartao-dashboard-export.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('CSV export stažen.');
+    });
+
+    // toast
+    function toast(msg){
+      const el = document.createElement('div');
+      el.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-50 rounded-2xl border border-white/10 bg-neutral-950/85 backdrop-blur-xl px-4 py-3 text-sm text-white shadow-[0_20px_80px_rgba(0,0,0,0.55)]';
+      el.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="check" class="h-4 w-4"></i><span>${escapeHtml(msg)}</span></div>`;
+      document.body.appendChild(el);
+      lucide.createIcons();
+      setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translate(-50%, 8px)'; el.style.transition = 'all .25s ease'; }, 2200);
+      setTimeout(() => el.remove(), 2600);
+    }
+
+    function escapeHtml(s){
+      return String(s || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // main refresh
+    function refreshAll(withToast=false){
+      const state = getDemoState();
+      renderKpis(state);
+      renderInsights(state);
+      renderFunnel(state);
+      renderTrend(state);
+      renderPlatform(state);
+      renderTable(state);
+      if (withToast) toast('Dashboard aktualizován.');
+    }
+
+    // first paint
+    refreshAll(false);
+  </script>
+</body>
+</html>
