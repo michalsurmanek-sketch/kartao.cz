@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartao.cz – Badge System Dashboard</title>
+  <meta name="description" content="Badge System Dashboard Kartao.cz – odznaky, úrovně, progress a odměny pro tvůrce i firmy." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+    /* drobná animace progressu */
+    @keyframes slideIn { from { transform: translateX(-12px); opacity: .0; } to { transform: translateX(0); opacity: 1; } }
+    .anim-in{ animation: slideIn .28s ease-out both; }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV (sjednocený) -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/badge-system-dashboard.html">Badges</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/prihlasit-se.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobileMenu" class="lg:hidden hidden">
+      <div class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/badge-system-dashboard.html">Badges</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+      <div class="relative p-8 md:p-12">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+
+          <div class="space-y-4 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="badge-check" class="h-4 w-4"></i>
+              <span>Badge System</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">progress, odměny, úrovně</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Odznaky a úrovně</h1>
+            <p class="text-white/70 leading-relaxed">
+              Sbírej odznaky za aktivitu na Kartao.cz. Tvůrci získávají důvěru, firmy získávají přehled.
+              Tohle je <b class="text-white">demo</b> připravené na napojení na reálná data.
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+              <button id="btnClaim" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="gift" class="h-4 w-4"></i>
+                Vybrat odměnu
+              </button>
+              <a href="#badges" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="grid-3x3" class="h-4 w-4"></i>
+                Projít odznaky
+              </a>
+              <button id="btnReset" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+                <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                Reset demo
+              </button>
+            </div>
+          </div>
+
+          <!-- profile card -->
+          <div class="w-full lg:w-[420px]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Profil & level</div>
+                <span id="pillRole" class="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">Tvůrce</span>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <div class="h-12 w-12 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                  <i data-lucide="user" class="h-6 w-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="font-extrabold text-lg truncate" id="profileName">@demo.tvurce</div>
+                  <div class="text-sm text-white/60">Badge XP: <span id="xp">0</span> • Odznaky: <span id="owned">0</span>/<span id="total">0</span></div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs text-white/60">Aktuální úroveň</div>
+                    <div class="text-xl font-extrabold" id="levelLabel">Nováček</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs text-white/60">Do další</div>
+                    <div class="font-semibold" id="toNext">—</div>
+                  </div>
+                </div>
+                <div class="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div id="levelBar" class="h-full w-[0%] bg-white"></div>
+                </div>
+                <div class="mt-2 text-xs text-white/50" id="levelHint">Plň úkoly a sbírej odznaky.</div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2">
+                <button id="roleCreator" class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-xs">Režim: Tvůrce</button>
+                <button id="roleBrand" class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-xs">Režim: Firma</button>
+                <button id="btnAddXP" class="px-3 py-2 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition text-xs">+ XP (demo)</button>
+              </div>
+              <div class="text-xs text-white/50">Pozn.: XP je demo metrika – v reálu ji spočítáme podle akcí (karta, kampaně, recenze, ověření…).</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTRY / HLEDÁNÍ -->
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold tracking-tight">Katalog odznaků</h2>
+          <p class="text-white/70 mt-2">Filtruj, co už máš, a co teprve odemkneš. Kliknutím otevřeš detail.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <div class="relative flex-1 min-w-[220px]">
+            <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+            <input id="q" type="text" placeholder="Hledat odznak…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+          </div>
+          <select id="scope" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <option value="all">Vše</option>
+            <option value="creator">Tvůrce</option>
+            <option value="brand">Firma</option>
+          </select>
+          <select id="state" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <option value="any">Vše</option>
+            <option value="owned">Mám</option>
+            <option value="locked">Zamčené</option>
+          </select>
+          <select id="sort" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <option value="recommended">Doporučené</option>
+            <option value="easy">Nejjednodušší</option>
+            <option value="hard">Nejtěžší</option>
+            <option value="xp">Nejvíc XP</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <section id="badges" class="space-y-4">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight">Odznaky</h3>
+          <p class="text-white/70 mt-2">Demo seznam, připravený na reálné napojení (Firestore/DB).</p>
+        </div>
+        <div class="text-sm text-white/60"><span id="count">0</span> výsledků</div>
+      </div>
+
+      <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+      <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div class="space-y-2">
+            <div class="text-sm text-white/60">Férové odměny</div>
+            <div class="text-xl md:text-2xl font-extrabold">Odznaky můžou odemykat výhody</div>
+            <div class="text-white/70">Sleva na VIP, zvýraznění profilu, přístup k vyšším kampaním, priorita v doporučení…</div>
+          </div>
+          <a href="/vip.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <i data-lucide="crown" class="h-4 w-4"></i>
+            Prozkoumat VIP
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRAVIDLA / JAK ZÍSKAT -->
+    <section class="grid lg:grid-cols-3 gap-4">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm text-white/60">Jak to funguje</div>
+            <h3 class="text-xl font-extrabold">Pravidla získávání</h3>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="clipboard-check" class="h-5 w-5"></i>
+          </div>
+        </div>
+
+        <div class="mt-5 grid sm:grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center gap-2 font-semibold"><i data-lucide="id-card" class="h-4 w-4"></i>Karta & portfolio</div>
+            <div class="text-sm text-white/70 mt-2">Vyplnění profilu, ověření platformy, přidání ukázek.</div>
+          </div>
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center gap-2 font-semibold"><i data-lucide="megaphone" class="h-4 w-4"></i>Kampaně</div>
+            <div class="text-sm text-white/70 mt-2">Dokončené spolupráce, dodržení termínů, výsledky.</div>
+          </div>
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center gap-2 font-semibold"><i data-lucide="star" class="h-4 w-4"></i>Recenze</div>
+            <div class="text-sm text-white/70 mt-2">Hodnocení po spolupráci zvedá důvěru a rank.</div>
+          </div>
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+            <div class="flex items-center gap-2 font-semibold"><i data-lucide="shield" class="h-4 w-4"></i>Ověření</div>
+            <div class="text-sm text-white/70 mt-2">Anti-fake kroky: napojení statistik, email, telefon.</div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-white/50">V reálu: každá akce bude mít event → body/XP → vyhodnocení odznaků.</div>
+      </div>
+
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm text-white/60">Leaderboard</div>
+            <h3 class="text-xl font-extrabold">Top profily</h3>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+            <i data-lucide="trophy" class="h-5 w-5"></i>
+          </div>
+        </div>
+        <div id="leaders" class="mt-5 space-y-2"></div>
+        <div class="mt-3 text-xs text-white/50">Demo žebříček. V reálu: podle XP, recenzí, dokončených kampaní.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Informace</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/registrace.html">Registrace</a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">badge-system-dashboard.html</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: detail + unlock -->
+  <div id="modal" class="fixed inset-0 z-50 hidden">
+    <div id="backdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="relative max-w-2xl mx-auto px-4 py-8 md:py-12">
+      <div class="rounded-3xl border border-white/10 bg-neutral-950/80 backdrop-blur-xl overflow-hidden">
+        <div class="p-5 md:p-6 border-b border-white/10 flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <div class="text-xs text-white/60">Detail odznaku</div>
+            <div class="text-xl md:text-2xl font-extrabold truncate" id="mTitle">—</div>
+            <div class="text-sm text-white/70 mt-1" id="mDesc">—</div>
+          </div>
+          <button id="mClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+
+        <div class="p-5 md:p-6 space-y-4">
+          <div class="grid md:grid-cols-3 gap-3">
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+              <div class="text-xs text-white/60">Role</div>
+              <div class="font-semibold" id="mRole">—</div>
+            </div>
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+              <div class="text-xs text-white/60">Náročnost</div>
+              <div class="font-semibold" id="mDiff">—</div>
+            </div>
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+              <div class="text-xs text-white/60">XP</div>
+              <div class="font-semibold" id="mXp">—</div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-xs text-white/60">Progress</div>
+                <div class="font-semibold" id="mProgLabel">—</div>
+              </div>
+              <div class="text-xs text-white/60" id="mProgPct">—</div>
+            </div>
+            <div class="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+              <div id="mProgBar" class="h-full w-[0%] bg-white"></div>
+            </div>
+            <div class="mt-2 text-xs text-white/50" id="mRule">—</div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="text-sm text-white/60" id="mState">—</div>
+            <div class="flex gap-2">
+              <button id="mBoost" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="zap" class="h-4 w-4"></i>
+                Přidat progress (demo)
+              </button>
+              <button id="mUnlock" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="unlock" class="h-4 w-4"></i>
+                Odemknout
+              </button>
+            </div>
+          </div>
+
+          <div class="text-xs text-white/50">Pozn.: Tlačítka jsou demo. V reálu: unlock pouze při splnění podmínek.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: claim -->
+  <div id="claim" class="fixed inset-0 z-50 hidden">
+    <div id="claimBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="relative max-w-xl mx-auto px-4 py-8 md:py-12">
+      <div class="rounded-3xl border border-white/10 bg-neutral-950/80 backdrop-blur-xl overflow-hidden">
+        <div class="p-5 md:p-6 border-b border-white/10 flex items-start justify-between gap-4">
+          <div>
+            <div class="text-xs text-white/60">Odměny (demo)</div>
+            <div class="text-xl md:text-2xl font-extrabold">Vybrat odměnu</div>
+            <div class="text-sm text-white/70 mt-1">Odměny se odemknou po dosažení úrovní/odznaků.</div>
+          </div>
+          <button id="claimClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+        <div class="p-5 md:p-6 space-y-3">
+          <div id="claimList" class="grid gap-3"></div>
+          <div class="text-xs text-white/50">Demo: klik jen přidá XP.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // ----------------------------
+    // DEMO DATA
+    // ----------------------------
+    const LS = {
+      role: 'kartao_badges_role_v1',
+      xp: 'kartao_badges_xp_v1',
+      owned: 'kartao_badges_owned_v1',
+      prog: 'kartao_badges_progress_v1'
+    };
+
+    const levels = [
+      { name: 'Nováček', minXp: 0, next: 120 },
+      { name: 'Aktivní', minXp: 120, next: 320 },
+      { name: 'Profi', minXp: 320, next: 650 },
+      { name: 'Legenda', minXp: 650, next: 1000 }
+    ];
+
+    const badges = [
+      // TVŮRCE
+      { id:'c_profile', role:'creator', title:'Profil hotový', icon:'id-card', desc:'Vyplněná karta na 90%+', difficulty:1, xp:60, rule:'Vyplň profil (bio, foto, platformy, ceník).', target: 90 },
+      { id:'c_verified', role:'creator', title:'Ověřený tvůrce', icon:'shield-check', desc:'Napojené ověření (email/telefon/statistiky).', difficulty:2, xp:120, rule:'Dokonči ověření účtu a jedné platformy.', target: 100 },
+      { id:'c_firstDeal', role:'creator', title:'První spolupráce', icon:'handshake', desc:'Dokončená první kampaň.', difficulty:2, xp:140, rule:'Dokonči 1 kampaň a nech si dát recenzi.', target: 1 },
+      { id:'c_5reviews', role:'creator', title:'Pět recenzí', icon:'star', desc:'5 pozitivních recenzí.', difficulty:3, xp:220, rule:'Získej 5 recenzí (>= 4★).', target: 5 },
+      { id:'c_fastReply', role:'creator', title:'Rychlá odpověď', icon:'zap', desc:'Odpovídáš rychle a spolehlivě.', difficulty:2, xp:110, rule:'Průměrná odpověď < 2 hod. (demo).', target: 100 },
+      { id:'c_trending', role:'creator', title:'Trending', icon:'flame', desc:'Nárůst dosahu v posledních 30 dnech.', difficulty:4, xp:320, rule:'Růst dosahu +20% (demo).', target: 100 },
+
+      // FIRMA
+      { id:'b_firstBrief', role:'brand', title:'První brief', icon:'megaphone', desc:'Zadaná první kampaň.', difficulty:1, xp:80, rule:'Zadej 1 kampaň a odešli brief.', target: 1 },
+      { id:'b_fairPay', role:'brand', title:'Férový zadavatel', icon:'badge-check', desc:'Kvalitní brief + férové podmínky.', difficulty:2, xp:140, rule:'Min. 3 kampaně bez stížnosti (demo).', target: 3 },
+      { id:'b_5deals', role:'brand', title:'5 spoluprací', icon:'layers', desc:'5 dokončených kampaní.', difficulty:3, xp:240, rule:'Dokonči 5 kampaní.', target: 5 },
+      { id:'b_reviewer', role:'brand', title:'Dává recenze', icon:'message-square', desc:'Hodnocení po spolupráci.', difficulty:2, xp:120, rule:'Napiš 3 recenze.', target: 3 },
+      { id:'b_vip', role:'brand', title:'VIP zadavatel', icon:'crown', desc:'VIP nebo předplatné aktivní.', difficulty:4, xp:300, rule:'Aktivní VIP.', target: 100 },
+      { id:'b_partner', role:'brand', title:'Partner trhu', icon:'trophy', desc:'Top značka podle kvality.', difficulty:5, xp:420, rule:'Dlouhodobé výsledky (demo).', target: 100 }
+    ];
+
+    const leaderSeed = [
+      { name:'@linda.fit', xp: 740 },
+      { name:'@adam.tech', xp: 610 },
+      { name:'BrandXYZ', xp: 580 },
+      { name:'Coffee&Co', xp: 530 },
+      { name:'@kaja.daily', xp: 490 }
+    ];
+
+    const claimItems = [
+      { id:'r1', title:'Zvýraznění profilu (7 dní)', need:'Úroveň Aktivní', grantXp: 25 },
+      { id:'r2', title:'Sleva na VIP (10%)', need:'3 odznaky', grantXp: 40 },
+      { id:'r3', title:'Prioritní doporučení (demo)', need:'Úroveň Profi', grantXp: 60 }
+    ];
+
+    // ----------------------------
+    // STATE
+    // ----------------------------
+    function getRole(){
+      return localStorage.getItem(LS.role) || 'creator';
+    }
+    function setRole(r){
+      localStorage.setItem(LS.role, r);
+    }
+    function getXP(){
+      return Number(localStorage.getItem(LS.xp) || 0);
+    }
+    function setXP(v){
+      localStorage.setItem(LS.xp, String(Math.max(0, Math.floor(v || 0))));
+    }
+    function getOwned(){
+      return new Set(JSON.parse(localStorage.getItem(LS.owned) || '[]'));
+    }
+    function setOwned(set){
+      localStorage.setItem(LS.owned, JSON.stringify(Array.from(set)));
+    }
+    function getProg(){
+      return JSON.parse(localStorage.getItem(LS.prog) || '{}');
+    }
+    function setProg(obj){
+      localStorage.setItem(LS.prog, JSON.stringify(obj || {}));
+    }
+
+    // init defaults
+    if (!localStorage.getItem(LS.role)) setRole('creator');
+    if (!localStorage.getItem(LS.xp)) setXP(80);
+
+    // ----------------------------
+    // UI helpers
+    // ----------------------------
+    function difficultyLabel(n){
+      const map = {1:'Easy',2:'Normal',3:'Hard',4:'Pro',5:'Legend'};
+      return map[n] || '—';
+    }
+
+    function roleLabel(r){
+      return r === 'brand' ? 'Firma' : 'Tvůrce';
+    }
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    function getLevel(xp){
+      // najít poslední level s minXp
+      let current = levels[0];
+      for (const l of levels) if (xp >= l.minXp) current = l;
+      const idx = levels.indexOf(current);
+      const next = levels[idx+1] || null;
+      return { current, next, idx };
+    }
+
+    function computeLevelProgress(xp){
+      const { current, next } = getLevel(xp);
+      if (!next) return { pct: 100, toNext: 'max', hint: 'Max úroveň. Respekt.' };
+      const span = next.minXp - current.minXp;
+      const done = xp - current.minXp;
+      const pct = span ? clamp((done / span) * 100, 0, 100) : 0;
+      return { pct, toNext: Math.max(0, next.minXp - xp), hint: `Ještě ${Math.max(0, next.minXp - xp)} XP na úroveň „${next.name}“.` };
+    }
+
+    function badgeProgress(b, prog){
+      // u některých odznaků je target % (demo), u některých kusy
+      const v = Number((prog && prog[b.id]) ?? 0);
+      const max = Number(b.target || 100);
+      const pct = max ? clamp((v / max) * 100, 0, 100) : 0;
+      return { v, max, pct };
+    }
+
+    // ----------------------------
+    // RENDER
+    // ----------------------------
+    const els = {
+      pillRole: document.getElementById('pillRole'),
+      profileName: document.getElementById('profileName'),
+      xp: document.getElementById('xp'),
+      owned: document.getElementById('owned'),
+      total: document.getElementById('total'),
+      levelLabel: document.getElementById('levelLabel'),
+      levelBar: document.getElementById('levelBar'),
+      toNext: document.getElementById('toNext'),
+      levelHint: document.getElementById('levelHint'),
+      count: document.getElementById('count'),
+      grid: document.getElementById('grid'),
+      leaders: document.getElementById('leaders')
+    };
+
+    function renderProfile(){
+      const role = getRole();
+      const xp = getXP();
+      const owned = getOwned();
+      const inRole = badges.filter(b => b.role === role);
+
+      els.pillRole.textContent = roleLabel(role);
+      els.profileName.textContent = role === 'brand' ? 'BrandXYZ (demo)' : '@demo.tvurce';
+      els.xp.textContent = String(xp);
+      els.owned.textContent = String(Array.from(owned).filter(id => inRole.some(b => b.id === id)).length);
+      els.total.textContent = String(inRole.length);
+
+      const lvl = getLevel(xp);
+      const p = computeLevelProgress(xp);
+      els.levelLabel.textContent = lvl.current.name;
+      els.levelBar.style.width = p.pct + '%';
+      els.toNext.textContent = p.toNext === 'max' ? 'MAX' : `${p.toNext} XP`;
+      els.levelHint.textContent = p.hint;
+    }
+
+    function renderLeaders(){
+      const xp = getXP();
+      const role = getRole();
+      const meName = role === 'brand' ? 'BrandXYZ (demo)' : '@demo.tvurce';
+      const data = [...leaderSeed, { name: meName, xp }]
+        .sort((a,b) => b.xp - a.xp)
+        .slice(0, 6);
+
+      els.leaders.innerHTML = data.map((x,i) => {
+        const me = x.name === meName;
+        return `
+          <div class="rounded-2xl bg-neutral-950/40 border border-white/10 p-3 flex items-center justify-between ${me ? 'ring-1 ring-white/20' : ''}">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="h-9 w-9 rounded-2xl bg-white/5 border border-white/10 grid place-items-center text-xs font-bold">${i+1}</div>
+              <div class="min-w-0">
+                <div class="font-semibold truncate">${escapeHtml(x.name)}</div>
+                <div class="text-xs text-white/60">XP: ${x.xp}</div>
+              </div>
+            </div>
+            <i data-lucide="${i===0?'trophy':(i<3?'medal':'chevron-right')}" class="h-4 w-4 text-white/70"></i>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderGrid(){
+      const role = getRole();
+      const q = (document.getElementById('q').value || '').trim().toLowerCase();
+      const scope = document.getElementById('scope').value;
+      const state = document.getElementById('state').value;
+      const sort = document.getElementById('sort').value;
+
+      const owned = getOwned();
+      const prog = getProg();
+
+      let data = badges.slice();
+
+      // scope
+      if (scope !== 'all') data = data.filter(b => b.role === scope);
+
+      // role highlight: primárně zobrazovat aktuální roli nahoře
+      data.sort((a,b) => (a.role === role ? -1 : 1) - (b.role === role ? -1 : 1));
+
+      // search
+      if (q) {
+        data = data.filter(b =>
+          b.title.toLowerCase().includes(q) ||
+          b.desc.toLowerCase().includes(q) ||
+          b.id.toLowerCase().includes(q)
+        );
+      }
+
+      // state
+      if (state === 'owned') data = data.filter(b => owned.has(b.id));
+      if (state === 'locked') data = data.filter(b => !owned.has(b.id));
+
+      // sort
+      const diffSort = (a,b) => (a.difficulty||0) - (b.difficulty||0);
+      if (sort === 'easy') data.sort(diffSort);
+      if (sort === 'hard') data.sort((a,b) => (b.difficulty||0) - (a.difficulty||0));
+      if (sort === 'xp') data.sort((a,b) => (b.xp||0) - (a.xp||0));
+      if (sort === 'recommended') {
+        data.sort((a,b) => {
+          const ao = owned.has(a.id) ? 1 : 0;
+          const bo = owned.has(b.id) ? 1 : 0;
+          if (ao !== bo) return ao - bo; // locked první
+          const ap = badgeProgress(a, prog).pct;
+          const bp = badgeProgress(b, prog).pct;
+          return bp - ap; // vyšší progress výš
+        });
+      }
+
+      document.getElementById('count').textContent = String(data.length);
+
+      els.grid.innerHTML = data.map((b, idx) => {
+        const isOwned = owned.has(b.id);
+        const p = badgeProgress(b, prog);
+        const isCurrentRole = b.role === role;
+
+        return `
+          <button data-badge="${b.id}" class="text-left rounded-3xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition group anim-in" style="animation-delay:${Math.min(idx*12,160)}ms">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="inline-flex items-center gap-2 text-xs text-white/70">
+                  <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">${roleLabel(b.role)}</span>
+                  <span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">${difficultyLabel(b.difficulty)}</span>
+                  ${isOwned ? '<span class="px-2 py-1 rounded-full bg-white text-neutral-950 font-semibold">Odemčeno</span>' : '<span class="px-2 py-1 rounded-full bg-white/5 border border-white/10">Zamčeno</span>'}
+                </div>
+                <div class="mt-3 font-extrabold text-lg truncate">${escapeHtml(b.title)}</div>
+                <div class="text-sm text-white/70 mt-1">${escapeHtml(b.desc)}</div>
+              </div>
+              <div class="shrink-0 h-12 w-12 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center ${isOwned ? 'shadow-[0_0_0_1px_rgba(255,255,255,0.12)_inset]' : ''}">
+                <i data-lucide="${b.icon}" class="h-6 w-6 ${isOwned ? '' : 'opacity-70'}"></i>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-2xl bg-neutral-950/40 border border-white/10 p-4">
+              <div class="flex items-center justify-between">
+                <div class="text-xs text-white/60">Progress</div>
+                <div class="text-xs text-white/60">${Math.round(p.pct)}%</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-white/10 overflow-hidden">
+                <div class="h-full bg-white" style="width:${p.pct}%"></div>
+              </div>
+              <div class="mt-2 flex items-center justify-between">
+                <div class="text-xs text-white/50">${p.v}/${p.max}</div>
+                <div class="text-xs ${isCurrentRole ? 'text-white/70' : 'text-white/50'}">+${b.xp} XP</div>
+              </div>
+            </div>
+
+            <div class="mt-4 text-xs ${isCurrentRole ? 'text-white/70' : 'text-white/50'}">
+              ${isCurrentRole ? 'Doporučeno pro tvůj režim.' : 'Mimo aktuální režim (přepni nahoře).'}
+            </div>
+          </button>
+        `;
+      }).join('') || `<div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70">Nic nenalezeno. Zkus změnit filtr nebo vyhledávání.</div>`;
+
+      lucide.createIcons();
+    }
+
+    function renderAll(){
+      renderProfile();
+      renderGrid();
+      renderLeaders();
+    }
+
+    function escapeHtml(s){
+      return String(s || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // ----------------------------
+    // MODAL LOGIC
+    // ----------------------------
+    const modal = document.getElementById('modal');
+    const backdrop = document.getElementById('backdrop');
+    const mClose = document.getElementById('mClose');
+
+    const mTitle = document.getElementById('mTitle');
+    const mDesc = document.getElementById('mDesc');
+    const mRole = document.getElementById('mRole');
+    const mDiff = document.getElementById('mDiff');
+    const mXp = document.getElementById('mXp');
+    const mRule = document.getElementById('mRule');
+    const mProgLabel = document.getElementById('mProgLabel');
+    const mProgPct = document.getElementById('mProgPct');
+    const mProgBar = document.getElementById('mProgBar');
+    const mState = document.getElementById('mState');
+    const mBoost = document.getElementById('mBoost');
+    const mUnlock = document.getElementById('mUnlock');
+
+    let currentBadgeId = null;
+
+    function openModal(bId){
+      const b = badges.find(x => x.id === bId);
+      if (!b) return;
+      currentBadgeId = bId;
+
+      const owned = getOwned();
+      const prog = getProg();
+      const p = badgeProgress(b, prog);
+      const isOwned = owned.has(b.id);
+      const canUnlock = p.pct >= 100;
+
+      mTitle.textContent = b.title;
+      mDesc.textContent = b.desc;
+      mRole.textContent = roleLabel(b.role);
+      mDiff.textContent = difficultyLabel(b.difficulty);
+      mXp.textContent = `+${b.xp} XP`;
+      mRule.textContent = b.rule;
+      mProgLabel.textContent = `${p.v}/${p.max}`;
+      mProgPct.textContent = `${Math.round(p.pct)}%`;
+      mProgBar.style.width = p.pct + '%';
+
+      mState.textContent = isOwned ? 'Tento odznak už máš odemčený.' : (canUnlock ? 'Podmínky splněné – můžeš odemknout.' : 'Zatím zamčeno – splň podmínky a progress.');
+
+      mUnlock.disabled = isOwned || !canUnlock;
+      mUnlock.classList.toggle('opacity-50', mUnlock.disabled);
+      mUnlock.classList.toggle('cursor-not-allowed', mUnlock.disabled);
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+
+    function closeModal(){
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      currentBadgeId = null;
+    }
+
+    backdrop.addEventListener('click', closeModal);
+    mClose.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+
+    mBoost.addEventListener('click', () => {
+      if (!currentBadgeId) return;
+      const b = badges.find(x => x.id === currentBadgeId);
+      if (!b) return;
+      const prog = getProg();
+      const cur = Number(prog[b.id] || 0);
+      // boost podle náročnosti
+      const inc = Math.max(1, 10 - (b.difficulty * 1));
+      prog[b.id] = Math.min(b.target || 100, cur + inc);
+      setProg(prog);
+      openModal(b.id); // refresh
+      renderAll();
+    });
+
+    mUnlock.addEventListener('click', () => {
+      if (!currentBadgeId) return;
+      const b = badges.find(x => x.id === currentBadgeId);
+      if (!b) return;
+
+      const prog = getProg();
+      const p = badgeProgress(b, prog);
+      if (p.pct < 100) return;
+
+      const owned = getOwned();
+      if (owned.has(b.id)) return;
+      owned.add(b.id);
+      setOwned(owned);
+
+      // přidat XP
+      setXP(getXP() + (b.xp || 0));
+
+      openModal(b.id);
+      renderAll();
+    });
+
+    // click on cards
+    document.getElementById('grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-badge]');
+      if (!btn) return;
+      openModal(btn.getAttribute('data-badge'));
+    });
+
+    // ----------------------------
+    // CLAIM MODAL
+    // ----------------------------
+    const claim = document.getElementById('claim');
+    const claimBackdrop = document.getElementById('claimBackdrop');
+    const claimClose = document.getElementById('claimClose');
+    const claimList = document.getElementById('claimList');
+
+    function openClaim(){
+      claimList.innerHTML = claimItems.map(x => {
+        return `
+          <button data-claim="${x.id}" class="text-left rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="font-extrabold">${escapeHtml(x.title)}</div>
+                <div class="text-sm text-white/70 mt-1">Podmínka: ${escapeHtml(x.need)}</div>
+              </div>
+              <div class="text-xs px-2 py-1 rounded-full bg-white text-neutral-950 font-semibold">+${x.grantXp} XP</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      claim.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeClaim(){
+      claim.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    claimBackdrop.addEventListener('click', closeClaim);
+    claimClose.addEventListener('click', closeClaim);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !claim.classList.contains('hidden')) closeClaim();
+    });
+
+    document.getElementById('btnClaim').addEventListener('click', openClaim);
+    claimList.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-claim]');
+      if (!b) return;
+      const item = claimItems.find(x => x.id === b.getAttribute('data-claim'));
+      if (!item) return;
+      setXP(getXP() + item.grantXp);
+      closeClaim();
+      renderAll();
+    });
+
+    // ----------------------------
+    // CONTROLS
+    // ----------------------------
+    document.getElementById('q').addEventListener('input', renderGrid);
+    document.getElementById('scope').addEventListener('change', renderGrid);
+    document.getElementById('state').addEventListener('change', renderGrid);
+    document.getElementById('sort').addEventListener('change', renderGrid);
+
+    document.getElementById('roleCreator').addEventListener('click', () => { setRole('creator'); renderAll(); });
+    document.getElementById('roleBrand').addEventListener('click', () => { setRole('brand'); renderAll(); });
+
+    document.getElementById('btnAddXP').addEventListener('click', () => {
+      setXP(getXP() + 35);
+      renderAll();
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      // smazat jen naše klíče
+      Object.values(LS).forEach(k => localStorage.removeItem(k));
+      setRole('creator');
+      setXP(80);
+      setOwned(new Set());
+      setProg({});
+      renderAll();
+    });
+
+    // init
+    document.getElementById('total').textContent = String(badges.filter(b => b.role === getRole()).length);
+    renderAll();
+  </script>
+</body>
+</html>
