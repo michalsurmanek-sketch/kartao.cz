@@ -8,6 +8,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide ikony - unified system -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    // Inicializovat ikony hned po načtení Lucide
+    window.addEventListener('load', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
   <style>
     .calendar-day {
       aspect-ratio: 1;
@@ -426,9 +434,10 @@
       }
     };
 
-    // Initialize icons
-    document.addEventListener('DOMContentLoaded', () => {
-    });
+    // Initialize icons - znovu pro dynamicky přidané elementy
+    if (window.lucide) {
+      lucide.createIcons();
+    }
   </script>
 </body>
 </html>
