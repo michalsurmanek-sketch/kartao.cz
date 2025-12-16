@@ -1,226 +1,945 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kartao.cz – Ceník</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="Kartao.cz ceník – promyšlené balíčky pro firmy a tvůrce. Marketplace, ověření, kurátorské výběry, poptávky, escrow a VIP partnerství." />
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide ikony - unified system -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Ikony (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase (ostré napojení) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    .card{background-color:rgba(23,23,23,.6);border:1px solid rgba(255,255,255,.1);border-radius:1rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:.75rem}
-    .btn-primary{background:#e879f9}
-    .btn-primary:hover{background:#db58f6}
-    .btn-light{background:#fff;color:#111}
-    .btn-light:hover{background:#f3f3f3}
-    .btn-outline{border:1px solid rgba(255,255,255,.2)}
-    .badge{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);padding:.15rem .5rem;border-radius:.5rem}
-    .toggle{display:inline-flex;border:1px solid rgba(255,255,255,.15);border-radius:.75rem;overflow:hidden}
-    .toggle button{padding:.35rem .7rem}
-    .toggle .active{background:#fff;color:#111}
-    .halo{position:relative}
-    .halo:before{content:"";position:absolute;inset:-2px;border-radius:1.1rem;background:linear-gradient(135deg,rgba(236,72,153,.45),rgba(251,191,36,.35));filter:blur(16px);opacity:.3;z-index:-1}
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+
+    .floaty{animation:floaty 7s ease-in-out infinite}
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+    .shine{position:relative;overflow:hidden}
+    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.12) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
+    @keyframes shine{0%{transform:translateX(-40%)}60%{transform:translateX(40%)}100%{transform:translateX(40%)}}
+
+    /* sticky sidebar */
+    @media (min-width: 1024px){
+      .sticky-col{position:sticky;top:92px}
+    }
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white">
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center"><i data-lucide="crown" class="w-5 h-5"></i></div>
-        <div>
-          <div class="font-extrabold tracking-tight text-lg">Kartao.cz</div>
-          <div class="text-xs text-white/60 -mt-0.5">Síť influencerů a tvůrců</div>
-        </div>
+<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+
+  <!-- dekor pozadí -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+  </div>
+
+  <!-- HEADER / NAV -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+
+      <a href="/index.html" class="group inline-flex items-center gap-2">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        </span>
+        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">ceník</span>
       </a>
-      <nav class="hidden md:flex items-center gap-2">
-        <a href="kartao-pro-firmy.html#brief" class="btn btn-light">Pro firmy</a>
-        <a href="kartao-pro-tvurce.html#form" class="btn btn-primary">Založit kartu</a>
+
+      <nav class="hidden xl:flex items-center gap-2 text-sm">
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-marketplace.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/kartao-cenik.html">Ceník</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
       </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/zadat-kampan.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <i data-lucide="megaphone" class="h-4 w-4"></i>
+          <span class="text-sm">Zadat kampaň</span>
+        </a>
+
+        <a href="/prihlasit-se.html" class="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="log-in" class="h-4 w-4"></i>
+          <span class="text-sm">Přihlásit se</span>
+        </a>
+
+        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="xl:hidden hidden">
+      <div class="max-w-7xl mx-auto px-4 pb-4">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+          <div class="grid gap-1 text-sm">
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-marketplace.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/kartao-cenik.html">Ceník</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white text-neutral-950 font-semibold" href="/zadat-kampan.html">Zadat kampaň</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/prihlasit-se.html">Přihlásit se</a>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- HERO -->
-  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
-    <div class="max-w-7xl mx-auto px-4 py-10 flex items-end justify-between gap-4">
-      <div>
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Ceník</h1>
-        <p class="mt-2 text-white/70 max-w-2xl">Tarify pro tvůrce. Bezpečné platby přes Stripe. Roční platba ≈ 2 měsíce zdarma.</p>
-        <div class="mt-3 flex flex-wrap gap-2 text-xs text-white/70">
-          <span class="badge"><i data-lucide="shield-check" class="w-3 h-3"></i> Bezpečný checkout</span>
-          <span class="badge"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Předplatné kdykoliv zrušíš</span>
-          <span class="badge"><i data-lucide="file-text" class="w-3 h-3"></i> Faktura e‑mailem</span>
+  <main class="max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/25 via-neutral-950 to-amber-700/18 shadow-[0_20px_90px_rgba(0,0,0,0.58)]">
+      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_12%_18%,rgba(255,0,170,0.30),transparent_40%),radial-gradient(circle_at_84%_72%,rgba(255,180,0,0.22),transparent_48%)]"></div>
+
+      <div class="relative p-8 md:p-12">
+        <div class="grid lg:grid-cols-[1.25fr_1fr] gap-10 items-center">
+
+          <div class="space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <i data-lucide="coins" class="h-4 w-4"></i>
+              <span>Ceník</span>
+              <span class="text-white/40">•</span>
+              <span class="text-white/60">férově, transparentně, bez chaosu</span>
+            </div>
+
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              Ceny, které dávají smysl.
+              <span class="text-white/70">Firmám i tvůrcům.</span>
+            </h1>
+
+            <p class="text-white/70 leading-relaxed max-w-2xl">
+              Kartao kombinuje marketplace (výběr tvůrců), ověření metrik, rychlé poptávky a (později) escrow platby.
+              Vyber si balíček podle toho, jestli chceš <span class="text-white/80 font-semibold">nakupovat výkon</span> nebo <span class="text-white/80 font-semibold">prodávat tvorbu</span>.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <a href="#plans" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <i data-lucide="sparkles" class="h-4 w-4"></i>
+                Vybrat balíček
+              </a>
+              <a href="/kontakt.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                <i data-lucide="message-circle" class="h-4 w-4"></i>
+                Chci poradit
+              </a>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-3">
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="text-xs text-white/60">Přístup</div>
+                <div class="mt-1 text-2xl font-extrabold">Marketplace</div>
+              </div>
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="text-xs text-white/60">Důvěra</div>
+                <div class="mt-1 text-2xl font-extrabold">Ověření</div>
+              </div>
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="text-xs text-white/60">Rychlost</div>
+                <div class="mt-1 text-2xl font-extrabold">Poptávky</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- side pricing controls -->
+          <div class="relative">
+            <div class="absolute -inset-6 opacity-40 blur-2xl bg-[radial-gradient(circle_at_30%_20%,rgba(255,0,170,0.35),transparent_45%),radial-gradient(circle_at_70%_80%,rgba(255,180,0,0.25),transparent_55%)]"></div>
+
+            <div class="relative rounded-3xl border border-white/10 bg-neutral-950/35 p-6 md:p-7">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-white/70">Nastavení ceníku</div>
+                <div class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">rychlý výběr</div>
+              </div>
+
+              <div class="mt-5 grid gap-3">
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <div class="text-xs text-white/60">Pro koho</div>
+                  <div class="mt-3 grid grid-cols-2 gap-2">
+                    <button id="segFirm" class="seg" data-seg="firm">Firmy</button>
+                    <button id="segCreator" class="seg" data-seg="creator">Tvůrci</button>
+                  </div>
+                  <div class="mt-3 text-sm text-white/60">Přepínač jen mění zobrazení balíčků níže.</div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-xs text-white/60">Fakturace</div>
+                      <div class="mt-1 font-extrabold">Měsíčně / ročně</div>
+                    </div>
+                    <button id="billingToggle" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-neutral-950/40 border border-white/10 hover:bg-white/10 transition">
+                      <span class="text-xs text-white/70" id="billingLabel">Měsíčně</span>
+                      <span class="h-5 w-9 rounded-full bg-white/10 border border-white/10 relative">
+                        <span id="billingDot" class="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white"></span>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="mt-2 text-sm text-white/60">Roční fakturace = sleva <span class="text-white/80 font-semibold">2 měsíce zdarma</span>.</div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+                  <div class="flex items-start gap-3">
+                    <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center floaty">
+                      <i data-lucide="shield-check" class="h-5 w-5"></i>
+                    </div>
+                    <div>
+                      <div class="font-extrabold">Bez přepálených slibů</div>
+                      <div class="text-sm text-white/60 mt-1">Ceník je nastavený tak, aby dával smysl i pro start. VIP/agentury řešíme individuálně.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <a href="#lead" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                  <i data-lucide="sparkles" class="h-4 w-4"></i>
+                  Chci individuální nabídku
+                </a>
+
+                <div class="text-xs text-white/50">Tip: Pokud chceš jen „zkusit“, vyber Start – dá ti smysl a nebude bolet.</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-      <div class="toggle" id="togglePeriod">
-        <button data-period="month" class="active">Měsíčně</button>
-        <button data-period="year">Ročně</button>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- PRICING CARDS -->
-  <main class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-4">
-    <!-- Free -->
-    <article class="card p-5 flex flex-col">
-      <div class="text-sm font-semibold text-white/80">Free</div>
-      <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="0" data-yearly="0">0</span> Kč <span class="text-base text-white/60 font-normal js-period">/ měs.</span></div>
-      <ul class="mt-4 space-y-2 text-sm text-white/80">
-        <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Veřejná karta</li>
-        <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Poptávky e‑mailem</li>
-        <li class="flex gap-2"><i data-lucide="minus" class="w-4 h-4"></i> Bez ověření účtů</li>
-      </ul>
-      <a href="kartao-pro-tvurce.html#form" class="btn btn-outline mt-5">Založit zdarma</a>
-    </article>
-
-    <!-- PRO -->
-    <article class="card p-5 flex flex-col halo">
-      <div class="text-sm font-semibold text-white/80 flex items-center gap-2">PRO <span class="badge text-amber-300 border-amber-300/30">Nejoblíbenější</span></div>
-      <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="299" data-yearly="2990">299</span> Kč <span class="text-base text-white/60 font-normal js-period">/ měs.</span></div>
-      <ul class="mt-4 space-y-2 text-sm text-white/80">
-        <li class="flex gap-2"><i data-lucide="badge-check" class="w-4 h-4"></i> Ověření IG/TT/YT</li>
-        <li class="flex gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i> Priorita ve výpisu</li>
-        <li class="flex gap-2"><i data-lucide="users" class="w-4 h-4"></i> Přímé nabídky od firem</li>
-      </ul>
-      <div class="mt-5 grid grid-cols-2 gap-2">
-        <button class="btn btn-primary w-full" data-plan="pro" data-interval="month">Jít do PRO</button>
-        <button class="btn btn-outline w-full" data-plan="pro" data-interval="year">Ročně</button>
+    <!-- PLANS -->
+    <section id="plans" class="space-y-5">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+        <div>
+          <div class="text-sm text-white/60">Balíčky</div>
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Vyber si úroveň</h2>
+          <p class="text-white/70 mt-2">Srozumitelně: co přesně dostaneš, limity, a proč to dává smysl.</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="/zadat-kampan.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <i data-lucide="megaphone" class="h-4 w-4"></i>
+            Zadat kampaň
+          </a>
+          <a href="/moje-karta.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="id-card" class="h-4 w-4"></i>
+            Moje karta
+          </a>
+        </div>
       </div>
-    </article>
 
-    <!-- PREMIUM -->
-    <article class="card p-5 flex flex-col">
-      <div class="text-sm font-semibold text-white/80">Premium</div>
-      <div class="text-3xl font-extrabold mt-1"><span class="js-price" data-monthly="699" data-yearly="6990">699</span> Kč <span class="text-base text-white/60 font-normal js-period">/ měs.</span></div>
-      <ul class="mt-4 space-y-2 text-sm text-white/80">
-        <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4"></i> Vše z PRO</li>
-        <li class="flex gap-2"><i data-lucide="chart-line" class="w-4 h-4"></i> Pokročilá analytika</li>
-        <li class="flex gap-2"><i data-lucide="crown" class="w-4 h-4"></i> Top badge & kurátorské výběry</li>
-      </ul>
-      <div class="mt-5 grid grid-cols-2 gap-2">
-        <button class="btn btn-primary w-full" data-plan="premium" data-interval="month">Jít do Premium</button>
-        <button class="btn btn-outline w-full" data-plan="premium" data-interval="year">Ročně</button>
+      <!-- cards container -->
+      <div id="planGrid" class="grid lg:grid-cols-3 gap-4"></div>
+
+      <!-- value proof strip -->
+      <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="text-xs text-white/60">Co šetří nejvíc peněz</div>
+            <div class="mt-1 text-xl font-extrabold">Špatný výběr tvůrce</div>
+            <div class="text-sm text-white/60 mt-2">Proto je v balíčcích: ověření, shortlisty, metriky a kurátorský výběr.</div>
+          </div>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="text-xs text-white/60">Co šetří nejvíc času</div>
+            <div class="mt-1 text-xl font-extrabold">Domlouvání v DMs</div>
+            <div class="text-sm text-white/60 mt-2">Proto: poptávky, šablony briefu, jasné balíčky a (později) escrow.</div>
+          </div>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="text-xs text-white/60">Co zvedá výsledky</div>
+            <div class="mt-1 text-xl font-extrabold">Relevance & timing</div>
+            <div class="text-sm text-white/60 mt-2">Proto: témata, regiony, engagement, dostupnost a doporučení.</div>
+          </div>
+        </div>
       </div>
-    </article>
+    </section>
+
+    <!-- COMPARISON TABLE -->
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-sm text-white/60">Porovnání</div>
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Co je v balíčku</h2>
+          <p class="text-white/70 mt-2">Jedna tabulka, žádné hádanky.</p>
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-neutral-950/40 border border-white/10 text-sm text-white/70">
+          <i data-lucide="info" class="h-4 w-4"></i>
+          <span>Limity jsou „měsíční“</span>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="min-w-[980px] w-full text-sm">
+          <thead>
+            <tr class="text-left">
+              <th class="py-3 px-3 text-white/60 font-semibold">Funkce</th>
+              <th class="py-3 px-3">
+                <div class="font-extrabold">Start</div>
+                <div class="text-xs text-white/60" data-col-price="start"></div>
+              </th>
+              <th class="py-3 px-3">
+                <div class="font-extrabold">Pro</div>
+                <div class="text-xs text-white/60" data-col-price="pro"></div>
+              </th>
+              <th class="py-3 px-3">
+                <div class="font-extrabold">Elite</div>
+                <div class="text-xs text-white/60" data-col-price="elite"></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="compareBody"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-5 text-xs text-white/50 leading-relaxed">
+        Pozn.: „Escrow“ a „Záruka výkonu“ jsou připravené jako roadmap funkce – cenově s tím počítáme u vyšších plánů.
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-sm text-white/60">FAQ</div>
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Časté otázky</h2>
+        </div>
+        <a href="#lead" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+          <i data-lucide="mail" class="h-4 w-4"></i>
+          Zeptat se / nabídka
+        </a>
+      </div>
+
+      <div class="mt-6 grid md:grid-cols-2 gap-3">
+        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+            <span class="font-semibold">Je v ceně i správa kampaně?</span>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+          </summary>
+          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+            V balíčcích je platforma, výběr, ověření a workflow. Správa kampaně (agenturní režim) je samostatná služba –
+            typicky pro větší rozpočty a více tvůrců.
+          </div>
+        </details>
+
+        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+            <span class="font-semibold">Co znamená „ověření“?</span>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+          </summary>
+          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+            Ověření znamená kontrolu základní konzistence metrik (engagement, publikum, profil) a označení profilu jako důvěryhodného.
+            Neznamená to garanci výsledku – ale zvyšuje šanci na férový deal.
+          </div>
+        </details>
+
+        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+            <span class="font-semibold">Můžu plán změnit kdykoliv?</span>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+          </summary>
+          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+            Ano. V praxi: když ti dojdou limity (poptávky / shortlisty / ověření), navýšíš na vyšší plán.
+          </div>
+        </details>
+
+        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+            <span class="font-semibold">Jak je to s provizí / poplatkem?</span>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+          </summary>
+          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+            Základ je předplatné za nástroje. Pro vyšší úrovně a escrow je možné přidat servisní poplatek dle typu kampaně.
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- LEAD FORM (Supabase) -->
+    <section id="lead" class="grid lg:grid-cols-[1fr_420px] gap-6 items-start">
+
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-sm text-white/60">Nezávazně</div>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Chci nabídku / aktivaci</h2>
+            <p class="text-white/70 mt-2">Vyber plán, napiš cíl a my ti nastavíme nejrychlejší cestu.</p>
+          </div>
+          <div class="h-12 w-12 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center floaty">
+            <i data-lucide="sparkles" class="h-6 w-6"></i>
+          </div>
+        </div>
+
+        <form id="leadForm" class="mt-6 grid gap-3">
+          <div class="grid md:grid-cols-2 gap-3">
+            <label class="grid gap-1">
+              <span class="text-sm text-white/70">Jméno / firma</span>
+              <input id="lf_name" required type="text" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="Např. Coffee&Co" />
+            </label>
+            <label class="grid gap-1">
+              <span class="text-sm text-white/70">E-mail</span>
+              <input id="lf_email" required type="email" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="name@email.cz" />
+            </label>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-3">
+            <label class="grid gap-1">
+              <span class="text-sm text-white/70">Jsem</span>
+              <select id="lf_seg" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="firm">Firma</option>
+                <option value="creator">Tvůrce</option>
+              </select>
+            </label>
+            <label class="grid gap-1">
+              <span class="text-sm text-white/70">Vybraný plán</span>
+              <select id="lf_plan" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+                <option value="start">Start</option>
+                <option value="pro">Pro</option>
+                <option value="elite">Elite</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="grid gap-1">
+            <span class="text-sm text-white/70">Cíl / popis</span>
+            <textarea id="lf_note" rows="5" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="Firma: co prodáváš, rozpočet, termín, region, platformy…\nTvůrce: platformy, niche, ceník, linky…"></textarea>
+          </label>
+
+          <label class="flex items-start gap-2 text-sm text-white/70 mt-1">
+            <input id="lf_gdpr" required type="checkbox" class="h-4 w-4 mt-0.5" />
+            <span>Souhlasím se zpracováním údajů pro účely kontaktování ohledně ceníku/aktivace.</span>
+          </label>
+
+          <button id="lf_submit" type="submit" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <i data-lucide="send" class="h-4 w-4"></i>
+            Odeslat
+          </button>
+
+          <div class="text-xs text-white/50">Uloží se do Supabase tabulky <span class="text-white/70">pricing_leads</span>.</div>
+        </form>
+      </div>
+
+      <aside class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-7 sticky-col">
+        <div class="text-sm text-white/60">Doporučení</div>
+        <div class="mt-2 text-xl font-extrabold">Vyber plán podle reality</div>
+
+        <div class="mt-4 grid gap-3">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div class="flex items-start gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="zap" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <div class="font-extrabold">Start</div>
+                <div class="text-sm text-white/60 mt-1">Když chceš zkusit, otestovat 1–2 kampaně / měsíčně.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950/40 to-amber-700/15 p-5">
+            <div class="flex items-start gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="crown" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <div class="font-extrabold">Pro</div>
+                <div class="text-sm text-white/60 mt-1">Když chceš pravidelně vybírat, porovnávat a škálovat spolupráce.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div class="flex items-start gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+                <i data-lucide="shield-check" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <div class="font-extrabold">Elite</div>
+                <div class="text-sm text-white/60 mt-1">Když chceš kurátorský výběr, ověření, prioritu a servis.</div>
+              </div>
+            </div>
+          </div>
+
+          <a href="/vip-partner.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="badge-check" class="h-4 w-4"></i>
+            VIP partner (pro firmy)
+          </a>
+
+          <a href="/influencer-partneri.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <i data-lucide="users" class="h-4 w-4"></i>
+            Influencer partneři
+          </a>
+        </div>
+      </aside>
+
+    </section>
+
   </main>
 
-  <!-- ENTERPRISE NOTE -->
-  <section class="border-t border-white/10 bg-neutral-900/30">
-    <div class="max-w-7xl mx-auto px-4 py-8 md:flex md:items-center md:justify-between gap-6">
-      <div class="flex items-start gap-3">
-        <i data-lucide="shield" class="w-6 h-6 text-emerald-300"></i>
-        <p class="text-white/80 text-sm">Pro agentury a značky s větším objemem spoluprací nabízíme <strong>Enterprise</strong> – týmové účty, vlastní SLA a fakturace.
-        <a href="kartao-pro-firmy.html#brief" class="underline hover:text-white">Napište si o nabídku.</a></p>
-      </div>
-      <a class="btn btn-light mt-4 md:mt-0" href="kartao-pro-firmy.html#brief"><i data-lucide="mail" class="w-4 h-4"></i> Kontaktovat</a>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
   <footer class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-white/60">
-      <div>
-        <div class="font-semibold mb-2 flex items-center gap-2"><i data-lucide="crown" class="w-5 h-5 text-amber-400"></i>Kartao.cz</div>
-        <p>Síť influencerů a tvůrců – každý má svou kartu.</p>
+    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="font-extrabold text-lg">Kartao.cz</div>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+        </div>
       </div>
-      <div class="space-y-1">
-        <div class="text-amber-400 font-medium">Odkazy</div>
-        <a class="block hover:text-white" href="index.html">Katalog</a>
-        <a class="block hover:text-white" href="kartao-pro-tvurce.html#form">Založit kartu</a>
-        <a class="block hover:text-white" href="kartao-pro-firmy.html#brief">Pro firmy</a>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Informace</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
       </div>
-      <div class="space-y-1">
-        <div class="text-amber-400 font-medium">Právo</div>
-        <a class="block hover:text-white" href="podminky.html">Podmínky</a>
-        <a class="block hover:text-white" href="ochrana-soukromi.html">Ochrana soukromí</a>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro firmy</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-marketplace.html">Marketplace</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip-partner.html">VIP partner</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-cenik.html">Ceník</a>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-semibold">Pro tvůrce</div>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/influencer-partneri.html">Influencer partneři</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-cenik.html">Ceník</a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pb-10">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
+        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">kartao-cenik.html</span></div>
       </div>
     </div>
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', ()=>{
-      lucide.createIcons();
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-      // ====== Stripe PRICE IDs (z Dashboardu) – podle pořadí, které jsi poslal ======
-      // Pokud je mapování jiné, řekni a hned upravím.
-      const PRICE_IDS = {
-        pro: {
-          month: 'price_1SQnfZBIDSiEwMlTzEB6DtZu',
-          year:  'price_1SQngNBIDSiEwMlTwK0Fti1M'
+    // year
+    $('#year').textContent = new Date().getFullYear();
+
+    // mobile menu
+    const menuBtn = $('#menuBtn');
+    const mobileMenu = $('#mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // toast
+    let toastT;
+    function toast(msg){
+      let el = $('#toast');
+      if (!el){
+        el = document.createElement('div');
+        el.id = 'toast';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = '1';
+      clearTimeout(toastT);
+      toastT = setTimeout(() => { el.style.opacity = '0'; }, 2200);
+    }
+
+    // pricing config (CZK)
+    const PRICES = {
+      firm: {
+        start: { m: 1490, y: 1490*10 },
+        pro:   { m: 3990, y: 3990*10 },
+        elite: { m: 8990, y: 8990*10 },
+      },
+      creator: {
+        start: { m: 0,    y: 0 },
+        pro:   { m: 490,  y: 490*10 },
+        elite: { m: 1490, y: 1490*10 },
+      }
+    };
+
+    const FEATURES = {
+      firm: {
+        start: {
+          title: 'Start',
+          badge: 'Pro start',
+          tone: 'Zkusit 1–2 kampaně / měsíc',
+          bullets: [
+            'Marketplace přístup + filtry',
+            '3× shortlist / měsíc',
+            '2× poptávka / měsíc',
+            'Základní porovnání profilů',
+            'Základní podpora'
+          ],
+          limits: { shortlists: '3', inquiries: '2', verifications: '—', curator: '—', team: '1 uživatel' }
         },
-        premium: {
-          month: 'price_1SQngrBIDSiEwMlT8n7z2NAO',
-          year:  'price_1SQnhGBIDSiEwMlTLQOhh5Ty'
+        pro: {
+          title: 'Pro',
+          badge: 'Doporučeno',
+          highlight: true,
+          tone: 'Pravidelný výkon a škálování',
+          bullets: [
+            'Vše ze Start',
+            '15× shortlist / měsíc',
+            '8× poptávka / měsíc',
+            'Prioritní odpovědi od partnerů',
+            'Šablony briefu + KPI checklist'
+          ],
+          limits: { shortlists: '15', inquiries: '8', verifications: '5', curator: '1× měsíčně', team: '3 uživatelé' }
+        },
+        elite: {
+          title: 'Elite',
+          badge: 'Pro týmy',
+          tone: 'Kurátorský výběr + servis',
+          bullets: [
+            'Vše z Pro',
+            'Neomezené shortlisty (fair-use)',
+            '25× poptávka / měsíc',
+            'Kurátorské výběry (brief → shortlist)',
+            'Roadmap: escrow + záruka výkonu'
+          ],
+          limits: { shortlists: '∞*', inquiries: '25', verifications: '15', curator: '4× měsíčně', team: '10 uživatelů' }
         }
-      };
-
-      // Toggle měsíčně/ročně – jen vizuální
-      const toggle = document.getElementById('togglePeriod');
-      const priceEls = document.querySelectorAll('.js-price');
-      const periodEls = document.querySelectorAll('.js-period');
-      let period = 'month';
-      toggle?.addEventListener('click', (e)=>{
-        const btn = e.target.closest('button');
-        if(!btn) return;
-        period = btn.dataset.period || 'month';
-        toggle.querySelectorAll('button').forEach(b=> b.classList.remove('active'));
-        btn.classList.add('active');
-        priceEls.forEach(el=>{
-          const m = el.getAttribute('data-monthly');
-          const y = el.getAttribute('data-yearly');
-          el.textContent = (period==='year' ? y : m) || '0';
-        });
-        periodEls.forEach(el=> el.textContent = period==='year' ? ' / rok' : ' / měs.');
-      });
-
-      // Stripe Checkout – volání našeho API
-      async function goCheckout(plan, interval){
-        const email = prompt('Zadej e-mail pro fakturaci:');
-        const params = new URLSearchParams(location.search);
-        const creatorFromUrl = params.get('creator');
-        if (creatorFromUrl) localStorage.setItem('creator_id', creatorFromUrl);
-        const creator_id = creatorFromUrl || localStorage.getItem('creator_id');
-
-        if(!email || !creator_id){
-          alert('Chybí e-mail nebo ID tvé karty (creator_id).');
-          return;
-        }
-
-        // Přidáme i price_id – backend ho může využít (nebo ignorovat)
-        const price_id = PRICE_IDS?.[plan]?.[interval] || null;
-
-        try {
-          const res = await fetch('https://api.kartao.cz/api/billing/checkout', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ plan, interval, email, creator_id, price_id })
-          });
-          const out = await res.json();
-          if(!res.ok){ alert(out.error || 'Chyba při vytváření platby'); return; }
-          location.href = out.url;
-        } catch (e) {
-          alert('Chyba připojení k API.');
+      },
+      creator: {
+        start: {
+          title: 'Start',
+          badge: 'Zdarma',
+          tone: 'Základ pro všechny',
+          bullets: [
+            'Profil/karta v systému',
+            'Základní zobrazení v marketplace',
+            'Možnost ceníku a balíčků',
+            'Poptávky (dle poptávky)',
+            'Základní tipy a šablony'
+          ],
+          limits: { visibility: 'standard', verified: '—', priority: '—', offers: 'standard', tools: 'základ' }
+        },
+        pro: {
+          title: 'Pro',
+          badge: 'Růst',
+          highlight: true,
+          tone: 'Více nabídek + lepší konverze',
+          bullets: [
+            'Vše ze Start',
+            'Zvýraznění profilu',
+            'Základní ověření metrik',
+            'Přednostní nabídky (soft)',
+            'Šablony cenových balíčků'
+          ],
+          limits: { visibility: 'vyšší', verified: 'ano', priority: 'střední', offers: 'více', tools: 'pro' }
+        },
+        elite: {
+          title: 'Elite',
+          badge: 'Top',
+          tone: 'Partnerství + kurátorské kampaně',
+          bullets: [
+            'Vše z Pro',
+            'Partner badge + ověření',
+            'Kurátorské výběry / top karty',
+            'Prioritní leady',
+            'Individuální nastavení profilu'
+          ],
+          limits: { visibility: 'top', verified: 'ano+', priority: 'vysoká', offers: 'VIP leady', tools: 'elite' }
         }
       }
+    };
 
-      document.querySelectorAll('[data-plan][data-interval]').forEach((btn)=>{
-        btn.addEventListener('click', ()=>{
-          const plan = btn.getAttribute('data-plan');
-          const interval = btn.getAttribute('data-interval');
-          goCheckout(plan, interval);
-        });
+    // state
+    const state = {
+      seg: 'firm',
+      billing: 'm' // m | y
+    };
+
+    function money(n){
+      if (!n) return '0 Kč';
+      return n.toLocaleString('cs-CZ') + ' Kč';
+    }
+
+    function perLabel(){
+      return state.billing === 'm' ? '/ měsíc' : '/ rok';
+    }
+
+    function billingHint(){
+      return state.billing === 'y' ? '2 měsíce zdarma' : 'kdykoliv přepneš na roční';
+    }
+
+    function styleSeg(){
+      $$('.seg').forEach(b => {
+        const active = b.dataset.seg === state.seg;
+        b.className = 'seg inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border transition ' +
+          (active ? 'bg-white text-neutral-950 border-white' : 'bg-neutral-950/40 border-white/10 hover:bg-white/10 text-white/80 hover:text-white');
       });
-    });
-  </script>
+    }
 
-  <!-- Supabase + Auth -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="auth-unified.js"></script>
-  <!-- <script src="hamburger-menu.js"></script> -->
-  <script src="credits-system-supabase.js"></script>
+    function renderPlans(){
+      const cfg = FEATURES[state.seg];
+      const grid = $('#planGrid');
+
+      const cards = ['start','pro','elite'].map(key => {
+        const p = cfg[key];
+        const price = PRICES[state.seg][key][state.billing];
+        const isFree = price === 0;
+        const highlight = !!p.highlight;
+
+        const priceHtml = isFree
+          ? `<div class="text-4xl font-extrabold">Zdarma</div>`
+          : `<div class="flex items-end gap-2"><div class="text-4xl font-extrabold">${money(price)}</div><div class="text-sm text-white/60 pb-1">${perLabel()}</div></div>`;
+
+        const sub = state.billing === 'y'
+          ? `<div class="text-xs text-white/60 mt-2">Ročně: ${money(price)} (${billingHint()})</div>`
+          : `<div class="text-xs text-white/60 mt-2">Tip: roční fakturace = ${billingHint()}</div>`;
+
+        const ctaText = state.seg === 'firm'
+          ? (key === 'start' ? 'Začít (firmy)' : key === 'pro' ? 'Vybrat Pro' : 'Vybrat Elite')
+          : (key === 'start' ? 'Vytvořit kartu' : key === 'pro' ? 'Aktivovat Pro' : 'Aktivovat Elite');
+
+        const ctaHref = state.seg === 'firm'
+          ? '/zadat-kampan.html'
+          : '/moje-karta.html';
+
+        const cta2 = `
+          <button class="selectPlan inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl ${highlight ? 'bg-white text-neutral-950' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'} font-semibold transition w-full" data-plan="${key}">
+            <i data-lucide="sparkles" class="h-4 w-4"></i>
+            ${ctaText}
+          </button>
+        `;
+
+        const shell = `
+          <article class="rounded-3xl border border-white/10 ${highlight ? 'bg-gradient-to-br from-fuchsia-700/20 via-neutral-950/40 to-amber-700/15' : 'bg-white/5'} p-6 md:p-7 overflow-hidden relative">
+            ${highlight ? '<div class="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-fuchsia-600/15 blur-[60px]"></div>' : ''}
+            <div class="relative">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs text-white/60">${state.seg === 'firm' ? 'Pro firmy' : 'Pro tvůrce'}</div>
+                  <div class="mt-1 text-2xl font-extrabold">${p.title}</div>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">${p.badge}</span>
+              </div>
+
+              <div class="mt-5">${priceHtml}${sub}</div>
+
+              <div class="mt-4 rounded-3xl border border-white/10 bg-neutral-950/35 p-4">
+                <div class="text-sm text-white/80 font-semibold">Pro koho</div>
+                <div class="text-sm text-white/60 mt-1">${p.tone}</div>
+              </div>
+
+              <ul class="mt-5 space-y-2 text-sm text-white/70">
+                ${p.bullets.map(x => `<li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i><span>${x}</span></li>`).join('')}
+              </ul>
+
+              <div class="mt-6 grid gap-2">
+                ${cta2}
+                <a href="${ctaHref}" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-neutral-950/35 border border-white/10 hover:bg-white/10 transition w-full">
+                  <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                  Otevřít akci
+                </a>
+              </div>
+
+              <div class="mt-4 text-xs text-white/50">Kliknutím na „Vybrat“ se předvyplní formulář níže.</div>
+            </div>
+          </article>
+        `;
+        return shell;
+      }).join('');
+
+      grid.innerHTML = cards;
+
+      // bind select
+      $$('.selectPlan').forEach(b => {
+        b.onclick = () => {
+          const plan = b.dataset.plan;
+          $('#lf_plan').value = plan;
+          $('#lf_seg').value = state.seg;
+          // scroll to lead
+          document.getElementById('lead')?.scrollIntoView({behavior:'smooth', block:'start'});
+          toast('Plan vybrán: ' + plan.toUpperCase());
+        };
+      });
+
+      // comparison table rows
+      renderCompare();
+
+      lucide.createIcons();
+    }
+
+    function td(v, yes=false){
+      if (v === '—') return `<td class="py-3 px-3 text-white/50">—</td>`;
+      if (v === '∞*') return `<td class="py-3 px-3"><span class="text-white/90 font-semibold">∞</span> <span class="text-white/50">(fair-use)</span></td>`;
+      if (yes === true) return `<td class="py-3 px-3"><span class="inline-flex items-center gap-2 text-white/80"><i data-lucide="check-circle-2" class="h-4 w-4"></i>${v}</span></td>`;
+      return `<td class="py-3 px-3 text-white/80">${v}</td>`;
+    }
+
+    function renderCompare(){
+      const body = $('#compareBody');
+      const seg = state.seg;
+
+      const cols = ['start','pro','elite'];
+      const labels = cols.reduce((acc,k)=>{
+        acc[k] = PRICES[seg][k][state.billing];
+        return acc;
+      },{});
+
+      $$('[data-col-price]').forEach(el => {
+        const k = el.getAttribute('data-col-price');
+        const n = labels[k];
+        el.textContent = (n === 0) ? 'Zdarma' : (money(n) + ' ' + perLabel());
+      });
+
+      const rowsFirm = [
+        {k:'Marketplace + filtry', v:{start:'ano', pro:'ano', elite:'ano'}, yes:true},
+        {k:'Shortlisty (uložené profily)', v:{start:'3', pro:'15', elite:'∞*'}},
+        {k:'Poptávky / měsíc', v:{start:'2', pro:'8', elite:'25'}},
+        {k:'Ověření tvůrců (sloty)', v:{start:'—', pro:'5', elite:'15'}},
+        {k:'Kurátorský výběr', v:{start:'—', pro:'1× měsíčně', elite:'4× měsíčně'}},
+        {k:'Tým / uživatelé', v:{start:'1', pro:'3', elite:'10'}},
+        {k:'Šablony briefu + KPI', v:{start:'základ', pro:'ano', elite:'ano+'}},
+        {k:'Roadmap: escrow / záruka výkonu', v:{start:'—', pro:'připraveno', elite:'priorita'}},
+      ];
+
+      const rowsCreator = [
+        {k:'Karta / profil', v:{start:'ano', pro:'ano', elite:'ano'}, yes:true},
+        {k:'Viditelnost v marketplace', v:{start:'standard', pro:'vyšší', elite:'top'}},
+        {k:'Ověření metrik', v:{start:'—', pro:'ano', elite:'ano+'}},
+        {k:'Přednostní nabídky', v:{start:'—', pro:'soft', elite:'VIP leady'}},
+        {k:'Kurátorské výběry', v:{start:'—', pro:'občas', elite:'pravidelně'}},
+        {k:'Šablony ceníku / balíčků', v:{start:'základ', pro:'ano', elite:'ano+'}},
+        {k:'Podpora', v:{start:'základ', pro:'priorita', elite:'top'}},
+        {k:'Individuální nastavení', v:{start:'—', pro:'—', elite:'ano'}},
+      ];
+
+      const rows = seg === 'firm' ? rowsFirm : rowsCreator;
+      body.innerHTML = rows.map(r => {
+        const yes = !!r.yes;
+        return `
+          <tr class="border-t border-white/10">
+            <td class="py-3 px-3 text-white/60 font-semibold">${r.k}</td>
+            ${td(yes ? 'Ano' : r.v.start, yes)}
+            ${td(yes ? 'Ano' : r.v.pro, yes)}
+            ${td(yes ? 'Ano' : r.v.elite, yes)}
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // seg toggle
+    function setSeg(seg){
+      state.seg = seg;
+      styleSeg();
+      // sync lead form
+      $('#lf_seg').value = seg;
+      renderPlans();
+    }
+
+    // billing toggle
+    function setBilling(next){
+      state.billing = next;
+      const dot = $('#billingDot');
+      const label = $('#billingLabel');
+      if (state.billing === 'y'){
+        dot.style.left = 'calc(100% - 18px)';
+        label.textContent = 'Ročně';
+      } else {
+        dot.style.left = '2px';
+        label.textContent = 'Měsíčně';
+      }
+      renderPlans();
+    }
+
+    // bind
+    $('#segFirm').onclick = () => setSeg('firm');
+    $('#segCreator').onclick = () => setSeg('creator');
+
+    $('#billingToggle').onclick = () => {
+      setBilling(state.billing === 'm' ? 'y' : 'm');
+    };
+
+    // init
+    styleSeg();
+    setBilling('m');
+    setSeg('firm');
+
+    // --- Supabase lead capture (OSTRÝ REŽIM) ---
+    const SUPABASE_URL = window.__SUPABASE_URL || 'PASTE_SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY || 'PASTE_SUPABASE_ANON_KEY_HERE';
+
+    const sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    const leadForm = $('#leadForm');
+    const lfSubmit = $('#lf_submit');
+
+    leadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!$('#lf_gdpr').checked){
+        toast('Musíš potvrdit souhlas se zpracováním údajů.');
+        return;
+      }
+
+      if (!sb || SUPABASE_URL.includes('PASTE_')){
+        toast('Chybí nastavení Supabase (URL / ANON KEY).');
+        return;
+      }
+
+      const payload = {
+        name: $('#lf_name').value.trim(),
+        email: $('#lf_email').value.trim().toLowerCase(),
+        seg: $('#lf_seg').value,
+        plan: $('#lf_plan').value,
+        billing: state.billing,
+        note: $('#lf_note').value.trim(),
+        page: 'kartao-cenik',
+        createdAt: new Date().toISOString(),
+      };
+
+      if (!payload.name || !payload.email){
+        toast('Vyplň prosím jméno a e-mail.');
+        return;
+      }
+
+      lfSubmit.disabled = true;
+      lfSubmit.classList.add('opacity-70');
+
+      try{
+        const { error } = await sb.from('pricing_leads').insert([payload]);
+        if (error) throw error;
+
+        leadForm.reset();
+        $('#lf_seg').value = state.seg;
+        toast('Odesláno ✅ Ozveme se co nejdřív.');
+
+      }catch(err){
+        console.error('Supabase insert error:', err);
+        toast('Nepodařilo se odeslat. Zkus to prosím znovu.');
+      }finally{
+        lfSubmit.disabled = false;
+        lfSubmit.classList.remove('opacity-70');
+      }
+    });
+
+    lucide.createIcons();
+  </script>
 </body>
 </html>
