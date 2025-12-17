@@ -931,8 +931,21 @@ document.addEventListener('DOMContentLoaded', () => {
   <footer class="border-t border-white/10 bg-gradient-to-b from-neutral-950 to-neutral-900/40 font-sans text-[15px]">
     <div class="max-w-7xl mx-auto px-4">
       
+      <!-- Luxusní toggle tlačítko pro mobil -->
+      <button id="footerToggleBtn" class="md:hidden w-full py-4 flex items-center justify-center gap-3 group hover:bg-white/5 transition-all duration-300">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-cyan-500/20 border border-fuchsia-400/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="layout-grid" class="w-5 h-5 text-fuchsia-300"></i>
+          </div>
+          <span class="text-base font-semibold bg-gradient-to-r from-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+            Zobrazit odkazy
+          </span>
+        </div>
+        <i id="footerToggleIcon" data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform duration-300"></i>
+      </button>
+      
       <!-- Main Footer Content -->
-      <div class="py-10 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-2 gap-y-0 justify-center">
+      <div id="footerContent" class="py-10 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-2 gap-y-0 justify-center hidden md:!grid">
         
         <!-- Informace -->
         <div class="mb-6 sm:mb-0">
@@ -3234,6 +3247,30 @@ document.addEventListener('DOMContentLoaded', () => {
       if (scrollBtn) {
         scrollBtn.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      // Footer toggle pro mobil
+      const footerToggleBtn = document.getElementById('footerToggleBtn');
+      const footerContent = document.getElementById('footerContent');
+      const footerToggleIcon = document.getElementById('footerToggleIcon');
+      
+      if (footerToggleBtn && footerContent && footerToggleIcon) {
+        footerToggleBtn.addEventListener('click', () => {
+          const isHidden = footerContent.classList.contains('hidden');
+          
+          if (isHidden) {
+            footerContent.classList.remove('hidden');
+            footerToggleIcon.style.transform = 'rotate(180deg)';
+            footerToggleBtn.querySelector('span').textContent = 'Skrýt odkazy';
+          } else {
+            footerContent.classList.add('hidden');
+            footerToggleIcon.style.transform = 'rotate(0deg)';
+            footerToggleBtn.querySelector('span').textContent = 'Zobrazit odkazy';
+          }
+          
+          // Reinicializovat Lucide ikony
+          if (window.lucide?.createIcons) window.lucide.createIcons();
         });
       }
 
