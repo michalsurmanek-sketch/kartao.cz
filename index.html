@@ -2314,13 +2314,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const loading = document.getElementById('reviewsLoading');
         const reviewsList = document.getElementById('reviewsList');
+        const reviewsCountBadge = document.getElementById('reviewsCountBadge');
+        
         if (loading) loading.style.display = 'none';
+        
+        // Zobrazit počet recenzí
+        if (reviewsCountBadge) {
+          reviewsCountBadge.textContent = reviews.length;
+          reviewsCountBadge.classList.remove('hidden');
+        }
 
         if (!reviewsList) return;
 
         if (!reviews.length) {
           reviewsList.innerHTML =
             '<div class="text-white/60 text-sm text-center py-4">Zatím žádné recenze</div>';
+          if (reviewsCountBadge) reviewsCountBadge.classList.add('hidden');
           return;
         }
 
@@ -3051,6 +3060,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <button id="toggleReviewsBtn" class="w-full flex items-center gap-2 font-semibold mb-3 hover:bg-white/5 p-2 rounded-lg transition">
             <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
             Recenze
+            <span id="reviewsCountBadge" class="hidden ml-1 px-2 py-0.5 text-xs rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">0</span>
             <div id="reviewsLoading" class="animate-spin">
               <i data-lucide="loader-2" class="w-4 h-4"></i>
             </div>
