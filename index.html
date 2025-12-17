@@ -2064,11 +2064,21 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             console.log('⏰ Volám openCollaborationForm pro:', data.id);
             openCollaborationForm(data.id);
-            // Scrolluj na formulář
-            const form = document.getElementById('collaborationForm');
-            if (form) {
-              form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
+            // Scrolluj na formulář v rámci draweru
+            setTimeout(() => {
+              const form = document.getElementById('collaborationForm');
+              const drawer = document.getElementById('drawer');
+              if (form && drawer) {
+                // Získat pozici formuláře relativně k draweru
+                const formTop = form.offsetTop;
+                // Scrollovat drawer na pozici formuláře
+                drawer.scrollTo({
+                  top: formTop - 100, // 100px offset od vrchu
+                  behavior: 'smooth'
+                });
+                console.log('📜 Scrolluji na formulář, pozice:', formTop);
+              }
+            }, 150);
           }, 500);
         });
       }
@@ -2958,11 +2968,18 @@ document.addEventListener('DOMContentLoaded', () => {
           e.preventDefault();
           console.log('🎯 Klik na Poptejte spolupráci z detailu');
           openCollaborationForm(id);
-          // Scrolluj na formulář
+          // Scrolluj na formulář - v rámci draweru
           setTimeout(() => {
             const form = document.getElementById('collaborationForm');
-            if (form) {
-              form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            const drawer = document.getElementById('drawer');
+            if (form && drawer) {
+              // Získat pozici formuláře relativně k draweru
+              const formTop = form.offsetTop;
+              // Scrollovat drawer na pozici formuláře
+              drawer.scrollTo({
+                top: formTop - 100, // 100px offset od vrchu
+                behavior: 'smooth'
+              });
             }
           }, 100);
         });
