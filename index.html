@@ -1243,21 +1243,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
-  <script>
-    // Inicializace Supabase klienta s čekáním na načtení SDK
-    (function initSupabase() {
-      const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
-      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
-      
-      if (typeof window.supabase !== 'undefined') {
-        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase klient inicializován');
-      } else {
-        console.warn('⚠️ Supabase SDK ještě není načteno, čekám...');
-        setTimeout(initSupabase, 100);
-      }
-    })();
-  </script>
 
   <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
   <script src="database-init.js"></script>
@@ -1267,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="notification-system.js"></script>
   <!-- live-chat-system.js zakomentováno, není načítáno -->
   <script src="advanced-analytics.js"></script>
-  <script src="security-manager.js"></script>
+  <!-- <script src="security-manager.js"></script> --> <!-- Zakomentováno - vyžaduje notifications tabulku -->
   <script src="internationalization-system.js"></script>
 
   <!-- Marketplace logika -->
@@ -1324,6 +1309,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     };
+
+    // Inicializace Supabase klienta - počkáme na načtení
+    (function waitForSupabase() {
+      if (typeof window.supabase !== 'undefined' && !window.supabaseClient) {
+        const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase klient inicializován');
+      } else if (typeof window.supabase === 'undefined') {
+        console.warn('⏳ Čekám na načtení Supabase SDK...');
+        setTimeout(waitForSupabase, 50);
+      }
+    })();
 
     // Inicializace služeb
     let creatorService;
@@ -1652,26 +1650,32 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loading) loading.classList.remove('hidden');
 
       try {
-        console.log('📡 Dotaz do Supabase...');
+        let data = null;
+        let error = null;
         
-        const { data, error } = await window.supabaseClient
-          .from('creators')
-          .select('*')
-          .order('created_at', { ascending: false });
+        if (window.supabaseClient) {
+          console.log('📡 Dotaz do Supabase...');
+          const response = await window.supabaseClient
+            .from('creators')
+            .select('*')
+            .order('created_at', { ascending: false });
+          data = response.data;
+          error = response.error;
+        } else {
+          console.warn('⚠️ Supabase klient není inicializován');
+          error = new Error('Supabase not initialized');
+        }
 
         console.log('📦 Odpověď z databáze:', { data: data?.length, error });
 
-        if (error) {
+        if (error || !window.supabaseClient) {
           console.error('❌ Chyba při načítání tvůrců ze Supabase:', error);
+          console.log('🔄 Načítám tvůrce lokálně...');
           
-          // Retry při síťové chybě
-          if (retryCount < MAX_RETRIES && (error.code === 'PGRST301' || error.message.includes('network'))) {
-            console.log(`🔄 Opakuji dotaz... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
-            isLoading = false;
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-            return loadAllCreators(retryCount + 1);
-          }
-          
+          // Načíst z lokálního souboru nebo použít prázdné pole
+          allCreators = [];
+        } else if (!data || data.length === 0) {
+          console.warn('⚠️ Databáze je prázdná');
           allCreators = [];
         } else {
           // Mapujeme Supabase strukturu na očekávaný formát
