@@ -2265,9 +2265,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ========================== */
     function stat(label, value) {
       return `
-        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+        <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40" data-stat-label="${label}">
           <div class="text-white/60 text-xs">${label}</div>
-          <div class="font-semibold">${value}</div>
+          <div class="font-semibold" data-stat-value>${value}</div>
         </div>
       `;
     }
@@ -2332,6 +2332,19 @@ document.addEventListener('DOMContentLoaded', () => {
           if (reviewsCountBadge) reviewsCountBadge.classList.add('hidden');
           return;
         }
+        
+        // Vypočítat průměrné hodnocení z recenzí
+        const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+        const roundedRating = Math.round(averageRating * 10) / 10; // Zaokrouhlit na 1 des. místo
+        
+        // Aktualizovat hodnocení v detailu
+        const ratingElements = document.querySelectorAll('[data-stat-label="Hodnocení"]');
+        ratingElements.forEach(el => {
+          const valueEl = el.querySelector('[data-stat-value]');
+          if (valueEl) {
+            valueEl.textContent = roundedRating.toFixed(1);
+          }
+        });
 
         reviewsList.innerHTML = reviews
           .map(
