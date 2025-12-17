@@ -1493,6 +1493,48 @@ document.addEventListener('DOMContentLoaded', () => {
           month: 'long', 
           day: 'numeric' 
         });
+      },
+      
+      async addReview(creatorId, userId, rating, title, comment) {
+        if (!window.supabaseClient) {
+          throw new Error('Supabase není inicializováno');
+        }
+        
+        try {
+          // Získat informace o uživateli pro company_name
+          const { data: userData, error: userError } = await window.supabaseClient
+            .from('profiles')
+            .select('company_name, avatar_url')
+            .eq('id', userId)
+            .single();
+          
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .insert({
+              creator_id: creatorId,
+              user_id: userId,
+              company_name: userData?.company_name || 'Anonymní uživatel',
+              company_logo: userData?.avatar_url || null,
+              rating: rating,
+              title: title || null,
+              comment: comment,
+              verified: false,
+              helpful_count: 0,
+              created_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          
+          if (error) {
+            console.error('Chyba při přidávání recenze:', error);
+            throw error;
+          }
+          
+          return data;
+        } catch (err) {
+          console.error('Neočekávaná chyba při přidávání recenze:', err);
+          throw err;
+        }
       }
     };
     
@@ -2591,10 +2633,10 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         console.log('Odesílám recenzi:', { creatorId, rating, title, comment });
         
-        // Zde by bylo volání do Supabase pro uložení recenze
-        // await ReviewServiceSupabase.addReview(...)
+        // Zavolat API pro uložení recenze
+        await ReviewServiceSupabase.addReview(creatorId, user.id, rating, title, comment);
         
-        showNotification('Recenze odeslána! ⭐', 'success');
+        showNotification('Recenze úspěšně přidána! ⭐', 'success');
         closeReviewForm();
         
         // Znovu načíst recenze
@@ -2603,8 +2645,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
         
       } catch (error) {
-        console.error('Chyba při odesílání:', error);
-        showNotification('Chyba při odesílání recenze', 'error');
+        console.error('Chyba při odesílání recenze:', error);
+        showNotification('Chyba při odesílání recenze: ' + (error.message || 'Neznámá chyba'), 'error');
       }
     }
 
