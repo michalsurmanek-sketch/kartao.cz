@@ -519,6 +519,40 @@ document.addEventListener('DOMContentLoaded', () => {
         display: none !important;
       }
     }
+    
+    /* Bottom Navigation Styling */
+    .bottom-nav-item {
+      color: rgba(255, 255, 255, 0.6);
+      position: relative;
+    }
+    
+    .bottom-nav-item:hover,
+    .bottom-nav-item:active {
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .bottom-nav-item.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .bottom-nav-item.active i {
+      color: #e879f9;
+      filter: drop-shadow(0 0 8px rgba(232, 121, 249, 0.5));
+    }
+    
+    /* Safe area for phones with notch */
+    .safe-area-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    /* Adjust main content to not be covered by bottom nav */
+    @media (max-width: 767px) {
+      body {
+        padding-bottom: 70px;
+      }
+    }
   </style>
   </header>
   
@@ -1150,9 +1184,59 @@ document.addEventListener('DOMContentLoaded', () => {
     </aside>
   </div>
 
+  <!-- SPODNÍ NAVIGAČNÍ PANEL (BOTTOM NAV BAR) - Pouze mobil -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-neutral-950/95 backdrop-blur-xl border-t border-white/10 z-40 safe-area-bottom">
+    <div class="flex items-center justify-around px-2 py-2">
+      <!-- Domů -->
+      <a href="index.html" class="bottom-nav-item active flex flex-col items-center justify-center flex-1 py-2 px-3 rounded-xl transition-all duration-200 group">
+        <div class="relative">
+          <i data-lucide="home" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+          <div class="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/20 to-cyan-500/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <span class="text-[10px] font-medium">Domů</span>
+      </a>
+      
+      <!-- Tvůrci -->
+      <a href="index.html#creators" class="bottom-nav-item flex flex-col items-center justify-center flex-1 py-2 px-3 rounded-xl transition-all duration-200 group">
+        <div class="relative">
+          <i data-lucide="users" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+          <div class="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/20 to-cyan-500/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <span class="text-[10px] font-medium">Tvůrci</span>
+      </a>
+      
+      <!-- Kampaně -->
+      <a href="kartao-marketplace.html" class="bottom-nav-item flex flex-col items-center justify-center flex-1 py-2 px-3 rounded-xl transition-all duration-200 group">
+        <div class="relative">
+          <i data-lucide="briefcase" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+          <div class="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/20 to-cyan-500/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <span class="text-[10px] font-medium">Kampaně</span>
+      </a>
+      
+      <!-- Zprávy -->
+      <a href="chat.html" class="bottom-nav-item flex flex-col items-center justify-center flex-1 py-2 px-3 rounded-xl transition-all duration-200 group">
+        <div class="relative">
+          <i data-lucide="message-circle" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+          <div class="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/20 to-cyan-500/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <span class="text-[10px] font-medium">Zprávy</span>
+      </a>
+      
+      <!-- Profil -->
+      <a href="moje-karta.html" class="bottom-nav-item flex flex-col items-center justify-center flex-1 py-2 px-3 rounded-xl transition-all duration-200 group">
+        <div class="relative">
+          <i data-lucide="user" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+          <div class="absolute -inset-1 bg-gradient-to-r from-fuchsia-500/20 to-cyan-500/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <span class="text-[10px] font-medium">Profil</span>
+      </a>
+    </div>
+  </nav>
+
   <!-- ŠIPKA NAHORU - KARTAO STYLE -->
   <button id="scrollTopBtn"
-    class="hidden fixed bottom-4 right-4 w-9 h-9 rounded-xl bg-black/70 text-white shadow-md hover:bg-black/90 transition flex items-center justify-center z-50 border border-white/10">
+    class="hidden fixed bottom-20 md:bottom-4 right-4 w-9 h-9 rounded-xl bg-black/70 text-white shadow-md hover:bg-black/90 transition flex items-center justify-center z-50 border border-white/10">
     <i data-lucide="arrow-up" class="w-4 h-4 opacity-80"></i>
   </button>
      <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
@@ -3188,6 +3272,22 @@ document.addEventListener('DOMContentLoaded', () => {
           userDataCache = null;
           if (notLoggedIn) notLoggedIn.classList.remove('hidden');
           if (loggedIn) loggedIn.classList.add('hidden');
+        }
+      });
+
+      // Bottom Navigation - set active state
+      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+      const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+      
+      bottomNavItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href) {
+          const linkPage = href.split('/').pop().split('#')[0] || 'index.html';
+          if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
         }
       });
 
