@@ -1241,7 +1241,16 @@ document.addEventListener('DOMContentLoaded', () => {
   </button>
      <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
-  <!-- Supabase SDK - odstraněno duplicitní načítání -->
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Inicializace Supabase klienta
+    const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
+    
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase klient inicializován');
+  </script>
 
   <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
   <script src="database-init.js"></script>
