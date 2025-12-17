@@ -2582,19 +2582,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStars(rating) {
       const starBtns = document.querySelectorAll('.star-btn');
       starBtns.forEach((btn, index) => {
-        const star = btn.querySelector('i[data-lucide="star"]');
+        // Hledat SVG (po Lucide převodu) nebo fallback na i tag
+        const star = btn.querySelector('svg') || btn.querySelector('i[data-lucide="star"]');
         const btnRating = parseInt(btn.getAttribute('data-rating'));
         
-        if (btnRating <= rating) {
-          // Vyplněná žlutá hvězdička
-          star.classList.remove('text-white/30');
-          star.classList.add('text-yellow-400');
-          star.style.fill = 'currentColor';
-        } else {
-          // Prázdná hvězdička
-          star.classList.remove('text-yellow-400');
-          star.classList.add('text-white/30');
-          star.style.fill = 'none';
+        if (star) {
+          if (btnRating <= rating) {
+            // Vyplněná žlutá hvězdička
+            star.classList.remove('text-white/30');
+            star.classList.add('text-yellow-400');
+            star.style.fill = 'currentColor';
+          } else {
+            // Prázdná hvězdička
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-white/30');
+            star.style.fill = 'none';
+          }
         }
       });
       
@@ -2604,7 +2607,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function resetStars() {
-      updateStars(0);
+      const starBtns = document.querySelectorAll('.star-btn');
+      starBtns.forEach((btn) => {
+        const star = btn.querySelector('svg') || btn.querySelector('i[data-lucide="star"]');
+        if (star) {
+          star.classList.remove('text-yellow-400');
+          star.classList.add('text-white/30');
+          star.style.fill = 'none';
+        }
+      });
     }
     
     async function submitReview(creatorId) {
