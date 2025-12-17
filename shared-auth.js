@@ -97,7 +97,7 @@ function updateUIForLoggedOut() {
   const loginBtn = document.querySelector('a[href*="moje-karta.html"], a[href*="login.html"]');
   if (loginBtn) {
     loginBtn.textContent = 'Přihlásit se';
-    loginBtn.href = '/login.html';
+    loginBtn.href = 'login.html';
   }
 
   // Odstranit odhlašovací tlačítko
@@ -126,7 +126,7 @@ async function handleLogout() {
     console.log('👋 Uživatel odhlášen');
     
     // Přesměrovat na homepage
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
   } catch (error) {
     console.error('Logout failed:', error);
     alert('Nepodařilo se odhlásit');
@@ -151,7 +151,7 @@ window.kartaoAuth = {
     window.kartaoAuth.isLoggedIn().then(loggedIn => {
       if (!loggedIn) {
         const redirect = redirectUrl || window.location.pathname + window.location.search;
-        window.location.href = '/login.html?redirect=' + encodeURIComponent(redirect);
+        window.location.href = 'login.html?redirect=' + encodeURIComponent(redirect);
       }
     });
   }
