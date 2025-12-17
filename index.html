@@ -2483,7 +2483,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data: { user } } = await window.supabaseClient.auth.getUser();
       if (!user) {
         showNotification('Pro rezervaci se prosím přihlaste', 'info');
-        window.location.href = '/auth.html';
+        window.location.href = '/login.html';
         return;
       }
       
@@ -2637,7 +2637,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data: { user } } = await window.supabaseClient.auth.getUser();
       if (!user) {
         showNotification('Pro přidání recenze se prosím přihlaste', 'info');
-        window.location.href = '/auth.html';
+        window.location.href = '/login.html';
         return;
       }
       
@@ -2711,7 +2711,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data: { user } } = await window.supabaseClient.auth.getUser();
       if (!user) {
         showNotification('Pro odeslání poptávky se prosím přihlaste', 'info');
-        window.location.href = '/auth.html';
+        window.location.href = '/login.html';
         return;
       }
       
@@ -2837,10 +2837,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendReward() {
       if (!currentCreatorData) return;
       
-      const { user } = await supabase.auth.getUser();
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
       if (!user) {
         showNotification('Pro poslání odměny se prosím přihlaste', 'info');
-        window.location.href = '/auth.html';
+        window.location.href = '/login.html';
         return;
       }
       
