@@ -2002,7 +2002,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button class="btn btn-light js-open">
                 Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
               </button>
-              <a class="btn btn-primary" href="kartao-pro-firmy.html#brief">Chci spolupráci</a>
+              <button class="btn btn-primary js-collab">Chci spolupráci</button>
             </div>
           </div>
         </div>
@@ -2048,6 +2048,28 @@ document.addEventListener('DOMContentLoaded', () => {
           e.stopPropagation();
           currentCreatorData = data;
           await sendReward();
+        });
+      }
+
+      // Event listener pro spolupráci z karty - otevře detail a formulář
+      const collabBtn = el.querySelector('.js-collab');
+      if (collabBtn) {
+        collabBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🎯 Klik na Chci spolupráci z karty');
+          // Nejdřív otevřeme detail
+          await openDetail(data);
+          // Pak otevřeme formulář spolupráce s delším zpožděním
+          setTimeout(() => {
+            console.log('⏰ Volám openCollaborationForm pro:', data.id);
+            openCollaborationForm(data.id);
+            // Scrolluj na formulář
+            const form = document.getElementById('collaborationForm');
+            if (form) {
+              form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 500);
         });
       }
 
@@ -2356,17 +2378,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Collaboration Form Functions
     function openCollaborationForm(creatorId) {
+      console.log('🔥 Otevírám formulář spolupráce pro:', creatorId);
       const form = document.getElementById('collaborationForm');
       const inlineChat = document.getElementById('inlineChatBox');
+      
+      if (!form) {
+        console.error('❌ Formulář spolupráce nenalezen!');
+        return;
+      }
       
       // Zavřít chat pokud je otevřený
       if (inlineChat) inlineChat.classList.add('hidden');
       
       // Otevřít formulář
-      if (form) {
-        form.classList.remove('hidden');
-        // Inicializovat ikony
-        if (window.lucide?.createIcons) window.lucide.createIcons();
+      form.classList.remove('hidden');
+      console.log('✅ Formulář otevřen');
+      
+      // Inicializovat ikony
+      if (window.lucide?.createIcons) {
+        setTimeout(() => {
+          window.lucide.createIcons();
+        }, 100);
       }
     }
 
@@ -2725,13 +2757,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <div class="mt-6 flex items-center justify-end gap-2">
-          <button onclick="startChat('${id}')" class="btn btn-outline">
+          <button id="startChatBtn" class="btn btn-outline">
             <i data-lucide="message-circle" class="w-4 h-4"></i> Napsat zprávu
           </button>
-          <a href="booking.html?creator=${id}" class="btn btn-outline">
+          <button id="bookingBtn" class="btn btn-outline" data-booking-url="booking.html?creator=${id}">
             <i data-lucide="calendar" class="w-4 h-4"></i> Rezervovat termín
-          </a>
-          <button onclick="openCollaborationForm('${id}')" class="btn btn-primary">
+          </button>
+          <button id="openCollaborationBtn" class="btn btn-primary">
             <i data-lucide="mail" class="w-4 h-4"></i> Poptejte spolupráci
           </button>
         </div>
@@ -2902,16 +2934,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
       
-      // Event listener pro tlačítko spolupráce - musí být přidán po vytvoření obsahu
-      const collabBtn = drawer.querySelector('.btn-primary[onclick*="openCollaborationForm"]');
-      if (collabBtn) {
-        collabBtn.onclick = () => openCollaborationForm(id);
+      // Event listenery pro akční tlačítka
+      const startChatBtn = document.getElementById('startChatBtn');
+      if (startChatBtn) {
+        startChatBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          startChat(id);
+        });
       }
       
-      // Event listener pro odeslání spolupráce
+      const bookingBtn = document.getElementById('bookingBtn');
+      if (bookingBtn) {
+        bookingBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = bookingBtn.getAttribute('data-booking-url');
+          window.location.href = url;
+        });
+      }
+      
+      const openCollabBtn = document.getElementById('openCollaborationBtn');
+      if (openCollabBtn) {
+        openCollabBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('🎯 Klik na Poptejte spolupráci z detailu');
+          openCollaborationForm(id);
+          // Scrolluj na formulář
+          setTimeout(() => {
+            const form = document.getElementById('collaborationForm');
+            if (form) {
+              form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 100);
+        });
+      }
+      
       const sendCollabBtn = document.getElementById('sendCollaborationBtn');
       if (sendCollabBtn) {
-        sendCollabBtn.onclick = () => sendCollaborationRequest(id);
+        sendCollabBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          sendCollaborationRequest(id);
+        });
       }
       
       // Scroll nahoru při otevření (důležité pro mobil)
