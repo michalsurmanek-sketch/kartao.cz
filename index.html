@@ -1242,14 +1242,21 @@ document.addEventListener('DOMContentLoaded', () => {
      <!-- JAVASCRIPT SEKCE ....................................................................................................................................-->
 
   <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
   <script>
-    // Inicializace Supabase klienta
-    const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
-    
-    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Supabase klient inicializován');
+    // Inicializace Supabase klienta s čekáním na načtení SDK
+    (function initSupabase() {
+      const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
+      
+      if (typeof window.supabase !== 'undefined') {
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase klient inicializován');
+      } else {
+        console.warn('⚠️ Supabase SDK ještě není načteno, čekám...');
+        setTimeout(initSupabase, 100);
+      }
+    })();
   </script>
 
   <!-- Nadstavbové systémy (loaded BEFORE core loader) -->
