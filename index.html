@@ -2386,6 +2386,96 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('chatMessage').value = '';
     }
 
+    // Booking Form Functions
+    function openBookingForm(creatorId) {
+      console.log('📅 Otevírám booking formulář pro:', creatorId);
+      const form = document.getElementById('bookingForm');
+      const inlineChat = document.getElementById('inlineChatBox');
+      const collabForm = document.getElementById('collaborationForm');
+      
+      if (!form) {
+        console.error('❌ Booking formulář nenalezen!');
+        return;
+      }
+      
+      // Zavřít ostatní formuláře
+      if (inlineChat) inlineChat.classList.add('hidden');
+      if (collabForm) collabForm.classList.add('hidden');
+      
+      // Otevřít formulář
+      form.classList.remove('hidden');
+      console.log('✅ Booking formulář otevřen');
+      
+      // Inicializovat ikony
+      if (window.lucide?.createIcons) {
+        setTimeout(() => {
+          window.lucide.createIcons();
+        }, 100);
+      }
+    }
+
+    function closeBookingForm() {
+      const form = document.getElementById('bookingForm');
+      if (form) {
+        form.classList.add('hidden');
+        // Resetovat formulář
+        document.getElementById('bookingDate').value = '';
+        document.getElementById('bookingTime').value = '';
+        document.getElementById('bookingType').value = 'video';
+        document.getElementById('bookingMessage').value = '';
+      }
+    }
+
+    async function sendBookingRequest(creatorId) {
+      const date = document.getElementById('bookingDate').value;
+      const time = document.getElementById('bookingTime').value;
+      const type = document.getElementById('bookingType').value;
+      const message = document.getElementById('bookingMessage').value.trim();
+      
+      if (!date || !time) {
+        showNotification('Vyberte prosím datum a čas', 'warning');
+        return;
+      }
+      
+      // Zkontrolovat přihlášení
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        showNotification('Pro rezervaci se prosím přihlaste', 'info');
+        window.location.href = '/auth.html';
+        return;
+      }
+      
+      // Formátovat datum a čas
+      const bookingDateTime = new Date(`${date}T${time}`);
+      const typeLabels = {
+        'video': 'Video call',
+        'personal': 'Osobní schůzka',
+        'phone': 'Telefonát',
+        'other': 'Jiné'
+      };
+      
+      try {
+        const bookingMessage = `📅 Rezervace termínu\\n\\nDatum: ${bookingDateTime.toLocaleDateString('cs-CZ', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}\\nČas: ${time}\\nTyp: ${typeLabels[type]}\\n\\n${message || 'Bez poznámky'}`;
+        
+        showNotification('Rezervace odeslána! 📅', 'success');
+        closeBookingForm();
+        
+        // Otevřít chat s předvyplněnou zprávou
+        setTimeout(() => {
+          window.location.href = `/chat.html?with=${creatorId}&message=${encodeURIComponent(bookingMessage)}`;
+        }, 1000);
+        
+      } catch (error) {
+        console.error('Chyba při odesílání:', error);
+        showNotification('Chyba při odesílání rezervace', 'error');
+      }
+    }
+
     // Collaboration Form Functions
     function openCollaborationForm(creatorId) {
       console.log('🔥 Otevírám formulář spolupráce pro:', creatorId);
@@ -2877,6 +2967,59 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
         
+        <!-- Booking Form -->
+        <div id="bookingForm" class="mt-4 hidden">
+          <div class="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border border-cyan-500/30 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="calendar-days" class="w-5 h-5 text-cyan-400"></i>
+                <span class="font-bold text-lg">Rezervovat termín</span>
+              </div>
+              <button onclick="closeBookingForm()" class="text-white/60 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+              </button>
+            </div>
+            
+            <div class="text-sm text-white/70 mb-4">Vyberte datum a čas pro schůzku nebo spolupráci:</div>
+            
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium mb-2">Datum</label>
+                <input type="date" id="bookingDate" class="w-full rounded-xl bg-white/5 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium mb-2">Čas</label>
+                <input type="time" id="bookingTime" class="w-full rounded-xl bg-white/5 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium mb-2">Typ schůzky</label>
+                <select id="bookingType" class="w-full rounded-xl bg-white/5 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                  <option value="video">Video call</option>
+                  <option value="personal">Osobní schůzka</option>
+                  <option value="phone">Telefonát</option>
+                  <option value="other">Jiné</option>
+                </select>
+              </div>
+              
+              <textarea 
+                id="bookingMessage" 
+                placeholder="Poznámka k rezervaci (volitelné)..." 
+                class="w-full rounded-xl bg-white/5 border border-white/20 px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                rows="3"
+              ></textarea>
+            </div>
+            
+            <div class="flex gap-2">
+              <button id="sendBookingBtn" class="flex-1 btn btn-primary">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                Potvrdit rezervaci
+              </button>
+            </div>
+          </div>
+        </div>
+        
         <!-- Inline Chat Box -->
         <div id="inlineChatBox" class="mt-4 hidden">
           <div class="bg-neutral-900/80 border border-fuchsia-500/30 rounded-xl p-4 space-y-3">
@@ -2957,8 +3100,28 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bookingBtn) {
         bookingBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          const url = bookingBtn.getAttribute('data-booking-url');
-          window.location.href = url;
+          console.log('📅 Klik na Rezervovat termín z detailu');
+          openBookingForm(id);
+          // Scrolluj na formulář - v rámci draweru
+          setTimeout(() => {
+            const form = document.getElementById('bookingForm');
+            const drawer = document.getElementById('drawer');
+            if (form && drawer) {
+              const formTop = form.offsetTop;
+              drawer.scrollTo({
+                top: formTop - 100,
+                behavior: 'smooth'
+              });
+            }
+          }, 100);
+        });
+      }
+      
+      const sendBookingBtn = document.getElementById('sendBookingBtn');
+      if (sendBookingBtn) {
+        sendBookingBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          sendBookingRequest(id);
         });
       }
       
