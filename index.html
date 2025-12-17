@@ -2648,10 +2648,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      if (!comment) {
-        showNotification('Napište prosím vaši zkušenost', 'warning');
-        return;
-      }
+      // Komentář je volitelný - není nutné vyplňovat
       
       // Zkontrolovat přihlášení
       const { data: { user } } = await window.supabaseClient.auth.getUser();
