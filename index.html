@@ -3362,26 +3362,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Funkce pro kontrolu, zda je influencer uložen
-    async function checkIfSaved(creatorId) {
-      if (!window.supabaseClient) return false;
-      
-      const { data: { user } } = await window.supabaseClient.auth.getUser();
-      if (!user) return false;
-      
-      try {
-        const { data, error } = await window.supabaseClient
-          .from('saved_creators')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('creator_id', creatorId)
-          .single();
-        
-        return !!data;
-      } catch (error) {
-        return false;
-      }
-    }
-
     // OPRAVA: openDetail si vytáhne hodnoty z data a používá safeImage
     async function openDetail(data) {
       const ov = document.getElementById('overlay');
@@ -3747,15 +3727,16 @@ document.addEventListener('DOMContentLoaded', () => {
       ov.classList.remove('hidden');
       
       // Zkontrolovat, zda je influencer uložen a aktualizovat ikonu
-      const isSaved = await checkIfSaved(id);
       const saveIcon = document.getElementById('saveCreatorIcon');
       
-      if (saveIcon && isSaved) {
+      if (saveIcon && savedCreatorIds && savedCreatorIds.includes(id)) {
         // Vyplněná záložka
         saveIcon.style.fill = 'currentColor';
+        saveIcon.classList.add('text-purple-400');
       } else if (saveIcon) {
         // Prázdná záložka
         saveIcon.style.fill = 'none';
+        saveIcon.classList.remove('text-purple-400');
       }
       
       // Inicializovat Lucide ikony v obsahu
@@ -3962,16 +3943,6 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => drawer.classList.add('active'), 0);
 
       loadCreatorReviews(id);
-      
-      // Zkontrolovat, zda je tvůrce uložen a aktualizovat ikonu
-      const saveIcon = document.getElementById('saveCreatorIcon');
-      if (saveIcon && savedCreatorIds.includes(id)) {
-        saveIcon.style.fill = 'currentColor';
-        saveIcon.classList.add('text-purple-400');
-      } else if (saveIcon) {
-        saveIcon.style.fill = 'none';
-        saveIcon.classList.remove('text-purple-400');
-      }
     }
 
     // Modal pro nahlášení recenze
