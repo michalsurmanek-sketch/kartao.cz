@@ -112,24 +112,6 @@
     <!-- Reels will be dynamically inserted here -->
   </div>
 
-  <!-- SEARCH BAR -->
-  <div id="searchBar" class="fixed top-4 right-4 z-50 transition-all duration-300 ease-out" style="width: 0; opacity: 0;">
-    <div class="flex items-center gap-2 bg-black/95 backdrop-blur-xl rounded-full border border-white/20 pr-3 overflow-hidden">
-      <button id="closeSearch" class="h-12 w-12 rounded-full flex items-center justify-center hover:bg-white/10 transition flex-shrink-0">
-        <i data-lucide="x" class="h-5 w-5"></i>
-      </button>
-      <div class="flex-1 relative">
-        <input 
-          id="searchInput" 
-          type="text" 
-          placeholder="Hledej tvůrce..." 
-          class="w-full bg-transparent py-3 pr-3 text-white placeholder-white/60 outline-none"
-          autocomplete="off"
-        />
-      </div>
-    </div>
-  </div>
-
   <!-- SEARCH RESULTS OVERLAY -->
   <div id="searchResults" class="fixed top-20 left-4 right-4 z-50 hidden max-h-[70vh] overflow-y-auto">
     <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
@@ -434,9 +416,24 @@
               <i data-lucide="arrow-left" class="h-5 w-5"></i>
             </button>
             <div class="flex items-center gap-2">
-              <button onclick="openSearchOverlay()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Hledat">
-                <i data-lucide="search" class="h-5 w-5"></i>
-              </button>
+              <!-- Search bar that expands from icon -->
+              <div id="searchBarInline" class="flex items-center gap-2 bg-black/40 backdrop-blur-sm rounded-full transition-all duration-300 ease-out overflow-hidden" style="width: 40px;">
+                <button id="searchIconBtn" onclick="openSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-black/60 transition flex-shrink-0" title="Hledat">
+                  <i data-lucide="search" class="h-5 w-5"></i>
+                </button>
+                <div id="searchInputWrapper" class="flex-1 opacity-0 transition-opacity duration-200" style="width: 0;">
+                  <input 
+                    id="searchInputInline" 
+                    type="text" 
+                    placeholder="Hledej tvůrce..." 
+                    class="w-full bg-transparent py-2 pr-3 text-white placeholder-white/60 outline-none text-sm"
+                    autocomplete="off"
+                  />
+                </div>
+                <button id="closeSearchInline" onclick="closeSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-white/10 transition flex-shrink-0 opacity-0" style="width: 0;">
+                  <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+              </div>
               <button onclick="window.location.href='/kartao-marketplace.html#filters'" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
                 <i data-lucide="sliders" class="h-5 w-5"></i>
               </button>
@@ -618,17 +615,23 @@
         } else {
           // Save with flying heart animation
           console.log('❤️ Saving creator...');
-          const { error } = await supabase
+          
+          // Use upsert to avoid duplicate errors
+          const { data, error } = await supabase
             .from('saved_creators')
-            .insert({
+            .upsert({
               user_id: userId,
               creator_id: creatorId,
               created_at: new Date().toISOString()
+            }, {
+              onConflict: 'user_id,creator_id'
             });
 
           if (error) {
             console.error('❌ Save error:', error);
-            throw error;
+            console.error('Error details:', JSON.stringify(error, null, 2));
+            showToast('Chyba: ' + (error.message || 'Nelze uložit'), 'error');
+            return;
           }
 
           savedCreators.add(creatorId);
@@ -811,30 +814,65 @@
 
     // Search functionality
     window.openSearchOverlay = function() {
-      const searchBar = $('#searchBar');
+      const searchBar = $('#searchBarInline');
+      const inputWrapper = $('#searchInputWrapper');
+      const closeBtn = $('#closeSearchInline');
+      const searchIconBtn = $('#searchIconBtn');
       const screenWidth = window.innerWidth;
-      const targetWidth = screenWidth - 32; // minus padding
+      const targetWidth = Math.min(screenWidth - 120, 400); // max 400px, leave space for other buttons
       
-      // Show and expand search bar
-      requestAnimationFrame(() => {
-        searchBar.style.width = targetWidth + 'px';
-        searchBar.style.opacity = '1';
-      });
+      // Expand search bar from icon
+      searchBar.style.width = targetWidth + 'px';
+      searchBar.classList.remove('bg-black/40');
+      searchBar.classList.add('bg-black/95');
       
+      // Show input and close button
       setTimeout(() => {
-        $('#searchInput').focus();
+        inputWrapper.style.width = 'auto';
+        inputWrapper.classList.remove('opacity-0');
+        inputWrapper.classList.add('opacity-100');
+        
+        closeBtn.style.width = '40px';
+        closeBtn.classList.remove('opacity-0');
+        closeBtn.classList.add('opacity-100');
+        
+        // Hide search icon, show X
+        searchIconBtn.style.width = '0';
+        searchIconBtn.style.opacity = '0';
+        
+        $('#searchInputInline').focus();
         lucide.createIcons();
-      }, 300);
+      }, 150);
+      
       trackEvent('search_opened');
     };
 
     function closeSearchOverlay() {
-      const searchBar = $('#searchBar');
+      const searchBar = $('#searchBarInline');
+      const inputWrapper = $('#searchInputWrapper');
+      const closeBtn = $('#closeSearchInline');
+      const searchIconBtn = $('#searchIconBtn');
       const resultsOverlay = $('#searchResults');
       
-      // Collapse search bar
-      searchBar.style.width = '0';
-      searchBar.style.opacity = '0';
+      // Hide input and close button
+      inputWrapper.classList.remove('opacity-100');
+      inputWrapper.classList.add('opacity-0');
+      closeBtn.classList.remove('opacity-100');
+      closeBtn.classList.add('opacity-0');
+      
+      // Show search icon again
+      searchIconBtn.style.width = '40px';
+      searchIconBtn.style.opacity = '1';
+      
+      setTimeout(() => {
+        inputWrapper.style.width = '0';
+        closeBtn.style.width = '0';
+        
+        // Collapse search bar back to icon
+        searchBar.style.width = '40px';
+        searchBar.classList.remove('bg-black/95');
+        searchBar.classList.add('bg-black/40');
+      }, 150);
       
       // Hide results
       resultsOverlay.classList.add('hidden');
@@ -847,8 +885,7 @@
       `;
       
       // Clear input
-      $('#searchInput').value = '';
-      $('#clearSearch')?.classList.add('hidden');
+      $('#searchInputInline').value = '';
       
       trackEvent('search_closed');
     }
@@ -953,9 +990,11 @@
 
     // Setup search event listeners
     function setupSearchListeners() {
-      const searchInput = $('#searchInput');
-      const closeBtn = $('#closeSearch');
-      const searchBar = $('#searchBar');
+      const searchInput = $('#searchInputInline');
+      const closeBtn = $('#closeSearchInline');
+      const searchBar = $('#searchBarInline');
+      
+      if (!searchInput) return;
       
       // Search input
       let searchTimeout;
@@ -970,12 +1009,17 @@
       });
 
       // Close button
-      closeBtn.addEventListener('click', closeSearchOverlay);
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeSearchOverlay();
+        });
+      }
 
       // ESC to close
       document.addEventListener('keydown', (e) => {
-        const currentWidth = parseFloat(searchBar.style.width);
-        if (e.key === 'Escape' && currentWidth > 0) {
+        const currentWidth = parseFloat(searchBar.style.width.replace('px', ''));
+        if (e.key === 'Escape' && currentWidth > 40) {
           closeSearchOverlay();
         }
       });
