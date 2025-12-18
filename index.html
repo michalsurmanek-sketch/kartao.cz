@@ -1938,6 +1938,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function card(data) {
       const el = document.createElement('div');
       el.className = 'card overflow-hidden';
+      el.setAttribute('data-creator-id', data.id);
 
       // vytáhneme pole z objektu data
       const {
@@ -2024,8 +2025,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   </span>
                 `
                 }
-                <span class="flex items-center gap-1">
-                  <i data-lucide="star" class="w-4 h-4"></i>${rating ?? '—'}
+                <span class="flex items-center gap-1" data-rating>
+                  <i data-lucide="star" class="w-4 h-4"></i>${rating ? rating.toFixed(1) + '/5' : '—'}
                 </span>
                 <span class="flex items-center gap-1">
                   <i data-lucide="map-pin" class="w-4 h-4"></i>${city ?? '—'}
@@ -2342,9 +2343,32 @@ document.addEventListener('DOMContentLoaded', () => {
         ratingElements.forEach(el => {
           const valueEl = el.querySelector('[data-stat-value]');
           if (valueEl) {
-            valueEl.textContent = roundedRating.toFixed(1);
+            valueEl.textContent = roundedRating.toFixed(1) + '/5';
           }
         });
+        
+        // Aktualizovat hodnocení i na hlavní kartě v gridu
+        const creator = allCreators.find(c => c.id === creatorId);
+        if (creator) {
+          creator.rating = roundedRating;
+          
+          // Najít kartu v gridu a aktualizovat hodnocení
+          const gridCard = document.querySelector(`[data-creator-id="${creatorId}"]`);
+          if (gridCard) {
+            const ratingBadge = gridCard.querySelector('[data-rating]');
+            if (ratingBadge) {
+              // Najít ikonu a text
+              const icon = ratingBadge.querySelector('i[data-lucide="star"]');
+              const iconHTML = icon ? icon.outerHTML : '<i data-lucide="star" class="w-4 h-4"></i>';
+              ratingBadge.innerHTML = `${iconHTML}${roundedRating.toFixed(1)}/5`;
+              
+              // Reinicializovat Lucide ikonu
+              if (window.lucide?.createIcons) {
+                window.lucide.createIcons();
+              }
+            }
+          }
+        }
 
         reviewsList.innerHTML = reviews
           .map(
