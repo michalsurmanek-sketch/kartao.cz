@@ -1373,9 +1373,15 @@
       $('#filters').scrollIntoView({behavior:'smooth', block:'start'});
     };
 
-    // procházet CTA
+    // procházet CTA - redirect to reels view
     $('#ctaBrowse').onclick = () => {
-      $('section.grid.lg\\:grid-cols-\\[360px_1fr\\]').scrollIntoView({behavior:'smooth', block:'start'});
+      // Na mobilu otevři fullscreen reels
+      if (window.innerWidth < 768) {
+        window.location.href = '/kartao-reels.html';
+      } else {
+        // Na desktopu scroll k výsledkům
+        $('section.grid.lg\\:grid-cols-\\[360px_1fr\\]').scrollIntoView({behavior:'smooth', block:'start'});
+      }
     };
 
     // Scroll to results tlačítko

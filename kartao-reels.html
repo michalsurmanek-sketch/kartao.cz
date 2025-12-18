@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kartao Reels - Procházet tvůrce a firmy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { overflow: hidden; }
+    .snap-container {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .snap-item {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+    .video-overlay {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 20%, transparent 60%, rgba(0,0,0,0.8) 100%);
+    }
+    video {
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <!-- REELS CONTAINER -->
+  <div id="reelsContainer" class="snap-container h-screen w-screen overflow-y-scroll">
+    <!-- Reels will be dynamically inserted here -->
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="loading" class="fixed inset-0 flex items-center justify-center bg-black z-50">
+    <div class="flex flex-col items-center gap-4">
+      <i data-lucide="loader-2" class="h-12 w-12 animate-spin text-white"></i>
+      <p class="text-white/80">Načítám reels...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    // Supabase init
+    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ0NDE2NTAsImV4cCI6MjA1MDAxNzY1MH0.Qvn8Z_VoVMiB4h7zN17FqBkmOLpR2EgzDQIaPF5mPtk';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allReels = [];
+    let currentIndex = 0;
+
+    // Demo data with video placeholders
+    const demoReels = [
+      {
+        id: 1,
+        handle: '@fitness_coach_martina',
+        name: 'Martina Nováková',
+        bio: '💪 Fitness trenérka | 🥗 Zdravá výživa',
+        followers_count: 125000,
+        verified: true,
+        premium: true,
+        avatar_url: null,
+        video_url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // placeholder
+        platforms: ['instagram', 'tiktok'],
+        type: 'creator'
+      },
+      {
+        id: 2,
+        handle: '@tech_reviewer_jan',
+        name: 'Jan Dvořák',
+        bio: '📱 Tech reviews | 🎮 Gaming',
+        followers_count: 89000,
+        verified: true,
+        premium: false,
+        avatar_url: null,
+        video_url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+        platforms: ['youtube', 'instagram'],
+        type: 'creator'
+      },
+      {
+        id: 3,
+        handle: '@beauty_by_petra',
+        name: 'Petra Svobodová',
+        bio: '💄 Beauty & Makeup | ✨ Lifestyle',
+        followers_count: 210000,
+        verified: true,
+        premium: true,
+        avatar_url: null,
+        video_url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        platforms: ['instagram', 'tiktok', 'youtube'],
+        type: 'creator'
+      }
+    ];
+
+    async function loadReels() {
+      try {
+        const { data, error } = await supabase
+          .from('creators')
+          .select('*')
+          .order('followers_count', { ascending: false })
+          .limit(50);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // Map database data and add placeholder video URLs
+          allReels = data.map((creator, index) => ({
+            ...creator,
+            video_url: creator.video_url || demoReels[index % demoReels.length].video_url
+          }));
+        } else {
+          allReels = demoReels;
+        }
+      } catch (error) {
+        console.error('Error loading reels:', error);
+        allReels = demoReels;
+      }
+
+      renderReels();
+      $('#loading').classList.add('hidden');
+      
+      // Auto-play first video
+      setTimeout(() => {
+        const firstVideo = $('video');
+        if (firstVideo) firstVideo.play().catch(e => console.log('Autoplay prevented:', e));
+      }, 100);
+    }
+
+    function renderReels() {
+      const container = $('#reelsContainer');
+      container.innerHTML = allReels.map((reel, index) => createReelHTML(reel, index)).join('');
+      lucide.createIcons();
+
+      // Attach video event listeners
+      $$('video').forEach((video, index) => {
+        video.addEventListener('ended', () => {
+          video.currentTime = 0;
+          video.play();
+        });
+      });
+
+      // Attach scroll listener for video play/pause
+      container.addEventListener('scroll', handleScroll);
+    }
+
+    function handleScroll() {
+      const container = $('#reelsContainer');
+      const scrollPosition = container.scrollTop;
+      const screenHeight = window.innerHeight;
+      const currentVideoIndex = Math.round(scrollPosition / screenHeight);
+
+      $$('video').forEach((video, index) => {
+        if (index === currentVideoIndex) {
+          video.play().catch(e => console.log('Play prevented:', e));
+        } else {
+          video.pause();
+        }
+      });
+    }
+
+    function createReelHTML(reel, index) {
+      const platformIcons = {
+        instagram: 'instagram',
+        tiktok: 'video',
+        youtube: 'youtube',
+        facebook: 'facebook'
+      };
+
+      const badgeHtml = reel.premium 
+        ? '<span class="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-bold">VIP</span>'
+        : reel.verified 
+        ? '<span class="px-2 py-1 rounded-full bg-blue-500/20 border border-blue-400/50 text-blue-300 text-xs font-semibold flex items-center gap-1"><i data-lucide="check-circle" class="h-3 w-3"></i>Ověřeno</span>'
+        : '';
+
+      return `
+        <div class="snap-item relative h-screen w-screen bg-black">
+          <!-- Video Background -->
+          <video 
+            class="absolute inset-0 h-full w-full"
+            src="${reel.video_url}"
+            loop
+            muted
+            playsinline
+            preload="metadata"
+          ></video>
+
+          <!-- Gradient Overlay -->
+          <div class="video-overlay absolute inset-0 pointer-events-none"></div>
+
+          <!-- Top Bar -->
+          <div class="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10">
+            <button onclick="window.history.back()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition">
+              <i data-lucide="arrow-left" class="h-5 w-5"></i>
+            </button>
+            <div class="flex items-center gap-2">
+              <button class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition">
+                <i data-lucide="search" class="h-5 w-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Info -->
+          <div class="absolute bottom-0 left-0 right-0 p-6 pb-8 z-10">
+            <div class="flex gap-4">
+              <!-- Left: Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="text-lg font-bold truncate">${reel.name}</h3>
+                  ${badgeHtml}
+                </div>
+                
+                <p class="text-sm text-white/90 mb-2">${reel.handle}</p>
+                
+                <p class="text-sm text-white/80 line-clamp-2 mb-3">${reel.bio || ''}</p>
+
+                <div class="flex items-center gap-3 text-sm text-white/70">
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="users" class="h-4 w-4"></i>
+                    ${formatNumber(reel.followers_count)}
+                  </span>
+                  <div class="flex gap-2">
+                    ${(reel.platforms || []).map(p => `
+                      <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                  <button class="flex-1 px-4 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition flex items-center justify-center gap-2">
+                    <i data-lucide="user-plus" class="h-4 w-4"></i>
+                    Sledovat
+                  </button>
+                  <button class="flex-1 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="h-4 w-4"></i>
+                    Kontakt
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right: Actions -->
+              <div class="flex flex-col items-center gap-6">
+                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                    <i data-lucide="heart" class="h-6 w-6"></i>
+                  </div>
+                  <span class="text-xs text-white/80">Uložit</span>
+                </button>
+
+                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                    <i data-lucide="share-2" class="h-6 w-6"></i>
+                  </div>
+                  <span class="text-xs text-white/80">Sdílet</span>
+                </button>
+
+                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                    <i data-lucide="more-horizontal" class="h-6 w-6"></i>
+                  </div>
+                  <span class="text-xs text-white/80">Více</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tap to play/pause overlay -->
+          <div class="absolute inset-0 flex items-center justify-center z-0" onclick="toggleVideoPlay(event, ${index})">
+            <div id="playIcon${index}" class="hidden">
+              <div class="h-20 w-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <i data-lucide="play" class="h-10 w-10"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    }
+
+    window.toggleVideoPlay = function(event, index) {
+      const video = $$('video')[index];
+      const playIcon = $(`#playIcon${index}`);
+      
+      if (video.paused) {
+        video.play();
+        playIcon.classList.add('hidden');
+      } else {
+        video.pause();
+        playIcon.classList.remove('hidden');
+        setTimeout(() => playIcon.classList.add('hidden'), 500);
+      }
+    };
+
+    // Init
+    loadReels();
+  </script>
+</body>
+</html>
