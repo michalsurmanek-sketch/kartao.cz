@@ -4,15 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kartao Reels - Procházet tvůrce a firmy</title>
+  <meta name="description" content="Procházej tvůrce a firmy ve fullscreen reels módu. Uklej si favority a kontaktuj tvůrce přímo.">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Config -->
+  <script src="supabase-config.js"></script>
+  
   <style>
-    body { overflow: hidden; }
+    body { 
+      overflow: hidden;
+      touch-action: pan-y;
+      overscroll-behavior: none;
+    }
     .snap-container {
       scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
     .snap-item {
       scroll-snap-align: start;
@@ -24,6 +34,13 @@
     video {
       object-fit: cover;
     }
+    .pulse-animation {
+      animation: pulse 0.3s ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -31,6 +48,11 @@
   <!-- REELS CONTAINER -->
   <div id="reelsContainer" class="snap-container h-screen w-screen overflow-y-scroll">
     <!-- Reels will be dynamically inserted here -->
+  </div>
+
+  <!-- POSITION INDICATOR -->
+  <div id="positionIndicator" class="fixed top-20 right-4 z-30 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold hidden">
+    <span id="currentPosition">1</span> / <span id="totalReels">0</span>
   </div>
 
   <!-- LOADING STATE -->
@@ -45,13 +67,15 @@
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
-    // Supabase init
-    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ0NDE2NTAsImV4cCI6MjA1MDAxNzY1MH0.Qvn8Z_VoVMiB4h7zN17FqBkmOLpR2EgzDQIaPF5mPtk';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Get Supabase from config
+    const supabase = window.supabaseClient;
 
     let allReels = [];
     let currentIndex = 0;
+    let savedCreators = new Set();
+    let userId = null;
+    let touchStartY = 0;
+    let touchEndY = 0;
 
     // Demo data with video placeholders
     const demoReels = [
@@ -96,8 +120,59 @@
       }
     ];
 
+    // Check authentication
+    async function checkAuth() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id;
+        
+        if (userId) {
+          await loadSavedCreators();
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      }
+    }
+
+    // Load saved creators for current user
+    async function loadSavedCreators() {
+      if (!userId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('saved_creators')
+          .select('creator_id')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+
+        savedCreators = new Set(data.map(item => item.creator_id));
+      } catch (error) {
+        console.error('Error loading saved creators:', error);
+      }
+    }
+
     async function loadReels() {
       try {
+        // Get URL parameters for filtering
+        const params = new URLSearchParams(window.location.search);
+        const platform = params.get('platform');
+        const category = params.get('category');
+
+        let query = supabase
+          .from('creators')
+          .select('*')
+          .order('followers_count', { ascending: false })
+          .limit(50);
+
+        // Apply filters if provided
+        if (platform) {
+          query = query.contains('platforms', [platform]);
+        }
+        if (category) {
+          query = query.contains('categories', [category]);
+        }
+
         const { data, error } = await supabase
           .from('creators')
           .select('*')
@@ -110,11 +185,15 @@
           // Map database data and add placeholder video URLs
           allReels = data.map((creator, index) => ({
             ...creator,
-            video_url: creator.video_url || demoReels[index % demoReels.length].video_url
+            video_url: creator.video_url || creator.showcase_video || demoReels[index % demoReels.length].video_url,
+            isSaved: savedCreators.has(creator.id)
           }));
         } else {
           allReels = demoReels;
         }
+
+        // Track analytics
+        trackEvent('reels_loaded', { count: allReels.length });
       } catch (error) {
         console.error('Error loading reels:', error);
         allReels = demoReels;
@@ -123,10 +202,20 @@
       renderReels();
       $('#loading').classList.add('hidden');
       
+      // Update position indicator
+      $('#totalReels').textContent = allReels.length;
+      $('#positionIndicator').classList.remove('hidden');
+      
       // Auto-play first video
       setTimeout(() => {
         const firstVideo = $('video');
-        if (firstVideo) firstVideo.play().catch(e => console.log('Autoplay prevented:', e));
+        if (firstVideo) {
+          firstVideo.play().catch(e => {
+            console.log('Autoplay prevented:', e);
+            // Show play button if autoplay is prevented
+            $('#playIcon0')?.classList.remove('hidden');
+          });
+        }
       }, 100);
     }
 
@@ -151,10 +240,25 @@
       const container = $('#reelsContainer');
       const scrollPosition = container.scrollTop;
       const screenHeight = window.innerHeight;
-      const currentVideoIndex = Math.round(scrollPosition / screenHeight);
+      const newIndex = Math.round(scrollPosition / screenHeight);
+
+      if (newIndex !== currentIndex) {
+        currentIndex = newIndex;
+        
+        // Update position indicator
+        $('#currentPosition').textContent = currentIndex + 1;
+        
+        // Track view
+        if (allReels[currentIndex]) {
+          trackEvent('reel_viewed', { 
+            creator_id: allReels[currentIndex].id,
+            creator_name: allReels[currentIndex].name 
+          });
+        }
+      }
 
       $$('video').forEach((video, index) => {
-        if (index === currentVideoIndex) {
+        if (index === currentIndex) {
           video.play().catch(e => console.log('Play prevented:', e));
         } else {
           video.pause();
@@ -167,17 +271,19 @@
         instagram: 'instagram',
         tiktok: 'video',
         youtube: 'youtube',
-        facebook: 'facebook'
+        facebook: 'facebook',
+        linkedin: 'linkedin'
       };
 
+      const isSaved = savedCreators.has(reel.id);
       const badgeHtml = reel.premium 
-        ? '<span class="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-bold">VIP</span>'
+        ? '<span class="px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-bold flex items-center gap-1"><i data-lucide="crown" class="h-3 w-3"></i>VIP</span>'
         : reel.verified 
         ? '<span class="px-2 py-1 rounded-full bg-blue-500/20 border border-blue-400/50 text-blue-300 text-xs font-semibold flex items-center gap-1"><i data-lucide="check-circle" class="h-3 w-3"></i>Ověřeno</span>'
         : '';
 
       return `
-        <div class="snap-item relative h-screen w-screen bg-black">
+        <div class="snap-item relative h-screen w-screen bg-black" data-reel-id="${reel.id}">
           <!-- Video Background -->
           <video 
             class="absolute inset-0 h-full w-full"
@@ -197,8 +303,11 @@
               <i data-lucide="arrow-left" class="h-5 w-5"></i>
             </button>
             <div class="flex items-center gap-2">
-              <button class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition">
+              <button onclick="window.location.href='/kartao-marketplace.html'" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Hledat">
                 <i data-lucide="search" class="h-5 w-5"></i>
+              </button>
+              <button onclick="window.location.href='/kartao-marketplace.html#filters'" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
+                <i data-lucide="sliders" class="h-5 w-5"></i>
               </button>
             </div>
           </div>
@@ -230,34 +339,34 @@
                 </div>
 
                 <div class="flex gap-2 mt-4">
-                  <button class="flex-1 px-4 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition flex items-center justify-center gap-2">
-                    <i data-lucide="user-plus" class="h-4 w-4"></i>
-                    Sledovat
+                  <button onclick="viewProfile('${reel.id}')" class="flex-1 px-4 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition flex items-center justify-center gap-2">
+                    <i data-lucide="user" class="h-4 w-4"></i>
+                    Profil
                   </button>
-                  <button class="flex-1 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition flex items-center justify-center gap-2">
+                  <button onclick="contactCreator('${reel.id}')" class="flex-1 px-4 py-2.5 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-semibold text-sm hover:brightness-110 transition flex items-center justify-center gap-2">
                     <i data-lucide="send" class="h-4 w-4"></i>
-                    Kontakt
+                    Poptat
                   </button>
                 </div>
               </div>
 
               <!-- Right: Actions -->
               <div class="flex flex-col items-center gap-6">
-                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
-                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <i data-lucide="heart" class="h-6 w-6"></i>
+                <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                  <div class="h-12 w-12 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-white/10'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center">
+                    <i data-lucide="${isSaved ? 'heart' : 'heart'}" class="h-6 w-6 ${isSaved ? 'fill-red-500 text-red-500' : ''}"></i>
                   </div>
-                  <span class="text-xs text-white/80">Uložit</span>
+                  <span class="text-xs text-white/80">${isSaved ? 'Uloženo' : 'Uložit'}</span>
                 </button>
 
-                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-1 hover:scale-110 transition">
                   <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
                     <i data-lucide="share-2" class="h-6 w-6"></i>
                   </div>
                   <span class="text-xs text-white/80">Sdílet</span>
                 </button>
 
-                <button class="flex flex-col items-center gap-1 hover:scale-110 transition">
+                <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 hover:scale-110 transition">
                   <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
                     <i data-lucide="more-horizontal" class="h-6 w-6"></i>
                   </div>
@@ -299,8 +408,216 @@
       }
     };
 
+    // Save/unsave creator
+    window.toggleSave = async function(creatorId, index) {
+      if (!userId) {
+        // Redirect to login
+        window.location.href = '/prihlasit-se.html?redirect=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+
+      const isSaved = savedCreators.has(creatorId);
+      const saveBtn = $(`#saveBtn${index}`);
+      
+      try {
+        if (isSaved) {
+          // Unsave
+          const { error } = await supabase
+            .from('saved_creators')
+            .delete()
+            .eq('user_id', userId)
+            .eq('creator_id', creatorId);
+
+          if (error) throw error;
+
+          savedCreators.delete(creatorId);
+          showToast('Odebráno z uložených');
+          trackEvent('creator_unsaved', { creator_id: creatorId });
+        } else {
+          // Save
+          const { error } = await supabase
+            .from('saved_creators')
+            .insert({
+              user_id: userId,
+              creator_id: creatorId,
+              created_at: new Date().toISOString()
+            });
+
+          if (error) throw error;
+
+          savedCreators.add(creatorId);
+          showToast('Uloženo do favoritů ❤️');
+          trackEvent('creator_saved', { creator_id: creatorId });
+        }
+
+        // Update button appearance
+        const heartIcon = saveBtn.querySelector('i');
+        const btnText = saveBtn.querySelector('span');
+        const btnContainer = saveBtn.querySelector('div');
+        
+        if (savedCreators.has(creatorId)) {
+          btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center pulse-animation';
+          heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
+          btnText.textContent = 'Uloženo';
+        } else {
+          btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
+          heartIcon.className = 'h-6 w-6';
+          btnText.textContent = 'Uložit';
+        }
+
+        lucide.createIcons();
+      } catch (error) {
+        console.error('Error toggling save:', error);
+        showToast('Chyba při ukládání', 'error');
+      }
+    };
+
+    // View creator profile
+    window.viewProfile = function(creatorId) {
+      trackEvent('profile_viewed_from_reels', { creator_id: creatorId });
+      window.location.href = `/creator-profile.html?id=${creatorId}`;
+    };
+
+    // Contact creator
+    window.contactCreator = function(creatorId) {
+      if (!userId) {
+        window.location.href = '/prihlasit-se.html?redirect=' + encodeURIComponent(`/zadat-kampan.html?creator=${creatorId}`);
+        return;
+      }
+      trackEvent('contact_from_reels', { creator_id: creatorId });
+      window.location.href = `/zadat-kampan.html?creator=${creatorId}`;
+    };
+
+    // Share creator
+    window.shareCreator = async function(creatorId) {
+      const reel = allReels.find(r => r.id === creatorId);
+      if (!reel) return;
+
+      const shareData = {
+        title: `${reel.name} na Kartao.cz`,
+        text: `Podívej se na profil ${reel.name} - ${reel.bio}`,
+        url: `${window.location.origin}/creator-profile.html?id=${creatorId}`
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+          trackEvent('creator_shared', { creator_id: creatorId, method: 'native' });
+        } else {
+          // Fallback - copy to clipboard
+          await navigator.clipboard.writeText(shareData.url);
+          showToast('Link zkopírován do schránky');
+          trackEvent('creator_shared', { creator_id: creatorId, method: 'clipboard' });
+        }
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    };
+
+    // Show more options
+    window.showMoreOptions = function(creatorId) {
+      // TODO: Implement options modal
+      showToast('Další možnosti - zatím nedostupné');
+    };
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full ${
+        type === 'error' ? 'bg-red-500' : 'bg-white/10'
+      } backdrop-blur-xl border border-white/20 text-white font-semibold shadow-xl`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+
+    // Analytics tracking
+    function trackEvent(eventName, properties = {}) {
+      try {
+        // Log to console for now
+        console.log('Track event:', eventName, properties);
+        
+        // TODO: Implement real analytics (Google Analytics, Mixpanel, etc.)
+        if (window.gtag) {
+          window.gtag('event', eventName, properties);
+        }
+      } catch (error) {
+        console.error('Analytics error:', error);
+      }
+    }
+
+    // Touch gestures for better mobile experience
+    function setupTouchGestures() {
+      const container = $('#reelsContainer');
+      
+      container.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      container.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipe();
+      }, { passive: true });
+    }
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartY - touchEndY;
+
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swipe up - next reel
+          trackEvent('swipe_up', { from_index: currentIndex });
+        } else {
+          // Swipe down - previous reel
+          trackEvent('swipe_down', { from_index: currentIndex });
+        }
+      }
+    }
+
+    // Keyboard navigation
+    function setupKeyboardNavigation() {
+      document.addEventListener('keydown', (e) => {
+        const container = $('#reelsContainer');
+        const screenHeight = window.innerHeight;
+
+        switch(e.key) {
+          case 'ArrowUp':
+            e.preventDefault();
+            container.scrollBy({ top: -screenHeight, behavior: 'smooth' });
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            container.scrollBy({ top: screenHeight, behavior: 'smooth' });
+            break;
+          case ' ':
+            e.preventDefault();
+            toggleVideoPlay(null, currentIndex);
+            break;
+          case 'Escape':
+            window.history.back();
+            break;
+        }
+      });
+    }
+
     // Init
-    loadReels();
+    async function init() {
+      await checkAuth();
+      await loadReels();
+      setupTouchGestures();
+      setupKeyboardNavigation();
+      
+      // Track session
+      trackEvent('reels_session_started');
+    }
+
+    init();
   </script>
 </body>
 </html>
