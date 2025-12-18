@@ -113,11 +113,11 @@
   </div>
 
   <!-- SEARCH OVERLAY -->
-  <div id="searchOverlay" class="fixed top-0 left-0 right-0 z-50 hidden flex-col max-h-[70vh]">
-    <div class="bg-black/95 backdrop-blur-xl rounded-b-3xl shadow-2xl">
+  <div id="searchOverlay" class="fixed top-4 left-0 right-4 z-50 hidden transition-all duration-300 ease-out" style="transform: translateX(-100%); opacity: 0;">
+    <div class="bg-black/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 mx-4">
       <div class="p-4">
-        <div class="flex items-center gap-3 mb-4">
-          <button id="closeSearch" class="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition">
+        <div class="flex items-center gap-3">
+          <button id="closeSearch" class="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition flex-shrink-0">
             <i data-lucide="arrow-left" class="h-5 w-5"></i>
           </button>
           <div class="flex-1 relative">
@@ -125,7 +125,7 @@
             <input 
               id="searchInput" 
               type="text" 
-              placeholder="Hledej tvůrce, téma, platformu..." 
+              placeholder="Hledej tvůrce..." 
               class="w-full rounded-full bg-white/10 border border-white/20 pl-12 pr-12 py-3 text-white placeholder-white/60 outline-none focus:border-white/40 focus:bg-white/15 transition"
               autocomplete="off"
             />
@@ -135,27 +135,8 @@
           </div>
         </div>
 
-        <!-- Quick filters -->
-        <div class="flex flex-wrap gap-2 mb-4">
-          <button class="search-chip px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition" data-filter="instagram">
-            <i data-lucide="instagram" class="inline h-3.5 w-3.5 mr-1"></i>Instagram
-          </button>
-          <button class="search-chip px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition" data-filter="tiktok">
-            <i data-lucide="video" class="inline h-3.5 w-3.5 mr-1"></i>TikTok
-          </button>
-          <button class="search-chip px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition" data-filter="youtube">
-            <i data-lucide="youtube" class="inline h-3.5 w-3.5 mr-1"></i>YouTube
-          </button>
-          <button class="search-chip px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition" data-filter="verified">
-            <i data-lucide="check-circle" class="inline h-3.5 w-3.5 mr-1"></i>Ověřeno
-          </button>
-          <button class="search-chip px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition" data-filter="premium">
-            <i data-lucide="crown" class="inline h-3.5 w-3.5 mr-1"></i>VIP
-          </button>
-        </div>
-
         <!-- Search results -->
-        <div id="searchResults" class="overflow-y-auto max-h-[50vh]">
+        <div id="searchResults" class="overflow-y-auto max-h-[60vh] mt-3">
           <div class="text-white/60 text-sm text-center py-8">
             Začni psát pro vyhledávání...
           </div>
@@ -759,8 +740,15 @@
 
     // Search functionality
     window.openSearchOverlay = function() {
-      $('#searchOverlay').classList.remove('hidden');
-      $('#searchOverlay').classList.add('flex');
+      const overlay = $('#searchOverlay');
+      overlay.classList.remove('hidden');
+      
+      // Trigger slide-in animation from left to right
+      requestAnimationFrame(() => {
+        overlay.style.transform = 'translateX(0)';
+        overlay.style.opacity = '1';
+      });
+      
       setTimeout(() => {
         $('#searchInput').focus();
         lucide.createIcons();
@@ -769,16 +757,23 @@
     };
 
     function closeSearchOverlay() {
-      $('#searchOverlay').classList.add('hidden');
-      $('#searchOverlay').classList.remove('flex');
+      const overlay = $('#searchOverlay');
+      
+      // Slide out to left
+      overlay.style.transform = 'translateX(-100%)';
+      overlay.style.opacity = '0';
+      
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+      
       trackEvent('search_closed');
     }
 
-    function performSearch(query, filters = []) {
+    function performSearch(query) {
       searchQuery = query.toLowerCase().trim();
-      activeFilters = filters;
 
-      if (!searchQuery && activeFilters.length === 0) {
+      if (!searchQuery) {
         $('#searchResults').innerHTML = `
           <div class="text-white/60 text-sm text-center py-8">
             Začni psát pro vyhledávání...
@@ -787,32 +782,13 @@
         return;
       }
 
-      // Filter reels based on search query and filters
+      // Filter reels based on search query
       filteredReels = allReels.filter(reel => {
-        const matchesQuery = !searchQuery || 
-          reel.name?.toLowerCase().includes(searchQuery) ||
+        return reel.name?.toLowerCase().includes(searchQuery) ||
           reel.handle?.toLowerCase().includes(searchQuery) ||
           reel.bio?.toLowerCase().includes(searchQuery) ||
           (reel.categories || []).some(cat => cat.toLowerCase().includes(searchQuery)) ||
           (reel.platforms || []).some(p => p.toLowerCase().includes(searchQuery));
-
-        const matchesFilters = activeFilters.length === 0 || activeFilters.every(filter => {
-          switch(filter) {
-            case 'instagram':
-            case 'tiktok':
-            case 'youtube':
-            case 'facebook':
-              return (reel.platforms || []).includes(filter);
-            case 'verified':
-              return reel.verified === true;
-            case 'premium':
-              return reel.premium === true;
-            default:
-              return true;
-          }
-        });
-
-        return matchesQuery && matchesFilters;
       });
 
       displaySearchResults(filteredReels);
@@ -895,6 +871,7 @@
       const searchInput = $('#searchInput');
       const clearBtn = $('#clearSearch');
       const closeBtn = $('#closeSearch');
+      const overlay = $('#searchOverlay');
       
       // Search input
       let searchTimeout;
@@ -911,7 +888,7 @@
         // Debounce search
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
-          performSearch(value, activeFilters);
+          performSearch(value);
         }, 300);
       });
 
@@ -919,36 +896,16 @@
       clearBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearBtn.classList.add('hidden');
-        performSearch('', activeFilters);
+        performSearch('');
         searchInput.focus();
       });
 
       // Close button
       closeBtn.addEventListener('click', closeSearchOverlay);
 
-      // Quick filter chips
-      $$('.search-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const filter = chip.dataset.filter;
-          
-          if (activeFilters.includes(filter)) {
-            activeFilters = activeFilters.filter(f => f !== filter);
-            chip.classList.remove('bg-fuchsia-500/30', 'border-fuchsia-500/50');
-            chip.classList.add('bg-white/10', 'border-white/20');
-          } else {
-            activeFilters.push(filter);
-            chip.classList.add('bg-fuchsia-500/30', 'border-fuchsia-500/50');
-            chip.classList.remove('bg-white/10', 'border-white/20');
-          }
-          
-          performSearch(searchInput.value, activeFilters);
-          lucide.createIcons();
-        });
-      });
-
       // ESC to close
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !$('#searchOverlay').classList.contains('hidden')) {
+        if (e.key === 'Escape' && overlay.style.transform === 'translateX(0px)') {
           closeSearchOverlay();
         }
       });
