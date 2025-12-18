@@ -530,7 +530,7 @@
     window.toggleSave = async function(creatorId, index) {
       if (!userId) {
         // Redirect to login
-        window.location.href = '/prihlasit-se.html?redirect=' + encodeURIComponent(window.location.pathname);
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
         return;
       }
 
@@ -613,7 +613,7 @@
     // Contact creator
     window.contactCreator = function(creatorId) {
       if (!userId) {
-        window.location.href = '/prihlasit-se.html?redirect=' + encodeURIComponent(`/zadat-kampan.html?creator=${creatorId}`);
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(`/zadat-kampan.html?creator=${creatorId}`);
         return;
       }
       trackEvent('contact_from_reels', { creator_id: creatorId });
