@@ -151,8 +151,10 @@
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
-    // Get Supabase from config
-    const supabase = window.supabaseClient;
+    // Initialize Supabase
+    const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ0NDE2NTAsImV4cCI6MjA1MDAxNzY1MH0.Qvn8Z_VoVMiB4h7zN17FqBkmOLpR2EgzDQIaPF5mPtk';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allReels = [];
     let filteredReels = [];
@@ -210,11 +212,15 @@
     // Check authentication
     async function checkAuth() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        userId = user?.id;
+        // First check session
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (userId) {
+        if (session?.user) {
+          userId = session.user.id;
           await loadSavedCreators();
+          console.log('User authenticated:', userId);
+        } else {
+          console.log('No user session found');
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -522,10 +528,23 @@
     }
 
     window.toggleSave = async function(creatorId, index) {
+      // Re-check auth in case it wasn't loaded yet
       if (!userId) {
-        // Redirect to login
-        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
-        return;
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            userId = session.user.id;
+            await loadSavedCreators();
+          } else {
+            // Redirect to login
+            window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+            return;
+          }
+        } catch (error) {
+          console.error('Auth check error:', error);
+          window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
       }
 
       const isSaved = savedCreators.has(creatorId);
