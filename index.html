@@ -2224,11 +2224,28 @@ document.addEventListener('DOMContentLoaded', () => {
       // Event listener pro uložení z karty
       const saveBtn = el.querySelector('.js-save');
       if (saveBtn) {
+        // Nastavit barvu ikony podle toho, zda je uložen
+        const svg = saveBtn.querySelector('svg');
+        if (svg && savedCreatorIds.includes(id)) {
+          svg.style.fill = 'currentColor';
+          svg.classList.add('text-purple-400');
+        }
+        
         saveBtn.addEventListener('click', async (e) => {
           e.preventDefault();
           e.stopPropagation();
           currentCreatorData = data;
-          await saveCreator();
+          
+          const svg = saveBtn.querySelector('svg');
+          const isSaved = savedCreatorIds.includes(id);
+          
+          if (isSaved) {
+            // Odebrat z uložených
+            await toggleSaveCreator(id, false, svg);
+          } else {
+            // Přidat do uložených
+            await toggleSaveCreator(id, true, svg);
+          }
         });
       }
 
@@ -3086,10 +3103,31 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Aktualizovat počet uložených
         updateSavedCount();
+        
+        // Aktualizovat ikony v gridu
+        updateSaveIconsInGrid();
       } catch (error) {
         console.error('Chyba při ukládání influencera:', error);
         showNotification('Chyba při ukládání influencera', 'error');
       }
+    }
+    
+    // Aktualizovat ikony uložení ve všech kartách
+    function updateSaveIconsInGrid() {
+      document.querySelectorAll('.js-save').forEach(btn => {
+        const creatorId = btn.getAttribute('data-creator-id');
+        const svg = btn.querySelector('svg');
+        
+        if (svg) {
+          if (savedCreatorIds.includes(creatorId)) {
+            svg.style.fill = 'currentColor';
+            svg.classList.add('text-purple-400');
+          } else {
+            svg.style.fill = 'none';
+            svg.classList.remove('text-purple-400');
+          }
+        }
+      });
     }
 
     // Načíst seznam uložených tvůrců
@@ -3160,6 +3198,75 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         btn.classList.remove('bg-purple-500/20', 'border', 'border-purple-500/50');
         btn.classList.add('hover:bg-purple-500/10');
+      }
+    }
+    
+    // Toggle uložení tvůrce (z karty v gridu)
+    async function toggleSaveCreator(creatorId, shouldSave, svgElement) {
+      try {
+        if (!window.supabaseClient) {
+          showNotification('Systém není připraven', 'error');
+          return;
+        }
+        
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        
+        if (!user) {
+          showNotification('Pro uložení se prosím přihlaste', 'info');
+          window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+        
+        if (shouldSave) {
+          // Přidat do uložených
+          const { error } = await window.supabaseClient
+            .from('saved_creators')
+            .insert({
+              user_id: user.id,
+              creator_id: creatorId,
+              creator_name: currentCreatorData?.name,
+              creator_avatar: currentCreatorData?.avatar,
+              creator_handle: currentCreatorData?.handle
+            });
+          
+          if (error && error.code !== '23505') {
+            throw error;
+          }
+          
+          // Změnit ikonu na vyplněnou záložku
+          if (svgElement) {
+            svgElement.style.fill = 'currentColor';
+            svgElement.classList.add('text-purple-400');
+          }
+          
+          showNotification('Influencer uložen! ✨', 'success');
+        } else {
+          // Odebrat z uložených
+          const { error } = await window.supabaseClient
+            .from('saved_creators')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('creator_id', creatorId);
+          
+          if (error) throw error;
+          
+          // Změnit ikonu na prázdnou záložku
+          if (svgElement) {
+            svgElement.style.fill = 'none';
+            svgElement.classList.remove('text-purple-400');
+          }
+          
+          showNotification('Influencer odebrán z uložených', 'info');
+        }
+        
+        // Aktualizovat počet uložených
+        await updateSavedCount();
+        
+        // Aktualizovat ikony v gridu
+        updateSaveIconsInGrid();
+      } catch (error) {
+        console.error('Chyba při ukládání:', error);
+        showNotification('Chyba při ukládání influencera', 'error');
       }
     }
 
@@ -3853,6 +3960,16 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => drawer.classList.add('active'), 0);
 
       loadCreatorReviews(id);
+      
+      // Zkontrolovat, zda je tvůrce uložen a aktualizovat ikonu
+      const saveIcon = document.getElementById('saveCreatorIcon');
+      if (saveIcon && savedCreatorIds.includes(id)) {
+        saveIcon.style.fill = 'currentColor';
+        saveIcon.classList.add('text-purple-400');
+      } else if (saveIcon) {
+        saveIcon.style.fill = 'none';
+        saveIcon.classList.remove('text-purple-400');
+      }
     }
 
     // Modal pro nahlášení recenze
