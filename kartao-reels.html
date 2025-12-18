@@ -1224,8 +1224,7 @@
       
       // Expand search bar from icon
       searchBar.style.width = targetWidth + 'px';
-      searchBar.classList.remove('bg-black/30');
-      searchBar.classList.add('bg-black/70');
+      // Keep same background color
       
       // Show input and close button
       setTimeout(() => {
@@ -1272,8 +1271,7 @@
         
         // Collapse search bar back to icon
         searchBar.style.width = '40px';
-        searchBar.classList.remove('bg-black/70');
-        searchBar.classList.add('bg-black/30');
+        // Background color stays the same (bg-black/30)
       }, 150);
       
       // Hide results if exists
