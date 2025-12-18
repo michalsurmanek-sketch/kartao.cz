@@ -598,8 +598,9 @@
                   <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
               </div>
-              <button onclick="openFiltersModal()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
+              <button onclick="openFiltersModal()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition relative" title="Filtry">
                 <i data-lucide="sliders" class="h-5 w-5"></i>
+                <span id="filtersBadge" class="hidden absolute -top-1 -right-1 h-4 w-4 rounded-full bg-fuchsia-500 border-2 border-black"></span>
               </button>
             </div>
           </div>
@@ -1022,9 +1023,30 @@
       // Apply filters to reels
       filterReels();
       closeFiltersModal();
+      updateFiltersBadge();
       showToast('Filtry aplikovány');
       trackEvent('filters_applied_from_reels', reelsFilters);
     };
+
+    function updateFiltersBadge() {
+      const badge = $('#filtersBadge');
+      if (!badge) return;
+      
+      // Check if any filters are active
+      const hasActiveFilters = 
+        reelsFilters.type !== 'creator' ||
+        reelsFilters.platforms.length > 0 ||
+        reelsFilters.topics.length > 0 ||
+        reelsFilters.region !== 'all' ||
+        reelsFilters.minFollowers > 0 ||
+        reelsFilters.verified;
+      
+      if (hasActiveFilters) {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
 
     function filterReels() {
       filteredReels = allReels.filter(reel => {
@@ -1550,6 +1572,10 @@
           if (followersSlider) followersSlider.value = '0';
           if (followersVal) followersVal.textContent = '0';
           if (verifiedCheck) verifiedCheck.checked = false;
+          
+          // Reset display to all reels
+          displayReels(allReels);
+          updateFiltersBadge();
           
           showToast('Filtry resetovány');
         });
