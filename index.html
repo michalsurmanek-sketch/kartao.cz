@@ -1596,6 +1596,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     };
+    
+    // Přepočítat rating všech tvůrců z recenzí
+    async function updateAllCreatorsRatings() {
+      if (!window.supabaseClient) return;
+      
+      try {
+        console.log('📊 Přepočítávám rating z recenzí...');
+        
+        for (const creator of allCreators) {
+          // Načíst recenze pro tvůrce
+          const { data: reviews, error } = await window.supabaseClient
+            .from('reviews')
+            .select('rating')
+            .eq('creator_id', creator.id);
+          
+          if (!error && reviews && reviews.length > 0) {
+            // Vypočítat průměr
+            const averageRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+            const roundedRating = Math.round(averageRating * 10) / 10;
+            
+            // Aktualizovat rating
+            creator.rating = roundedRating;
+          }
+        }
+        
+        console.log('✅ Rating přepočítán pro všechny tvůrce');
+      } catch (error) {
+        console.error('Chyba při přepočítávání ratingu:', error);
+      }
+    }
 
     async function loadAllCreators(retryCount = 0) {
       const MAX_RETRIES = 3;
@@ -1727,6 +1757,9 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log('✅ Načteno tvůrců ze Supabase:', allCreators.length);
           const loadTime = (performance.now() - startTime).toFixed(2);
           console.log(`⚡ Rychlost načítání: ${loadTime}ms`);
+          
+          // Přepočítat rating z recenzí pro všechny tvůrce
+          await updateAllCreatorsRatings();
           
           // Pokud databáze je prázdná, zobrazit varování
           if (allCreators.length === 0) {
