@@ -168,6 +168,20 @@ document.addEventListener('DOMContentLoaded', () => {
       0% { box-shadow: 0 0 0 0 rgba(251,191,36,.35); }
       100% { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
     .icon-badge {
       display: grid;
       place-items: center;
@@ -1534,6 +1548,7 @@ document.addEventListener('DOMContentLoaded', () => {
               comment: comment,
               verified: false,
               helpful_count: 0,
+              status: 'active',
               created_at: new Date().toISOString()
             })
             .select()
@@ -1547,6 +1562,84 @@ document.addEventListener('DOMContentLoaded', () => {
           return data;
         } catch (err) {
           console.error('Neočekávaná chyba při přidávání recenze:', err);
+          throw err;
+        }
+      },
+      
+      async updateReview(reviewId, userId, rating, title, comment) {
+        if (!window.supabaseClient) {
+          throw new Error('Supabase není inicializováno');
+        }
+        
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .update({
+              rating: rating,
+              title: title || null,
+              comment: comment || null,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', reviewId)
+            .eq('user_id', userId)
+            .select()
+            .single();
+          
+          if (error) throw error;
+          return data;
+        } catch (err) {
+          console.error('Chyba při aktualizaci recenze:', err);
+          throw err;
+        }
+      },
+      
+      async addInfluencerResponse(reviewId, creatorId, response) {
+        if (!window.supabaseClient) {
+          throw new Error('Supabase není inicializováno');
+        }
+        
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .update({
+              influencer_response: response,
+              influencer_response_at: new Date().toISOString()
+            })
+            .eq('id', reviewId)
+            .eq('creator_id', creatorId)
+            .select()
+            .single();
+          
+          if (error) throw error;
+          return data;
+        } catch (err) {
+          console.error('Chyba při přidávání odpovědi:', err);
+          throw err;
+        }
+      },
+      
+      async reportReview(reviewId, userId, reason) {
+        if (!window.supabaseClient) {
+          throw new Error('Supabase není inicializováno');
+        }
+        
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('reviews')
+            .update({
+              status: 'reported',
+              reported_reason: reason,
+              reported_by: userId,
+              reported_at: new Date().toISOString()
+            })
+            .eq('id', reviewId)
+            .select()
+            .single();
+          
+          if (error) throw error;
+          return data;
+        } catch (err) {
+          console.error('Chyba při nahlášení recenze:', err);
           throw err;
         }
       }
@@ -2406,7 +2499,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reviewsList.innerHTML = reviews
           .map(
             review => `
-          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40">
+          <div class="p-3 rounded-xl border border-white/10 bg-neutral-900/40" data-review-id="${review.id}">
             <div class="flex items-start gap-3">
               <img src="${
                 review.companyLogo ||
@@ -2425,12 +2518,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `<div class="font-medium text-sm mb-1">${review.title}</div>`
                     : ''
                 }
-                <p class="text-white/80 text-sm line-clamp-2">${review.comment}</p>
+                <p class="text-white/80 text-sm ${review.comment ? '' : 'italic text-white/50'}">${review.comment || 'Bez komentáře'}</p>
+                
+                ${review.influencerResponse ? `
+                  <div class="mt-3 p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                    <div class="flex items-center gap-2 mb-1">
+                      <i data-lucide="message-circle" class="w-3 h-3 text-blue-400"></i>
+                      <span class="text-xs font-medium text-blue-400">Odpověď tvůrce</span>
+                    </div>
+                    <p class="text-sm text-white/80">${review.influencerResponse}</p>
+                  </div>
+                ` : `
+                  <button class="respond-review-btn mt-3 text-xs text-blue-400 hover:text-blue-300 transition hidden flex items-center gap-1" 
+                          data-review-id="${review.id}" 
+                          data-creator-id="${review.creatorId}"
+                          title="Odpovědět na recenzi">
+                    <i data-lucide="message-circle" class="w-3 h-3"></i>
+                    Odpovědět
+                  </button>
+                `}
+                
                 <div class="flex items-center justify-between mt-2 text-xs text-white/50">
                   <span>${ReviewServiceSupabase.formatDate(review.createdAt)}</span>
-                  <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-2">
                     ${review.verified ? '<span class="text-green-400">✓ Ověřeno</span>' : ''}
-                    <span>${review.helpful || 0} užitečné</span>
+                    <button class="edit-review-btn hover:text-purple-400 transition hidden" 
+                            data-review-id="${review.id}" 
+                            data-user-id="${review.userId}"
+                            data-rating="${review.rating}"
+                            data-title="${review.title || ''}"
+                            data-comment="${review.comment || ''}"
+                            title="Upravit">
+                      <i data-lucide="edit-2" class="w-3 h-3"></i>
+                    </button>
+                    <button class="report-review-btn hover:text-red-400 transition" data-review-id="${review.id}" title="Nahlásit">
+                      <i data-lucide="flag" class="w-3 h-3"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -2441,6 +2564,23 @@ document.addEventListener('DOMContentLoaded', () => {
           .join('');
 
         if (window.lucide?.createIcons) lucide.createIcons();
+        
+        // Zobrazit tlačítko "Upravit" jen autorovi recenze a "Odpovědět" influencerovi
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (user) {
+          document.querySelectorAll('.edit-review-btn').forEach(btn => {
+            if (btn.dataset.userId === user.id) {
+              btn.classList.remove('hidden');
+            }
+          });
+          
+          // Zobrazit tlačítko "Odpovědět" jen influencerovi (podle creatorId)
+          document.querySelectorAll('.respond-review-btn').forEach(btn => {
+            if (btn.dataset.creatorId === creatorId) {
+              btn.classList.remove('hidden');
+            }
+          });
+        }
       } catch (error) {
         console.error('Chyba při načítání recenzí:', error);
         const loading = document.getElementById('reviewsLoading');
@@ -3561,6 +3701,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
       
+      // Event listeners pro tlačítka nahlásit v recenzích
+      setTimeout(() => {
+        document.querySelectorAll('.report-review-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const reviewId = btn.getAttribute('data-review-id');
+            await reportReviewModal(reviewId);
+          });
+        });
+        
+        // Event listeners pro tlačítka upravit recenzi
+        document.querySelectorAll('.edit-review-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const reviewId = btn.getAttribute('data-review-id');
+            const rating = parseInt(btn.getAttribute('data-rating'));
+            const title = btn.getAttribute('data-title');
+            const comment = btn.getAttribute('data-comment');
+            await editReviewModal(reviewId, rating, title, comment);
+          });
+        });
+        
+        // Event listeners pro tlačítka odpovědět na recenzi (influencer)
+        document.querySelectorAll('.respond-review-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const reviewId = btn.getAttribute('data-review-id');
+            const creatorId = btn.getAttribute('data-creator-id');
+            await respondToReviewModal(reviewId, creatorId);
+          });
+        });
+      }, 500);
+      
       // Scroll nahoru při otevření (důležité pro mobil)
       drawer.scrollTop = 0;
       
@@ -3574,6 +3747,368 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => drawer.classList.add('active'), 0);
 
       loadCreatorReviews(id);
+    }
+
+    // Modal pro nahlášení recenze
+    async function reportReviewModal(reviewId) {
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      if (!user) {
+        showNotification('Pro nahlášení recenze se prosím přihlaste', 'info');
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+
+      const reportReasons = [
+        { value: 'spam', label: '🚫 Spam', description: 'Nevyžádaný nebo opakovaný obsah' },
+        { value: 'offensive', label: '🚫 Urážlivý obsah', description: 'Obsahuje nevhodné nebo urážlivé výrazy' },
+        { value: 'fake', label: '🚫 Nepravdivá recenze', description: 'Podezření z falešné nebo zmanipulované recenze' },
+        { value: 'other', label: '🚫 Jiný důvod', description: 'Jiný problém s touto recenzí' }
+      ];
+
+      // Vytvoření modalu
+      const modalHTML = `
+        <div id="reportReviewModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4" style="animation: fadeIn 0.2s;">
+          <div class="bg-gradient-to-br from-purple-900/90 to-blue-900/90 rounded-2xl max-w-md w-full border border-purple-500/20 shadow-2xl" style="animation: slideUp 0.3s;">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                  <i data-lucide="flag" class="w-5 h-5 text-red-400"></i>
+                  Nahlásit recenzi
+                </h3>
+                <button onclick="closeReportModal()" class="text-white/60 hover:text-white transition">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+              
+              <p class="text-white/80 text-sm mb-4">
+                Vyberte prosím důvod nahlášení této recenze:
+              </p>
+
+              <div class="space-y-2 mb-4">
+                ${reportReasons.map(reason => `
+                  <label class="report-reason-option flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition border border-transparent hover:border-purple-500/30">
+                    <input type="radio" name="reportReason" value="${reason.value}" class="mt-1 accent-purple-500">
+                    <div class="flex-1">
+                      <div class="font-medium text-white">${reason.label}</div>
+                      <div class="text-xs text-white/60">${reason.description}</div>
+                    </div>
+                  </label>
+                `).join('')}
+              </div>
+
+              <textarea id="reportReasonText" 
+                        class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-purple-500 transition resize-none hidden mb-4" 
+                        rows="3" 
+                        placeholder="Popište prosím problém podrobněji..."></textarea>
+
+              <div class="flex gap-3">
+                <button onclick="closeReportModal()" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition">
+                  Zrušit
+                </button>
+                <button id="submitReportBtn" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  Nahlásit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Inicializace ikon
+      setTimeout(() => {
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }, 50);
+
+      // Zobrazit textarea při výběru "other"
+      document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const textarea = document.getElementById('reportReasonText');
+          if (e.target.value === 'other') {
+            textarea.classList.remove('hidden');
+          } else {
+            textarea.classList.add('hidden');
+          }
+        });
+      });
+
+      // Submit handler
+      document.getElementById('submitReportBtn').addEventListener('click', async () => {
+        const selectedReason = document.querySelector('input[name="reportReason"]:checked');
+        if (!selectedReason) {
+          showNotification('Prosím vyberte důvod nahlášení', 'error');
+          return;
+        }
+
+        let reason = reportReasons.find(r => r.value === selectedReason.value).label;
+        
+        if (selectedReason.value === 'other') {
+          const textarea = document.getElementById('reportReasonText');
+          if (textarea.value.trim()) {
+            reason += ': ' + textarea.value.trim();
+          }
+        }
+
+        try {
+          document.getElementById('submitReportBtn').disabled = true;
+          await ReviewServiceSupabase.reportReview(reviewId, user.id, reason);
+          showNotification('Recenze byla nahlášena. Děkujeme za zpětnou vazbu.', 'success');
+          closeReportModal();
+          
+          // Znovu načíst recenze
+          const currentCreatorId = document.getElementById('drawer').dataset.creatorId;
+          if (currentCreatorId) {
+            loadCreatorReviews(currentCreatorId);
+          }
+        } catch (error) {
+          console.error('Chyba při nahlašování:', error);
+          showNotification('Nepodařilo se nahlásit recenzi', 'error');
+          document.getElementById('submitReportBtn').disabled = false;
+        }
+      });
+
+      // Blokovat scrollování
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReportModal() {
+      const modal = document.getElementById('reportReviewModal');
+      if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Modal pro úpravu recenze
+    async function editReviewModal(reviewId, currentRating, currentTitle, currentComment) {
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      if (!user) {
+        showNotification('Pro úpravu recenze se prosím přihlaste', 'info');
+        return;
+      }
+
+      let selectedRating = currentRating;
+
+      const modalHTML = `
+        <div id="editReviewModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4" style="animation: fadeIn 0.2s;">
+          <div class="bg-gradient-to-br from-purple-900/90 to-blue-900/90 rounded-2xl max-w-md w-full border border-purple-500/20 shadow-2xl" style="animation: slideUp 0.3s;">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                  <i data-lucide="edit-2" class="w-5 h-5 text-purple-400"></i>
+                  Upravit recenzi
+                </h3>
+                <button onclick="closeEditReviewModal()" class="text-white/60 hover:text-white transition">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-white/80 mb-2">Hodnocení *</label>
+                <div class="flex gap-2" id="editStarRating">
+                  ${[1, 2, 3, 4, 5].map(star => `
+                    <button type="button" 
+                            class="edit-star-btn w-10 h-10 rounded-lg transition ${star <= currentRating ? 'text-yellow-400' : 'text-white/20'} hover:text-yellow-400" 
+                            data-rating="${star}">
+                      <i data-lucide="star" class="w-6 h-6"></i>
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="editReviewTitle" class="block text-sm font-medium text-white/80 mb-2">Nadpis (volitelné)</label>
+                <input type="text" 
+                       id="editReviewTitle" 
+                       value="${currentTitle || ''}"
+                       class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-purple-500 transition" 
+                       placeholder="Např.: Skvělá spolupráce!">
+              </div>
+
+              <div class="mb-4">
+                <label for="editReviewComment" class="block text-sm font-medium text-white/80 mb-2">Komentář (volitelné)</label>
+                <textarea id="editReviewComment" 
+                          class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-purple-500 transition resize-none" 
+                          rows="4" 
+                          placeholder="Sdílejte svou zkušenost...">${currentComment || ''}</textarea>
+              </div>
+
+              <div class="flex gap-3">
+                <button onclick="closeEditReviewModal()" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition">
+                  Zrušit
+                </button>
+                <button id="submitEditReviewBtn" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium transition disabled:opacity-50">
+                  Uložit změny
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Inicializace ikon
+      setTimeout(() => {
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }, 50);
+
+      // Event listenery pro hvězdičky
+      document.querySelectorAll('.edit-star-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedRating = parseInt(btn.dataset.rating);
+          document.querySelectorAll('.edit-star-btn').forEach((b, idx) => {
+            if (idx < selectedRating) {
+              b.classList.remove('text-white/20');
+              b.classList.add('text-yellow-400');
+            } else {
+              b.classList.remove('text-yellow-400');
+              b.classList.add('text-white/20');
+            }
+          });
+        });
+      });
+
+      // Submit handler
+      document.getElementById('submitEditReviewBtn').addEventListener('click', async () => {
+        const title = document.getElementById('editReviewTitle').value.trim();
+        const comment = document.getElementById('editReviewComment').value.trim();
+
+        try {
+          document.getElementById('submitEditReviewBtn').disabled = true;
+          await ReviewServiceSupabase.updateReview(reviewId, user.id, selectedRating, title, comment);
+          showNotification('Recenze byla úspěšně aktualizována', 'success');
+          closeEditReviewModal();
+          
+          // Znovu načíst recenze a přepočítat hodnocení
+          const currentCreatorId = document.getElementById('drawer').dataset.creatorId;
+          if (currentCreatorId) {
+            await loadCreatorReviews(currentCreatorId);
+            await updateAllCreatorsRatings();
+          }
+        } catch (error) {
+          console.error('Chyba při úpravě recenze:', error);
+          showNotification('Nepodařilo se aktualizovat recenzi', 'error');
+          document.getElementById('submitEditReviewBtn').disabled = false;
+        }
+      });
+
+      // Blokovat scrollování
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditReviewModal() {
+      const modal = document.getElementById('editReviewModal');
+      if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Modal pro odpověď influencera na recenzi
+    async function respondToReviewModal(reviewId, creatorId) {
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      if (!user) {
+        showNotification('Pro odpověď na recenzi se prosím přihlaste', 'info');
+        return;
+      }
+
+      const modalHTML = `
+        <div id="respondReviewModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4" style="animation: fadeIn 0.2s;">
+          <div class="bg-gradient-to-br from-purple-900/90 to-blue-900/90 rounded-2xl max-w-md w-full border border-purple-500/20 shadow-2xl" style="animation: slideUp 0.3s;">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                  <i data-lucide="message-circle" class="w-5 h-5 text-blue-400"></i>
+                  Odpovědět na recenzi
+                </h3>
+                <button onclick="closeRespondReviewModal()" class="text-white/60 hover:text-white transition">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+              
+              <p class="text-white/80 text-sm mb-4">
+                Vaše odpověď bude zobrazena pod touto recenzí. Můžete odpovědět pouze jednou.
+              </p>
+
+              <div class="mb-4">
+                <label for="influencerResponse" class="block text-sm font-medium text-white/80 mb-2">Vaše odpověď *</label>
+                <textarea id="influencerResponse" 
+                          class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-blue-500 transition resize-none" 
+                          rows="5" 
+                          placeholder="Děkujeme za vaši recenzi! Jsme rádi, že..."></textarea>
+              </div>
+
+              <div class="flex gap-3">
+                <button onclick="closeRespondReviewModal()" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition">
+                  Zrušit
+                </button>
+                <button id="submitResponseBtn" 
+                        class="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium transition disabled:opacity-50">
+                  Odeslat odpověď
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Inicializace ikon
+      setTimeout(() => {
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }, 50);
+
+      // Submit handler
+      document.getElementById('submitResponseBtn').addEventListener('click', async () => {
+        const response = document.getElementById('influencerResponse').value.trim();
+        
+        if (!response) {
+          showNotification('Prosím zadejte text odpovědi', 'error');
+          return;
+        }
+
+        try {
+          document.getElementById('submitResponseBtn').disabled = true;
+          await ReviewServiceSupabase.addInfluencerResponse(reviewId, creatorId, response);
+          showNotification('Vaše odpověď byla úspěšně přidána', 'success');
+          closeRespondReviewModal();
+          
+          // Znovu načíst recenze
+          const currentCreatorId = document.getElementById('drawer').dataset.creatorId;
+          if (currentCreatorId) {
+            loadCreatorReviews(currentCreatorId);
+          }
+        } catch (error) {
+          console.error('Chyba při přidávání odpovědi:', error);
+          showNotification('Nepodařilo se přidat odpověď', 'error');
+          document.getElementById('submitResponseBtn').disabled = false;
+        }
+      });
+
+      // Blokovat scrollování
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRespondReviewModal() {
+      const modal = document.getElementById('respondReviewModal');
+      if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+      }
     }
 
     function closeDetail() {
