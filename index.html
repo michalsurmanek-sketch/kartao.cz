@@ -3660,6 +3660,18 @@ document.addEventListener('DOMContentLoaded', () => {
           if (isHidden) {
             reviewsSection.classList.remove('hidden');
             reviewsChevron.style.transform = 'rotate(0deg)';
+            
+            // Scroll na začátek recenzí při otevření (zejména na mobilu)
+            setTimeout(() => {
+              const drawer = document.getElementById('drawer');
+              const reviewsTop = toggleReviewsBtn.offsetTop;
+              if (drawer) {
+                drawer.scrollTo({
+                  top: reviewsTop - 20,
+                  behavior: 'smooth'
+                });
+              }
+            }, 100);
           } else {
             reviewsSection.classList.add('hidden');
             reviewsChevron.style.transform = 'rotate(-90deg)';
