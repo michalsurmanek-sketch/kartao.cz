@@ -893,10 +893,16 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       
       <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2 text-white/70 text-sm">
-          <i data-lucide="users" class="w-4 h-4"></i> <span>Nalezeno</span> <span id="total" class="font-semibold text-white">0</span>
-          <span>tvůrců</span>
-          <span id="modeBadge" class="ml-2 inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
+        <div class="flex items-center gap-2 text-white/70 text-sm flex-wrap">
+          <div class="flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i> <span>Nalezeno</span> <span id="total" class="font-semibold text-white">0</span>
+            <span>tvůrců</span>
+          </div>
+          <div class="flex items-center gap-2 text-purple-400">
+            <i data-lucide="bookmark" class="w-4 h-4"></i> <span>Uloženo</span> <span id="savedCount" class="font-semibold">0</span>
+            <span>tvůrců</span>
+          </div>
+          <span id="modeBadge" class="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
         </div>
         <div class="hidden md:flex items-center gap-2 text-xs">
           <span class="tag" data-platform="all">
@@ -2291,6 +2297,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const all = applyFilters();
       totalEl.textContent = String(all.length);
       modeBadge.textContent = 'Režim: ' + (state.mode === 'max' ? 'MAX' : 'Σ Součet');
+      
+      // Aktualizovat počet uložených tvůrců
+      updateSavedCount();
 
       const pageCount = Math.max(1, Math.ceil(all.length / state.pageSize));
       state.page = Math.min(Math.max(1, state.page), pageCount);
@@ -3034,6 +3043,9 @@ document.addEventListener('DOMContentLoaded', () => {
           
           // Zobrazit notifikaci
           showNotification('Influencer odebrán z uložených', 'info');
+          
+          // Aktualizovat počet uložených
+          updateSavedCount();
         } else {
           // Přidat do uložených
           const { error } = await window.supabaseClient
@@ -3063,9 +3075,46 @@ document.addEventListener('DOMContentLoaded', () => {
           // Zobrazit notifikaci
           showNotification('Influencer uložen! ✨', 'success');
         }
+        
+        // Aktualizovat počet uložených
+        updateSavedCount();
       } catch (error) {
         console.error('Chyba při ukládání influencera:', error);
         showNotification('Chyba při ukládání influencera', 'error');
+      }
+    }
+
+    // Aktualizovat počet uložených tvůrců
+    async function updateSavedCount() {
+      const savedCountEl = document.getElementById('savedCount');
+      if (!savedCountEl) return;
+      
+      try {
+        // Zkontrolovat, zda je uživatel přihlášen
+        if (!window.supabaseClient) {
+          savedCountEl.textContent = '0';
+          return;
+        }
+        
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        
+        if (!user) {
+          savedCountEl.textContent = '0';
+          return;
+        }
+        
+        // Načíst počet uložených tvůrců
+        const { count, error } = await window.supabaseClient
+          .from('saved_creators')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        
+        savedCountEl.textContent = String(count || 0);
+      } catch (error) {
+        console.error('Chyba při načítání počtu uložených:', error);
+        savedCountEl.textContent = '0';
       }
     }
 
