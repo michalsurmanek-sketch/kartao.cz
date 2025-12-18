@@ -41,6 +41,68 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.2); }
     }
+    
+    /* Flying heart animation */
+    .flying-heart {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      font-size: 60px;
+      animation: flyToButton 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    @keyframes flyToButton {
+      0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(15deg);
+        opacity: 1;
+      }
+      50% {
+        transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(180deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0.8) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    .heart-burst {
+      animation: heartBurst 0.5s ease-out forwards;
+    }
+    
+    @keyframes heartBurst {
+      0% {
+        transform: scale(0.8);
+        filter: brightness(1);
+      }
+      50% {
+        transform: scale(1.4);
+        filter: brightness(1.5) drop-shadow(0 0 20px rgba(239, 68, 68, 0.8));
+      }
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+    }
+    
+    .fade-out-text {
+      animation: fadeOut 0.4s ease-out forwards;
+    }
+    
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -452,6 +514,38 @@
     };
 
     // Save/unsave creator
+    // Flying heart effect
+    function createFlyingHeart(targetButton) {
+      const heart = document.createElement('div');
+      heart.className = 'flying-heart';
+      heart.innerHTML = '❤️';
+      
+      // Start position (center of screen)
+      const startX = window.innerWidth / 2;
+      const startY = window.innerHeight / 2;
+      
+      // Target position (save button)
+      const btnRect = targetButton.getBoundingClientRect();
+      const targetX = btnRect.left + btnRect.width / 2;
+      const targetY = btnRect.top + btnRect.height / 2;
+      
+      // Calculate translation
+      const tx = targetX - startX;
+      const ty = targetY - startY;
+      
+      heart.style.left = startX + 'px';
+      heart.style.top = startY + 'px';
+      heart.style.setProperty('--tx', `${tx}px`);
+      heart.style.setProperty('--ty', `${ty}px`);
+      
+      document.body.appendChild(heart);
+      
+      // Remove after animation
+      setTimeout(() => {
+        heart.remove();
+      }, 800);
+    }
+
     window.toggleSave = async function(creatorId, index) {
       if (!userId) {
         // Redirect to login
@@ -477,7 +571,7 @@
           showToast('Odebráno z uložených');
           trackEvent('creator_unsaved', { creator_id: creatorId });
         } else {
-          // Save
+          // Save with flying heart animation
           const { error } = await supabase
             .from('saved_creators')
             .insert({
@@ -489,6 +583,10 @@
           if (error) throw error;
 
           savedCreators.add(creatorId);
+          
+          // Trigger flying heart effect
+          createFlyingHeart(saveBtn);
+          
           showToast('Uloženo do favoritů ❤️');
           trackEvent('creator_saved', { creator_id: creatorId });
         }
@@ -499,16 +597,26 @@
         const btnContainer = saveBtn.querySelector('div');
         
         if (savedCreators.has(creatorId)) {
-          btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center pulse-animation';
-          heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
-          btnText.textContent = 'Uloženo';
+          // Add burst animation to button
+          btnContainer.classList.add('heart-burst');
+          setTimeout(() => btnContainer.classList.remove('heart-burst'), 500);
+          
+          // Fade out text
+          btnText.classList.add('fade-out-text');
+          
+          setTimeout(() => {
+            btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
+            heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
+            btnText.textContent = 'Uloženo';
+            btnText.classList.remove('fade-out-text');
+            lucide.createIcons();
+          }, 400);
         } else {
           btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
           heartIcon.className = 'h-6 w-6';
           btnText.textContent = 'Uložit';
+          lucide.createIcons();
         }
-
-        lucide.createIcons();
       } catch (error) {
         console.error('Error toggling save:', error);
         showToast('Chyba při ukládání', 'error');
