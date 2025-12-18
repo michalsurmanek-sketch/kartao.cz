@@ -112,15 +112,6 @@
     <!-- Reels will be dynamically inserted here -->
   </div>
 
-  <!-- SEARCH RESULTS OVERLAY -->
-  <div id="searchResults" class="fixed top-20 left-4 right-4 z-50 hidden max-h-[70vh] overflow-y-auto">
-    <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
-      <div class="text-white/60 text-sm text-center py-8">
-        Začni psát pro vyhledávání...
-      </div>
-    </div>
-  </div>
-
   <!-- LOADING STATE -->
   <div id="loading" class="fixed inset-0 flex items-center justify-center bg-black z-50">
     <div class="flex flex-col items-center gap-4">
@@ -417,26 +408,36 @@
             </button>
             <div class="flex items-center gap-2">
               <!-- Search bar that expands from icon -->
-              <div id="searchBarInline" class="flex items-center gap-2 bg-black/30 backdrop-blur-md rounded-full transition-all duration-300 ease-out overflow-hidden border border-white/10" style="width: 40px;">
-                <button id="searchIconBtn" onclick="openSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-black/40 transition flex-shrink-0" title="Hledat">
+              <div id="searchBarInline${index}" class="flex items-center gap-2 bg-black/30 backdrop-blur-md rounded-full transition-all duration-300 ease-out overflow-hidden border border-white/10" style="width: 40px;">
+                <button id="searchIconBtn${index}" onclick="openSearchOverlay(${index})" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-black/40 transition flex-shrink-0" title="Hledat">
                   <i data-lucide="search" class="h-5 w-5"></i>
                 </button>
-                <div id="searchInputWrapper" class="flex-1 opacity-0 transition-opacity duration-200" style="width: 0;">
+                <div id="searchInputWrapper${index}" class="flex-1 opacity-0 transition-opacity duration-200" style="width: 0;">
                   <input 
-                    id="searchInputInline" 
+                    id="searchInputInline${index}" 
                     type="text" 
                     placeholder="Hledej tvůrce..." 
                     class="w-full bg-transparent py-2 pr-3 text-white placeholder-white/50 outline-none text-sm"
                     autocomplete="off"
+                    oninput="handleSearchInput(${index}, this.value)"
                   />
                 </div>
-                <button id="closeSearchInline" onclick="closeSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-white/10 transition flex-shrink-0 opacity-0" style="width: 0;">
+                <button id="closeSearchInline${index}" onclick="closeSearchOverlay(${index})" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-white/10 transition flex-shrink-0 opacity-0" style="width: 0;">
                   <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
               </div>
               <button onclick="window.location.href='/kartao-marketplace.html#filters'" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
                 <i data-lucide="sliders" class="h-5 w-5"></i>
               </button>
+            </div>
+          </div>
+
+          <!-- Search Results Overlay for this reel -->
+          <div id="searchResults${index}" class="absolute top-20 left-4 right-4 z-40 hidden max-h-[60vh] overflow-y-auto">
+            <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
+              <div class="text-white/60 text-sm text-center py-8">
+                Začni psát pro vyhledávání...
+              </div>
             </div>
           </div>
 
@@ -819,11 +820,11 @@
     }
 
     // Search functionality
-    window.openSearchOverlay = function() {
-      const searchBar = $('#searchBarInline');
-      const inputWrapper = $('#searchInputWrapper');
-      const closeBtn = $('#closeSearchInline');
-      const searchIconBtn = $('#searchIconBtn');
+    window.openSearchOverlay = function(index) {
+      const searchBar = $(`#searchBarInline${index}`);
+      const inputWrapper = $(`#searchInputWrapper${index}`);
+      const closeBtn = $(`#closeSearchInline${index}`);
+      const searchIconBtn = $(`#searchIconBtn${index}`);
       const screenWidth = window.innerWidth;
       const targetWidth = Math.min(screenWidth - 120, 400); // max 400px, leave space for other buttons
       
@@ -847,19 +848,19 @@
         searchIconBtn.style.opacity = '0';
         
         // Focus without scrolling
-        $('#searchInputInline').focus({ preventScroll: true });
+        $(`#searchInputInline${index}`).focus({ preventScroll: true });
         lucide.createIcons();
       }, 150);
       
-      trackEvent('search_opened');
+      trackEvent('search_opened', { reel_index: index });
     };
 
-    function closeSearchOverlay() {
-      const searchBar = $('#searchBarInline');
-      const inputWrapper = $('#searchInputWrapper');
-      const closeBtn = $('#closeSearchInline');
-      const searchIconBtn = $('#searchIconBtn');
-      const resultsOverlay = $('#searchResults');
+    window.closeSearchOverlay = function(index) {
+      const searchBar = $(`#searchBarInline${index}`);
+      const inputWrapper = $(`#searchInputWrapper${index}`);
+      const closeBtn = $(`#closeSearchInline${index}`);
+      const searchIconBtn = $(`#searchIconBtn${index}`);
+      const resultsOverlay = $(`#searchResults${index}`);
       
       // Hide input and close button
       inputWrapper.classList.remove('opacity-100');
@@ -881,26 +882,88 @@
         searchBar.classList.add('bg-black/30');
       }, 150);
       
-      // Hide results
-      resultsOverlay.classList.add('hidden');
-      resultsOverlay.innerHTML = `
+      // Hide results if exists
+      if (resultsOverlay) {
+        resultsOverlay.classList.add('hidden');
+        resultsOverlay.innerHTML = `
+          <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
+            <div class="text-white/60 text-sm text-center py-8">
+              Začni psát pro vyhledávání...
+            </div>
+          </div>
+        `;
+      }
+      
+      // Clear input
+      $(`#searchInputInline${index}`).value = '';
+      
+      trackEvent('search_closed', { reel_index: index });
+    };
+
+    window.handleSearchInput = function(index, query) {
+      searchQuery = query.toLowerCase().trim();
+      const resultsContainer = $(`#searchResults${index}`);
+
+      if (!searchQuery) {
+        resultsContainer.classList.add('hidden');
+        return;
+      }
+
+      // Filter reels based on search query
+      filteredReels = allReels.filter(reel => {
+        return reel.name?.toLowerCase().includes(searchQuery) ||
+          reel.handle?.toLowerCase().includes(searchQuery) ||
+          reel.bio?.toLowerCase().includes(searchQuery) ||
+          (reel.categories || []).some(cat => cat.toLowerCase().includes(searchQuery)) ||
+          (reel.platforms || []).some(p => p.toLowerCase().includes(searchQuery));
+      });
+
+      // Show results
+      resultsContainer.classList.remove('hidden');
+      
+      if (filteredReels.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
+            <div class="text-white/60 text-sm text-center py-8">
+              Žádné výsledky pro "${query}"
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Display results
+      resultsContainer.innerHTML = `
         <div class="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 p-4">
-          <div class="text-white/60 text-sm text-center py-8">
-            Začni psát pro vyhledávání...
+          <div class="text-white/80 text-xs font-semibold mb-3">${filteredReels.length} ${filteredReels.length === 1 ? 'výsledek' : 'výsledků'}</div>
+          <div class="space-y-2">
+            ${filteredReels.map((reel, i) => `
+              <button onclick="jumpToReel(${allReels.indexOf(reel)})" class="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition text-left">
+                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-600 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-sm">${reel.name[0]}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-white font-semibold text-sm truncate">${reel.name}</div>
+                  <div class="text-white/60 text-xs truncate">${reel.handle}</div>
+                </div>
+                <i data-lucide="arrow-right" class="h-4 w-4 text-white/40"></i>
+              </button>
+            `).join('')}
           </div>
         </div>
       `;
       
-      // Clear input
-      $('#searchInputInline').value = '';
-      
-      trackEvent('search_closed');
-    }
+      lucide.createIcons();
+      trackEvent('search_performed', { query: searchQuery, results: filteredReels.length, reel_index: index });
+    };
 
     function performSearch(query) {
+      // Deprecated - kept for backwards compatibility
       searchQuery = query.toLowerCase().trim();
       const resultsContainer = $('#searchResults');
 
+      if (!resultsContainer) return;
+      
       if (!searchQuery) {
         resultsContainer.classList.add('hidden');
         return;
