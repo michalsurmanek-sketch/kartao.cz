@@ -50,11 +50,6 @@
     <!-- Reels will be dynamically inserted here -->
   </div>
 
-  <!-- POSITION INDICATOR -->
-  <div id="positionIndicator" class="fixed top-20 right-4 z-30 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold hidden">
-    <span id="currentPosition">1</span> / <span id="totalReels">0</span>
-  </div>
-
   <!-- SEARCH OVERLAY -->
   <div id="searchOverlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 hidden flex-col">
     <div class="p-4">
@@ -255,10 +250,6 @@
       renderReels();
       $('#loading').classList.add('hidden');
       
-      // Update position indicator
-      $('#totalReels').textContent = allReels.length;
-      $('#positionIndicator').classList.remove('hidden');
-      
       // Auto-play first video
       setTimeout(() => {
         const firstVideo = $('video');
@@ -297,9 +288,6 @@
 
       if (newIndex !== currentIndex) {
         currentIndex = newIndex;
-        
-        // Update position indicator
-        $('#currentPosition').textContent = currentIndex + 1;
         
         // Track view
         if (allReels[currentIndex]) {
