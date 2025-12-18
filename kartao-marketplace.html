@@ -1305,6 +1305,17 @@
 
     $('#q').oninput = (e) => { state.q = e.target.value || ''; render(); };
 
+    // Dynamický placeholder podle velikosti obrazovky
+    function updateSearchPlaceholder() {
+      const isMobile = window.innerWidth < 768;
+      const placeholder = isMobile 
+        ? 'Hledat tvůrce, značku, téma...'
+        : 'Hledej tvůrce, značku, téma… (např. fitness, auta, beauty)';
+      $('#q').placeholder = placeholder;
+    }
+    updateSearchPlaceholder();
+    window.addEventListener('resize', updateSearchPlaceholder);
+
     // reset
     $('#reset').onclick = () => {
       state.seg = 'creator';
