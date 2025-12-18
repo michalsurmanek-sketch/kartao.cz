@@ -898,10 +898,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <i data-lucide="users" class="w-4 h-4"></i> <span>Nalezeno</span> <span id="total" class="font-semibold text-white">0</span>
             <span>tvůrců</span>
           </div>
-          <div class="flex items-center gap-2 text-purple-400">
+          <button id="savedFilterBtn" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition px-3 py-1 rounded-lg hover:bg-purple-500/10 cursor-pointer" title="Zobrazit jen uložené tvůrce">
             <i data-lucide="bookmark" class="w-4 h-4"></i> <span>Uloženo</span> <span id="savedCount" class="font-semibold">0</span>
             <span>tvůrců</span>
-          </div>
+          </button>
           <span id="modeBadge" class="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
         </div>
         <div class="hidden md:flex items-center gap-2 text-xs">
@@ -1365,8 +1365,11 @@ document.addEventListener('DOMContentLoaded', () => {
       premiumOnly: false,
       page: 1,
       pageSize: 12,
-      infinite: false
+      infinite: false,
+      savedOnly: false
     };
+    
+    let savedCreatorIds = [];
 
     function fmtFollowers(n) {
       return DataHelpers.formatFollowers(n);
@@ -1960,6 +1963,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (state.city !== 'all') {
         list = list.filter(c => c.city === state.city);
+      }
+      
+      // Filtr pouze uložených tvůrců
+      if (state.savedOnly) {
+        list = list.filter(c => savedCreatorIds.includes(c.id));
       }
 
       // Řazení
@@ -3084,6 +3092,35 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Načíst seznam uložených tvůrců
+    async function loadSavedCreators() {
+      try {
+        if (!window.supabaseClient) {
+          savedCreatorIds = [];
+          return;
+        }
+        
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        
+        if (!user) {
+          savedCreatorIds = [];
+          return;
+        }
+        
+        const { data, error } = await window.supabaseClient
+          .from('saved_creators')
+          .select('creator_id')
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        
+        savedCreatorIds = data.map(item => item.creator_id);
+      } catch (error) {
+        console.error('Chyba při načítání uložených tvůrců:', error);
+        savedCreatorIds = [];
+      }
+    }
+    
     // Aktualizovat počet uložených tvůrců
     async function updateSavedCount() {
       const savedCountEl = document.getElementById('savedCount');
@@ -3103,18 +3140,26 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         
-        // Načíst počet uložených tvůrců
-        const { count, error } = await window.supabaseClient
-          .from('saved_creators')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id);
-        
-        if (error) throw error;
-        
-        savedCountEl.textContent = String(count || 0);
+        // Načíst uložené tvůrce a aktualizovat počet
+        await loadSavedCreators();
+        savedCountEl.textContent = String(savedCreatorIds.length);
       } catch (error) {
         console.error('Chyba při načítání počtu uložených:', error);
         savedCountEl.textContent = '0';
+      }
+    }
+    
+    // Aktualizovat UI filtru uložených
+    function updateSavedFilterUI() {
+      const btn = document.getElementById('savedFilterBtn');
+      if (!btn) return;
+      
+      if (state.savedOnly) {
+        btn.classList.add('bg-purple-500/20', 'border', 'border-purple-500/50');
+        btn.classList.remove('hover:bg-purple-500/10');
+      } else {
+        btn.classList.remove('bg-purple-500/20', 'border', 'border-purple-500/50');
+        btn.classList.add('hover:bg-purple-500/10');
       }
     }
 
@@ -4544,8 +4589,20 @@ document.addEventListener('DOMContentLoaded', () => {
           state.infinite = false;
           state.pageSize = 12;
           state.page = 1;
+          state.savedOnly = false;
 
           syncInputsFromState();
+          updateSavedFilterUI();
+          await resetPageAndRender();
+        });
+      }
+      
+      // Event listener pro tlačítko "Uloženo"
+      const savedFilterBtn = document.getElementById('savedFilterBtn');
+      if (savedFilterBtn) {
+        savedFilterBtn.addEventListener('click', async () => {
+          state.savedOnly = !state.savedOnly;
+          updateSavedFilterUI();
           await resetPageAndRender();
         });
       }
@@ -4635,6 +4692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // ==========================================
       console.log('🚀 UI inicializováno, načítám tvůrce...');
       await loadAllCreators();
+      await updateSavedCount(); // Načíst uložené tvůrce při načtení stránky
       render();
     });
 
