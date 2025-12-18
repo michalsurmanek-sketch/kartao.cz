@@ -376,7 +376,10 @@
       <section id="vysledky" class="space-y-4">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Výsledky</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2">
+              <span>Výsledky</span>
+              <i id="resultsIcon" data-lucide="users" class="h-6 w-6 md:h-7 md:w-7 text-white/70"></i>
+            </h2>
             <p class="text-white/70 mt-2">Klikni na kartu pro detail, ulož si favority nebo pošli poptávku.</p>
           </div>
 
@@ -1022,6 +1025,12 @@
       $('#grid').innerHTML = out.map(cardHtml).join('');
       $('#empty').classList.toggle('hidden', out.length !== 0);
       $('#statResults').textContent = String(out.length);
+
+      // Aktualizuj ikonku v nadpisu Výsledky
+      const resultsIcon = $('#resultsIcon');
+      if (resultsIcon) {
+        resultsIcon.setAttribute('data-lucide', state.seg === 'creator' ? 'users' : 'building-2');
+      }
 
       // bind
       $$('#grid [data-open]').forEach(b => b.onclick = () => openModal(b.dataset.open));
