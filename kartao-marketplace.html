@@ -332,7 +332,7 @@
     <section class="grid lg:grid-cols-[360px_1fr] gap-6 items-start">
 
       <!-- SIDEBAR (filtry) -->
-      <aside id="filters" class="hidden lg:block rounded-3xl border border-white/10 bg-neutral-900/95 backdrop-blur-xl p-6 sticky-col lg:sticky lg:top-24">
+      <aside id="filters" class="hidden lg:block rounded-3xl border border-white/10 bg-white/[0.15] backdrop-blur-sm p-6 sticky-col lg:sticky lg:top-24">
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <button id="closeFilters" class="lg:hidden inline-flex items-center justify-center h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 transition">
@@ -1462,19 +1462,42 @@
       }
     };
 
-    // Toggle filters on mobile
+    // Toggle filters modal
     function toggleMobileFilters() {
       const filters = $('#filters');
       const isHidden = filters.classList.contains('hidden');
       
       if (isHidden) {
+        // Create backdrop if it doesn't exist
+        let backdrop = $('#filtersBackdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.id = 'filtersBackdrop';
+          backdrop.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-40';
+          backdrop.onclick = toggleMobileFilters;
+          document.body.appendChild(backdrop);
+        } else {
+          backdrop.classList.remove('hidden');
+        }
+        
         filters.classList.remove('hidden');
-        // Na mobilu zobraz přes celou šířku s fixed pozicí
-        filters.classList.add('fixed', 'inset-0', 'z-50', 'overflow-y-auto', 'lg:relative', 'lg:inset-auto', 'lg:z-auto');
+        // Zobraz jako modal overlay
+        filters.classList.add('fixed', 'inset-x-4', 'top-1/2', '-translate-y-1/2', 'z-50', 'overflow-y-auto', 'max-h-[90vh]', 'max-w-lg', 'mx-auto');
+        filters.classList.remove('lg:sticky', 'lg:top-24', 'sticky-col');
         document.body.style.overflow = 'hidden'; // Zakázat scrollování stránky
       } else {
+        const backdrop = $('#filtersBackdrop');
+        if (backdrop) {
+          backdrop.classList.add('hidden');
+        }
+        
         filters.classList.add('hidden');
-        filters.classList.remove('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+        filters.classList.remove('fixed', 'inset-x-4', 'top-1/2', '-translate-y-1/2', 'z-50', 'overflow-y-auto', 'max-h-[90vh]', 'max-w-lg', 'mx-auto');
+        // Restore original classes for desktop
+        if (window.innerWidth >= 1024) {
+          filters.classList.remove('hidden');
+          filters.classList.add('lg:sticky', 'lg:top-24', 'sticky-col');
+        }
         document.body.style.overflow = ''; // Povolit scrollování stránky
       }
       lucide.createIcons();
