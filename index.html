@@ -3372,6 +3372,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Uložit aktuální data
       currentCreatorData = data;
+      
+      // Uložit ID do drawer pro pozdější použití
+      drawer.dataset.creatorId = data.id;
 
       const {
         id,
@@ -4751,7 +4754,21 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Event listenery pro uložení, sdílení a odměnu influencera
       const saveCreatorBtn = document.getElementById('saveCreatorBtn');
-      if (saveCreatorBtn) saveCreatorBtn.addEventListener('click', saveCreator);
+      if (saveCreatorBtn) {
+        saveCreatorBtn.addEventListener('click', async () => {
+          const currentId = document.getElementById('drawer').dataset.creatorId;
+          if (!currentId) return;
+          
+          const icon = document.getElementById('saveCreatorIcon');
+          const isSaved = savedCreatorIds && savedCreatorIds.includes(currentId);
+          
+          if (isSaved) {
+            await toggleSaveCreator(currentId, false, icon);
+          } else {
+            await toggleSaveCreator(currentId, true, icon);
+          }
+        });
+      }
       const shareCreatorBtn = document.getElementById('shareCreatorBtn');
       if (shareCreatorBtn) shareCreatorBtn.addEventListener('click', shareCreator);
       const sendRewardBtn = document.getElementById('sendRewardBtn');
