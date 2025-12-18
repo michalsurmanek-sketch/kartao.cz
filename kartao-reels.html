@@ -659,7 +659,10 @@
           
           setTimeout(() => {
             btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
-            if (heartIcon) heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
+            if (heartIcon) {
+              heartIcon.className = 'h-6 w-6 text-red-500';
+              heartIcon.style.fill = 'currentColor'; // Force fill
+            }
             if (btnText) {
               btnText.textContent = 'Uloženo';
               btnText.classList.remove('fade-out-text');
@@ -668,7 +671,10 @@
           }, 400);
         } else {
           btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
-          if (heartIcon) heartIcon.className = 'h-6 w-6';
+          if (heartIcon) {
+            heartIcon.className = 'h-6 w-6';
+            heartIcon.style.fill = 'none'; // Remove fill
+          }
           if (btnText) btnText.textContent = 'Uložit';
           lucide.createIcons();
         }
