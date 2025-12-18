@@ -103,6 +103,61 @@
         transform: translateY(-10px);
       }
     }
+
+    /* Filter Styles */
+    .seg-reels {
+      padding: 0.625rem 1rem;
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.875rem;
+    }
+    .seg-reels:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .seg-reels.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      font-weight: 600;
+    }
+
+    .pill-reels {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.875rem;
+    }
+    .pill-reels:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .pill-reels.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      font-weight: 600;
+    }
+
+    .tagBtn-reels {
+      padding: 0.5rem 0.875rem;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.8125rem;
+    }
+    .tagBtn-reels:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .tagBtn-reels.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -543,7 +598,7 @@
                   <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
               </div>
-              <button onclick="window.location.href='/kartao-marketplace.html#filters'" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
+              <button onclick="openFiltersModal()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition" title="Filtry">
                 <i data-lucide="sliders" class="h-5 w-5"></i>
               </button>
             </div>
@@ -940,6 +995,70 @@
         viewProfile(creatorId);
       }, 100);
     };
+
+    // Filters Modal
+    let reelsFilters = {
+      type: 'creator',
+      platforms: [],
+      topics: [],
+      region: 'all',
+      minFollowers: 0,
+      verified: false
+    };
+
+    window.openFiltersModal = function() {
+      const modal = $('#filtersModal');
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+      trackEvent('filters_opened_from_reels');
+    };
+
+    window.closeFiltersModal = function() {
+      const modal = $('#filtersModal');
+      modal.classList.add('hidden');
+    };
+
+    window.applyFiltersReels = function() {
+      // Apply filters to reels
+      filterReels();
+      closeFiltersModal();
+      showToast('Filtry aplikovány');
+      trackEvent('filters_applied_from_reels', reelsFilters);
+    };
+
+    function filterReels() {
+      filteredReels = allReels.filter(reel => {
+        // Type filter
+        if (reelsFilters.type && reel.type !== reelsFilters.type) return false;
+        
+        // Platform filter
+        if (reelsFilters.platforms.length > 0) {
+          const hasMatch = reelsFilters.platforms.some(p => (reel.platforms || []).includes(p));
+          if (!hasMatch) return false;
+        }
+        
+        // Topic filter
+        if (reelsFilters.topics.length > 0) {
+          const hasMatch = reelsFilters.topics.some(t => (reel.categories || []).includes(t));
+          if (!hasMatch) return false;
+        }
+        
+        // Followers filter
+        if (reel.followers_count < reelsFilters.minFollowers) return false;
+        
+        // Verified filter
+        if (reelsFilters.verified && !reel.verified) return false;
+        
+        return true;
+      });
+
+      // Update reels display
+      if (filteredReels.length > 0) {
+        displayReels(filteredReels);
+      } else {
+        showToast('Žádné výsledky pro tyto filtry', 'error');
+      }
+    }
 
     // Contact creator
     window.contactCreator = function(creatorId) {
@@ -1345,6 +1464,98 @@
       });
     }
 
+    // Setup filter listeners
+    function setupFilterListeners() {
+      // Type segments
+      $$('.seg-reels').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $$('.seg-reels').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          reelsFilters.type = btn.dataset.seg;
+        });
+      });
+
+      // Platforms
+      $$('.pill-reels').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          const plat = btn.dataset.plat;
+          if (reelsFilters.platforms.includes(plat)) {
+            reelsFilters.platforms = reelsFilters.platforms.filter(p => p !== plat);
+          } else {
+            reelsFilters.platforms.push(plat);
+          }
+        });
+      });
+
+      // Topics
+      $$('.tagBtn-reels').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          const topic = btn.dataset.topic;
+          if (reelsFilters.topics.includes(topic)) {
+            reelsFilters.topics = reelsFilters.topics.filter(t => t !== topic);
+          } else {
+            reelsFilters.topics.push(topic);
+          }
+        });
+      });
+
+      // Region
+      const regionSelect = $('#regionReels');
+      if (regionSelect) {
+        regionSelect.addEventListener('change', () => {
+          reelsFilters.region = regionSelect.value;
+        });
+      }
+
+      // Followers slider
+      const followersSlider = $('#followersReels');
+      const followersVal = $('#followersValReels');
+      if (followersSlider && followersVal) {
+        followersSlider.addEventListener('input', () => {
+          const val = parseInt(followersSlider.value);
+          reelsFilters.minFollowers = val;
+          followersVal.textContent = val >= 500000 ? '500k+' : (val >= 1000 ? Math.round(val/1000) + 'k' : val);
+        });
+      }
+
+      // Verified checkbox
+      const verifiedCheck = $('#verifiedReels');
+      if (verifiedCheck) {
+        verifiedCheck.addEventListener('change', () => {
+          reelsFilters.verified = verifiedCheck.checked;
+        });
+      }
+
+      // Reset button
+      const resetBtn = $('#resetReels');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          reelsFilters = {
+            type: 'creator',
+            platforms: [],
+            topics: [],
+            region: 'all',
+            minFollowers: 0,
+            verified: false
+          };
+          
+          // Reset UI
+          $$('.seg-reels').forEach(b => b.classList.remove('active'));
+          $$('.seg-reels[data-seg="creator"]').forEach(b => b.classList.add('active'));
+          $$('.pill-reels').forEach(b => b.classList.remove('active'));
+          $$('.tagBtn-reels').forEach(b => b.classList.remove('active'));
+          if (regionSelect) regionSelect.value = 'all';
+          if (followersSlider) followersSlider.value = '0';
+          if (followersVal) followersVal.textContent = '0';
+          if (verifiedCheck) verifiedCheck.checked = false;
+          
+          showToast('Filtry resetovány');
+        });
+      }
+    }
+
     // Init
     async function init() {
       await checkAuth();
@@ -1352,6 +1563,7 @@
       setupTouchGestures();
       setupKeyboardNavigation();
       setupSearchListeners();
+      setupFilterListeners();
       
       // Track session
       trackEvent('reels_session_started');
