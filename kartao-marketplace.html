@@ -266,11 +266,16 @@
     <section class="grid lg:grid-cols-[360px_1fr] gap-6 items-start">
 
       <!-- SIDEBAR (filtry) -->
-      <aside id="filters" class="rounded-3xl border border-white/10 bg-white/[0.08] backdrop-blur-sm p-6 sticky-col">
+      <aside id="filters" class="hidden lg:block rounded-3xl border border-white/10 bg-white/[0.08] backdrop-blur-sm p-6 sticky-col lg:sticky lg:top-24">
         <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-sm text-white/60">Pokročilé</div>
-            <h2 class="text-xl font-extrabold">Filtry</h2>
+          <div class="flex items-center gap-3">
+            <button id="closeFilters" class="lg:hidden inline-flex items-center justify-center h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 transition">
+              <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+            <div>
+              <div class="text-sm text-white/60">Pokročilé</div>
+              <h2 class="text-xl font-extrabold">Filtry</h2>
+            </div>
           </div>
           <button id="reset" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
             <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
@@ -384,6 +389,10 @@
           </div>
 
           <div class="flex flex-nowrap md:flex-wrap gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide">
+            <button id="toggleFilters" class="lg:hidden inline-flex items-center gap-1 px-2.5 md:px-4 py-2 md:py-2.5 text-xs md:text-sm rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition whitespace-nowrap">
+              <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+              <span class="hidden sm:inline">Filtry</span>
+            </button>
             <button id="toggleView" class="inline-flex items-center gap-1 px-2.5 md:px-4 py-2 md:py-2.5 text-xs md:text-sm rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition whitespace-nowrap">
               <i data-lucide="layout-grid" class="h-4 w-4"></i>
               <span>Grid</span>
@@ -1376,6 +1385,27 @@
         vysledkySection.scrollIntoView({behavior:'smooth', block:'start'});
       }
     };
+
+    // Toggle filters on mobile
+    function toggleMobileFilters() {
+      const filters = $('#filters');
+      const isHidden = filters.classList.contains('hidden');
+      
+      if (isHidden) {
+        filters.classList.remove('hidden');
+        // Na mobilu zobraz přes celou šířku s fixed pozicí
+        filters.classList.add('fixed', 'inset-0', 'z-50', 'overflow-y-auto', 'lg:relative', 'lg:inset-auto', 'lg:z-auto');
+        document.body.style.overflow = 'hidden'; // Zakázat scrollování stránky
+      } else {
+        filters.classList.add('hidden');
+        filters.classList.remove('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+        document.body.style.overflow = ''; // Povolit scrollování stránky
+      }
+      lucide.createIcons();
+    }
+
+    $('#toggleFilters').onclick = toggleMobileFilters;
+    $('#closeFilters').onclick = toggleMobileFilters;
 
     // init
     syncUI();
