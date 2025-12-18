@@ -15,6 +15,9 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
+  <!-- Supabase Config -->
+  <script src="supabase-config.js"></script>
+  
   <!-- Shared Auth -->
   <script src="shared-auth.js" defer></script>
 
@@ -567,6 +570,15 @@
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
+    // --- Supabase init ---
+    let supabase;
+    if (typeof window.supabaseConfig !== 'undefined') {
+      supabase = window.supabase.createClient(
+        window.supabaseConfig.url,
+        window.supabaseConfig.anonKey
+      );
+    }
+
     // --- base components styling ---
     $$('button.chip').forEach(b => {
       b.className = 'chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
@@ -600,18 +612,80 @@
       });
     }
 
-    // --- Data (demo) ---
-    const now = Date.now();
-    const demo = [
-      {id:'c1', type:'creator', handle:'@lucy.fit', name:'Lucy', region:'cz', topics:['fitness','food'], platforms:['instagram','tiktok'], followers:128000, eng:6.2, priceFrom:4900, verified:true, badge:'VIP', note:'Rychlé dodání, čisté výstupy, vysoký engagement.', packs:[{t:'Reels + Story', p:6900},{t:'3× Story', p:3200},{t:'UGC video', p:5500}], createdAt: now-1000*60*60*24*9},
-      {id:'c2', type:'creator', handle:'@adam.tech', name:'Adam', region:'cz', topics:['gaming'], platforms:['youtube','twitch'], followers:82000, eng:4.1, priceFrom:5900, verified:false, badge:'PRO', note:'Tech & gaming. Dobře fungují recenze produktů.', packs:[{t:'YouTube integrace', p:12900},{t:'Shorts', p:4200}], createdAt: now-1000*60*60*24*18},
-      {id:'c3', type:'creator', handle:'@kaja.daily', name:'Kája', region:'sk', topics:['beauty','travel'], platforms:['instagram'], followers:156000, eng:5.4, priceFrom:7900, verified:true, badge:'VERIFIED', note:'Beauty/ lifestyle. Silná komunita.', packs:[{t:'Reels', p:8900},{t:'Story set', p:3900}], createdAt: now-1000*60*60*24*3},
-      {id:'c4', type:'creator', handle:'@martin.travel', name:'Martin', region:'eu', topics:['travel','food'], platforms:['instagram','youtube'], followers:64000, eng:3.7, priceFrom:4500, verified:true, badge:'VERIFIED', note:'Cestování & gastro. Dobré na hotely a zážitky.', packs:[{t:'Reels', p:5200},{t:'YouTube mention', p:7900}], createdAt: now-1000*60*60*24*31},
-      {id:'c5', type:'creator', handle:'@auto.david', name:'David', region:'cz', topics:['auta'], platforms:['tiktok','instagram'], followers:210000, eng:7.1, priceFrom:9900, verified:false, badge:'TREND', note:'Auta – virální formáty. Rychlé testy.', packs:[{t:'TikTok video', p:9900},{t:'IG Reels', p:10900}], createdAt: now-1000*60*60*24*2},
+    // --- Data ---
+    let demo = [];
+    let isLoading = true;
+    let loadError = null;
 
-      {id:'b1', type:'brand', handle:'TechStore', name:'TechStore', region:'cz', topics:['gaming'], platforms:['youtube'], followers:0, eng:0, priceFrom:0, verified:true, badge:'BRAND', note:'Hledá gaming tvůrce pro Black Friday.', packs:[{t:'Poptávka: 5 tvůrců', p:0}], createdAt: now-1000*60*60*24*6},
-      {id:'b2', type:'brand', handle:'Coffee&Co', name:'Coffee&Co', region:'cz', topics:['food'], platforms:['instagram','tiktok'], followers:0, eng:0, priceFrom:0, verified:false, badge:'BRAND', note:'Gastro brand – UGC & Reels.', packs:[{t:'UGC balík', p:0}], createdAt: now-1000*60*60*24*22},
-    ];
+    // Mapování databázového záznamu na formát UI
+    function mapCreatorToUI(dbCreator) {
+      const now = Date.now();
+      return {
+        id: dbCreator.id,
+        type: 'creator',
+        handle: dbCreator.handle || `@${dbCreator.name}`,
+        name: dbCreator.name,
+        region: dbCreator.city ? 'cz' : 'cz', // Defaultně CZ, můžeme rozšířit
+        topics: dbCreator.categories || [],
+        platforms: dbCreator.platforms || [],
+        followers: dbCreator.followers_count || 0,
+        eng: dbCreator.engagement || 0,
+        priceFrom: dbCreator.price || 0,
+        verified: dbCreator.verified || false,
+        badge: dbCreator.premium ? 'VIP' : dbCreator.verified ? 'VERIFIED' : '',
+        note: dbCreator.bio || 'Tvůrce na Kartao.cz',
+        packs: [], // Zatím prázdné, můžeme rozšířit
+        createdAt: new Date(dbCreator.created_at).getTime()
+      };
+    }
+
+    // Načtení influencerů z databáze
+    async function loadCreators() {
+      if (!supabase) {
+        console.warn('Supabase není k dispozici, používám demo data');
+        loadDemoData();
+        return;
+      }
+
+      try {
+        isLoading = true;
+        const { data, error } = await supabase
+          .from('creators')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          demo = data.map(mapCreatorToUI);
+          console.log(`✅ Načteno ${demo.length} influencerů z databáze`);
+        } else {
+          console.log('⚠️ Žádní influenceři v databázi, používám demo data');
+          loadDemoData();
+        }
+      } catch (error) {
+        console.error('❌ Chyba při načítání influencerů:', error);
+        loadError = error.message;
+        loadDemoData();
+      } finally {
+        isLoading = false;
+        render();
+      }
+    }
+
+    // Fallback demo data
+    function loadDemoData() {
+      const now = Date.now();
+      demo = [
+        {id:'c1', type:'creator', handle:'@lucy.fit', name:'Lucy', region:'cz', topics:['fitness','food'], platforms:['instagram','tiktok'], followers:128000, eng:6.2, priceFrom:4900, verified:true, badge:'VIP', note:'Rychlé dodání, čisté výstupy, vysoký engagement.', packs:[{t:'Reels + Story', p:6900},{t:'3× Story', p:3200},{t:'UGC video', p:5500}], createdAt: now-1000*60*60*24*9},
+        {id:'c2', type:'creator', handle:'@adam.tech', name:'Adam', region:'cz', topics:['gaming'], platforms:['youtube','twitch'], followers:82000, eng:4.1, priceFrom:5900, verified:false, badge:'PRO', note:'Tech & gaming. Dobře fungují recenze produktů.', packs:[{t:'YouTube integrace', p:12900},{t:'Shorts', p:4200}], createdAt: now-1000*60*60*24*18},
+        {id:'c3', type:'creator', handle:'@kaja.daily', name:'Kája', region:'sk', topics:['beauty','travel'], platforms:['instagram'], followers:156000, eng:5.4, priceFrom:7900, verified:true, badge:'VERIFIED', note:'Beauty/ lifestyle. Silná komunita.', packs:[{t:'Reels', p:8900},{t:'Story set', p:3900}], createdAt: now-1000*60*60*24*3},
+        {id:'c4', type:'creator', handle:'@martin.travel', name:'Martin', region:'eu', topics:['travel','food'], platforms:['instagram','youtube'], followers:64000, eng:3.7, priceFrom:4500, verified:true, badge:'VERIFIED', note:'Cestování & gastro. Dobré na hotely a zážitky.', packs:[{t:'Reels', p:5200},{t:'YouTube mention', p:7900}], createdAt: now-1000*60*60*24*31},
+        {id:'c5', type:'creator', handle:'@auto.david', name:'David', region:'cz', topics:['auta'], platforms:['tiktok','instagram'], followers:210000, eng:7.1, priceFrom:9900, verified:false, badge:'TREND', note:'Auta – virální formáty. Rychlé testy.', packs:[{t:'TikTok video', p:9900},{t:'IG Reels', p:10900}], createdAt: now-1000*60*60*24*2},
+        {id:'b1', type:'brand', handle:'TechStore', name:'TechStore', region:'cz', topics:['gaming'], platforms:['youtube'], followers:0, eng:0, priceFrom:0, verified:true, badge:'BRAND', note:'Hledá gaming tvůrce pro Black Friday.', packs:[{t:'Poptávka: 5 tvůrců', p:0}], createdAt: now-1000*60*60*24*6},
+        {id:'b2', type:'brand', handle:'Coffee&Co', name:'Coffee&Co', region:'cz', topics:['food'], platforms:['instagram','tiktok'], followers:0, eng:0, priceFrom:0, verified:false, badge:'BRAND', note:'Gastro brand – UGC & Reels.', packs:[{t:'UGC balík', p:0}], createdAt: now-1000*60*60*24*22},
+      ];
+    }
 
     // --- State ---
     const state = {
@@ -867,6 +941,18 @@
     }
 
     function render(){
+      if (isLoading) {
+        $('#grid').innerHTML = '<div class="col-span-full text-center py-20"><div class="inline-flex items-center gap-3 px-6 py-4 rounded-3xl bg-white/5 border border-white/10"><i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i><span class="text-white/80">Načítám influencery...</span></div></div>';
+        lucide.createIcons();
+        return;
+      }
+
+      if (loadError) {
+        $('#grid').innerHTML = `<div class="col-span-full text-center py-20"><div class="inline-flex flex-col items-center gap-3 px-6 py-4 rounded-3xl bg-red-500/10 border border-red-400/30"><i data-lucide="alert-circle" class="h-8 w-8 text-red-400"></i><span class="text-white/80">Chyba při načítání dat</span><span class="text-sm text-white/60">${loadError}</span></div></div>`;
+        lucide.createIcons();
+        return;
+      }
+
       const out = applyFilters(demo);
       $('#grid').innerHTML = out.map(cardHtml).join('');
       $('#empty').classList.toggle('hidden', out.length !== 0);
@@ -1201,6 +1287,14 @@
     syncUI();
     persistSaved();
     $('#statViews').textContent = String(state.views);
+    
+    // Načíst influencery z databáze při načtení stránky
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCreators();
+      lucide.createIcons();
+    });
+    
+    // První render s loading stavem
     render();
     lucide.createIcons();
   </script>
