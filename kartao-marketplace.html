@@ -154,7 +154,10 @@
               <div class="grid md:grid-cols-[1fr_auto] gap-3">
                 <div class="relative">
                   <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
-                  <input id="q" type="text" placeholder="Hledej tvůrce, značku, téma… (např. fitness, auta, beauty)" class="w-full rounded-2xl bg-neutral-950/60 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+                  <input id="q" type="text" placeholder="Hledej tvůrce, značku, téma… (např. fitness, auta, beauty)" class="w-full rounded-2xl bg-neutral-950/60 border border-white/10 pl-11 pr-12 py-3 outline-none focus:border-white/25" />
+                  <button id="scrollToResults" class="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 transition grid place-items-center" title="Přejít na výsledky">
+                    <i data-lucide="arrow-down" class="h-4 w-4"></i>
+                  </button>
                 </div>
                 <div class="flex gap-2">
                   <button id="openFilters" class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition md:hidden">
@@ -1340,6 +1343,11 @@
 
     // procházet CTA
     $('#ctaBrowse').onclick = () => {
+      $('section.grid.lg\\:grid-cols-\\[360px_1fr\\]').scrollIntoView({behavior:'smooth', block:'start'});
+    };
+
+    // Scroll to results tlačítko
+    $('#scrollToResults').onclick = () => {
       $('section.grid.lg\\:grid-cols-\\[360px_1fr\\]').scrollIntoView({behavior:'smooth', block:'start'});
     };
 
