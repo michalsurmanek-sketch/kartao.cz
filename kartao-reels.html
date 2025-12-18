@@ -113,7 +113,7 @@
   </div>
 
   <!-- SEARCH BAR -->
-  <div id="searchBar" class="fixed top-4 left-4 z-50 transition-all duration-300 ease-out" style="width: 0; opacity: 0;">
+  <div id="searchBar" class="fixed top-4 right-4 z-50 transition-all duration-300 ease-out" style="width: 0; opacity: 0;">
     <div class="flex items-center gap-2 bg-black/95 backdrop-blur-xl rounded-full border border-white/20 pr-3 overflow-hidden">
       <button id="closeSearch" class="h-12 w-12 rounded-full flex items-center justify-center hover:bg-white/10 transition flex-shrink-0">
         <i data-lucide="x" class="h-5 w-5"></i>
@@ -209,27 +209,43 @@
       }
     ];
 
-    // Check authentication
+    // Check authentication and setup listener
     async function checkAuth() {
       try {
-        // First check session
+        // Check current session
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
           userId = session.user.id;
           await loadSavedCreators();
-          console.log('User authenticated:', userId);
+          console.log('✅ User authenticated:', userId);
         } else {
-          console.log('No user session found');
+          console.log('❌ No user session found');
         }
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event, session?.user?.id);
+          
+          if (session?.user) {
+            userId = session.user.id;
+            await loadSavedCreators();
+          } else {
+            userId = null;
+            savedCreators.clear();
+          }
+        });
       } catch (error) {
-        console.error('Auth check error:', error);
+        console.error('❌ Auth check error:', error);
       }
     }
 
     // Load saved creators for current user
     async function loadSavedCreators() {
-      if (!userId) return;
+      if (!userId) {
+        console.log('⚠️ Cannot load saved creators - no userId');
+        return;
+      }
       
       try {
         const { data, error } = await supabase
@@ -240,9 +256,38 @@
         if (error) throw error;
 
         savedCreators = new Set(data.map(item => item.creator_id));
+        console.log('✅ Loaded saved creators:', savedCreators.size);
+        
+        // Update UI for all reels
+        updateAllSaveButtons();
       } catch (error) {
-        console.error('Error loading saved creators:', error);
+        console.error('❌ Error loading saved creators:', error);
       }
+    }
+
+    // Update all save buttons based on current saved state
+    function updateAllSaveButtons() {
+      allReels.forEach((reel, index) => {
+        const saveBtn = $(`#saveBtn${index}`);
+        if (!saveBtn) return;
+
+        const isSaved = savedCreators.has(reel.id);
+        const heartIcon = saveBtn.querySelector('i');
+        const btnText = saveBtn.querySelector('span');
+        const btnContainer = saveBtn.querySelector('div');
+
+        if (isSaved) {
+          btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
+          if (heartIcon) heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
+          if (btnText) btnText.textContent = 'Uloženo';
+        } else {
+          btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
+          if (heartIcon) heartIcon.className = 'h-6 w-6';
+          if (btnText) btnText.textContent = 'Uložit';
+        }
+      });
+      
+      lucide.createIcons();
     }
 
     async function loadReels() {
@@ -528,44 +573,51 @@
     }
 
     window.toggleSave = async function(creatorId, index) {
-      // Re-check auth in case it wasn't loaded yet
+      console.log('🔄 Toggle save called - userId:', userId, 'creatorId:', creatorId);
+      
+      // Check if user is logged in
       if (!userId) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user) {
-            userId = session.user.id;
-            await loadSavedCreators();
-          } else {
-            // Redirect to login
-            window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
-            return;
-          }
-        } catch (error) {
-          console.error('Auth check error:', error);
+        console.log('⚠️ No userId, checking session...');
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session?.user) {
+          console.log('❌ Not logged in, redirecting...');
           window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
           return;
         }
+        
+        userId = session.user.id;
+        await loadSavedCreators();
+        console.log('✅ Session found, userId:', userId);
       }
 
       const isSaved = savedCreators.has(creatorId);
       const saveBtn = $(`#saveBtn${index}`);
       
+      console.log('Current state - isSaved:', isSaved, 'savedCreators size:', savedCreators.size);
+      
       try {
         if (isSaved) {
           // Unsave
+          console.log('🗑️ Unsaving creator...');
           const { error } = await supabase
             .from('saved_creators')
             .delete()
             .eq('user_id', userId)
             .eq('creator_id', creatorId);
 
-          if (error) throw error;
+          if (error) {
+            console.error('❌ Unsave error:', error);
+            throw error;
+          }
 
           savedCreators.delete(creatorId);
+          console.log('✅ Unsaved successfully');
           showToast('Odebráno z uložených');
           trackEvent('creator_unsaved', { creator_id: creatorId });
         } else {
           // Save with flying heart animation
+          console.log('❤️ Saving creator...');
           const { error } = await supabase
             .from('saved_creators')
             .insert({
@@ -574,9 +626,13 @@
               created_at: new Date().toISOString()
             });
 
-          if (error) throw error;
+          if (error) {
+            console.error('❌ Save error:', error);
+            throw error;
+          }
 
           savedCreators.add(creatorId);
+          console.log('✅ Saved successfully, new size:', savedCreators.size);
           
           // Trigger flying heart effect
           createFlyingHeart(saveBtn);
@@ -596,23 +652,25 @@
           setTimeout(() => btnContainer.classList.remove('heart-burst'), 500);
           
           // Fade out text
-          btnText.classList.add('fade-out-text');
+          if (btnText) btnText.classList.add('fade-out-text');
           
           setTimeout(() => {
             btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
-            heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
-            btnText.textContent = 'Uloženo';
-            btnText.classList.remove('fade-out-text');
+            if (heartIcon) heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
+            if (btnText) {
+              btnText.textContent = 'Uloženo';
+              btnText.classList.remove('fade-out-text');
+            }
             lucide.createIcons();
           }, 400);
         } else {
           btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
-          heartIcon.className = 'h-6 w-6';
-          btnText.textContent = 'Uložit';
+          if (heartIcon) heartIcon.className = 'h-6 w-6';
+          if (btnText) btnText.textContent = 'Uložit';
           lucide.createIcons();
         }
       } catch (error) {
-        console.error('Error toggling save:', error);
+        console.error('❌ Error toggling save:', error);
         showToast('Chyba při ukládání', 'error');
       }
     };
