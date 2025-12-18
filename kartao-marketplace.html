@@ -37,6 +37,10 @@
     @media (min-width: 1024px){
       .sticky-col{position:sticky;top:92px}
     }
+
+    /* skrýt scrollbar pro horizontální scroll */
+    .scrollbar-hide::-webkit-scrollbar{display:none}
+    .scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
@@ -164,13 +168,13 @@
                 </div>
               </div>
 
-              <div class="mt-3 flex flex-wrap gap-2 text-xs">
-                <button class="chip" data-chip="tiktok">TikTok</button>
-                <button class="chip" data-chip="instagram">Instagram</button>
-                <button class="chip" data-chip="youtube">YouTube</button>
-                <button class="chip" data-chip="gaming">Gaming</button>
-                <button class="chip" data-chip="fitness">Fitness</button>
-                <button class="chip" data-chip="auta">Auta</button>
+              <div class="mt-3 flex gap-2 text-xs overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide">
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="tiktok">TikTok</button>
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="instagram">Instagram</button>
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="youtube">YouTube</button>
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="gaming">Gaming</button>
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="fitness">Fitness</button>
+                <button class="chip whitespace-nowrap flex-shrink-0" data-chip="auta">Auta</button>
               </div>
             </div>
 
