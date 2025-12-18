@@ -778,12 +778,26 @@
 
     function platformPills(item){
       const icons = {instagram:'instagram', tiktok:'video', youtube:'youtube', facebook:'facebook'};
-      return item.platforms.map(p => `
-        <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 inline-flex items-center gap-1">
-          <i data-lucide="${icons[p]||'circle'}" class="h-3.5 w-3.5"></i>
-          ${p}
-        </span>
-      `).join('');
+      const platforms = item.platforms || [];
+      const showIconOnly = platforms.length > 4;
+      
+      return platforms.map((p, index) => {
+        // Na mobilu pokud je víc než 4 platformy, zobraz jen ikony
+        if (showIconOnly) {
+          return `
+            <span class="text-xs p-2 rounded-full bg-white/5 border border-white/10 text-white/70 inline-flex items-center" title="${p}">
+              <i data-lucide="${icons[p]||'circle'}" class="h-3.5 w-3.5"></i>
+            </span>
+          `;
+        }
+        // Pokud je 4 nebo méně, zobraz ikonu + text
+        return `
+          <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 inline-flex items-center gap-1">
+            <i data-lucide="${icons[p]||'circle'}" class="h-3.5 w-3.5"></i>
+            <span class="hidden sm:inline">${p}</span>
+          </span>
+        `;
+      }).join('');
     }
 
     function topicTags(item){
@@ -919,7 +933,7 @@
               </div>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-2">${platformPills(item)}</div>
+            <div class="mt-4 flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide">${platformPills(item)}</div>
             <div class="mt-3 flex flex-wrap gap-2">${topicTags(item)}</div>
 
             <div class="mt-4">${metric}</div>
