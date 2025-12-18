@@ -112,6 +112,23 @@
     <!-- Reels will be dynamically inserted here -->
   </div>
 
+  <!-- PROFILE CARD MODAL -->
+  <div id="profileModal" class="fixed inset-0 z-[100] hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeProfileModal()"></div>
+    
+    <!-- Card -->
+    <div class="absolute inset-x-4 top-1/2 -translate-y-1/2 max-w-lg mx-auto bg-gradient-to-b from-gray-900 to-black rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
+      <!-- Close button -->
+      <button onclick="closeProfileModal()" class="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <!-- Content will be dynamically inserted -->
+      <div id="profileModalContent"></div>
+    </div>
+  </div>
+
   <!-- LOADING STATE -->
   <div id="loading" class="fixed inset-0 flex items-center justify-center bg-black z-50">
     <div class="flex flex-col items-center gap-4">
@@ -687,8 +704,129 @@
 
     // View creator profile
     window.viewProfile = function(creatorId) {
-      trackEvent('profile_viewed_from_reels', { creator_id: creatorId });
-      window.location.href = `/creator-profile.html?id=${creatorId}`;
+      const reel = allReels.find(r => r.id === creatorId);
+      if (!reel) return;
+
+      const isCompany = reel.type === 'company';
+      const modal = $('#profileModal');
+      const content = $('#profileModalContent');
+
+      // Platform icons
+      const platformIcons = {
+        instagram: 'instagram',
+        youtube: 'youtube',
+        tiktok: 'music',
+        facebook: 'facebook',
+        twitter: 'twitter',
+        linkedin: 'linkedin'
+      };
+
+      // Build platforms HTML
+      const platformsHtml = (reel.platforms || []).map(p => `
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+          <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
+          <span class="text-xs capitalize">${p}</span>
+        </div>
+      `).join('');
+
+      // Build badges
+      let badgeHtml = '';
+      if (reel.verified) {
+        badgeHtml += '<div class="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center" title="Ověřený profil"><i data-lucide="check" class="h-3 w-3 text-white"></i></div>';
+      }
+      if (reel.premium) {
+        badgeHtml += '<div class="h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center" title="Premium"><i data-lucide="crown" class="h-3 w-3 text-white"></i></div>';
+      }
+
+      content.innerHTML = `
+        <!-- Header with gradient -->
+        <div class="relative h-32 bg-gradient-to-br from-fuchsia-600 via-purple-600 to-blue-600">
+          <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+
+        <!-- Profile info -->
+        <div class="relative px-6 pb-6">
+          <!-- Avatar -->
+          <div class="absolute -top-16 left-6">
+            <div class="h-24 w-24 rounded-full bg-gradient-to-br from-fuchsia-600 to-purple-600 flex items-center justify-center text-3xl font-bold border-4 border-gray-900">
+              ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full rounded-full object-cover">` : reel.name[0]}
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="pt-10">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h2 class="text-2xl font-bold">${reel.name}</h2>
+                  ${badgeHtml ? `<div class="flex gap-1">${badgeHtml}</div>` : ''}
+                </div>
+                <p class="text-white/60">${reel.handle}</p>
+              </div>
+            </div>
+
+            ${reel.bio ? `<p class="text-white/80 mb-4">${reel.bio}</p>` : ''}
+
+            <!-- Stats -->
+            <div class="flex items-center gap-6 mb-4">
+              <div>
+                <div class="text-2xl font-bold">${formatNumber(reel.followers_count)}</div>
+                <div class="text-xs text-white/60">Sledujících</div>
+              </div>
+              ${isCompany ? `
+                <div>
+                  <div class="text-2xl font-bold">${reel.employees || 'N/A'}</div>
+                  <div class="text-xs text-white/60">Zaměstnanců</div>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Platforms -->
+            ${platformsHtml ? `
+              <div class="mb-6">
+                <div class="text-xs text-white/60 font-semibold mb-2">PLATFORMY</div>
+                <div class="flex flex-wrap gap-2">
+                  ${platformsHtml}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Categories -->
+            ${reel.categories && reel.categories.length > 0 ? `
+              <div class="mb-6">
+                <div class="text-xs text-white/60 font-semibold mb-2">KATEGORIE</div>
+                <div class="flex flex-wrap gap-2">
+                  ${reel.categories.map(cat => `
+                    <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs">${cat}</span>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Action buttons -->
+            <div class="flex gap-3">
+              <button onclick="contactCreator('${reel.id}')" class="flex-1 px-6 py-3 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-semibold hover:brightness-110 transition flex items-center justify-center gap-2">
+                <i data-lucide="send" class="h-4 w-4"></i>
+                ${isCompany ? 'Kontaktovat' : 'Poptat spolupráci'}
+              </button>
+              <button onclick="toggleSave('${reel.id}', ${allReels.indexOf(reel)})" class="px-6 py-3 rounded-full ${savedCreators.has(reel.id) ? 'bg-red-500/20 border-red-500/50' : 'bg-white/10 border-white/20'} border hover:brightness-110 transition">
+                <i data-lucide="heart" class="h-5 w-5 ${savedCreators.has(reel.id) ? 'fill-red-500 text-red-500' : ''}"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Show modal
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+      
+      trackEvent('profile_viewed_from_reels', { creator_id: creatorId, type: reel.type });
+    };
+
+    window.closeProfileModal = function() {
+      const modal = $('#profileModal');
+      modal.classList.add('hidden');
     };
 
     // Contact creator
