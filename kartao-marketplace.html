@@ -868,10 +868,10 @@
 
       const metric = item.type === 'creator'
         ? `
-          <div class="grid grid-cols-3 gap-2 text-xs">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
             <div class="rounded-2xl bg-white/5 border border-white/10 p-3"><div class="text-white/60">Followers</div><div class="font-bold">${human(item.followers)}</div></div>
             <div class="rounded-2xl bg-white/5 border border-white/10 p-3"><div class="text-white/60">Eng</div><div class="font-bold">${(item.eng||0).toString().replace('.',',')}%</div></div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 p-3"><div class="text-white/60">Cena od</div><div class="font-bold">${money(item.priceFrom)}</div></div>
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-3 col-span-2 md:col-span-1"><div class="text-white/60">Cena od</div><div class="font-bold">${money(item.priceFrom)}</div></div>
           </div>
         `
         : `
