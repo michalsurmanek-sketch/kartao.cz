@@ -417,8 +417,8 @@
             </button>
             <div class="flex items-center gap-2">
               <!-- Search bar that expands from icon -->
-              <div id="searchBarInline" class="flex items-center gap-2 bg-black/40 backdrop-blur-sm rounded-full transition-all duration-300 ease-out overflow-hidden" style="width: 40px;">
-                <button id="searchIconBtn" onclick="openSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-black/60 transition flex-shrink-0" title="Hledat">
+              <div id="searchBarInline" class="flex items-center gap-2 bg-black/30 backdrop-blur-md rounded-full transition-all duration-300 ease-out overflow-hidden border border-white/10" style="width: 40px;">
+                <button id="searchIconBtn" onclick="openSearchOverlay()" class="h-10 w-10 rounded-full flex items-center justify-center hover:bg-black/40 transition flex-shrink-0" title="Hledat">
                   <i data-lucide="search" class="h-5 w-5"></i>
                 </button>
                 <div id="searchInputWrapper" class="flex-1 opacity-0 transition-opacity duration-200" style="width: 0;">
@@ -426,7 +426,7 @@
                     id="searchInputInline" 
                     type="text" 
                     placeholder="Hledej tvůrce..." 
-                    class="w-full bg-transparent py-2 pr-3 text-white placeholder-white/60 outline-none text-sm"
+                    class="w-full bg-transparent py-2 pr-3 text-white placeholder-white/50 outline-none text-sm"
                     autocomplete="off"
                   />
                 </div>
@@ -823,8 +823,8 @@
       
       // Expand search bar from icon
       searchBar.style.width = targetWidth + 'px';
-      searchBar.classList.remove('bg-black/40');
-      searchBar.classList.add('bg-black/95');
+      searchBar.classList.remove('bg-black/30');
+      searchBar.classList.add('bg-black/70');
       
       // Show input and close button
       setTimeout(() => {
@@ -840,7 +840,8 @@
         searchIconBtn.style.width = '0';
         searchIconBtn.style.opacity = '0';
         
-        $('#searchInputInline').focus();
+        // Focus without scrolling
+        $('#searchInputInline').focus({ preventScroll: true });
         lucide.createIcons();
       }, 150);
       
@@ -870,8 +871,8 @@
         
         // Collapse search bar back to icon
         searchBar.style.width = '40px';
-        searchBar.classList.remove('bg-black/95');
-        searchBar.classList.add('bg-black/40');
+        searchBar.classList.remove('bg-black/70');
+        searchBar.classList.add('bg-black/30');
       }, 150);
       
       // Hide results
