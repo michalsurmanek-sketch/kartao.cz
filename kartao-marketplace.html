@@ -576,11 +576,20 @@
 
     // --- Supabase init ---
     let supabase;
-    if (typeof window.supabaseConfig !== 'undefined') {
-      supabase = window.supabase.createClient(
-        window.supabaseConfig.url,
-        window.supabaseConfig.anonKey
-      );
+    try {
+      const config = window.supabaseConfig || {
+        url: "https://hrmrgudiindtnfaaiyyg.supabase.co",
+        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0"
+      };
+      
+      if (window.supabase && window.supabase.createClient) {
+        supabase = window.supabase.createClient(config.url, config.anonKey);
+        console.log('✅ Supabase inicializován:', supabase);
+      } else {
+        console.error('❌ Supabase SDK není k dispozici');
+      }
+    } catch (error) {
+      console.error('❌ Chyba při inicializaci Supabase:', error);
     }
 
     // --- base components styling ---
@@ -645,26 +654,39 @@
 
     // Načtení influencerů z databáze
     async function loadCreators() {
+      console.log('🔄 Spouštím loadCreators()...');
+      console.log('Supabase klient:', supabase);
+      
       if (!supabase) {
-        console.warn('Supabase není k dispozici, používám demo data');
+        console.warn('⚠️ Supabase není k dispozici, používám demo data');
         loadDemoData();
+        isLoading = false;
+        render();
         return;
       }
 
       try {
         isLoading = true;
+        render(); // Zobrazit loading stav
+        
+        console.log('📡 Dotazuji se databáze creators...');
         const { data, error } = await supabase
           .from('creators')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        console.log('📦 Odpověď z databáze:', { data, error });
+
+        if (error) {
+          console.error('❌ Chyba z Supabase:', error);
+          throw error;
+        }
 
         if (data && data.length > 0) {
           demo = data.map(mapCreatorToUI);
-          console.log(`✅ Načteno ${demo.length} influencerů z databáze`);
+          console.log(`✅ Načteno ${demo.length} influencerů z databáze:`, demo);
         } else {
-          console.log('⚠️ Žádní influenceři v databázi, používám demo data');
+          console.log('⚠️ Žádní influenceři v databázi (data.length = 0), používám demo data');
           loadDemoData();
         }
       } catch (error) {
@@ -673,6 +695,7 @@
         loadDemoData();
       } finally {
         isLoading = false;
+        console.log('✅ loadCreators() dokončeno, isLoading:', isLoading);
         render();
       }
     }
