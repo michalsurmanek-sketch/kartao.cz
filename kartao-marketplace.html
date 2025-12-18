@@ -287,7 +287,7 @@
               <button class="pill" data-plat="instagram"><i data-lucide="instagram" class="h-4 w-4"></i><span>Instagram</span></button>
               <button class="pill" data-plat="tiktok"><i data-lucide="video" class="h-4 w-4"></i><span>TikTok</span></button>
               <button class="pill" data-plat="youtube"><i data-lucide="youtube" class="h-4 w-4"></i><span>YouTube</span></button>
-              <button class="pill" data-plat="twitch"><i data-lucide="tv" class="h-4 w-4"></i><span>Twitch</span></button>
+              <button class="pill" data-plat="facebook"><i data-lucide="facebook" class="h-4 w-4"></i><span>Facebook</span></button>
             </div>
           </div>
 
@@ -705,7 +705,7 @@
       const now = Date.now();
       demo = [
         {id:'c1', type:'creator', handle:'@lucy.fit', name:'Lucy', region:'cz', topics:['fitness','food'], platforms:['instagram','tiktok'], followers:128000, eng:6.2, priceFrom:4900, verified:true, badge:'VIP', note:'Rychlé dodání, čisté výstupy, vysoký engagement.', packs:[{t:'Reels + Story', p:6900},{t:'3× Story', p:3200},{t:'UGC video', p:5500}], createdAt: now-1000*60*60*24*9},
-        {id:'c2', type:'creator', handle:'@adam.tech', name:'Adam', region:'cz', topics:['gaming'], platforms:['youtube','twitch'], followers:82000, eng:4.1, priceFrom:5900, verified:false, badge:'PRO', note:'Tech & gaming. Dobře fungují recenze produktů.', packs:[{t:'YouTube integrace', p:12900},{t:'Shorts', p:4200}], createdAt: now-1000*60*60*24*18},
+        {id:'c2', type:'creator', handle:'@adam.tech', name:'Adam', region:'cz', topics:['gaming'], platforms:['youtube','facebook'], followers:82000, eng:4.1, priceFrom:5900, verified:false, badge:'PRO', note:'Tech & gaming. Dobře fungují recenze produktů.', packs:[{t:'YouTube integrace', p:12900},{t:'Shorts', p:4200}], createdAt: now-1000*60*60*24*18},
         {id:'c3', type:'creator', handle:'@kaja.daily', name:'Kája', region:'sk', topics:['beauty','travel'], platforms:['instagram'], followers:156000, eng:5.4, priceFrom:7900, verified:true, badge:'VERIFIED', note:'Beauty/ lifestyle. Silná komunita.', packs:[{t:'Reels', p:8900},{t:'Story set', p:3900}], createdAt: now-1000*60*60*24*3},
         {id:'c4', type:'creator', handle:'@martin.travel', name:'Martin', region:'eu', topics:['travel','food'], platforms:['instagram','youtube'], followers:64000, eng:3.7, priceFrom:4500, verified:true, badge:'VERIFIED', note:'Cestování & gastro. Dobré na hotely a zážitky.', packs:[{t:'Reels', p:5200},{t:'YouTube mention', p:7900}], createdAt: now-1000*60*60*24*31},
         {id:'c5', type:'creator', handle:'@auto.david', name:'David', region:'cz', topics:['auta'], platforms:['tiktok','instagram'], followers:210000, eng:7.1, priceFrom:9900, verified:false, badge:'TREND', note:'Auta – virální formáty. Rychlé testy.', packs:[{t:'TikTok video', p:9900},{t:'IG Reels', p:10900}], createdAt: now-1000*60*60*24*2},
@@ -761,7 +761,7 @@
     }
 
     function platformPills(item){
-      const icons = {instagram:'instagram', tiktok:'video', youtube:'youtube', twitch:'tv'};
+      const icons = {instagram:'instagram', tiktok:'video', youtube:'youtube', facebook:'facebook'};
       return item.platforms.map(p => `
         <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 inline-flex items-center gap-1">
           <i data-lucide="${icons[p]||'circle'}" class="h-3.5 w-3.5"></i>
@@ -1223,7 +1223,7 @@
     $$('.chip').forEach(b => {
       b.onclick = () => {
         const v = b.dataset.chip;
-        if (['tiktok','instagram','youtube','twitch'].includes(v)){
+        if (['tiktok','instagram','youtube','facebook'].includes(v)){
           state.plats.has(v) ? state.plats.delete(v) : state.plats.add(v);
         } else {
           state.topics.has(v) ? state.topics.delete(v) : state.topics.add(v);
