@@ -49,6 +49,64 @@
     /* skrýt scrollbar pro horizontální scroll */
     .scrollbar-hide::-webkit-scrollbar{display:none}
     .scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
+
+    /* Filter button styles */
+    .seg {
+      padding: 0.625rem 1rem;
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.875rem;
+    }
+    .seg:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .seg.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgb(217, 70, 239);
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgb(217, 70, 239);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.875rem;
+    }
+    .pill:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .pill.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgb(217, 70, 239);
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgb(217, 70, 239);
+    }
+
+    .tagBtn {
+      padding: 0.5rem 0.875rem;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s;
+      font-size: 0.8125rem;
+    }
+    .tagBtn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .tagBtn.active {
+      background: rgba(255,255,255,0.15);
+      border-color: rgb(217, 70, 239);
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgb(217, 70, 239);
+    }
   </style>
 </head>
 <body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
@@ -1425,6 +1483,31 @@
     $('#toggleFilters').onclick = toggleMobileFilters;
     $('#closeFilters').onclick = toggleMobileFilters;
 
+    // Filter button interactions
+    function setupFilterButtons() {
+      // Seg buttons (typ profilu)
+      $$('.seg').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $$('.seg').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+
+      // Pill buttons (platformy)
+      $$('.pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+        });
+      });
+
+      // Tag buttons (témata)
+      $$('.tagBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+        });
+      });
+    }
+
     // init
     syncUI();
     persistSaved();
@@ -1433,6 +1516,7 @@
     // Načíst influencery z databáze při načtení stránky
     document.addEventListener('DOMContentLoaded', () => {
       loadCreators();
+      setupFilterButtons();
       lucide.createIcons();
     });
     
