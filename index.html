@@ -1967,6 +1967,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Filtr pouze uložených tvůrců
       if (state.savedOnly) {
+        console.log('🔍 Filtr savedOnly aktivní, savedCreatorIds:', savedCreatorIds);
         list = list.filter(c => savedCreatorIds.includes(c.id));
       }
 
@@ -2226,7 +2227,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (saveBtn) {
         // Nastavit barvu ikony podle toho, zda je uložen
         const svg = saveBtn.querySelector('svg');
-        if (svg && savedCreatorIds.includes(id)) {
+        if (svg && savedCreatorIds && savedCreatorIds.includes(id)) {
           svg.style.fill = 'currentColor';
           svg.classList.add('text-purple-400');
         }
@@ -2237,7 +2238,7 @@ document.addEventListener('DOMContentLoaded', () => {
           currentCreatorData = data;
           
           const svg = saveBtn.querySelector('svg');
-          const isSaved = savedCreatorIds.includes(id);
+          const isSaved = savedCreatorIds && savedCreatorIds.includes(id);
           
           if (isSaved) {
             // Odebrat z uložených
@@ -2320,6 +2321,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loading) loading.classList.add('hidden');
 
       const all = applyFilters();
+      console.log('🎨 Render - nalezeno tvůrců:', all.length, 'savedOnly:', state.savedOnly);
       totalEl.textContent = String(all.length);
       modeBadge.textContent = 'Režim: ' + (state.mode === 'max' ? 'MAX' : 'Σ Součet');
       
