@@ -23,18 +23,25 @@
   async function init() {
     console.log('🔐 Auth Unified: Initializing...');
     
-    // Čekat na Supabase client
+    // Čekat na Supabase client s delším timeoutem
     let attempts = 0;
-    while (!window.supabaseClient && attempts < 50) {
+    while (!window.supabaseClient && !window.sb && attempts < 100) {
       await new Promise(resolve => setTimeout(resolve, 100));
       attempts++;
     }
 
-    if (!window.supabaseClient) {
-      console.error('🔐 Auth Unified: Supabase client not available!');
+    const client = window.supabaseClient || window.sb;
+    
+    if (!client) {
+      console.error('🔐 Auth Unified: Supabase client not available after 10s!');
+      window.kartaoAuth.isReady = true;
+      notifyListeners();
       return;
     }
 
+    // Použij který klient existuje
+    if (!window.supabaseClient) window.supabaseClient = client;
+    
     console.log('🔐 Auth Unified: Supabase client ready');
 
     // Načíst aktuální session
