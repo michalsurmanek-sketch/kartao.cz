@@ -208,8 +208,7 @@
 
   <script>
     // Inicializace Supabase
-    const { createClient } = supabase;
-    const sb = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+    const sb = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
 
     // rok v patičce
     document.getElementById('year').textContent = new Date().getFullYear();
