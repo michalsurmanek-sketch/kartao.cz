@@ -415,10 +415,22 @@
 
     // Načtení údajů přihlášeného uživatele do formuláře
     async function loadUserDataToForm() {
-      if (!window.kartaoAuth?.user) return;
+      console.log('🔍 loadUserDataToForm: start');
+      
+      if (!window.kartaoAuth?.user) {
+        console.log('❌ Uživatel není přihlášen');
+        return;
+      }
+      
+      if (!window.supabaseClient) {
+        console.log('⏳ Supabase ještě není inicializován, čekám...');
+        setTimeout(loadUserDataToForm, 500);
+        return;
+      }
       
       const userId = window.kartaoAuth.user.id;
       const userRole = localStorage.getItem('userRole');
+      console.log('✅ User ID:', userId, 'Role:', userRole);
       
       try {
         let data;
@@ -428,6 +440,7 @@
             .select('name, email, phone')
             .eq('user_id', userId)
             .single();
+          if (error) console.error('Chyba při načítání firmy:', error);
           if (!error && firmData) data = firmData;
         } else {
           const { data: creatorData, error } = await window.supabaseClient
@@ -435,24 +448,37 @@
             .select('name, email, phone')
             .eq('user_id', userId)
             .single();
+          if (error) console.error('Chyba při načítání tvůrce:', error);
           if (!error && creatorData) data = creatorData;
         }
         
         if (data) {
+          console.log('📝 Načtená data:', data);
           if (data.name) document.getElementById('name').value = data.name;
           if (data.email) document.getElementById('email').value = data.email;
           if (data.phone) document.getElementById('phone').value = data.phone;
+          console.log('✅ Formulář předvyplněn');
+        } else {
+          console.log('⚠️ Žádná data nenalezena');
         }
       } catch (err) {
-        console.error('Chyba při načítání uživatelských dat:', err);
+        console.error('❌ Chyba při načítání uživatelských dat:', err);
       }
     }
 
     // Spustit načtení po inicializaci auth
-    document.addEventListener('kartao-auth-changed', loadUserDataToForm);
-    if (window.kartaoAuth?.user) {
+    document.addEventListener('kartao-auth-changed', () => {
+      console.log('🔔 Event: kartao-auth-changed');
       loadUserDataToForm();
-    }
+    });
+    
+    // Spustit při načtení stránky s timeout
+    setTimeout(() => {
+      console.log('⏰ Timeout: kontrola přihlášení');
+      if (window.kartaoAuth?.user) {
+        loadUserDataToForm();
+      }
+    }, 1000);
 
     // form -> mailto
     const form = document.getElementById('contactForm');
