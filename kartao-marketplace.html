@@ -669,22 +669,7 @@
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
     // --- Supabase init ---
-    let supabase;
-    try {
-      const config = window.supabaseConfig || {
-        url: "https://hrmrgudiindtnfaaiyyg.supabase.co",
-        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0"
-      };
-      
-      if (window.supabase && window.supabase.createClient) {
-        supabase = window.supabase.createClient(config.url, config.anonKey);
-        console.log('✅ Supabase inicializován:', supabase);
-      } else {
-        console.error('❌ Supabase SDK není k dispozici');
-      }
-    } catch (error) {
-      console.error('❌ Chyba při inicializaci Supabase:', error);
-    }
+    // shared-auth.js already initializes supabase globally, so we just use it
 
     // --- base components styling ---
     $$('button.chip').forEach(b => {
