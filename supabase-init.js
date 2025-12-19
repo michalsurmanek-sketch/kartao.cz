@@ -10,10 +10,9 @@ if (typeof supabase === "undefined") {
 
 if (typeof supabaseConfig === "undefined") {
   console.error("❌ supabase-config.js nebyl načten. Zkontroluj pořadí script tagů.");
-} else {
+} else if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
   // Vytvoř Supabase klienta
-  const { createClient } = supabase;
-  window.supabaseClient = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+  window.supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
   
   console.log("🚀 Supabase client inicializován:", supabaseConfig.url);
   
@@ -24,4 +23,6 @@ if (typeof supabaseConfig === "undefined") {
   
   // Vyvolat event pro ostatní komponenty
   window.dispatchEvent(new CustomEvent('supabase-initialized'));
+} else {
+  console.error("❌ window.supabase.createClient není dostupný");
 }
