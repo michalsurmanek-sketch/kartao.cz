@@ -2,25 +2,31 @@
 // SUPABASE CONFIG – Kartao.cz
 // ==========================================
 
-const SUPABASE_URL = "https://hrmrgudiindtnfaaiyyg.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0";
+const supabaseConfig = {
+  url: "https://hrmrgudiindtnfaaiyyg.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0"
+};
 
-// Globální proměnná pro Supabase klienta (inicializuje se po načtení SDK)
-var supabaseClient = null;
+// Globální Supabase klient - vytvoří se automaticky po načtení SDK
+var supabase;
 
-// Funkce pro získání Supabase klienta
-function getSupabaseClient() {
-  if (supabaseClient) {
-    return supabaseClient;
-  }
-  
-  // Zkus vytvořit klienta
+// Inicializace po načtení stránky
+(function initSupabase() {
+  // Pokud SDK už je načteno, vytvoř klienta hned
   if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Supabase klient vytvořen');
-    return supabaseClient;
+    supabase = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+    console.log('✅ Supabase klient inicializován');
+  } else {
+    // Jinak čekej na load event
+    if (typeof window !== 'undefined') {
+      window.addEventListener('load', function() {
+        if (window.supabase && window.supabase.createClient) {
+          supabase = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+          console.log('✅ Supabase klient inicializován (po načtení)');
+        } else {
+          console.error('❌ Supabase SDK se nepodařilo načíst');
+        }
+      });
+    }
   }
-  
-  console.warn('⚠️ Supabase SDK ještě není načteno');
-  return null;
-}
+})();

@@ -735,8 +735,6 @@
     // Načtení influencerů z databáze
     async function loadCreators() {
       console.log('🔄 Spouštím loadCreators()...');
-      
-      const supabase = getSupabaseClient();
       console.log('Supabase klient:', supabase);
       
       if (!supabase) {
@@ -1522,8 +1520,6 @@
     // Načíst VIP Spotlight tvůrce z databáze
     async function loadVIPSpotlight() {
       console.log('🔄 Načítám VIP Spotlight...');
-      
-      const supabase = getSupabaseClient();
       
       if (!supabase) {
         console.warn('⚠️ Supabase není k dispozici pro VIP Spotlight');
