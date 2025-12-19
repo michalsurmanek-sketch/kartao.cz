@@ -302,7 +302,15 @@
     // Initialize Supabase
     const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Check if Supabase is loaded before initializing
+    let supabase = null;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase klient inicializován');
+    } else {
+      console.warn('⚠️ Supabase není dostupný, použijí se demo data');
+    }
 
     let allReels = [];
     let filteredReels = [];
@@ -359,6 +367,12 @@
 
     // Check authentication and setup listener
     async function checkAuth() {
+      // Skip auth check if Supabase is not available
+      if (!supabase) {
+        console.log('Přeskakuji kontrolu autentizace (Supabase není k dispozici)');
+        return;
+      }
+      
       try {
         // Check current session
         const { data: { session } } = await supabase.auth.getSession();
@@ -459,11 +473,8 @@
           query = query.contains('categories', [category]);
         }
 
-        const { data, error } = await supabase
-          .from('creators')
-          .select('*')
-          .order('followers_count', { ascending: false })
-          .limit(50);
+        // Execute the query with filters applied
+        const { data, error } = await query;
 
         if (error) throw error;
 
