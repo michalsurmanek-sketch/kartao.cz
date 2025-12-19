@@ -1952,6 +1952,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (state.premiumOnly) {
         list = list.filter(c => c.premium === true);
       }
+      
+      // Filtr podle platformy - zobrazit jen ty, kteří mají platformu připojenou
+      if (state.platform !== 'all') {
+        list = list.filter(c => {
+          const m = c.metrics?.[state.platform];
+          return m && m.connected === true;
+        });
+      }
+      
       if (state.minFollowers != null) {
         list = list.filter(c => {
           const total = platformFollowers(c, state.platform, state.mode);
