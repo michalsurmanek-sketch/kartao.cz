@@ -1567,18 +1567,20 @@
       const topicsText = (creator.topics || []).join(' • ');
       const engText = String(creator.eng || 0).replace('.', ',');
       
-      // Ikony pro platformy
-      const platformIcons = {
-        'Instagram': 'instagram',
-        'TikTok': 'video',
-        'YouTube': 'youtube',
-        'Facebook': 'facebook',
-        'Pinterest': 'pin'
+      // Ikony pro platformy (case-insensitive)
+      const getPlatformIcon = (platform) => {
+        const p = platform.toLowerCase();
+        if (p.includes('instagram')) return 'instagram';
+        if (p.includes('tiktok')) return 'video';
+        if (p.includes('youtube')) return 'youtube';
+        if (p.includes('facebook')) return 'facebook';
+        if (p.includes('pinterest')) return 'pin';
+        return 'share-2';
       };
       
       const platformBadges = (creator.platforms || []).map(p => 
         `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 text-xs">
-          <i data-lucide="${platformIcons[p] || 'share-2'}" class="h-3 w-3"></i>
+          <i data-lucide="${getPlatformIcon(p)}" class="h-3 w-3"></i>
           ${escapeHtml(p)}
         </span>`
       ).join('');
