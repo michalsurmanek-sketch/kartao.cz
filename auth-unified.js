@@ -278,7 +278,10 @@
   window.kartaoAuth.login = async function(email, password) {
     console.log('🔐 Auth Unified: Logging in...');
     
-    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+    const client = window.supabaseClient || window.sb;
+    if (!client) throw new Error('Supabase client not available');
+    
+    const { data, error } = await client.auth.signInWithPassword({
       email,
       password
     });
@@ -292,7 +295,10 @@
   window.kartaoAuth.register = async function(email, password, isCompany = false) {
     console.log('🔐 Auth Unified: Registering...');
     
-    const { data, error } = await window.supabaseClient.auth.signUp({
+    const client = window.supabaseClient || window.sb;
+    if (!client) throw new Error('Supabase client not available');
+    
+    const { data, error } = await client.auth.signUp({
       email,
       password,
       options: {
@@ -311,7 +317,10 @@
   window.kartaoAuth.logout = async function() {
     console.log('🔐 Auth Unified: Logging out...');
     
-    const { error } = await window.supabaseClient.auth.signOut();
+    const client = window.supabaseClient || window.sb;
+    if (!client) throw new Error('Supabase client not available');
+    
+    const { error } = await client.auth.signOut();
     if (error) throw error;
     
     console.log('🔐 Auth Unified: Logout successful');
