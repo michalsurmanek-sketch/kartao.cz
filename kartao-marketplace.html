@@ -268,7 +268,7 @@
           </div>
 
           <!-- Hero panel (VIP spotlight) -->
-          <div class="relative -mx-4 md:mx-0">
+          <div id="vipSpotlight" class="relative -mx-4 md:mx-0">
             <div class="absolute -inset-6 opacity-40 blur-2xl bg-[radial-gradient(circle_at_30%_20%,rgba(255,0,170,0.35),transparent_45%),radial-gradient(circle_at_70%_80%,rgba(255,180,0,0.25),transparent_55%)]"></div>
 
             <div class="relative rounded-3xl border border-white/10 bg-neutral-950/35 p-6 md:p-7">
@@ -277,7 +277,7 @@
                 <div class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">TOP výběr</div>
               </div>
 
-              <div class="mt-5 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-neutral-950/40 p-5">
+              <div id="spotlightContent" class="mt-5 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-neutral-950/40 p-5">
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex items-center gap-3">
                     <div class="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 grid place-items-center floaty">
@@ -1441,18 +1441,160 @@
       toggleMobileFilters();
     };
 
+    // Demo reels data
+    const demoReels = [
+      {
+        handle: '@lucy.fit',
+        avatar: '👑',
+        category: 'Fitness • CZ',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        likes: '2.1k',
+        views: '45k'
+      },
+      {
+        handle: '@tech_martin',
+        avatar: '🎮',
+        category: 'Tech • Gaming',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        likes: '3.5k',
+        views: '78k'
+      },
+      {
+        handle: '@beauty_kate',
+        avatar: '💄',
+        category: 'Beauty • Lifestyle',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+        likes: '1.8k',
+        views: '32k'
+      }
+    ];
+
+    let currentReelIndex = 0;
+    let isReelsMode = false;
+
+    function showReelsInSpotlight() {
+      isReelsMode = true;
+      const content = $('#spotlightContent');
+      const reel = demoReels[currentReelIndex];
+      
+      content.innerHTML = `
+        <div class="aspect-[9/16] max-h-[500px] mx-auto relative rounded-2xl overflow-hidden bg-neutral-900">
+          <video id="spotlightVideo" class="w-full h-full object-cover" loop muted playsinline autoplay>
+            <source src="${reel.videoUrl}" type="video/mp4">
+          </video>
+          
+          <!-- Overlay info -->
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="h-10 w-10 rounded-xl bg-white/10 border border-white/20 grid place-items-center">
+                <span class="text-xl">${reel.avatar}</span>
+              </div>
+              <div>
+                <div class="font-bold">${reel.handle}</div>
+                <div class="text-xs text-white/70">${reel.category}</div>
+              </div>
+            </div>
+            <div class="flex gap-4 text-xs text-white/80">
+              <span>❤️ ${reel.likes}</span>
+              <span>👁️ ${reel.views}</span>
+            </div>
+          </div>
+
+          <!-- TV icon indicator -->
+          <div class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 grid place-items-center">
+            <i data-lucide="tv" class="h-5 w-5"></i>
+          </div>
+
+          <!-- Click to next -->
+          <button onclick="window.nextReel()" class="absolute inset-0 cursor-pointer"></button>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button onclick="window.showNormalSpotlight()" class="btnGhost flex-1">
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+            Zpět
+          </button>
+          <button class="btnPrimary flex-1" data-open="demoSpotlight">Zobrazit kartu</button>
+        </div>
+
+        <div class="mt-3 text-xs text-center text-white/50">
+          Klikni kamkoliv na video pro další reel
+        </div>
+      `;
+      
+      lucide.createIcons();
+    }
+
+    function showNormalSpotlight() {
+      isReelsMode = false;
+      const content = $('#spotlightContent');
+      
+      content.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 grid place-items-center floaty">
+              <span class="text-xl">👑</span>
+            </div>
+            <div>
+              <div class="font-extrabold text-lg">@lucy.fit</div>
+              <div class="text-sm text-white/60">Fitness • CZ • IG + TikTok</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-white/60">Engagement</div>
+            <div class="font-extrabold">6,2%</div>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
+          <div class="rounded-2xl bg-white/5 border borderwhite/10 p-3">
+            <div class="text-white/60">Followers</div>
+            <div class="font-bold">128k</div>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
+            <div class="text-white/60">Reels</div>
+            <div class="font-bold">3,1M</div>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
+            <div class="text-white/60">Cena od</div>
+            <div class="font-bold">4 900 Kč</div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="tag">ověřené statistiky</span>
+          <span class="tag">rychlé dodání</span>
+          <span class="tag">balíčky</span>
+        </div>
+
+        <div class="mt-5 flex gap-2">
+          <button class="btnPrimary w-full" data-open="demoSpotlight">Zobrazit kartu</button>
+          <a class="btnGhost" href="/zadat-kampan.html">Poptat</a>
+        </div>
+      `;
+      
+      lucide.createIcons();
+    }
+
+    window.nextReel = function() {
+      currentReelIndex = (currentReelIndex + 1) % demoReels.length;
+      showReelsInSpotlight();
+    };
+
+    window.showNormalSpotlight = showNormalSpotlight;
+
     // procházet CTA - redirect to reels view
     $('#ctaBrowse').onclick = () => {
       // Na mobilu otevři fullscreen reels
       if (window.innerWidth < 768) {
         window.location.href = '/kartao-reels.html';
       } else {
-        // Na desktopu scroll k výsledkům a zobraz filtr
-        $('section.grid.lg\\:grid-cols-\\[360px_1fr\\]').scrollIntoView({behavior:'smooth', block:'start'});
-        // Na větších obrazovkách zobraz filtr
-        if (window.innerWidth >= 1024) {
-          $('#filters').scrollIntoView({behavior:'smooth', block:'start'});
-        }
+        // Na desktopu zobraz reels ve VIP Spotlight
+        const spotlight = $('#vipSpotlight');
+        spotlight.scrollIntoView({behavior:'smooth', block:'center'});
+        setTimeout(() => {
+          showReelsInSpotlight();
+        }, 500);
       }
     };
 
