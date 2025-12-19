@@ -1808,12 +1808,60 @@
     persistSaved();
     $('#statViews').textContent = String(state.views);
     
+    // Aktualizovat auth tlačítka podle stavu přihlášení
+    function updateAuthButtons() {
+      const user = window.kartaoAuth?.user;
+      const desktopAuthLink = document.querySelector('a[href="/login.html"]:not(#mobileMenu a)');
+      const mobileAuthLink = document.querySelector('#mobileMenu a[href="/login.html"]');
+      
+      if (user) {
+        // Přihlášený - změnit na odhlásit
+        if (desktopAuthLink) {
+          desktopAuthLink.innerHTML = '<i data-lucide="log-out" class="h-4 w-4"></i><span class="text-sm">Odhlásit se</span>';
+          desktopAuthLink.href = '#';
+          desktopAuthLink.onclick = async (e) => {
+            e.preventDefault();
+            await window.kartaoAuth.logout();
+            window.location.reload();
+          };
+        }
+        if (mobileAuthLink) {
+          mobileAuthLink.innerHTML = 'Odhlásit se';
+          mobileAuthLink.href = '#';
+          mobileAuthLink.onclick = async (e) => {
+            e.preventDefault();
+            await window.kartaoAuth.logout();
+            window.location.reload();
+          };
+        }
+      } else {
+        // Nepřihlášený - přihlásit se
+        if (desktopAuthLink) {
+          desktopAuthLink.innerHTML = '<i data-lucide="log-in" class="h-4 w-4"></i><span class="text-sm">Přihlásit se</span>';
+          desktopAuthLink.href = '/login.html';
+          desktopAuthLink.onclick = null;
+        }
+        if (mobileAuthLink) {
+          mobileAuthLink.innerHTML = 'Přihlásit se';
+          mobileAuthLink.href = '/login.html';
+          mobileAuthLink.onclick = null;
+        }
+      }
+      
+      // Aktualizovat ikony
+      if (window.lucide) lucide.createIcons();
+    }
+    
+    // Poslouchat změny autentizace
+    window.addEventListener('kartao-auth-changed', updateAuthButtons);
+    
     // Načíst influencery z databáze při načtení stránky
     document.addEventListener('DOMContentLoaded', () => {
       loadCreators();
       loadVIPSpotlight();
       setupFilterButtons();
       styleChips();
+      updateAuthButtons(); // Aktualizovat auth tlačítka při načtení
       lucide.createIcons();
     });
     
