@@ -23,11 +23,12 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Supabase Config -->
+  <!-- Supabase Config + Init -->
   <script src="supabase-config.js"></script>
+  <script src="supabase-init.js"></script>
   
-  <!-- Shared Auth -->
-  <script src="shared-auth.js" defer></script>
+  <!-- Auth Unified -->
+  <script src="auth-unified.js"></script>
 
   <style>
     ::-webkit-scrollbar{height:10px;width:10px}
@@ -666,7 +667,7 @@
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
     // --- Supabase init ---
-    // shared-auth.js already initializes supabase globally, so we just use it
+    // supabase-init.js initializes window.supabaseClient globally
 
     // --- base components styling ---
     // Chip buttons are styled dynamically in styleChips()
@@ -744,9 +745,9 @@
     // Načtení influencerů z databáze
     async function loadCreators() {
       console.log('🔄 Spouštím loadCreators()...');
-      console.log('Supabase klient:', supabase);
+      console.log('Supabase klient:', window.supabaseClient);
       
-      if (!supabase) {
+      if (!window.supabaseClient) {
         console.warn('⚠️ Supabase není k dispozici, používám demo data');
         loadDemoData();
         isLoading = false;
@@ -759,7 +760,7 @@
         render(); // Zobrazit loading stav
         
         console.log('📡 Dotazuji se databáze creators...');
-        const { data, error } = await supabase
+        const { data, error } = await window.supabaseClient
           .from('creators')
           .select('*')
           .order('created_at', { ascending: false });
@@ -1530,14 +1531,14 @@
     async function loadVIPSpotlight() {
       console.log('🔄 Načítám VIP Spotlight...');
       
-      if (!supabase) {
+      if (!window.supabaseClient) {
         console.warn('⚠️ Supabase není k dispozici pro VIP Spotlight');
         return;
       }
 
       try {
         // Načíst top tvůrce (premium nebo verified s nejvyšším engagementem)
-        const { data, error } = await supabase
+        const { data, error } = await window.supabaseClient
           .from('creators')
           .select('*')
           .or('premium.eq.true,verified.eq.true')
