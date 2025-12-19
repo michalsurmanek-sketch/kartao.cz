@@ -12,7 +12,7 @@
     
     if (user) {
       if (desktopAuthLink) {
-        desktopAuthLink.innerHTML = '<i data-lucide="log-out" class="h-4 w-4"></i><span class="text-sm">Odhlásit se</span>';
+        desktopAuthLink.innerHTML = '<i data-lucide="log-out" class="h-4 w-4"></i><span class="text-sm">Odhlásit</span>';
         desktopAuthLink.href = '#';
         desktopAuthLink.onclick = async (e) => {
           e.preventDefault();
@@ -21,7 +21,7 @@
         };
       }
       if (mobileAuthLink) {
-        mobileAuthLink.textContent = 'Odhlásit se';
+        mobileAuthLink.textContent = 'Odhlásit';
         mobileAuthLink.href = '#';
         mobileAuthLink.onclick = async (e) => {
           e.preventDefault();
