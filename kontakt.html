@@ -413,6 +413,47 @@
       });
     });
 
+    // Načtení údajů přihlášeného uživatele do formuláře
+    async function loadUserDataToForm() {
+      if (!window.kartaoAuth?.user) return;
+      
+      const userId = window.kartaoAuth.user.id;
+      const userRole = localStorage.getItem('userRole');
+      
+      try {
+        let data;
+        if (userRole === 'firma') {
+          const { data: firmData, error } = await window.supabaseClient
+            .from('firms')
+            .select('name, email, phone')
+            .eq('user_id', userId)
+            .single();
+          if (!error && firmData) data = firmData;
+        } else {
+          const { data: creatorData, error } = await window.supabaseClient
+            .from('creators')
+            .select('name, email, phone')
+            .eq('user_id', userId)
+            .single();
+          if (!error && creatorData) data = creatorData;
+        }
+        
+        if (data) {
+          if (data.name) document.getElementById('name').value = data.name;
+          if (data.email) document.getElementById('email').value = data.email;
+          if (data.phone) document.getElementById('phone').value = data.phone;
+        }
+      } catch (err) {
+        console.error('Chyba při načítání uživatelských dat:', err);
+      }
+    }
+
+    // Spustit načtení po inicializaci auth
+    document.addEventListener('kartao-auth-changed', loadUserDataToForm);
+    if (window.kartaoAuth?.user) {
+      loadUserDataToForm();
+    }
+
     // form -> mailto
     const form = document.getElementById('contactForm');
     const errorBox = document.getElementById('errorBox');
