@@ -2,60 +2,69 @@
 // SUPABASE INIT – Kartao.cz
 // ==========================================
 
-(async function() {
+(async function () {
   console.log("⏳ Čekám na Supabase SDK...");
-  
-  // Čekej na Supabase SDK (max 5 sekund)
+
+  // 1) čekání na SDK
   let attempts = 0;
-  while (typeof window.supabase === "undefined" && attempts < 50) {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  while (!window.supabase && attempts < 200) {
+    await new Promise(r => setTimeout(r, 50));
     attempts++;
   }
 
-  if (typeof window.supabase === "undefined") {
-    console.error("❌ Supabase SDK se nepodařilo načíst po 5 sekundách!");
+  if (!window.supabase) {
+    console.error("❌ Supabase SDK se nepodařilo načíst (10s).");
+    console.error("window.supabase:", window.supabase);
     return;
   }
 
-  console.log("✅ Supabase SDK loaded");
-
-  // Čekej na config
+  // 2) čekání na config (POUZE window.supabaseConfig)
+  console.log("✅ Supabase SDK loaded, čekám na config...");
   attempts = 0;
-  while (typeof supabaseConfig === "undefined" && attempts < 50) {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  while (!window.supabaseConfig && attempts < 200) {
+    await new Promise(r => setTimeout(r, 50));
     attempts++;
   }
 
-  if (typeof supabaseConfig === "undefined") {
-    console.error("❌ supabase-config.js nebyl načten!");
+  if (!window.supabaseConfig) {
+    console.error("❌ window.supabaseConfig není dostupný! (supabase-config.js asi není v globálu)");
+    console.error("TIP: v supabase-config.js použij window.supabaseConfig = {...}");
     return;
   }
 
-  if (window.supabase && window.supabase.createClient) {
-    // Vytvoř Supabase klienta
-    window.supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
-    
-    console.log("🚀 Supabase client inicializován:", supabaseConfig.url);
-    
-    // Globální zkratky (pro kompatibilitu s Firebase kódem)
+  // 3) createClient – robustní získání
+  const createClient =
+    window.supabase?.createClient ||
+    window.supabase?.default?.createClient;
+
+  if (typeof createClient !== "function") {
+    console.error("❌ createClient není funkce – špatný build/verze SDK.");
+    console.error("window.supabase:", window.supabase);
+    return;
+  }
+
+  try {
+    window.supabaseClient = createClient(
+      window.supabaseConfig.url,
+      window.supabaseConfig.anonKey
+    );
+
     window.sb = window.supabaseClient;
-  
-    // Test připojení
-    window.supabaseClient.from('creators').select('count', { count: 'exact', head: true })
-      .then(({ count, error }) => {
-        if (error && error.code !== 'PGRST116') { // PGRST116 = empty table is OK
-          console.warn("⚠️ Supabase connection warning:", error.message);
-        } else {
-          console.log("✅ Supabase připojeno, creators tabulka:", count !== null ? `${count} záznamů` : "prázdná");
-        }
-      })
-      .catch(err => {
-        console.error("❌ Supabase connection error:", err);
-      });
-    
-    // Vyvolej event pro ostatní komponenty
-    window.dispatchEvent(new CustomEvent('supabase-initialized'));
-  } else {
-    console.error("❌ window.supabase.createClient není dostupný!");
+    console.log("🚀 Supabase client inicializován:", window.supabaseConfig.url);
+
+    // Test připojení (bez zbytečných false-positive)
+    const { error, count } = await window.sb
+      .from("creators")
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      console.warn("⚠️ Supabase test dotaz selhal:", error);
+    } else {
+      console.log("✅ Supabase připojeno, creators:", (count ?? 0), "záznamů");
+    }
+
+    window.dispatchEvent(new CustomEvent("supabase-initialized"));
+  } catch (e) {
+    console.error("❌ Supabase init crash:", e);
   }
 })();
