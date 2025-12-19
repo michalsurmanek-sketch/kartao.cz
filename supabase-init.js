@@ -2,7 +2,7 @@
 // SUPABASE INIT – Kartao.cz
 // ==========================================
 
-if (typeof supabase === "undefined") {
+if (typeof window.supabase === "undefined") {
   console.error("❌ Supabase SDK není načteno. Přidej <script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script>");
 } else {
   console.log("✅ Supabase SDK loaded");
