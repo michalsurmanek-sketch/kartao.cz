@@ -1567,51 +1567,113 @@
       const topicsText = (creator.topics || []).join(' • ');
       const engText = String(creator.eng || 0).replace('.', ',');
       
+      // Ikony pro platformy
+      const platformIcons = {
+        'Instagram': 'instagram',
+        'TikTok': 'video',
+        'YouTube': 'youtube',
+        'Facebook': 'facebook'
+      };
+      
+      const platformBadges = (creator.platforms || []).map(p => 
+        `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 text-xs">
+          <i data-lucide="${platformIcons[p] || 'share-2'}" class="h-3 w-3"></i>
+          ${escapeHtml(p)}
+        </span>`
+      ).join('');
+      
       content.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex items-center gap-3">
-            ${creator.avatar_url 
-              ? `<img src="${escapeHtml(creator.avatar_url)}" alt="${escapeHtml(creator.handle)}" class="h-12 w-12 rounded-2xl object-cover border border-white/10 floaty" />`
-              : `<div class="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 grid place-items-center floaty">
-                  <span class="text-xl">${creator.badge === 'VIP' ? '👑' : '⭐'}</span>
-                </div>`
-            }
-            <div>
-              <div class="font-extrabold text-lg">${escapeHtml(creator.handle)}</div>
-              <div class="text-sm text-white/60">${escapeHtml(topicsText)} • ${escapeHtml(creator.region || 'CZ').toUpperCase()} • ${escapeHtml(platformsText)}</div>
+        <!-- Header s avatarem a základními info -->
+        <div class="relative">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div class="flex items-start gap-4 flex-1">
+              ${creator.avatar_url 
+                ? `<div class="relative">
+                     <img src="${escapeHtml(creator.avatar_url)}" alt="${escapeHtml(creator.handle)}" 
+                          class="h-16 w-16 rounded-2xl object-cover border-2 border-white/20 shadow-xl" />
+                     ${creator.verified ? '<div class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 border-2 border-neutral-950 grid place-items-center"><i data-lucide="check" class="h-3 w-3"></i></div>' : ''}
+                   </div>`
+                : `<div class="relative h-16 w-16 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border-2 border-white/20 shadow-xl grid place-items-center">
+                     <span class="text-3xl">${creator.badge === 'VIP' ? '👑' : '⭐'}</span>
+                     ${creator.verified ? '<div class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 border-2 border-neutral-950 grid place-items-center"><i data-lucide="check" class="h-3 w-3"></i></div>' : ''}
+                   </div>`
+              }
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-extrabold text-xl tracking-tight">${escapeHtml(creator.handle)}</h3>
+                  ${creator.badge ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-fuchsia-600 to-violet-600 border border-fuchsia-400/50">${escapeHtml(creator.badge)}</span>` : ''}
+                </div>
+                <div class="text-sm text-white/70 mb-2">${escapeHtml(topicsText)}</div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${platformBadges}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Engagement badge -->
+            <div class="text-center">
+              <div class="relative inline-flex flex-col items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-fuchsia-600/20 to-violet-600/20 border border-fuchsia-500/30 backdrop-blur-sm">
+                <div class="text-xs font-medium text-white/60 leading-none">ENG</div>
+                <div class="text-lg font-black mt-0.5">${engText}%</div>
+              </div>
             </div>
           </div>
-          <div class="text-right">
-            <div class="text-xs text-white/60">Engagement</div>
-            <div class="font-extrabold">${engText}%</div>
-          </div>
-        </div>
 
-        <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
-          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
-            <div class="text-white/60">Followers</div>
-            <div class="font-bold">${human(creator.followers)}</div>
+          <!-- Statistiky -->
+          <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="relative group">
+              <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-4 transition-all hover:border-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/10">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="users" class="h-4 w-4 text-white/40"></i>
+                  <div class="text-xs text-white/50 font-medium uppercase tracking-wide">Followers</div>
+                </div>
+                <div class="text-2xl font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(creator.followers)}</div>
+              </div>
+            </div>
+            
+            <div class="relative group">
+              <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-4 transition-all hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="play-circle" class="h-4 w-4 text-white/40"></i>
+                  <div class="text-xs text-white/50 font-medium uppercase tracking-wide">Avg. Views</div>
+                </div>
+                <div class="text-2xl font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(Math.floor(creator.followers * 0.024))}</div>
+              </div>
+            </div>
+            
+            <div class="relative group">
+              <div class="rounded-2xl bg-gradient-to-br from-fuchsia-600/20 to-violet-600/20 border border-fuchsia-500/30 p-4 transition-all hover:border-fuchsia-500/50 hover:shadow-lg hover:shadow-fuchsia-500/20">
+                <div class="flex items-center gap-2 mb-1">
+                  <i data-lucide="tag" class="h-4 w-4 text-fuchsia-300/70"></i>
+                  <div class="text-xs text-fuchsia-200/70 font-medium uppercase tracking-wide">Cena od</div>
+                </div>
+                <div class="text-2xl font-black text-white">${money(creator.priceFrom)}</div>
+              </div>
+            </div>
           </div>
-          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
-            <div class="text-white/60">Reels</div>
-            <div class="font-bold">${human(Math.floor(creator.followers * 0.024))}${creator.followers > 100000 ? 'M' : 'k'}</div>
-          </div>
-          <div class="rounded-2xl bg-white/5 border border-white/10 p-3">
-            <div class="text-white/60">Cena od</div>
-            <div class="font-bold">${money(creator.priceFrom)}</div>
-          </div>
-        </div>
 
-        <div class="mt-4 flex flex-wrap gap-2">
-          ${creator.verified ? '<span class="tag">ověřené statistiky</span>' : ''}
-          ${creator.badge === 'VIP' ? '<span class="tag">rychlé dodání</span>' : ''}
-          ${creator.packs && creator.packs.length > 0 ? '<span class="tag">balíčky</span>' : ''}
-          ${creator.badge ? `<span class="tag">${escapeHtml(creator.badge)}</span>` : ''}
-        </div>
+          <!-- Tagy -->
+          ${creator.verified || creator.badge || (creator.packs && creator.packs.length > 0) ? `
+            <div class="flex flex-wrap gap-2 mb-5 pb-5 border-b border-white/10">
+              ${creator.verified ? '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border border-emerald-500/30 text-emerald-200"><i data-lucide="shield-check" class="h-3 w-3"></i>Ověřené statistiky</span>' : ''}
+              ${creator.badge === 'VIP' ? '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 text-amber-200"><i data-lucide="zap" class="h-3 w-3"></i>Rychlé dodání</span>' : ''}
+              ${creator.packs && creator.packs.length > 0 ? '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-600/20 to-purple-600/20 border border-violet-500/30 text-violet-200"><i data-lucide="package" class="h-3 w-3"></i>Balíčky k dispozici</span>' : ''}
+            </div>
+          ` : ''}
 
-        <div class="mt-5 flex gap-2">
-          <button class="btnPrimary w-full" onclick="window.__openModal('${creator.id}')">Zobrazit kartu</button>
-          <a class="btnGhost" href="/zadat-kampan.html">Poptat</a>
+          <!-- CTA tlačítka -->
+          <div class="flex gap-3">
+            <button class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-500 hover:to-violet-500 font-bold transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-fuchsia-500/25 active:scale-[0.98]" 
+                    onclick="window.__openModal('${creator.id}')">
+              <i data-lucide="eye" class="h-5 w-5"></i>
+              <span>Zobrazit profil</span>
+            </button>
+            <a href="/zadat-kampan.html" 
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 font-bold transition-all hover:scale-[1.02]">
+              <i data-lucide="send" class="h-5 w-5"></i>
+              <span>Poptat</span>
+            </a>
+          </div>
         </div>
       `;
       
