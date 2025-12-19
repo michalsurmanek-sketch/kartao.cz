@@ -434,6 +434,12 @@
             </div>
           </div>
 
+          <!-- Tlačítko Použít (pouze na mobilu) -->
+          <button id="applyFilters" class="lg:hidden w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 font-bold text-white shadow-lg transition">
+            <i data-lucide="search" class="h-5 w-5"></i>
+            <span>Najít influencery</span>
+          </button>
+
         </div>
       </aside>
 
@@ -1769,6 +1775,16 @@
 
     $('#toggleFilters').onclick = toggleMobileFilters;
     $('#closeFilters').onclick = toggleMobileFilters;
+
+    // Apply filters button - scroll to results and close filters
+    $('#applyFilters').onclick = () => {
+      toggleMobileFilters(); // Zavřít filtr
+      // Scroll k výsledkům
+      const results = document.getElementById('vysledky');
+      if (results) {
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
 
     // Filter button interactions
     function setupFilterButtons() {
