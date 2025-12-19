@@ -552,7 +552,7 @@
 
         // Úspěch - rovnou redirect
         console.log('[LOGIN] Login successful, redirecting...');
-        window.location.href = "index.html";
+        window.location.href = "index.html?redirect=1";
 
       } catch (err) {
         console.error('[LOGIN] Login error:', err);
@@ -586,7 +586,7 @@
         if (result.session) {
           showMessage("Registrace úspěšná! Přesměrování...", "success");
           setTimeout(() => {
-            window.location.href = "index.html";
+            window.location.href = "index.html?redirect=1";
           }, 1000);
         } else {
           showMessage("Registrace úspěšná! Zkontroluj e-mail a potvrď registraci.", "success");

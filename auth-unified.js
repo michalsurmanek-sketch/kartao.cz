@@ -302,6 +302,7 @@
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/index.html?redirect=1`,
         data: {
           is_company: isCompany
         }
