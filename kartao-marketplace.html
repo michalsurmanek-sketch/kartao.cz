@@ -1463,47 +1463,52 @@
       const reel = demoReels[currentReelIndex];
       
       content.innerHTML = `
-        <div class="aspect-[9/16] max-h-[500px] mx-auto relative rounded-2xl overflow-hidden bg-neutral-900">
+        <div class="w-full h-[600px] relative rounded-2xl overflow-hidden bg-neutral-900">
           <video id="spotlightVideo" class="w-full h-full object-cover" loop muted playsinline autoplay>
             <source src="${reel.videoUrl}" type="video/mp4">
           </video>
           
-          <!-- Overlay info -->
-          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <div class="flex items-center gap-3 mb-2">
-              <div class="h-10 w-10 rounded-xl bg-white/10 border border-white/20 grid place-items-center">
-                <span class="text-xl">${reel.avatar}</span>
-              </div>
-              <div>
-                <div class="font-bold">${reel.handle}</div>
-                <div class="text-xs text-white/70">${reel.category}</div>
-              </div>
-            </div>
-            <div class="flex gap-4 text-xs text-white/80">
-              <span>❤️ ${reel.likes}</span>
-              <span>👁️ ${reel.views}</span>
-            </div>
-          </div>
+          <!-- Back button overlay (top left) -->
+          <button onclick="window.showNormalSpotlight()" class="absolute top-4 left-4 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition flex items-center gap-2 text-sm font-medium z-10">
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+            Zpět
+          </button>
 
-          <!-- TV icon indicator -->
+          <!-- TV icon indicator (top right) -->
           <div class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 grid place-items-center">
             <i data-lucide="tv" class="h-5 w-5"></i>
           </div>
 
-          <!-- Click to next -->
-          <button onclick="window.nextReel()" class="absolute inset-0 cursor-pointer"></button>
-        </div>
-
-        <div class="mt-4 flex gap-2">
-          <button onclick="window.showNormalSpotlight()" class="btnGhost flex-1">
-            <i data-lucide="arrow-left" class="h-4 w-4"></i>
-            Zpět
+          <!-- Card button overlay (top right, below TV icon) -->
+          <button class="absolute top-20 right-4 px-4 py-2 rounded-xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition text-sm" data-open="demoSpotlight">
+            Zobrazit kartu
           </button>
-          <button class="btnPrimary flex-1" data-open="demoSpotlight">Zobrazit kartu</button>
+
+          <!-- Creator info overlay (bottom) -->
+          <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="h-12 w-12 rounded-xl bg-white/10 border border-white/20 grid place-items-center">
+                  <span class="text-2xl">${reel.avatar}</span>
+                </div>
+                <div>
+                  <div class="font-bold text-lg">${reel.handle}</div>
+                  <div class="text-sm text-white/80">${reel.category}</div>
+                </div>
+              </div>
+              <div class="flex gap-4 text-sm">
+                <span class="flex items-center gap-1">❤️ ${reel.likes}</span>
+                <span class="flex items-center gap-1">👁️ ${reel.views}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Click to next (center area) -->
+          <button onclick="window.nextReel()" class="absolute inset-0 cursor-pointer" title="Klikni pro další reel"></button>
         </div>
 
         <div class="mt-3 text-xs text-center text-white/50">
-          Klikni kamkoliv na video pro další reel
+          💡 Klikni kamkoliv na video pro další reel
         </div>
       `;
       
