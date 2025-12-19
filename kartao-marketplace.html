@@ -1621,34 +1621,34 @@
           </div>
 
           <!-- Statistiky -->
-          <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="grid grid-cols-3 gap-2 mb-4">
             <div class="relative group">
-              <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-4 transition-all hover:border-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/10">
-                <div class="flex items-center gap-2 mb-1">
-                  <i data-lucide="users" class="h-4 w-4 text-white/40"></i>
-                  <div class="text-xs text-white/50 font-medium uppercase tracking-wide">Followers</div>
+              <div class="rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-2.5 transition-all hover:border-fuchsia-500/30">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <i data-lucide="users" class="h-3 w-3 text-white/40"></i>
+                  <div class="text-[10px] text-white/50 font-medium uppercase tracking-wide">Followers</div>
                 </div>
-                <div class="text-2xl font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(creator.followers)}</div>
+                <div class="text-lg font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(creator.followers)}</div>
               </div>
             </div>
             
             <div class="relative group">
-              <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-4 transition-all hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10">
-                <div class="flex items-center gap-2 mb-1">
-                  <i data-lucide="play-circle" class="h-4 w-4 text-white/40"></i>
-                  <div class="text-xs text-white/50 font-medium uppercase tracking-wide">Avg. Views</div>
+              <div class="rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 p-2.5 transition-all hover:border-violet-500/30">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <i data-lucide="play-circle" class="h-3 w-3 text-white/40"></i>
+                  <div class="text-[10px] text-white/50 font-medium uppercase tracking-wide">Views</div>
                 </div>
-                <div class="text-2xl font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(Math.floor(creator.followers * 0.024))}</div>
+                <div class="text-lg font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">${human(Math.floor(creator.followers * 0.024))}</div>
               </div>
             </div>
             
             <div class="relative group">
-              <div class="rounded-2xl bg-gradient-to-br from-fuchsia-600/20 to-violet-600/20 border border-fuchsia-500/30 p-4 transition-all hover:border-fuchsia-500/50 hover:shadow-lg hover:shadow-fuchsia-500/20">
-                <div class="flex items-center gap-2 mb-1">
-                  <i data-lucide="tag" class="h-4 w-4 text-fuchsia-300/70"></i>
-                  <div class="text-xs text-fuchsia-200/70 font-medium uppercase tracking-wide">Cena od</div>
+              <div class="rounded-xl bg-gradient-to-br from-fuchsia-600/20 to-violet-600/20 border border-fuchsia-500/30 p-2.5 transition-all hover:border-fuchsia-500/50">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <i data-lucide="tag" class="h-3 w-3 text-fuchsia-300/70"></i>
+                  <div class="text-[10px] text-fuchsia-200/70 font-medium uppercase tracking-wide">Cena od</div>
                 </div>
-                <div class="text-2xl font-black text-white">${money(creator.priceFrom)}</div>
+                <div class="text-lg font-black text-white">${money(creator.priceFrom)}</div>
               </div>
             </div>
           </div>
