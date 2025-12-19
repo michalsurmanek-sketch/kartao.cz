@@ -1584,19 +1584,26 @@
     window.showNormalSpotlight = showNormalSpotlight;
 
     // procházet CTA - redirect to reels view
-    $('#ctaBrowse').onclick = () => {
-      // Na mobilu otevři fullscreen reels
-      if (window.innerWidth < 768) {
-        window.location.href = '/kartao-reels.html';
-      } else {
-        // Na desktopu zobraz reels ve VIP Spotlight
-        const spotlight = $('#vipSpotlight');
-        spotlight.scrollIntoView({behavior:'smooth', block:'center'});
-        setTimeout(() => {
-          showReelsInSpotlight();
-        }, 500);
-      }
-    };
+    const browseBtn = $('#ctaBrowse');
+    if (browseBtn) {
+      browseBtn.onclick = () => {
+        console.log('Browse clicked, width:', window.innerWidth);
+        // Na mobilu otevři fullscreen reels
+        if (window.innerWidth < 768) {
+          window.location.href = '/kartao-reels.html';
+        } else {
+          // Na desktopu zobraz reels ve VIP Spotlight
+          console.log('Showing reels in spotlight');
+          const spotlight = $('#vipSpotlight');
+          if (spotlight) {
+            spotlight.scrollIntoView({behavior:'smooth', block:'center'});
+            setTimeout(() => {
+              showReelsInSpotlight();
+            }, 500);
+          }
+        }
+      };
+    }
 
     // Scroll to results tlačítko
     $('#scrollToResults').onclick = () => {
