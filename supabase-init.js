@@ -10,9 +10,8 @@ if (typeof supabase === "undefined") {
 
 if (typeof supabaseConfig === "undefined") {
   console.error("❌ supabase-config.js nebyl načten. Zkontroluj pořadí script tagů.");
-} else {
+} else if (window.supabase && window.supabase.createClient) {
   // Vytvoř Supabase klienta
-  // const { createClient } = supabase;
   window.supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
   
   console.log("🚀 Supabase client inicializován:", supabaseConfig.url);
