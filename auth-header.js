@@ -31,12 +31,12 @@
       }
     } else {
       if (desktopAuthLink) {
-        desktopAuthLink.innerHTML = '<i data-lucide="log-in" class="h-4 w-4"></i><span class="text-sm">Přihlásit se</span>';
+        desktopAuthLink.innerHTML = '<i data-lucide="log-in" class="h-4 w-4"></i><span class="text-sm">Přihlásit</span>';
         desktopAuthLink.href = '/login.html';
         desktopAuthLink.onclick = null;
       }
       if (mobileAuthLink) {
-        mobileAuthLink.textContent = 'Přihlásit se';
+        mobileAuthLink.textContent = 'Přihlásit';
         mobileAuthLink.href = '/login.html';
         mobileAuthLink.onclick = null;
       }
