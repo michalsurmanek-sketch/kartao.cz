@@ -404,6 +404,11 @@
 
     // Load saved creators for current user
     async function loadSavedCreators() {
+      if (!supabase) {
+        console.log('⚠️ Cannot load saved creators - Supabase not available');
+        return;
+      }
+      
       if (!userId) {
         console.log('⚠️ Cannot load saved creators - no userId');
         return;
@@ -454,6 +459,15 @@
 
     async function loadReels() {
       try {
+        // If Supabase is not available, use demo data
+        if (!supabase) {
+          console.log('Používám demo data (Supabase není k dispozici)');
+          allReels = demoReels;
+          renderReels();
+          $('#loading').classList.add('hidden');
+          return;
+        }
+
         // Get URL parameters for filtering
         const params = new URLSearchParams(window.location.search);
         const platform = params.get('platform');
@@ -486,13 +500,14 @@
             isSaved: savedCreators.has(creator.id)
           }));
         } else {
+          console.log('Žádná data z databáze, používám demo data');
           allReels = demoReels;
         }
 
         // Track analytics
         trackEvent('reels_loaded', { count: allReels.length });
       } catch (error) {
-        console.error('Error loading reels:', error);
+        console.error('Chyba při načítání reels:', error);
         allReels = demoReels;
       }
 
@@ -759,6 +774,13 @@
 
     window.toggleSave = async function(creatorId, index) {
       console.log('🔄 Toggle save called - userId:', userId, 'creatorId:', creatorId);
+      
+      // Check if Supabase is available
+      if (!supabase) {
+        console.log('⚠️ Supabase není k dispozici');
+        showToast('Funkce ukládání není momentálně dostupná', 'error');
+        return;
+      }
       
       // Check if user is logged in
       if (!userId) {
