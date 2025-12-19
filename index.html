@@ -1333,8 +1333,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializace Supabase klienta - počkáme na načtení
     (function waitForSupabase() {
       if (typeof window.supabase !== 'undefined' && !window.supabaseClient) {
-        const SUPABASE_URL = 'https://hrmrgudiindufaaivyg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdWZhYWl2eWciLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDM5NDcwNSwiZXhwIjoyMDQ5OTcwNzA1fQ.Mg-jOOIaJzFKbXXjBnIdNXEj2oVQWLkgE2-R-I0UyUo';
+        const SUPABASE_URL = 'https://hrmrgudiindtnfaaiyyg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhybXJndWRpaW5kdG5mYWFpeXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDQ2MzgsImV4cCI6MjA4MDE4MDYzOH0.J83cwvvUanIh4flrogiMfF8g1tOJUu2xW2dG-TfAhm0';
         window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('✅ Supabase klient inicializován');
       } else if (typeof window.supabase === 'undefined') {
@@ -1741,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('🔍 Kontrola Supabase:', typeof window.supabaseClient);
       
       // Čekání na Supabase client s timeoutem
-      if (typeof window.supabaseClient === 'undefined') {
+      if (!window.supabaseClient) {
         if (retryCount < MAX_RETRIES) {
           console.log(`⏳ Supabase ještě není připraven, čekám... (pokus ${retryCount + 1}/${MAX_RETRIES})`);
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
