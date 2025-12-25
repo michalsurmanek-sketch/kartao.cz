@@ -1131,27 +1131,68 @@ document.addEventListener('DOMContentLoaded', () => {
     // pokud nemáš videa, nic nedělej
     if (!vids.length) return;
 
+    // Funkce pro načtení a přehrání videa
+    const loadAndPlay = async (video) => {
+      if (!video.src) {
+        const src = video.getAttribute("data-src");
+        if (src) video.src = src;
+      }
+      try { 
+        await video.play(); 
+      } catch (err) {
+        console.log('Auto-play blocked, waiting for user interaction');
+      }
+    };
+
+    // IntersectionObserver pro auto-play při scrollování
     const io = new IntersectionObserver((entries) => {
       entries.forEach(async (e) => {
         const v = e.target;
         const isVisible = e.isIntersecting && e.intersectionRatio > 0.5;
 
-        // lazy load src (až když je potřeba)
-        if (isVisible && !v.src) {
-          const src = v.getAttribute("data-src");
-          if (src) v.src = src;
-        }
-
-        // play/pause podle viditelnosti
         if (isVisible) {
-          try { await v.play(); } catch (err) {}
+          await loadAndPlay(v);
         } else {
           try { v.pause(); } catch (err) {}
         }
       });
     }, { threshold: [0.5, 0.75, 1] });
 
+    // Observe všechna videa
     vids.forEach(v => io.observe(v));
+
+    // Klik na kartu = načti a přehraj video okamžitě
+    document.querySelectorAll('.reels-card').forEach(card => {
+      card.addEventListener('click', async (e) => {
+        const video = card.querySelector('.reels-video');
+        if (video && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          await loadAndPlay(video);
+          // Po krátké pauze přesměruj
+          setTimeout(() => {
+            window.location.href = card.getAttribute('href');
+          }, 300);
+        }
+      });
+    });
+
+    // Auto-start prvního videa když je sekce viditelná
+    const reelsSection = document.querySelector('.reels-card');
+    if (reelsSection && vids.length > 0) {
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(async (entry) => {
+          if (entry.isIntersecting) {
+            // Počkej chvilku a pak přehraj první video
+            setTimeout(async () => {
+              await loadAndPlay(vids[0]);
+            }, 500);
+            sectionObserver.disconnect();
+          }
+        });
+      }, { threshold: 0.3 });
+      
+      sectionObserver.observe(reelsSection);
+    }
   })();
   </script>
 
