@@ -960,7 +960,7 @@ document.addEventListener('DOMContentLoaded', () => {
   </section>
 
   <!-- RESULTS -->
-  <section>
+  <section id="influencers">
     <div class="max-w-7xl mx-auto px-4 py-4 md:py-8">
       <!-- Nadpis sekce tvůrců -->
       <div class="mb-6">
@@ -4898,6 +4898,17 @@ document.addEventListener('DOMContentLoaded', () => {
           { rootMargin: '200px' }
         );
         io.observe(sent);
+      }
+
+      // Event listener pro tlačítko Vyhledat - scrollování na influencery
+      const applyFiltersBtn = document.getElementById('applyFilters');
+      if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', () => {
+          const influencersSection = document.getElementById('influencers');
+          if (influencersSection) {
+            influencersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
       }
 
       // ==========================================
