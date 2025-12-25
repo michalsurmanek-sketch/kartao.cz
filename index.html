@@ -948,6 +948,213 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </section>
 
+  <!-- =========================================
+   REELS NABÍDKA (reklamní box) – vlož doprostřed stránky
+   Klik vede na: /kartao-reels.html
+  ========================================= -->
+  <section class="max-w-6xl mx-auto px-4 my-10">
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-600/15 via-neutral-950 to-amber-500/10 shadow-[0_20px_60px_-35px_rgba(255,0,200,0.6)]">
+      <!-- glow -->
+      <div class="pointer-events-none absolute -inset-40 opacity-40 blur-3xl bg-[radial-gradient(circle_at_20%_20%,rgba(217,70,239,0.35),transparent_55%),radial-gradient(circle_at_80%_30%,rgba(245,158,11,0.22),transparent_55%)]"></div>
+
+      <div class="relative p-5 md:p-7">
+        <!-- header -->
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+          <div>
+            <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 border border-white/10 bg-white/5">
+              <span class="text-lg">🎬</span>
+              <span class="text-sm text-white/80">Reels nabídka</span>
+            </div>
+            <h3 class="mt-3 text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+              Projeď 3–4 top Reels a klikni na plný režim
+            </h3>
+            <p class="mt-2 text-white/70 max-w-2xl">
+              Rychlý náhled trendujících tvůrců. Kliknutím otevřeš skutečný Reels feed na Kartao.cz.
+            </p>
+          </div>
+
+          <a href="/kartao-reels.html"
+             class="group inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-[0.99] transition font-semibold text-white shadow-lg shadow-fuchsia-600/20">
+            Otevřít Reels
+            <span class="opacity-90 group-hover:translate-x-0.5 transition">→</span>
+          </a>
+        </div>
+
+        <!-- reels rail -->
+        <div class="mt-6">
+          <div class="flex md:grid md:grid-cols-4 gap-4 overflow-x-auto md:overflow-visible pb-2 snap-x snap-mandatory">
+            
+            <!-- CARD 1 -->
+            <a href="/kartao-reels.html"
+               class="reels-card snap-start group relative w-[72%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition">
+              <video class="reels-video absolute inset-0 h-full w-full object-cover"
+                     muted playsinline loop preload="none"
+                     data-src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10"></div>
+
+              <div class="absolute top-3 left-3 flex items-center gap-2">
+                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">👑</div>
+                <div class="text-sm">
+                  <div class="text-white font-semibold leading-tight">@influencer_01</div>
+                  <div class="text-white/60 text-xs">Fashion • IG</div>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-white font-semibold truncate">Outfit tip za 10s</div>
+                  <div class="text-white/65 text-xs">24,1k zhlédnutí • 1,2k лайků</div>
+                </div>
+
+                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
+                  <!-- play -->
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <!-- CARD 2 -->
+            <a href="/kartao-reels.html"
+               class="reels-card snap-start group relative w-[72%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition">
+              <video class="reels-video absolute inset-0 h-full w-full object-cover"
+                     muted playsinline loop preload="none"
+                     data-src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10"></div>
+
+              <div class="absolute top-3 left-3 flex items-center gap-2">
+                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">🔥</div>
+                <div class="text-sm">
+                  <div class="text-white font-semibold leading-tight">@creator_02</div>
+                  <div class="text-white/60 text-xs">Food • TikTok</div>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-white font-semibold truncate">Recept: 3 ingredience</div>
+                  <div class="text-white/65 text-xs">18,7k zhlédnutí • 980 лайků</div>
+                </div>
+                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <!-- CARD 3 -->
+            <a href="/kartao-reels.html"
+               class="reels-card snap-start group relative w-[72%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition">
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(217,70,239,0.35),transparent_55%),radial-gradient(circle_at_80%_40%,rgba(245,158,11,0.25),transparent_55%)]"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"></div>
+
+              <div class="absolute top-3 left-3 flex items-center gap-2">
+                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">🎮</div>
+                <div class="text-sm">
+                  <div class="text-white font-semibold leading-tight">@gamer_03</div>
+                  <div class="text-white/60 text-xs">Gaming • YT</div>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-white font-semibold truncate">Top 5 setup hacků</div>
+                  <div class="text-white/65 text-xs">31,9k zhlédnutí • 2,4k лайků</div>
+                </div>
+                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="absolute inset-0 grid place-items-center">
+                <div class="rounded-2xl px-4 py-2 border border-white/15 bg-white/10 text-white font-semibold">
+                  Klikni pro Reels
+                </div>
+              </div>
+            </a>
+
+            <!-- CARD 4 -->
+            <a href="/kartao-reels.html"
+               class="reels-card snap-start group relative w-[72%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition">
+              <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(217,70,239,0.25),rgba(0,0,0,0.2),rgba(245,158,11,0.18))]"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"></div>
+
+              <div class="absolute top-3 left-3 flex items-center gap-2">
+                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">✨</div>
+                <div class="text-sm">
+                  <div class="text-white font-semibold leading-tight">@creator_04</div>
+                  <div class="text-white/60 text-xs">Beauty • IG</div>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-white font-semibold truncate">Before/After za 8s</div>
+                  <div class="text-white/65 text-xs">12,3k zhlédnutí • 730 лайků</div>
+                </div>
+                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- badge -->
+              <div class="absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-bold bg-fuchsia-600/90 text-white">
+                NOVÉ
+              </div>
+            </a>
+
+          </div>
+
+          <div class="mt-3 flex items-center justify-between text-xs text-white/55">
+            <div>Tip: na mobilu přejeď doprava/doleva (swipe).</div>
+            <div class="hidden md:block">Kliknutí otevře plný Reels režim.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  /* =========================================
+    Reels náhledy – lazy load + auto play, když jsou vidět
+  ========================================= */
+  (function () {
+    const vids = Array.from(document.querySelectorAll(".reels-video"));
+
+    // pokud nemáš videa, nic nedělej
+    if (!vids.length) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(async (e) => {
+        const v = e.target;
+        const isVisible = e.isIntersecting && e.intersectionRatio > 0.5;
+
+        // lazy load src (až když je potřeba)
+        if (isVisible && !v.src) {
+          const src = v.getAttribute("data-src");
+          if (src) v.src = src;
+        }
+
+        // play/pause podle viditelnosti
+        if (isVisible) {
+          try { await v.play(); } catch (err) {}
+        } else {
+          try { v.pause(); } catch (err) {}
+        }
+      });
+    }, { threshold: [0.5, 0.75, 1] });
+
+    vids.forEach(v => io.observe(v));
+  })();
+  </script>
+
   <!-- PRO FIRMY (promo) -->
   <section class="border-t border-white/10 bg-neutral-900/30 mt-8">
     <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
