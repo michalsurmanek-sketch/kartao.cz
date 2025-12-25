@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kartao.cz – Marketplace (YouTube styl)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  "#fff1fb",
+              100: "#ffe4f7",
+              200: "#ffb8ea",
+              300: "#ff8ada",
+              400: "#ff5ccb",
+              500: "#ff2fbf", // uprav na svou Kartao růžovou
+              600: "#e61aa9",
+              700: "#b81484"
+            }
+          },
+          boxShadow: {
+            soft: "0 10px 28px rgba(0,0,0,.10)",
+            topbar: "0 1px 0 rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05)"
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Jemný YouTube-like scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
+
+    /* Zamezí poskakování při focus outline */
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+
+<body class="bg-white text-neutral-900">
+
+  <!-- TOP BAR (YouTube styl) -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-neutral-200 shadow-topbar">
+    <div class="mx-auto max-w-[1480px] px-3 sm:px-4">
+      <div class="h-16 flex items-center gap-3">
+
+        <!-- Left: menu + logo -->
+        <div class="flex items-center gap-2 min-w-[220px]">
+          <button id="btnSidebar" class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100 transition" aria-label="Menu">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <a href="#" class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-brand-500 text-white shadow-soft">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </span>
+            <div class="leading-tight">
+              <div class="font-extrabold tracking-tight">Kartao.cz</div>
+              <div class="text-[12px] text-neutral-500 -mt-0.5">Síť influencerů a tvůrců</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Center: search -->
+        <div class="flex-1 flex items-center justify-center">
+          <div class="w-full max-w-[720px] flex items-center gap-2">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500"></i>
+              <input id="q" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full h-11 pl-12 pr-4 rounded-full border border-neutral-300 bg-white focus:outline-none focus:ring-4 focus:ring-brand-100 focus:border-brand-400" />
+            </div>
+            <button class="hidden sm:inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand-500 text-white font-semibold shadow-soft hover:bg-brand-600 active:scale-[0.99] transition">
+              Hledat
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: nav + actions -->
+        <div class="flex items-center gap-2 justify-end min-w-[220px]">
+          <nav class="hidden xl:flex items-center gap-2 text-sm">
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Platformy</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Business</a>
+            <a class="px-3 py-2 rounded-full bg-neutral-100" href="#">Marketplace</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Chat</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Magazín</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Kontakt</a>
+          </nav>
+
+          <button class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100" aria-label="Notifikace">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </button>
+
+          <button class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-neutral-300 hover:bg-neutral-100 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Odhlásit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT: sidebar + content -->
+  <div class="mx-auto max-w-[1480px] px-3 sm:px-4">
+    <div class="flex gap-6">
+
+      <!-- SIDEBAR -->
+      <aside id="sidebar" class="hidden lg:block w-[240px] pt-6 pb-10">
+        <div class="space-y-2">
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="home" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Domů</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-brand-50 border border-brand-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-white grid place-items-center text-brand-600"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Marketplace</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Chat</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="newspaper" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Magazín</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="settings" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Nastavení</span>
+          </a>
+
+          <div class="pt-4">
+            <div class="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Rychlé akce</div>
+            <div class="mt-2 space-y-2">
+              <button class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-neutral-200 hover:bg-neutral-100 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="plus" class="w-5 h-5"></i></span>
+                  <span class="font-semibold">Zadat kampaň</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-500"></i>
+              </button>
+              <button class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-neutral-200 hover:bg-neutral-100 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="bookmark" class="w-5 h-5"></i></span>
+                  <span class="font-semibold">Uložené</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-500"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 pt-6 pb-14">
+
+        <!-- HERO / INTRO (stejná logika jako Kartao, ale bílé) -->
+        <section class="rounded-3xl border border-neutral-200 bg-white shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8">
+            <div class="flex items-start justify-between gap-6">
+              <div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
+                  Najdi toho pravého influencera.
+                  <span class="text-brand-600">Rychle a chytře.</span>
+                </h1>
+                <p class="mt-3 text-neutral-600 max-w-3xl">
+                  Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.
+                </p>
+              </div>
+
+              <div class="hidden lg:block">
+                <div class="w-[280px] rounded-3xl border border-neutral-200 bg-gradient-to-br from-brand-50 to-white p-4 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="font-bold">Reels / Shorts režim</div>
+                    <span class="text-xs px-2 py-1 rounded-full bg-white border border-neutral-200 text-neutral-600">beta</span>
+                  </div>
+                  <div class="mt-3 text-sm text-neutral-600">
+                    Přepni výpis do stylu YouTube/Shorts a procházej profily jako videa.
+                  </div>
+                  <a href="/kartao-reels.html" class="mt-4 inline-flex items-center justify-center w-full h-10 rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition">
+                    Otevřít Reels
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- FILTER BAR (YouTube chips + selecty) -->
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
+
+              <!-- search (duplicitní k topbaru – můžeš vypnout, ale nechávám jako na tvém screenshotu) -->
+              <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                  <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500"></i>
+                  <input id="q2" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full h-11 pl-12 pr-4 rounded-full border border-neutral-300 bg-white focus:outline-none focus:ring-4 focus:ring-brand-100 focus:border-brand-400" />
+                </div>
+                <button class="inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand-500 text-white font-semibold shadow-soft hover:bg-brand-600 transition">
+                  Pokročilé
+                </button>
+              </div>
+
+              <!-- quick selects -->
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Vše</option>
+                  <option>Influencer</option>
+                  <option>Tvůrce</option>
+                </select>
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Součet (Σ)</option>
+                  <option>Followers</option>
+                  <option>Engagement</option>
+                </select>
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Vše</option>
+                  <option>Micro</option>
+                  <option>Mid</option>
+                  <option>Macro</option>
+                </select>
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Celá ČR</option>
+                  <option>Praha</option>
+                  <option>Brno</option>
+                  <option>Ostrava</option>
+                </select>
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Relevance</option>
+                  <option>Nejnovější</option>
+                  <option>Nejlepší výkon</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Platform chips (YouTube style) -->
+            <div class="mt-5 flex flex-wrap items-center gap-2">
+              <button class="chip is-active" data-platform="all">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                Vše
+              </button>
+              <button class="chip" data-platform="facebook">
+                <i data-lucide="facebook" class="w-4 h-4"></i>
+                Facebook
+              </button>
+              <button class="chip" data-platform="instagram">
+                <i data-lucide="instagram" class="w-4 h-4"></i>
+                Instagram
+              </button>
+              <button class="chip" data-platform="tiktok">
+                <i data-lucide="music" class="w-4 h-4"></i>
+                TikTok
+              </button>
+              <button class="chip" data-platform="youtube">
+                <i data-lucide="youtube" class="w-4 h-4"></i>
+                YouTube
+              </button>
+              <button class="chip" data-platform="pinterest">
+                <i data-lucide="pin" class="w-4 h-4"></i>
+                Pinterest
+              </button>
+
+              <div class="ml-auto flex items-center gap-4 text-sm text-neutral-600">
+                <span class="inline-flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                  Nalezeno <b id="foundCount" class="text-neutral-900">0</b> tvůrců
+                </span>
+                <span class="inline-flex items-center gap-2">
+                  <i data-lucide="bookmark" class="w-4 h-4"></i>
+                  Uloženo <b id="savedCount" class="text-neutral-900">0</b>
+                </span>
+                <span class="hidden sm:inline-flex items-center gap-2">
+                  <span class="px-2 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs">Režim: Σ Součet</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- separátor v hero boxu -->
+          <div class="h-px bg-neutral-200"></div>
+
+          <!-- Title like in screenshot -->
+          <div class="p-6 sm:p-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              PORTFOLIO TVŮRCŮ
+            </div>
+
+            <div class="mt-3">
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Tvůrci a <span class="text-brand-600">influenceři</span></h2>
+              <p class="mt-2 text-neutral-600">Procházej profily ověřených tvůrců. Najdi partnera pro svou kampaň a začni spolupracovat.</p>
+            </div>
+
+            <!-- GRID (YouTube tiles) -->
+            <div class="mt-6">
+              <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-10 text-sm text-neutral-500">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>© <span id="year"></span> Kartao.cz – Marketplace</div>
+            <div class="flex items-center gap-3">
+              <a href="#" class="hover:text-neutral-900">Podmínky</a>
+              <span class="text-neutral-300">•</span>
+              <a href="#" class="hover:text-neutral-900">Ochrana soukromí</a>
+              <span class="text-neutral-300">•</span>
+              <a href="#" class="hover:text-neutral-900">Kontakt</a>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Mobile sidebar drawer -->
+  <div id="drawer" class="lg:hidden fixed inset-0 z-[60] hidden">
+    <div id="drawerBackdrop" class="absolute inset-0 bg-black/35"></div>
+    <div class="absolute left-0 top-0 h-full w-[86%] max-w-[320px] bg-white shadow-2xl border-r border-neutral-200 p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-brand-500 text-white">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </span>
+          <div>
+            <div class="font-extrabold">Kartao.cz</div>
+            <div class="text-xs text-neutral-500">Marketplace</div>
+          </div>
+        </div>
+        <button id="drawerClose" class="w-10 h-10 rounded-full hover:bg-neutral-100 grid place-items-center" aria-label="Zavřít">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-2">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#"><i data-lucide="home" class="w-5 h-5"></i> Domů</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-brand-50 border border-brand-100" href="#"><i data-lucide="sparkles" class="w-5 h-5"></i> Marketplace</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#"><i data-lucide="message-circle" class="w-5 h-5"></i> Chat</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#"><i data-lucide="newspaper" class="w-5 h-5"></i> Magazín</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#"><i data-lucide="settings" class="w-5 h-5"></i> Nastavení</a>
+      </div>
+
+      <div class="mt-6 p-3 rounded-3xl border border-neutral-200 bg-gradient-to-br from-brand-50 to-white">
+        <div class="font-bold">Reels / Shorts režim</div>
+        <div class="mt-1 text-sm text-neutral-600">Přepni do procházení jako videa.</div>
+        <a href="/kartao-reels.html" class="mt-3 inline-flex w-full h-10 items-center justify-center rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition">Otevřít Reels</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- UI styles (chips + cards) -->
+  <style>
+    .chip{
+      display:inline-flex;align-items:center;gap:.5rem;
+      height:36px;padding:0 14px;border-radius:999px;
+      border:1px solid rgb(229 229 229);
+      background:white;
+      font-weight:600;font-size:14px;
+      color:rgb(38 38 38);
+      transition:all .15s ease;
+    }
+    .chip:hover{ background: rgb(245 245 245); }
+    .chip.is-active{
+      background: rgb(255 241 251);
+      border-color: rgb(255 228 247);
+      color: rgb(184 20 132);
+      box-shadow: 0 6px 18px rgba(255,47,191,.18);
+    }
+
+    .tile{
+      border-radius: 24px;
+      border: 1px solid rgb(229 229 229);
+      background: white;
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .tile:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.10); }
+
+    .thumb{
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, rgba(255,47,191,.18), rgba(0,0,0,.02));
+    }
+
+    .badge-pill{
+      display:inline-flex;align-items:center;gap:.35rem;
+      height:26px;padding:0 10px;border-radius:999px;
+      background: rgba(255,47,191,.10);
+      border: 1px solid rgba(255,47,191,.18);
+      color: rgb(184 20 132);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .iconbtn{
+      width:40px;height:40px;border-radius:999px;
+      border: 1px solid rgb(229 229 229);
+      background:white;
+      display:grid;place-items:center;
+      transition: background .15s ease, transform .05s ease;
+    }
+    .iconbtn:hover{ background: rgb(245 245 245); }
+    .iconbtn:active{ transform: scale(.98); }
+  </style>
+
+
+  <script>
+    // Init icons
+    lucide.createIcons();
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Demo data (nahraď svými daty)
+    const creators = [
+      {
+        id: 'michal-s',
+        name: 'Michal Šurmánek',
+        handle: 'reklamas',
+        city: 'Brno',
+        tags: ['Marketing', 'Reels', 'Brand deals'],
+        platform: 'instagram',
+        followers: 12800,
+        verified: true,
+        avatar: 'https://images.unsplash.com/photo-1520975958225-9e8c2a84f8d8?auto=format&fit=crop&w=200&q=70'
+      },
+      {
+        id: 'michal-s2',
+        name: 'Michal Š',
+        handle: 'surma',
+        city: 'Praha',
+        tags: ['Ecommerce', 'Shorts', 'UGC'],
+        platform: 'youtube',
+        followers: 54000,
+        verified: false,
+        avatar: 'https://images.unsplash.com/photo-1520975911825-6b1eaa8f6c46?auto=format&fit=crop&w=200&q=70'
+      },
+      {
+        id: 'lucie-k',
+        name: 'Lucie K.',
+        handle: 'luciestyle',
+        city: 'Ostrava',
+        tags: ['Fashion', 'Beauty', 'TikTok'],
+        platform: 'tiktok',
+        followers: 221000,
+        verified: true,
+        avatar: 'https://images.unsplash.com/photo-1524503033411-f7a2fe8c7f71?auto=format&fit=crop&w=200&q=70'
+      },
+      {
+        id: 'adam-h',
+        name: 'Adam H.',
+        handle: 'adamtech',
+        city: 'Brno',
+        tags: ['Tech', 'Reviews', 'YouTube'],
+        platform: 'youtube',
+        followers: 86000,
+        verified: true,
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=70'
+      },
+      {
+        id: 'vera-p',
+        name: 'Věra P.',
+        handle: 'verapinterest',
+        city: 'Plzeň',
+        tags: ['Home', 'DIY', 'Pinterest'],
+        platform: 'pinterest',
+        followers: 31000,
+        verified: false,
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=70'
+      }
+    ];
+
+    // Saved (demo)
+    const saved = new Set(['michal-s']);
+
+    const grid = document.getElementById('grid');
+    const foundCount = document.getElementById('foundCount');
+    const savedCount = document.getElementById('savedCount');
+
+    let activePlatform = 'all';
+
+    function fmt(n){
+      // 12 800 -> 12,8k
+      if (n >= 1_000_000) return (n/1_000_000).toFixed(1).replace('.', ',') + 'M';
+      if (n >= 1_000) return (n/1_000).toFixed(1).replace('.', ',') + 'k';
+      return String(n);
+    }
+
+    function platformLabel(p){
+      return ({ instagram:'Instagram', facebook:'Facebook', tiktok:'TikTok', youtube:'YouTube', pinterest:'Pinterest' }[p] || 'Vše');
+    }
+
+    function render(){
+      grid.innerHTML = '';
+
+      const q = (document.getElementById('q').value || document.getElementById('q2').value || '').trim().toLowerCase();
+
+      const list = creators.filter(c => {
+        const okPlatform = (activePlatform === 'all') ? true : (c.platform === activePlatform);
+        const okQuery = !q ? true : [c.name, c.handle, c.city, ...(c.tags||[])].join(' ').toLowerCase().includes(q);
+        return okPlatform && okQuery;
+      });
+
+      foundCount.textContent = list.length;
+      savedCount.textContent = saved.size;
+
+      for(const c of list){
+        const isSaved = saved.has(c.id);
+
+        const el = document.createElement('article');
+        el.className = 'tile';
+        el.innerHTML = `
+          <div class="thumb">
+            <div class="absolute inset-0 p-4 flex items-start justify-between">
+              <span class="badge-pill">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                ${platformLabel(c.platform)}
+              </span>
+              <div class="flex items-center gap-2">
+                <button class="iconbtn" data-save="${c.id}" title="Uložit">
+                  <i data-lucide="bookmark" class="w-5 h-5 ${isSaved ? 'text-brand-600' : 'text-neutral-700'}"></i>
+                </button>
+                <button class="iconbtn" title="Sdílet">
+                  <i data-lucide="share-2" class="w-5 h-5 text-neutral-700"></i>
+                </button>
+                <button class="iconbtn" title="Dárek">
+                  <i data-lucide="gift" class="w-5 h-5 text-neutral-700"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="absolute inset-x-0 bottom-0 p-4">
+              <div class="flex items-center gap-3">
+                <img src="${c.avatar}" alt="${c.name}" class="w-12 h-12 rounded-full object-cover border border-white shadow" />
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <div class="font-extrabold text-lg leading-tight">${c.name}</div>
+                    ${c.verified ? `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-500 text-white" title="Ověřeno"><i data-lucide="check" class="w-4 h-4"></i></span>` : ``}
+                  </div>
+                  <div class="text-sm text-neutral-700 -mt-0.5">@${c.handle} • ${c.city} • <b>${fmt(c.followers)}</b> sledujících</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4">
+            <div class="flex flex-wrap gap-2">
+              ${(c.tags||[]).slice(0,3).map(t => `<span class="text-xs px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200">${t}</span>`).join('')}
+            </div>
+
+            <div class="mt-4 flex items-center gap-2">
+              <a href="#" class="flex-1 inline-flex items-center justify-center h-10 rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition">
+                Nabídnout spolupráci
+              </a>
+              <a href="#" class="inline-flex items-center justify-center h-10 px-4 rounded-2xl border border-neutral-300 hover:bg-neutral-100 transition" title="Detail">
+                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+              </a>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(el);
+      }
+
+      lucide.createIcons();
+
+      // bind save buttons
+      document.querySelectorAll('[data-save]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-save');
+          if (saved.has(id)) saved.delete(id); else saved.add(id);
+          render();
+        });
+      });
+    }
+
+    // Platform chips
+    document.querySelectorAll('.chip').forEach(ch => {
+      ch.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(x => x.classList.remove('is-active'));
+        ch.classList.add('is-active');
+        activePlatform = ch.getAttribute('data-platform') || 'all';
+        render();
+      });
+    });
+
+    // Search sync
+    const q = document.getElementById('q');
+    const q2 = document.getElementById('q2');
+    function sync(from, to){ to.value = from.value; render(); }
+    q.addEventListener('input', () => sync(q, q2));
+    q2.addEventListener('input', () => sync(q2, q));
+
+    // Drawer
+    const drawer = document.getElementById('drawer');
+    const btnSidebar = document.getElementById('btnSidebar');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const drawerClose = document.getElementById('drawerClose');
+
+    function openDrawer(){ drawer.classList.remove('hidden'); }
+    function closeDrawer(){ drawer.classList.add('hidden'); }
+    btnSidebar.addEventListener('click', openDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+    drawerClose.addEventListener('click', closeDrawer);
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
