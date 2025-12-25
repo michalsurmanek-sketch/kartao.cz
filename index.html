@@ -100,19 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- Tailwind konfigurace -->
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              50:  "#fff1fb",
-              100: "#ffe4f7",
-              200: "#ffb8ea",
-              300: "#ff8ada",
-              400: "#ff5ccb",
-              500: "#ff2fbf",
-              600: "#e61aa9",
-              700: "#b81484"
-            },
             neutral: tailwind.colors.neutral,
             fuchsia: tailwind.colors.fuchsia,
             amber: tailwind.colors.amber,
@@ -120,8 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             emerald: tailwind.colors.emerald
           },
           boxShadow: {
-            soft: "0 10px 28px rgba(0,0,0,.10)",
-            topbar: "0 1px 0 rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05)"
+            soft: "0 8px 30px rgb(0 0 0 / 0.25)",
           },
           keyframes: {
             crownPulse: {
@@ -138,14 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
 
   <style>
-    /* Jemný YouTube-like scrollbar */
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
-
-    /* Zamezí poskakování při focus outline */
-    * { -webkit-tap-highlight-color: transparent; }
-
     .logo-badge {
       position: relative;
       overflow: hidden;
@@ -226,8 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 10px 30px rgba(236,72,153,.15);
     }
     .card {
-      background-color: rgba(255,255,255,.95);
-      border: 1px solid rgba(0,0,0,.1);
+      background-color: rgba(23,23,23,.6);
+      border: 1px solid rgba(255,255,255,.1);
       border-radius: 1rem;
     }
     .btn {
@@ -238,10 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
       border-radius: .75rem;
     }
     .btn-primary {
-      background: #ff2fbf;
+      background: #db58f6;
     }
     .btn-primary:hover {
-      background: #ff5ccb;
+      background: #e879f9;
     }
     .btn-light {
       background: #fff;
@@ -251,16 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
       background: #f3f3f3;
     }
     .btn-outline {
-      border: 1px solid rgba(0,0,0,.2);
+      border: 1px solid rgba(255,255,255,.2);
     }
     .tag {
       display: inline-flex;
       align-items: center;
       gap: .35rem;
-      border: 1px solid rgba(0,0,0,.1);
+      border: 1px solid rgba(255,255,255,.1);
       padding: .25rem .5rem;
       border-radius: .5rem;
-      background: rgba(255,255,255,.9);
+      background: rgba(38,38,38,.9);
     }
     .modal-enter {
       transform: translateX(100%);
@@ -275,11 +257,11 @@ document.addEventListener('DOMContentLoaded', () => {
       animation: crownGlow 1.8s ease-in-out infinite;
     }
     @keyframes crownGlow {
-      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #ff2fbf); }
-      40% { color: #ff2fbf; filter: drop-shadow(0 0 12px #ff2fbf); }
+      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+      40% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
       60% { color: #ffffff; filter: drop-shadow(0 0 18px #ffffff); }
-      80% { color: #ff2fbf; filter: drop-shadow(0 0 12px #ff2fbf); }
-      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #ff2fbf); }
+      80% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
     }
     .svh { height: 100svh; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -295,147 +277,227 @@ document.addEventListener('DOMContentLoaded', () => {
       max-height: 500px;
       opacity: 1;
     }
-
-    /* YouTube-style chips */
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      height: 36px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid rgb(229 229 229);
-      background: white;
-      font-weight: 600;
-      font-size: 14px;
-      color: rgb(38 38 38);
-      transition: all .15s ease;
-      cursor: pointer;
-    }
-    .chip:hover {
-      background: rgb(245 245 245);
-    }
-    .chip.is-active {
-      background: rgb(255 241 251);
-      border-color: rgb(255 228 247);
-      color: rgb(184 20 132);
-      box-shadow: 0 6px 18px rgba(255,47,191,.18);
-    }
-
-    /* YouTube-style tiles */
-    .tile {
-      border-radius: 24px;
-      border: 1px solid rgb(229 229 229);
-      background: white;
-      overflow: hidden;
-      transition: transform .15s ease, box-shadow .15s ease;
-      cursor: pointer;
-    }
-    .tile:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,0,0,.10);
-    }
-
-    .thumb {
-      position: relative;
-      aspect-ratio: 16 / 9;
-      background: linear-gradient(135deg, rgba(255,47,191,.18), rgba(0,0,0,.02));
-    }
-
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      height: 26px;
-      padding: 0 10px;
-      border-radius: 999px;
-      background: rgba(255,47,191,.10);
-      border: 1px solid rgba(255,47,191,.18);
-      color: rgb(184 20 132);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .iconbtn {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      border: 1px solid rgb(229 229 229);
-      background: white;
-      display: grid;
-      place-items: center;
-      transition: background .15s ease, transform .05s ease;
-      cursor: pointer;
-    }
-    .iconbtn:hover {
-      background: rgb(245 245 245);
-    }
-    .iconbtn:active {
-      transform: scale(.98);
-    }
   </style>
 </head>
 
-<body class="bg-white text-neutral-900">
+<body class="min-h-screen bg-neutral-950 text-white">
 
-  <!-- TOP BAR (YouTube styl) -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-neutral-200 shadow-topbar">
-    <div class="mx-auto max-w-[1480px] px-3 sm:px-4">
-      <div class="h-16 flex items-center gap-3">
-
-        <!-- Left: menu + logo -->
-        <div class="flex items-center gap-2 min-w-[220px]">
-          <button id="btnSidebar" class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100 transition" aria-label="Menu">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-          </button>
-
-          <a href="index.html" class="flex items-center gap-3">
-            <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-brand-500 text-white shadow-soft">
-              <i data-lucide="crown" class="w-5 h-5"></i>
-            </span>
-            <div class="leading-tight">
-              <div class="font-extrabold tracking-tight">Kartao.cz</div>
-              <div class="text-[12px] text-neutral-500 -mt-0.5">Síť influencerů a tvůrců</div>
-            </div>
-          </a>
+  <!-- HLAVNÍ HEADER -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
+          <i data-lucide="crown" class="w-5 h-5"></i>
         </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-lg">Kartao.cz</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
+              Marketplace
+            </span>
+          </div>
+          <p class="text-[11px] text-white/60">Síť influencerů a tvůrců</p>
+        </div>
+      </a>
 
-        <!-- Center: search -->
-        <div class="flex-1 flex items-center justify-center">
-          <div class="w-full max-w-[720px] flex items-center gap-2">
-            <div class="relative flex-1">
-              <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500"></i>
-              <input id="qTop" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full h-11 pl-12 pr-4 rounded-full border border-neutral-300 bg-white focus:outline-none focus:ring-4 focus:ring-brand-100 focus:border-brand-400" />
+      <nav class="hidden lg:flex items-center gap-6">
+        <!-- Hlavní funkce dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>Platformy</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <!-- SOCIÁLNÍ SÍŤ KARTAO – hlavní feed & komunita -->
+              <a href="luxus2.html"
+                class="col-span-2 flex items-center gap-3 px-4 py-3 rounded-xl transition
+                      bg-gradient-to-br from-blue-500/20 via-cyan-400/15 to-sky-500/20
+                      border border-blue-300/30 hover:border-blue-300/60
+                      hover:shadow-[0_0_12px_rgba(59,130,246,0.45)]"
+                data-requires-auth="true">
+
+                <div class="w-10 h-10 rounded-lg grid place-items-center
+                            bg-gradient-to-tr from-blue-400 to-cyan-300
+                            text-neutral-900 shadow-[0_0_6px_rgba(59,130,246,0.5)]">
+                  <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
+
+                <div class="flex flex-col leading-tight">
+                  <span class="text-base font-bold text-blue-200">Sociální síť Kartao</span>
+                  <span class="text-xs text-blue-100/70">Feed, Stories, Komunita & Chat</span>
+                </div>
+              </a>
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3 mt-3">Základní systémy</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <!-- 1) Moje karta – centrální ovládání profilu influencera -->
+                <a id="userCardLink" href="#"
+                  class="flex items-center gap-3 px-3 py-2 rounded-xl transition
+                        bg-gradient-to-br from-yellow-500/20 via-yellow-400/15 to-amber-500/20
+                        border border-yellow-300/30 hover:border-yellow-300/60
+                        hover:shadow-[0_0_12px_rgba(255,215,0,0.45)]">
+
+                  <div id="userCardIcon" class="w-8 h-8 rounded-lg grid place-items-center
+                              bg-gradient-to-tr from-yellow-300 to-amber-200
+                              text-neutral-900 shadow-[0_0_6px_rgba(255,220,0,0.5)]">
+                    <!-- Ikona se mění podle role -->
+                  </div>
+
+                  <div class="flex flex-col leading-tight">
+                    <span id="userCardTitle" class="text-sm font-semibold text-yellow-200">Moje karta</span>
+                    <span id="userCardSubtitle" class="text-[11px] text-yellow-100/70">Profil &amp; ovládání účtu</span>
+                  </div>
+                </a>
+
+                <!-- 2) KREDITY – GAMIFIKACE -->
+                <a href="credits-dashboard.html"
+                  class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3"
+                  data-requires-auth="true">
+                  <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Kredity</div>
+                    <div class="text-xs text-white/60">Gamifikace</div>
+                  </div>
+                </a>
+
+                <!-- 3) Odznaky -->
+                <a href="badge-system-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                    <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Odznaky</div>
+                    <div class="text-xs text-white/60">Achievements</div>
+                  </div>
+                </a>
+
+                <!-- 4) Žebříčky -->
+                <a href="leaderboards-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <i data-lucide="trophy" class="w-4 h-4 text-purple-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Žebříčky</div>
+                    <div class="text-xs text-white/60">Rankings</div>
+                  </div>
+                </a>
+              </div>
+
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">AI &amp; Pokročilé</div>
+              <div class="grid grid-cols-2 gap-2">
+                <a href="ai-pricing-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="brain" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Pricing</div>
+                    <div class="text-xs text-white/60">Smart ceny</div>
+                  </div>
+                </a>
+                <a href="ai-analytics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <i data-lucide="bar-chart" class="w-4 h-4 text-orange-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">AI Analytics</div>
+                    <div class="text-xs text-white/60">Analýzy</div>
+                  </div>
+                </a>
+                <a href="intelligent-recommendation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Doporučení</div>
+                    <div class="text-xs text-white/60">ML systém</div>
+                  </div>
+                </a>
+                <a href="ai-price-negotiation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <i data-lucide="handshake" class="w-4 h-4 text-amber-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Vyjednávání</div>
+                    <div class="text-xs text-white/60">AI negotiation</div>
+                  </div>
+                </a>
+              </div>
             </div>
-            <button class="hidden sm:inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand-500 text-white font-semibold shadow-soft hover:bg-brand-600 active:scale-[0.99] transition">
-              Hledat
-            </button>
           </div>
         </div>
 
-        <!-- Right: nav + actions -->
-        <div class="flex items-center gap-2 justify-end min-w-[220px]">
-          <nav class="hidden xl:flex items-center gap-2 text-sm">
-            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Platformy</a>
-            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Business</a>
-            <a class="px-3 py-2 rounded-full bg-neutral-100" href="#">Marketplace</a>
-            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="chat.html">Chat</a>
-            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="kartao-magazin.html">Magazín</a>
-            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="kontakt.html">Kontakt</a>
-          </nav>
-
-          <button class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100" aria-label="Notifikace">
-            <i data-lucide="bell" class="w-5 h-5"></i>
+        <!-- Business systémy dropdown -->
+        <div class="relative group">
+          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            <span>Business</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
           </button>
-
-          <button id="desktopAuthBtn" class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-neutral-300 hover:bg-neutral-100 transition">
-            <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
-            <span id="desktopAuthText" class="hidden sm:inline">Přihlásit</span>
-          </button>
+          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="p-4">
+              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Business nástroje</div>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <a href="comments-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Komentáře</div>
+                    <div class="text-xs text-white/60">Feedback</div>
+                  </div>
+                </a>
+                <a href="ecommerce-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">E-shop</div>
+                    <div class="text-xs text-white/60">Prodej</div>
+                  </div>
+                </a>
+                <a href="world-class-statistics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Statistiky</div>
+                    <div class="text-xs text-white/60">Real-time</div>
+                  </div>
+                </a>
+                <a href="company-mini-websites-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                    <i data-lucide="globe" class="w-4 h-4 text-violet-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-white">Mini Weby</div>
+                    <div class="text-xs text-white/60">Website builder</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </header>
+
+        <a href="kartao-marketplace.html" class="text-white/80 hover:text-white transition flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně</a>
+        <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
+        <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
+        <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
+        <a href="vip.html" class="lg:hidden inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
+          <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
+          <span class="font-bold">VIP</span>
+        </a>
+      </nav>
+
+      <div class="hidden md:flex items-center gap-3">
+  <!-- Desktop auth button (přihlášení/odhlášení) -->
+  <button id="desktopAuthBtn" class="btn btn-primary text-sm md:inline-flex flex items-center gap-2">
+    <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
+    <span id="desktopAuthText">Přihlásit se</span>
+  </button>
+</div>
 
 <div class="md:hidden flex items-center gap-2">
   <!-- User menu mobile - přihlášen -->
@@ -886,329 +948,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </section>
 
-  <!-- =========================================
-   REELS NABÍDKA (reklamní box) – vlož doprostřed stránky
-   Klik vede na: /kartao-reels.html
-  ========================================= -->
-  <section class="border-t border-white/10 max-w-6xl mx-auto px-4 pt-8 pb-10">
-    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-600/15 via-neutral-950 to-amber-500/10 shadow-[0_20px_60px_-35px_rgba(255,0,200,0.6)]">
-      <!-- glow -->
-      <div class="pointer-events-none absolute -inset-40 opacity-40 blur-3xl bg-[radial-gradient(circle_at_20%_20%,rgba(217,70,239,0.35),transparent_55%),radial-gradient(circle_at_80%_30%,rgba(245,158,11,0.22),transparent_55%)]"></div>
-
-      <div class="relative p-5 md:p-7">
-        <!-- header -->
-        <div class="flex flex-row items-center justify-between gap-3">
-          <div>
-            <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 border border-white/10 bg-white/5">
-              <span class="text-lg">🎬</span>
-              <span class="text-sm text-white/80">Reels nabídka</span>
-            </div>
-          </div>
-
-          <a href="/kartao-reels.html"
-             class="group inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 md:py-3 bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-[0.99] transition font-semibold text-white shadow-lg shadow-fuchsia-600/20 shrink-0">
-            Otevřít Reels
-            <span class="opacity-90 group-hover:translate-x-0.5 transition">→</span>
-          </a>
-        </div>
-
-        <!-- reels rail -->
-        <div class="mt-6">
-          <div class="flex md:grid md:grid-cols-4 gap-4 overflow-x-auto md:overflow-visible pb-2 snap-x snap-mandatory -mr-4 pr-4">
-            
-            <!-- CARD 1 -->
-            <a href="/kartao-reels.html"
-               class="reels-card snap-start group relative w-[85%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition shrink-0">
-              <video class="reels-video absolute inset-0 h-full w-full object-cover"
-                     muted playsinline loop preload="none"
-                     data-src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
-
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10"></div>
-
-              <!-- Menu s třemi tečkami -->
-              <div class="absolute top-3 right-3 z-10">
-                <button class="reels-menu-btn w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/70 transition" onclick="event.preventDefault(); event.stopPropagation(); toggleReelsMenu(this);">
-                  <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
-                </button>
-                <div class="reels-menu hidden absolute right-0 mt-2 w-48 rounded-xl bg-neutral-900 border border-white/10 shadow-xl overflow-hidden">
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); saveReel(this);">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    Uložit
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); shareReel(this);">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    Sdílet
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white/70 hover:bg-white/5 transition flex items-center gap-2 border-t border-white/10" onclick="event.preventDefault(); event.stopPropagation(); reportReel(this);">
-                    <i data-lucide="flag" class="w-4 h-4"></i>
-                    Nahlásit
-                  </button>
-                </div>
-              </div>
-
-              <div class="absolute top-3 left-3 flex items-center gap-2">
-                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">👑</div>
-                <div class="text-sm">
-                  <div class="text-white font-semibold leading-tight">@influencer_01</div>
-                  <div class="text-white/60 text-xs">Fashion • IG</div>
-                </div>
-              </div>
-
-              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="text-white font-semibold truncate">Outfit tip za 10s</div>
-                  <div class="text-white/65 text-xs">24,1k zhlédnutí • 1,2k лайků</div>
-                </div>
-
-                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
-                  <!-- play -->
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
-                  </svg>
-                </div>
-              </div>
-            </a>
-
-            <!-- CARD 2 -->
-            <a href="/kartao-reels.html"
-               class="reels-card snap-start group relative w-[85%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition shrink-0">
-              <video class="reels-video absolute inset-0 h-full w-full object-cover"
-                     muted playsinline loop preload="none"
-                     data-src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10"></div>
-
-              <!-- Menu s třemi tečkami -->
-              <div class="absolute top-3 right-3 z-10">
-                <button class="reels-menu-btn w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/70 transition" onclick="event.preventDefault(); event.stopPropagation(); toggleReelsMenu(this);">
-                  <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
-                </button>
-                <div class="reels-menu hidden absolute right-0 mt-2 w-48 rounded-xl bg-neutral-900 border border-white/10 shadow-xl overflow-hidden">
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); saveReel(this);">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    Uložit
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); shareReel(this);">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    Sdílet
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white/70 hover:bg-white/5 transition flex items-center gap-2 border-t border-white/10" onclick="event.preventDefault(); event.stopPropagation(); reportReel(this);">
-                    <i data-lucide="flag" class="w-4 h-4"></i>
-                    Nahlásit
-                  </button>
-                </div>
-              </div>
-
-              <div class="absolute top-3 left-3 flex items-center gap-2">
-                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">🔥</div>
-                <div class="text-sm">
-                  <div class="text-white font-semibold leading-tight">@creator_02</div>
-                  <div class="text-white/60 text-xs">Food • TikTok</div>
-                </div>
-              </div>
-
-              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="text-white font-semibold truncate">Recept: 3 ingredience</div>
-                  <div class="text-white/65 text-xs">18,7k zhlédnutí • 980 лайků</div>
-                </div>
-                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
-                  </svg>
-                </div>
-              </div>
-            </a>
-
-            <!-- CARD 3 -->
-            <a href="/kartao-reels.html"
-               class="reels-card snap-start group relative w-[85%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition shrink-0">
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(217,70,239,0.35),transparent_55%),radial-gradient(circle_at_80%_40%,rgba(245,158,11,0.25),transparent_55%)]"></div>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"></div>
-
-              <!-- Menu s třemi tečkami -->
-              <div class="absolute top-3 right-3 z-10">
-                <button class="reels-menu-btn w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/70 transition" onclick="event.preventDefault(); event.stopPropagation(); toggleReelsMenu(this);">
-                  <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
-                </button>
-                <div class="reels-menu hidden absolute right-0 mt-2 w-48 rounded-xl bg-neutral-900 border border-white/10 shadow-xl overflow-hidden">
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); saveReel(this);">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    Uložit
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); shareReel(this);">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    Sdílet
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white/70 hover:bg-white/5 transition flex items-center gap-2 border-t border-white/10" onclick="event.preventDefault(); event.stopPropagation(); reportReel(this);">
-                    <i data-lucide="flag" class="w-4 h-4"></i>
-                    Nahlásit
-                  </button>
-                </div>
-              </div>
-
-              <div class="absolute top-3 left-3 flex items-center gap-2">
-                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">🎮</div>
-                <div class="text-sm">
-                  <div class="text-white font-semibold leading-tight">@gamer_03</div>
-                  <div class="text-white/60 text-xs">Gaming • YT</div>
-                </div>
-              </div>
-
-              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="text-white font-semibold truncate">Top 5 setup hacků</div>
-                  <div class="text-white/65 text-xs">31,9k zhlédnutí • 2,4k лайků</div>
-                </div>
-                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="absolute inset-0 grid place-items-center">
-                <div class="rounded-2xl px-4 py-2 border border-white/15 bg-white/10 text-white font-semibold">
-                  Klikni pro Reels
-                </div>
-              </div>
-            </a>
-
-            <!-- CARD 4 -->
-            <a href="/kartao-reels.html"
-               class="reels-card snap-start group relative w-[85%] sm:w-[48%] md:w-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/10 bg-black/30 hover:border-white/20 transition shrink-0">
-              <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(217,70,239,0.25),rgba(0,0,0,0.2),rgba(245,158,11,0.18))]"></div>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"></div>
-
-              <!-- Menu s třemi tečkami -->
-              <div class="absolute top-3 right-3 z-10">
-                <button class="reels-menu-btn w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/70 transition" onclick="event.preventDefault(); event.stopPropagation(); toggleReelsMenu(this);">
-                  <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
-                </button>
-                <div class="reels-menu hidden absolute right-0 mt-2 w-48 rounded-xl bg-neutral-900 border border-white/10 shadow-xl overflow-hidden">
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); saveReel(this);">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    Uložit
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 transition flex items-center gap-2" onclick="event.preventDefault(); event.stopPropagation(); shareReel(this);">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    Sdílet
-                  </button>
-                  <button class="w-full px-4 py-2.5 text-left text-sm text-white/70 hover:bg-white/5 transition flex items-center gap-2 border-t border-white/10" onclick="event.preventDefault(); event.stopPropagation(); reportReel(this);">
-                    <i data-lucide="flag" class="w-4 h-4"></i>
-                    Nahlásit
-                  </button>
-                </div>
-              </div>
-
-              <div class="absolute top-3 left-3 flex items-center gap-2">
-                <div class="h-9 w-9 rounded-full bg-white/10 border border-white/15 grid place-items-center">✨</div>
-                <div class="text-sm">
-                  <div class="text-white font-semibold leading-tight">@creator_04</div>
-                  <div class="text-white/60 text-xs">Beauty • IG</div>
-                </div>
-              </div>
-
-              <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="text-white font-semibold truncate">Before/After za 8s</div>
-                  <div class="text-white/65 text-xs">12,3k zhlédnutí • 730 лайků</div>
-                </div>
-                <div class="shrink-0 grid place-items-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 group-hover:bg-white/15 transition">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-                    <path d="M9 7l10 5-10 5V7z" fill="currentColor"/>
-                  </svg>
-                </div>
-              </div>
-
-              <!-- badge -->
-              <div class="absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-bold bg-fuchsia-600/90 text-white">
-                NOVÉ
-              </div>
-            </a>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script>
-  /* =========================================
-    Reels náhledy – lazy load + auto play, když jsou vidět
-  ========================================= */
-  (function () {
-    const vids = Array.from(document.querySelectorAll(".reels-video"));
-
-    // pokud nemáš videa, nic nedělej
-    if (!vids.length) return;
-
-    // Funkce pro načtení a přehrání videa
-    const loadAndPlay = async (video) => {
-      if (!video.src) {
-        const src = video.getAttribute("data-src");
-        if (src) video.src = src;
-      }
-      try { 
-        await video.play(); 
-      } catch (err) {
-        console.log('Auto-play blocked, waiting for user interaction');
-      }
-    };
-
-    // IntersectionObserver pro auto-play při scrollování
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(async (e) => {
-        const v = e.target;
-        const isVisible = e.isIntersecting && e.intersectionRatio > 0.5;
-
-        if (isVisible) {
-          await loadAndPlay(v);
-        } else {
-          try { v.pause(); } catch (err) {}
-        }
-      });
-    }, { threshold: [0.5, 0.75, 1] });
-
-    // Observe všechna videa
-    vids.forEach(v => io.observe(v));
-
-    // Klik na kartu = načti a přehraj video okamžitě
-    document.querySelectorAll('.reels-card').forEach(card => {
-      card.addEventListener('click', async (e) => {
-        const video = card.querySelector('.reels-video');
-        if (video && !e.ctrlKey && !e.metaKey) {
-          e.preventDefault();
-          await loadAndPlay(video);
-          // Po krátké pauze přesměruj
-          setTimeout(() => {
-            window.location.href = card.getAttribute('href');
-          }, 300);
-        }
-      });
-    });
-
-    // Auto-start prvního videa když je sekce viditelná
-    const reelsSection = document.querySelector('.reels-card');
-    if (reelsSection && vids.length > 0) {
-      const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(async (entry) => {
-          if (entry.isIntersecting) {
-            // Počkej chvilku a pak přehraj první video
-            setTimeout(async () => {
-              await loadAndPlay(vids[0]);
-            }, 500);
-            sectionObserver.disconnect();
-          }
-        });
-      }, { threshold: 0.3 });
-      
-      sectionObserver.observe(reelsSection);
-    }
-  })();
-  </script>
-
   <!-- PRO FIRMY (promo) -->
-  <section class="border-t border-white/10 bg-neutral-900/30 pt-8">
+  <section class="border-t border-white/10 bg-neutral-900/30 mt-8">
     <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
       <div>
         <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Pro firmy a agentury</h2>
