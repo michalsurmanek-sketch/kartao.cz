@@ -100,10 +100,19 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- Tailwind konfigurace -->
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
+            brand: {
+              50:  "#fff1fb",
+              100: "#ffe4f7",
+              200: "#ffb8ea",
+              300: "#ff8ada",
+              400: "#ff5ccb",
+              500: "#ff2fbf",
+              600: "#e61aa9",
+              700: "#b81484"
+            },
             neutral: tailwind.colors.neutral,
             fuchsia: tailwind.colors.fuchsia,
             amber: tailwind.colors.amber,
@@ -111,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
             emerald: tailwind.colors.emerald
           },
           boxShadow: {
-            soft: "0 8px 30px rgb(0 0 0 / 0.25)",
+            soft: "0 10px 28px rgba(0,0,0,.10)",
+            topbar: "0 1px 0 rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05)"
           },
           keyframes: {
             crownPulse: {
@@ -128,6 +138,14 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
 
   <style>
+    /* Jemný YouTube-like scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
+
+    /* Zamezí poskakování při focus outline */
+    * { -webkit-tap-highlight-color: transparent; }
+
     .logo-badge {
       position: relative;
       overflow: hidden;
@@ -208,8 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 10px 30px rgba(236,72,153,.15);
     }
     .card {
-      background-color: rgba(23,23,23,.6);
-      border: 1px solid rgba(255,255,255,.1);
+      background-color: rgba(255,255,255,.95);
+      border: 1px solid rgba(0,0,0,.1);
       border-radius: 1rem;
     }
     .btn {
@@ -220,10 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
       border-radius: .75rem;
     }
     .btn-primary {
-      background: #db58f6;
+      background: #ff2fbf;
     }
     .btn-primary:hover {
-      background: #e879f9;
+      background: #ff5ccb;
     }
     .btn-light {
       background: #fff;
@@ -233,16 +251,16 @@ document.addEventListener('DOMContentLoaded', () => {
       background: #f3f3f3;
     }
     .btn-outline {
-      border: 1px solid rgba(255,255,255,.2);
+      border: 1px solid rgba(0,0,0,.2);
     }
     .tag {
       display: inline-flex;
       align-items: center;
       gap: .35rem;
-      border: 1px solid rgba(255,255,255,.1);
+      border: 1px solid rgba(0,0,0,.1);
       padding: .25rem .5rem;
       border-radius: .5rem;
-      background: rgba(38,38,38,.9);
+      background: rgba(255,255,255,.9);
     }
     .modal-enter {
       transform: translateX(100%);
@@ -257,11 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
       animation: crownGlow 1.8s ease-in-out infinite;
     }
     @keyframes crownGlow {
-      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
-      40% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
+      0% { color: #fbbf24; filter: drop-shadow(0 0 0px #ff2fbf); }
+      40% { color: #ff2fbf; filter: drop-shadow(0 0 12px #ff2fbf); }
       60% { color: #ffffff; filter: drop-shadow(0 0 18px #ffffff); }
-      80% { color: #e879f9; filter: drop-shadow(0 0 12px #e879f9); }
-      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #e879f9); }
+      80% { color: #ff2fbf; filter: drop-shadow(0 0 12px #ff2fbf); }
+      100% { color: #fbbf24; filter: drop-shadow(0 0 0px #ff2fbf); }
     }
     .svh { height: 100svh; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -277,227 +295,147 @@ document.addEventListener('DOMContentLoaded', () => {
       max-height: 500px;
       opacity: 1;
     }
+
+    /* YouTube-style chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgb(229 229 229);
+      background: white;
+      font-weight: 600;
+      font-size: 14px;
+      color: rgb(38 38 38);
+      transition: all .15s ease;
+      cursor: pointer;
+    }
+    .chip:hover {
+      background: rgb(245 245 245);
+    }
+    .chip.is-active {
+      background: rgb(255 241 251);
+      border-color: rgb(255 228 247);
+      color: rgb(184 20 132);
+      box-shadow: 0 6px 18px rgba(255,47,191,.18);
+    }
+
+    /* YouTube-style tiles */
+    .tile {
+      border-radius: 24px;
+      border: 1px solid rgb(229 229 229);
+      background: white;
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .15s ease;
+      cursor: pointer;
+    }
+    .tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.10);
+    }
+
+    .thumb {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, rgba(255,47,191,.18), rgba(0,0,0,.02));
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255,47,191,.10);
+      border: 1px solid rgba(255,47,191,.18);
+      color: rgb(184 20 132);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .iconbtn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid rgb(229 229 229);
+      background: white;
+      display: grid;
+      place-items: center;
+      transition: background .15s ease, transform .05s ease;
+      cursor: pointer;
+    }
+    .iconbtn:hover {
+      background: rgb(245 245 245);
+    }
+    .iconbtn:active {
+      transform: scale(.98);
+    }
   </style>
 </head>
 
-<body class="min-h-screen bg-neutral-950 text-white">
+<body class="bg-white text-neutral-900">
 
-  <!-- HLAVNÍ HEADER -->
-  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 grid place-items-center">
-          <i data-lucide="crown" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold text-lg">Kartao.cz</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-400/40">
-              Marketplace
+  <!-- TOP BAR (YouTube styl) -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-neutral-200 shadow-topbar">
+    <div class="mx-auto max-w-[1480px] px-3 sm:px-4">
+      <div class="h-16 flex items-center gap-3">
+
+        <!-- Left: menu + logo -->
+        <div class="flex items-center gap-2 min-w-[220px]">
+          <button id="btnSidebar" class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100 transition" aria-label="Menu">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <a href="index.html" class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-brand-500 text-white shadow-soft">
+              <i data-lucide="crown" class="w-5 h-5"></i>
             </span>
-          </div>
-          <p class="text-[11px] text-white/60">Síť influencerů a tvůrců</p>
-        </div>
-      </a>
-
-      <nav class="hidden lg:flex items-center gap-6">
-        <!-- Hlavní funkce dropdown -->
-        <div class="relative group">
-          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
-            <i data-lucide="zap" class="w-4 h-4"></i>
-            <span>Platformy</span>
-            <i data-lucide="chevron-down" class="w-3 h-3"></i>
-          </button>
-          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div class="p-4">
-              <!-- SOCIÁLNÍ SÍŤ KARTAO – hlavní feed & komunita -->
-              <a href="luxus2.html"
-                class="col-span-2 flex items-center gap-3 px-4 py-3 rounded-xl transition
-                      bg-gradient-to-br from-blue-500/20 via-cyan-400/15 to-sky-500/20
-                      border border-blue-300/30 hover:border-blue-300/60
-                      hover:shadow-[0_0_12px_rgba(59,130,246,0.45)]"
-                data-requires-auth="true">
-
-                <div class="w-10 h-10 rounded-lg grid place-items-center
-                            bg-gradient-to-tr from-blue-400 to-cyan-300
-                            text-neutral-900 shadow-[0_0_6px_rgba(59,130,246,0.5)]">
-                  <i data-lucide="users" class="w-5 h-5"></i>
-                </div>
-
-                <div class="flex flex-col leading-tight">
-                  <span class="text-base font-bold text-blue-200">Sociální síť Kartao</span>
-                  <span class="text-xs text-blue-100/70">Feed, Stories, Komunita & Chat</span>
-                </div>
-              </a>
-              <div class="text-xs uppercase tracking-wide text-white/50 mb-3 mt-3">Základní systémy</div>
-              <div class="grid grid-cols-2 gap-2 mb-4">
-                <!-- 1) Moje karta – centrální ovládání profilu influencera -->
-                <a id="userCardLink" href="#"
-                  class="flex items-center gap-3 px-3 py-2 rounded-xl transition
-                        bg-gradient-to-br from-yellow-500/20 via-yellow-400/15 to-amber-500/20
-                        border border-yellow-300/30 hover:border-yellow-300/60
-                        hover:shadow-[0_0_12px_rgba(255,215,0,0.45)]">
-
-                  <div id="userCardIcon" class="w-8 h-8 rounded-lg grid place-items-center
-                              bg-gradient-to-tr from-yellow-300 to-amber-200
-                              text-neutral-900 shadow-[0_0_6px_rgba(255,220,0,0.5)]">
-                    <!-- Ikona se mění podle role -->
-                  </div>
-
-                  <div class="flex flex-col leading-tight">
-                    <span id="userCardTitle" class="text-sm font-semibold text-yellow-200">Moje karta</span>
-                    <span id="userCardSubtitle" class="text-[11px] text-yellow-100/70">Profil &amp; ovládání účtu</span>
-                  </div>
-                </a>
-
-                <!-- 2) KREDITY – GAMIFIKACE -->
-                <a href="credits-dashboard.html"
-                  class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3"
-                  data-requires-auth="true">
-                  <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Kredity</div>
-                    <div class="text-xs text-white/60">Gamifikace</div>
-                  </div>
-                </a>
-
-                <!-- 3) Odznaky -->
-                <a href="badge-system-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                    <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Odznaky</div>
-                    <div class="text-xs text-white/60">Achievements</div>
-                  </div>
-                </a>
-
-                <!-- 4) Žebříčky -->
-                <a href="leaderboards-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                    <i data-lucide="trophy" class="w-4 h-4 text-purple-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Žebříčky</div>
-                    <div class="text-xs text-white/60">Rankings</div>
-                  </div>
-                </a>
-              </div>
-
-              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">AI &amp; Pokročilé</div>
-              <div class="grid grid-cols-2 gap-2">
-                <a href="ai-pricing-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
-                    <i data-lucide="brain" class="w-4 h-4 text-pink-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">AI Pricing</div>
-                    <div class="text-xs text-white/60">Smart ceny</div>
-                  </div>
-                </a>
-                <a href="ai-analytics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                    <i data-lucide="bar-chart" class="w-4 h-4 text-orange-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">AI Analytics</div>
-                    <div class="text-xs text-white/60">Analýzy</div>
-                  </div>
-                </a>
-                <a href="intelligent-recommendation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Doporučení</div>
-                    <div class="text-xs text-white/60">ML systém</div>
-                  </div>
-                </a>
-                <a href="ai-price-negotiation-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <i data-lucide="handshake" class="w-4 h-4 text-amber-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Vyjednávání</div>
-                    <div class="text-xs text-white/60">AI negotiation</div>
-                  </div>
-                </a>
-              </div>
+            <div class="leading-tight">
+              <div class="font-extrabold tracking-tight">Kartao.cz</div>
+              <div class="text-[12px] text-neutral-500 -mt-0.5">Síť influencerů a tvůrců</div>
             </div>
-          </div>
+          </a>
         </div>
 
-        <!-- Business systémy dropdown -->
-        <div class="relative group">
-          <button class="text-white/80 hover:text-white transition flex items-center gap-2">
-            <i data-lucide="building" class="w-4 h-4"></i>
-            <span>Business</span>
-            <i data-lucide="chevron-down" class="w-3 h-3"></i>
-          </button>
-          <div class="absolute top-full left-0 mt-2 w-80 bg-neutral-900 backdrop-blur rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div class="p-4">
-              <div class="text-xs uppercase tracking-wide text-white/50 mb-3">Business nástroje</div>
-              <div class="grid grid-cols-2 gap-2 mb-4">
-                <a href="comments-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                    <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Komentáře</div>
-                    <div class="text-xs text-white/60">Feedback</div>
-                  </div>
-                </a>
-                <a href="ecommerce-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
-                    <i data-lucide="shopping-bag" class="w-4 h-4 text-pink-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">E-shop</div>
-                    <div class="text-xs text-white/60">Prodej</div>
-                  </div>
-                </a>
-                <a href="world-class-statistics-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                    <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Statistiky</div>
-                    <div class="text-xs text-white/60">Real-time</div>
-                  </div>
-                </a>
-                <a href="company-mini-websites-dashboard.html" class="p-3 rounded-lg hover:bg-white/5 transition flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
-                    <i data-lucide="globe" class="w-4 h-4 text-violet-400"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium text-white">Mini Weby</div>
-                    <div class="text-xs text-white/60">Website builder</div>
-                  </div>
-                </a>
-              </div>
+        <!-- Center: search -->
+        <div class="flex-1 flex items-center justify-center">
+          <div class="w-full max-w-[720px] flex items-center gap-2">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500"></i>
+              <input id="qTop" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full h-11 pl-12 pr-4 rounded-full border border-neutral-300 bg-white focus:outline-none focus:ring-4 focus:ring-brand-100 focus:border-brand-400" />
             </div>
+            <button class="hidden sm:inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand-500 text-white font-semibold shadow-soft hover:bg-brand-600 active:scale-[0.99] transition">
+              Hledat
+            </button>
           </div>
         </div>
 
-        <a href="kartao-marketplace.html" class="text-white/80 hover:text-white transition flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i>Kampaně</a>
-        <a href="chat.html" class="text-white/80 hover:text-white transition">Chat</a>
-        <a href="kartao-magazin.html" class="text-white/80 hover:text-white transition">Magazín</a>
-        <a href="kontakt.html" class="text-white/80 hover:text-white transition">Kontakt</a>
-        <a href="vip.html" class="lg:hidden inline-flex items-center gap-2 rounded-xl px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 transition">
-          <i data-lucide="crown" class="w-4 h-4 text-amber-400 animate-crown-glow"></i>
-          <span class="font-bold">VIP</span>
-        </a>
-      </nav>
+        <!-- Right: nav + actions -->
+        <div class="flex items-center gap-2 justify-end min-w-[220px]">
+          <nav class="hidden xl:flex items-center gap-2 text-sm">
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Platformy</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="#">Business</a>
+            <a class="px-3 py-2 rounded-full bg-neutral-100" href="#">Marketplace</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="chat.html">Chat</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="kartao-magazin.html">Magazín</a>
+            <a class="px-3 py-2 rounded-full hover:bg-neutral-100" href="kontakt.html">Kontakt</a>
+          </nav>
 
-      <div class="hidden md:flex items-center gap-3">
-  <!-- Desktop auth button (přihlášení/odhlášení) -->
-  <button id="desktopAuthBtn" class="btn btn-primary text-sm md:inline-flex flex items-center gap-2">
-    <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
-    <span id="desktopAuthText">Přihlásit se</span>
-  </button>
-</div>
+          <button class="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-neutral-100" aria-label="Notifikace">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </button>
+
+          <button id="desktopAuthBtn" class="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-neutral-300 hover:bg-neutral-100 transition">
+            <i id="desktopAuthIcon" data-lucide="log-in" class="w-4 h-4"></i>
+            <span id="desktopAuthText" class="hidden sm:inline">Přihlásit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
 
 <div class="md:hidden flex items-center gap-2">
   <!-- User menu mobile - přihlášen -->
@@ -613,340 +551,367 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 
-  <!-- HLAVNÍ OBSAH -->
+  <!-- LAYOUT: sidebar + content -->
+  <div class="mx-auto max-w-[1480px] px-3 sm:px-4">
+    <div class="flex gap-6">
 
-  <!-- HERO + SEARCH -->
-  <section class="border-b border-white/10 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(236,72,153,0.2),transparent_60%)]">
-    <div class="max-w-7xl mx-auto px-4 py-6">
-      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Najdi toho pravého influencera. <span class="text-fuchsia-400">Rychle a chytře.</span></h1>
-      <p class="mt-3 text-white/70 max-w-2xl">Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.</p>
+      <!-- SIDEBAR -->
+      <aside id="sidebar" class="hidden lg:block w-[240px] pt-6 pb-10">
+        <div class="space-y-2">
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="index.html">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="home" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Domů</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-brand-50 border border-brand-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-white grid place-items-center text-brand-600"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Marketplace</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="chat.html">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Chat</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="kartao-magazin.html">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="newspaper" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Magazín</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#">
+            <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="settings" class="w-5 h-5"></i></span>
+            <span class="font-semibold">Nastavení</span>
+          </a>
 
-      <div class="mt-6 grid gap-3 md:grid-cols-8 items-stretch">
-        <div class="md:col-span-3">
-          <div class="relative flex gap-2">
-            <div class="relative flex-1">
-              <input id="q" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full pl-10 pr-3 py-2 rounded-xl bg-neutral-900 border border-white/10 text-white placeholder:text-white/40 outline-none"/>
-              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/50"></i>
+          <div class="pt-4">
+            <div class="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Rychlé akce</div>
+            <div class="mt-2 space-y-2">
+              <button class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-neutral-200 hover:bg-neutral-100 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="plus" class="w-5 h-5"></i></span>
+                  <span class="font-semibold">Zadat kampaň</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-500"></i>
+              </button>
+              <button id="sidebarSavedBtn" class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-neutral-200 hover:bg-neutral-100 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-neutral-100 grid place-items-center"><i data-lucide="bookmark" class="w-5 h-5"></i></span>
+                  <span class="font-semibold">Uložené</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-neutral-500"></i>
+              </button>
             </div>
-            <!-- Mobilní ikonka filtru -->
-            <button id="mobileFilterBtn" class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 transition">
-              <i data-lucide="filter" class="w-5 h-5"></i>
-            </button>
           </div>
         </div>
+      </aside>
 
-        <select id="platform" class="hidden md:block rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="all">Vše</option>
-          <option value="facebook">Facebook</option>
-          <option value="instagram">Instagram</option>
-          <option value="tiktok">TikTok</option>
-          <option value="youtube">YouTube</option>
-          <option value="pinterest">Pinterest</option>
-        </select>
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 pt-6 pb-14">
 
-        <select id="mode" class="hidden md:block rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="sum">Součet (Σ)</option>
-          <option value="max">Maximum (MAX)</option>
-        </select>
+        <!-- HERO / INTRO -->
+        <section class="rounded-3xl border border-neutral-200 bg-white shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8">
+            <div class="flex items-start justify-between gap-6">
+              <div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
+                  Najdi toho pravého influencera.
+                  <span class="text-brand-600">Rychle a chytře.</span>
+                </h1>
+                <p class="mt-3 text-neutral-600 max-w-3xl">
+                  Propojujeme značky a tvůrce. Karty s portfoliem, ověřené statistiky a přímé nabídky spolupráce.
+                </p>
+              </div>
 
-        <select id="category" class="hidden md:block rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="all">Vše</option>
-          <option>Fashion</option>
-          <option>Beauty</option>
-          <option>Fitness</option>
-          <option>Lifestyle</option>
-          <option>Gaming</option>
-          <option>Tech</option>
-          <option>Food</option>
-          <option>Travel</option>
-          <option>Auto</option>
-          <option>Music</option>
-        </select>
+              <div class="hidden lg:block">
+                <div class="w-[280px] rounded-3xl border border-neutral-200 bg-gradient-to-br from-brand-50 to-white p-4 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="font-bold">Reels / Shorts režim</div>
+                    <span class="text-xs px-2 py-1 rounded-full bg-white border border-neutral-200 text-neutral-600">beta</span>
+                  </div>
+                  <div class="mt-3 text-sm text-neutral-600">
+                    Přepni výpis do stylu YouTube/Shorts a procházej profily jako videa.
+                  </div>
+                  <a href="/kartao-reels.html" class="mt-4 inline-flex items-center justify-center w-full h-10 rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition">
+                    Otevřít Reels
+                  </a>
+                </div>
+              </div>
+            </div>
 
-        <select id="city" class="hidden md:block rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="all">Celá ČR</option>
-          <!-- Hlavní města -->
-          <option value="Praha">Praha</option>
-          <option value="Brno">Brno</option>
-          <option value="Ostrava">Ostrava</option>
-          <option value="Plzeň">Plzeň</option>
-          <option value="Liberec">Liberec</option>
-          <option value="Olomouc">Olomouc</option>
-          <option value="Zlín">Zlín</option>
-          <option value="Hradec Králové">Hradec Králové</option>
-          <option value="České Budějovice">České Budějovice</option>
-          <option value="Pardubice">Pardubice</option>
-          <!-- Další města se doplní dynamicky z databáze -->
-        </select>
+            <!-- FILTER BAR -->
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
 
-        <select id="sort" class="hidden md:block rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-          <option value="relevance">Relevance</option>
-          <option value="followers">Nejvíc followerů</option>
-          <option value="priceLow">Nejnižší cena</option>
-          <option value="priceHigh">Nejvyšší cena</option>
-          <option value="rating">Nejlepší hodnocení</option>
-          <option value="newest">Nejnovější</option>
-        </select>
+              <!-- search -->
+              <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                  <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500"></i>
+                  <input id="q" type="text" placeholder="Hledat podle jména, oboru, města…" class="w-full h-11 pl-12 pr-4 rounded-full border border-neutral-300 bg-white focus:outline-none focus:ring-4 focus:ring-brand-100 focus:border-brand-400" />
+                </div>
+                <button id="advancedBtn" class="inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand-500 text-white font-semibold shadow-soft hover:bg-brand-600 transition">
+                  Pokročilé
+                </button>
+              </div>
 
-        <button id="advancedBtn" class="hidden md:flex btn btn-primary md:col-span-1"><i data-lucide="filter" class="w-4 h-4 mr-1.5"></i> Pokročilé</button>
+              <!-- quick selects -->
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <select id="category" class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option value="all">Vše</option>
+                  <option>Fashion</option>
+                  <option>Beauty</option>
+                  <option>Fitness</option>
+                  <option>Lifestyle</option>
+                  <option>Gaming</option>
+                  <option>Tech</option>
+                  <option>Food</option>
+                  <option>Travel</option>
+                  <option>Auto</option>
+                  <option>Music</option>
+                </select>
+                <select id="mode" class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option value="sum">Součet (Σ)</option>
+                  <option value="max">Maximum (MAX)</option>
+                </select>
+                <select class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option>Vše</option>
+                  <option>Micro</option>
+                  <option>Mid</option>
+                  <option>Macro</option>
+                </select>
+                <select id="city" class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option value="all">Celá ČR</option>
+                  <option value="Praha">Praha</option>
+                  <option value="Brno">Brno</option>
+                  <option value="Ostrava">Ostrava</option>
+                  <option value="Plzeň">Plzeň</option>
+                  <option value="Liberec">Liberec</option>
+                  <option value="Olomouc">Olomouc</option>
+                  <option value="Zlín">Zlín</option>
+                  <option value="Hradec Králové">Hradec Králové</option>
+                  <option value="České Budějovice">České Budějovice</option>
+                  <option value="Pardubice">Pardubice</option>
+                </select>
+                <select id="sort" class="h-11 rounded-full border border-neutral-300 bg-white px-4 text-sm focus:outline-none focus:ring-4 focus:ring-brand-100">
+                  <option value="relevance">Relevance</option>
+                  <option value="followers">Nejvíc followerů</option>
+                  <option value="priceLow">Nejnižší cena</option>
+                  <option value="priceHigh">Nejvyšší cena</option>
+                  <option value="rating">Nejlepší hodnocení</option>
+                  <option value="newest">Nejnovější</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Platform chips (YouTube style) -->
+            <div class="mt-5 flex flex-wrap items-center gap-2">
+              <button class="chip is-active" data-platform="all">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                Vše
+              </button>
+              <button class="chip" data-platform="facebook">
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+                Facebook
+              </button>
+              <button class="chip" data-platform="instagram">
+                <i data-lucide="instagram" class="w-4 h-4"></i>
+                Instagram
+              </button>
+              <button class="chip" data-platform="tiktok">
+                <i data-lucide="video" class="w-4 h-4"></i>
+                TikTok
+              </button>
+              <button class="chip" data-platform="youtube">
+                <i data-lucide="youtube" class="w-4 h-4"></i>
+                YouTube
+              </button>
+              <button class="chip" data-platform="pinterest">
+                <i data-lucide="pin" class="w-4 h-4"></i>
+                Pinterest
+              </button>
+
+              <div class="ml-auto flex items-center gap-4 text-sm text-neutral-600">
+                <span class="inline-flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                  Nalezeno <b id="total" class="text-neutral-900">0</b> tvůrců
+                </span>
+                <button id="savedFilterBtn" class="inline-flex items-center gap-2 hover:text-brand-600 cursor-pointer transition">
+                  <i data-lucide="bookmark" class="w-4 h-4"></i>
+                  Uloženo <b id="savedCount" class="text-neutral-900">0</b>
+                </button>
+                <span class="hidden sm:inline-flex items-center gap-2">
+                  <span id="modeBadge" class="px-2 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs">Režim: Σ Součet</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Pokročilé filtry -->
+            <div class="mt-5 grid gap-3 md:grid-cols-6 hidden" id="advancedWrap">
+              <div class="space-y-2">
+                <label class="text-xs text-neutral-700">Rozpočet (Kč)</label>
+                <select id="priceRange" class="w-full rounded-full border border-neutral-300 bg-white pl-3 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500">
+                  <option value="all">Jakýkoliv</option>
+                  <option value="0-1500">0 - 1 500 Kč</option>
+                  <option value="1501-3000">1 501 - 3 000 Kč</option>
+                  <option value="3001-5000">3 001 - 5 000 Kč</option>
+                  <option value="5001-10000">5 001 - 10 000 Kč</option>
+                  <option value="10001-20000">10 001 - 20 000 Kč</option>
+                  <option value="20001-50000">20 001 - 50 000 Kč</option>
+                  <option value="50001-999999">50 001+ Kč</option>
+                </select>
+              </div>
+              
+              <div class="space-y-2">
+                <label class="text-xs text-neutral-700">Min. hodnocení</label>
+                <select id="minRating" class="w-full rounded-full border border-neutral-300 bg-white px-3 py-2 text-sm">
+                  <option value="0">Jakékoliv</option>
+                  <option value="3">3+ hvězdy</option>
+                  <option value="4">4+ hvězdy</option>
+                  <option value="4.5">4.5+ hvězdy</option>
+                </select>
+              </div>
+              
+              <div class="relative space-y-2">
+                <label class="text-xs text-neutral-700">Min. followeři</label>
+                <input id="minFollowers" type="number" min="0" placeholder="Počet" class="w-full rounded-full border border-neutral-300 bg-white px-3 py-2 text-sm disabled:opacity-50" />
+                <div class="text-xs text-neutral-500" id="minFollowersHint" style="display:none">Filtr se uplatní jen při výběru konkrétní platformy</div>
+              </div>
+              
+              <div class="flex flex-col gap-2 justify-center">
+                <label class="flex items-center gap-2 text-sm text-neutral-800 select-none">
+                  <input id="premiumOnly" type="checkbox" class="accent-brand-500" />
+                  Pouze ověřené
+                </label>
+                <label class="flex items-center gap-2 text-sm text-neutral-800 select-none">
+                  <input id="infinite" type="checkbox" class="accent-brand-500" />
+                  Infinite scroll
+                </label>
+              </div>
+              
+              <div class="space-y-2">
+                <label class="text-xs text-neutral-700">Výsledky na stránku</label>
+                <select id="pageSize" class="w-full rounded-full border border-neutral-300 bg-white px-3 py-2 text-sm">
+                  <option value="12">12</option>
+                  <option value="24">24</option>
+                  <option value="48">48</option>
+                </select>
+              </div>
+              
+              <div class="flex items-end">
+                <button id="resetFilters" class="w-full px-4 py-2 rounded-full border border-neutral-300 text-neutral-800 hover:text-neutral-900 hover:border-neutral-400 transition text-sm">
+                  <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>Vymazat
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- separátor v hero boxu -->
+          <div class="h-px bg-neutral-200"></div>
+
+          <!-- Title like in screenshot -->
+          <div class="p-6 sm:p-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              PORTFOLIO TVŮRCŮ
+            </div>
+
+            <div class="mt-3">
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Tvůrci a <span class="text-brand-600">influenceři</span></h2>
+              <p class="mt-2 text-neutral-600">Procházej profily ověřených tvůrců. Najdi partnera pro svou kampaň a začni spolupracovat.</p>
+            </div>
+
+            <!-- GRID (YouTube tiles) -->
+            <div class="mt-6">
+              <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5"></div>
+
+              <!-- Loading indikátor -->
+              <div id="loading" class="hidden border border-neutral-200 rounded-2xl p-8 text-center bg-white">
+                <div class="animate-spin w-8 h-8 mx-auto mb-3">
+                  <i data-lucide="loader-2" class="w-8 h-8 text-brand-500"></i>
+                </div>
+                <div class="font-semibold text-neutral-900">Načítám tvůrce...</div>
+                <div class="text-neutral-600 text-sm mt-1">Chvilku strpení, prosím</div>
+              </div>
+              
+              <div id="empty" class="hidden border border-neutral-200 rounded-2xl p-8 text-center bg-white">
+                <i data-lucide="sparkles" class="w-6 h-6 mx-auto text-neutral-400"></i>
+                <div class="font-semibold mt-2 text-neutral-900">Zkuste upravit filtry</div>
+                <div class="text-neutral-600 text-sm">Nenašli jsme žádné tvůrce pro zadaná kritéria.</div>
+              </div>
+
+              <div id="pagination" class="mt-8 flex items-center justify-between"></div>
+              <div id="sentinel" class="h-10 mt-6 grid place-items-center text-neutral-600 text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-10 text-sm text-neutral-500">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>© <span id="year"></span> Kartao.cz – Marketplace</div>
+            <div class="flex items-center gap-3">
+              <a href="#" class="hover:text-neutral-900">Podmínky</a>
+              <span class="text-neutral-300">•</span>
+              <a href="#" class="hover:text-neutral-900">Ochrana soukromí</a>
+              <span class="text-neutral-300">•</span>
+              <a href="#" class="hover:text-neutral-900">Kontakt</a>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Mobile sidebar drawer -->
+  <div id="drawer" class="lg:hidden fixed inset-0 z-[60] hidden">
+    <div id="drawerBackdrop" class="absolute inset-0 bg-black/35"></div>
+    <div class="absolute left-0 top-0 h-full w-[86%] max-w-[320px] bg-white shadow-2xl border-r border-neutral-200 p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-brand-500 text-white">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </span>
+          <div>
+            <div class="font-extrabold">Kartao.cz</div>
+            <div class="text-xs text-neutral-500">Marketplace</div>
+          </div>
+        </div>
+        <button id="drawerClose" class="w-10 h-10 rounded-full hover:bg-neutral-100 grid place-items-center" aria-label="Zavřít">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
 
-      <!-- Mobilní panel filtrů -->
-      <div id="mobileFiltersWrap" class="mt-3 space-y-3 hidden md:hidden">
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Platforma</label>
-          <select id="platformMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-            <option value="all">Vše</option>
-            <option value="facebook">Facebook</option>
-            <option value="instagram">Instagram</option>
-            <option value="tiktok">TikTok</option>
-            <option value="youtube">YouTube</option>
-            <option value="pinterest">Pinterest</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Režim sčítání</label>
-          <select id="modeMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-            <option value="sum">Součet (Σ)</option>
-            <option value="max">Maximum (MAX)</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Kategorie</label>
-          <select id="categoryMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-            <option value="all">Vše</option>
-            <option>Fashion</option>
-            <option>Beauty</option>
-            <option>Fitness</option>
-            <option>Lifestyle</option>
-            <option>Gaming</option>
-            <option>Tech</option>
-            <option>Food</option>
-            <option>Travel</option>
-            <option>Auto</option>
-            <option>Music</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Město</label>
-          <select id="cityMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-            <option value="all">Celá ČR</option>
-            <option value="Praha">Praha</option>
-            <option value="Brno">Brno</option>
-            <option value="Ostrava">Ostrava</option>
-            <option value="Plzeň">Plzeň</option>
-            <option value="Liberec">Liberec</option>
-            <option value="Olomouc">Olomouc</option>
-            <option value="Zlín">Zlín</option>
-            <option value="Hradec Králové">Hradec Králové</option>
-            <option value="České Budějovice">České Budějovice</option>
-            <option value="Pardubice">Pardubice</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Řazení</label>
-          <select id="sortMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2">
-            <option value="relevance">Relevance</option>
-            <option value="followers">Nejvíc followerů</option>
-            <option value="priceLow">Nejnižší cena</option>
-            <option value="priceHigh">Nejvyšší cena</option>
-            <option value="rating">Nejlepší hodnocení</option>
-            <option value="newest">Nejnovější</option>
-          </select>
-        </div>
-
-        <!-- Pokročilé filtry pro mobil -->
-        <div class="pt-3 border-t border-white/10 space-y-3">
-          <div class="space-y-2">
-            <label class="text-xs text-white/70">Rozpočet (Kč)</label>
-            <select id="priceRangeMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
-              <option value="all">Jakýkoliv</option>
-              <option value="0-1500">0 - 1 500 Kč</option>
-              <option value="1501-3000">1 501 - 3 000 Kč</option>
-              <option value="3001-5000">3 001 - 5 000 Kč</option>
-              <option value="5001-10000">5 001 - 10 000 Kč</option>
-              <option value="10001-20000">10 001 - 20 000 Kč</option>
-              <option value="20001-50000">20 001 - 50 000 Kč</option>
-              <option value="50001-999999">50 001+ Kč</option>
-            </select>
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-xs text-white/70">Min. hodnocení</label>
-            <select id="minRatingMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
-              <option value="0">Jakékoliv</option>
-              <option value="3">3+ hvězdy</option>
-              <option value="4">4+ hvězdy</option>
-              <option value="4.5">4.5+ hvězdy</option>
-            </select>
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-xs text-white/70">Min. followeři</label>
-            <input id="minFollowersMobile" type="number" min="0" placeholder="Počet" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm" />
-            <div class="text-xs text-white/50">Filtr se uplatní jen při výběru konkrétní platformy</div>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-              <input id="premiumOnlyMobile" type="checkbox" class="accent-fuchsia-500" />
-              Pouze ověřené
-            </label>
-            <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-              <input id="infiniteMobile" type="checkbox" class="accent-fuchsia-500" />
-              Infinite scroll
-            </label>
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-xs text-white/70">Výsledky na stránku</label>
-            <select id="pageSizeMobile" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
-              <option value="12">12</option>
-              <option value="24">24</option>
-              <option value="48">48</option>
-            </select>
-          </div>
-
-          <button id="resetFiltersMobile" class="w-full px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 transition text-sm">
-            <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>Vymazat filtry
-          </button>
-        </div>
+      <div class="mt-4 space-y-2">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="index.html"><i data-lucide="home" class="w-5 h-5"></i> Domů</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-brand-50 border border-brand-100" href="#"><i data-lucide="sparkles" class="w-5 h-5"></i> Marketplace</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="chat.html"><i data-lucide="message-circle" class="w-5 h-5"></i> Chat</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="kartao-magazin.html"><i data-lucide="newspaper" class="w-5 h-5"></i> Magazín</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-neutral-100" href="#"><i data-lucide="settings" class="w-5 h-5"></i> Nastavení</a>
       </div>
 
-      <!-- Pokročilé filtry -->
-      <div class="mt-3 grid gap-3 md:grid-cols-6 hidden" id="advancedWrap">
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Rozpočet (Kč)</label>
-          <select id="priceRange" class="w-full rounded-xl bg-neutral-900 border border-white/10 pl-3 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500">
-            <option value="all">Jakýkoliv</option>
-            <option value="0-1500">0 - 1 500 Kč</option>
-            <option value="1501-3000">1 501 - 3 000 Kč</option>
-            <option value="3001-5000">3 001 - 5 000 Kč</option>
-            <option value="5001-10000">5 001 - 10 000 Kč</option>
-            <option value="10001-20000">10 001 - 20 000 Kč</option>
-            <option value="20001-50000">20 001 - 50 000 Kč</option>
-            <option value="50001-999999">50 001+ Kč</option>
-          </select>
-        </div>
-        
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Min. hodnocení</label>
-          <select id="minRating" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
-            <option value="0">Jakékoliv</option>
-            <option value="3">3+ hvězdy</option>
-            <option value="4">4+ hvězdy</option>
-            <option value="4.5">4.5+ hvězdy</option>
-          </select>
-        </div>
-        
-        <div class="relative space-y-2">
-          <label class="text-xs text-white/70">Min. followeři</label>
-          <input id="minFollowers" type="number" min="0" placeholder="Počet" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm disabled:opacity-50" />
-          <div class="text-xs text-white/50" id="minFollowersHint" style="display:none">Filtr se uplatní jen při výběru konkrétní platformy</div>
-        </div>
-        
-        <div class="flex flex-col gap-2 justify-center">
-          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-            <input id="premiumOnly" type="checkbox" class="accent-fuchsia-500" />
-            Pouze ověřené
-          </label>
-          <label class="flex items-center gap-2 text-sm text-white/80 select-none">
-            <input id="infinite" type="checkbox" class="accent-fuchsia-500" />
-            Infinite scroll
-          </label>
-        </div>
-        
-        <div class="space-y-2">
-          <label class="text-xs text-white/70">Výsledky na stránku</label>
-          <select id="pageSize" class="w-full rounded-xl bg-neutral-900 border border-white/10 px-3 py-2 text-sm">
-            <option value="12">12</option>
-            <option value="24">24</option>
-            <option value="48">48</option>
-          </select>
-        </div>
-        
-        <div class="flex items-end">
-          <button id="resetFilters" class="w-full px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 transition text-sm">
-            <i data-lucide="x" class="w-4 h-4 inline mr-1"></i>Vymazat
-          </button>
-        </div>
+      <div class="mt-6 p-3 rounded-3xl border border-neutral-200 bg-gradient-to-br from-brand-50 to-white">
+        <div class="font-bold">Reels / Shorts režim</div>
+        <div class="mt-1 text-sm text-neutral-600">Přepni do procházení jako videa.</div>
+        <a href="/kartao-reels.html" class="mt-3 inline-flex w-full h-10 items-center justify-center rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition">Otevřít Reels</a>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- RESULTS -->
-  <section>
-    <div class="max-w-7xl mx-auto px-4 py-4 md:py-8">
-      <!-- Nadpis sekce tvůrců -->
-      <div class="mb-6">
-        <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-fuchsia-300/90 mb-2">
-          <span class="inline-flex h-6 items-center rounded-full bg-fuchsia-500/10 px-3">
-            <i data-lucide="users" class="w-3 h-3 mr-1"></i>Portfolio tvůrců
-          </span>
-        </div>
-        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Tvůrci <span class="text-fuchsia-400">a influenceři</span></h2>
-        <p class="text-white/70 text-sm md:text-base mt-1">Procházej profily ověřených tvůrců. Najdi partnera pro svou kampaň a začni spolupracovat.</p>
+  <!-- ADMIN MODAL -->
+  <div id="adminModal" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/70" data-close></div>
+    <div class="relative max-w-sm mx-auto mt-24 bg-white border border-neutral-200 rounded-xl p-5">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="text-lg font-semibold text-neutral-900">Přihlášení administrátora</h3>
+        <button class="text-neutral-700 hover:text-neutral-900" data-close aria-label="Zavřít">✕</button>
       </div>
-      
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2 text-white/70 text-sm flex-wrap">
-          <div class="flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4"></i> <span>Nalezeno</span> <span id="total" class="font-semibold text-white">0</span>
-            <span>tvůrců</span>
-          </div>
-          <button id="savedFilterBtn" class="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition px-3 py-1 rounded-lg hover:bg-purple-500/10 cursor-pointer" title="Zobrazit jen uložené tvůrce">
-            <i data-lucide="bookmark" class="w-4 h-4"></i> <span>Uloženo</span> <span id="savedCount" class="font-semibold">0</span>
-            <span>tvůrců</span>
-          </button>
-          <span id="modeBadge" class="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold">Režim: Σ Součet</span>
-        </div>
-        <div class="hidden md:flex items-center gap-2 text-xs">
-          <span class="tag" data-platform="all">
-            <i data-lucide="layers" class="w-3.5 h-3.5"></i> Vše
-          </span>
-          <span class="tag" data-platform="facebook">
-            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Facebook
-          </span>
-          <span class="tag" data-platform="instagram">
-            <i data-lucide="instagram" class="w-3.5 h-3.5"></i> Instagram
-          </span>
-          <span class="tag" data-platform="tiktok">
-            <i data-lucide="video" class="w-3.5 h-3.5"></i> TikTok
-          </span>
-          <span class="tag" data-platform="youtube">
-            <i data-lucide="youtube" class="w-3.5 h-3.5"></i> YouTube
-          </span>
-          <span class="tag" data-platform="pinterest">
-            <i data-lucide="pin" class="w-3.5 h-3.5"></i> Pinterest
-          </span>
-        </div>
+      <p class="text-sm text-neutral-700 mt-2">Zadej admin klíč a potvrď.</p>
+      <input id="adminKeyInput" type="password" placeholder="Admin klíč"
+             class="mt-3 w-full p-2 rounded bg-neutral-100 border border-neutral-300" />
+      <div class="text-[11px] text-neutral-500 mt-1">
+        Pro lokální test: <code class="bg-neutral-100 px-1.5 py-0.5 rounded">kartao-dev</code>
       </div>
-
-      <div id="grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-      
-      <!-- Loading indikátor -->
-      <div id="loading" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
-        <div class="animate-spin w-8 h-8 mx-auto mb-3">
-          <i data-lucide="loader-2" class="w-8 h-8 text-fuchsia-400"></i>
-        </div>
-        <div class="font-semibold">Načítám tvůrce...</div>
-        <div class="text-white/60 text-sm mt-1">Chvilku strpení, prosím</div>
-      </div>
-      
-      <div id="empty" class="hidden border border-white/10 rounded-2xl p-8 text-center bg-neutral-900/40">
-        <i data-lucide="sparkles" class="w-6 h-6 mx-auto"></i>
-        <div class="font-semibold mt-2">Zkuste upravit filtry</div>
-        <div class="text-white/60 text-sm">Nenašli jsme žádné tvůrce pro zadaná kritéria.</div>
-      </div>
-
-      <div id="pagination" class="mt-8 flex items-center justify-between"></div>
-      <div id="sentinel" class="h-10 mt-6 grid place-items-center text-white/60 text-sm"></div>
+      <button id="adminLoginBtn"
+              class="mt-4 w-full bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded text-white">
+        Přihlásit admin
+      </button>
     </div>
-  </section>
+  </div>
 
   <!-- =========================================
    REELS NABÍDKA (reklamní box) – vlož doprostřed stránky
@@ -2407,8 +2372,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function card(data) {
-      const el = document.createElement('div');
-      el.className = 'card overflow-hidden';
+      const el = document.createElement('article');
+      el.className = 'tile';
       el.setAttribute('data-creator-id', data.id);
 
       // vytáhneme pole z objektu data
@@ -2434,110 +2399,61 @@ document.addEventListener('DOMContentLoaded', () => {
       const safeAvatar = safeImage(avatar, DEFAULT_AVATAR);
       const followersObj   = pickFollowers(data);
       const followersLabel = followersObj.val != null ? fmtFollowers(followersObj.val) : null;
-      const aggregateBadge =
-        state.mode === 'max'
-          ? '<span class="inline-flex items-center justify-center px-1.5 h-4 text-[10px] font-bold rounded bg-white/10">MAX</span>'
-          : '<span class="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded bg-white/10">Σ</span>';
+      const platformIcon = followersObj.mode === 'single' ? followersObj.icon : 'layers';
+      const platformLabel = followersObj.mode === 'single' ? followersObj.topLabel : (state.mode === 'max' ? 'MAX' : 'Σ Všechny');
+
+      const isSaved = savedCreatorIds && savedCreatorIds.includes(id);
 
       el.innerHTML = `
-        <div class="relative h-32 bg-cover bg-center" style="background-image:url('${safeCover}')">
-          <div class="absolute top-2 right-2 flex gap-1">
-            <button class="js-save w-8 h-8 rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-sm flex items-center justify-center transition group" title="Uložit" data-creator-id="${id}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white group-hover:scale-110 transition"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-            </button>
-            <button class="js-share w-8 h-8 rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-sm flex items-center justify-center transition group" title="Sdílet" data-creator-id="${id}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white group-hover:scale-110 transition"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-            </button>
-            <button class="js-reward w-8 h-8 rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-sm flex items-center justify-center transition group" title="Poslat odměnu" data-creator-id="${id}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white group-hover:scale-110 transition"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
-            </button>
+        <div class="thumb" style="background-image:linear-gradient(135deg, rgba(255,47,191,.08), rgba(0,0,0,.02)), url('${safeCover}'); background-size: cover; background-position: center;">
+          <div class="absolute inset-0 p-4 flex items-start justify-between">
+            <span class="badge-pill">
+              <i data-lucide="${platformIcon}" class="w-3.5 h-3.5"></i>
+              ${platformLabel}
+            </span>
+            <div class="flex items-center gap-2">
+              <button class="iconbtn js-save" title="Uložit" data-creator-id="${id}">
+                <i data-lucide="bookmark" class="w-5 h-5 ${isSaved ? 'fill-brand-600 text-brand-600' : 'text-neutral-700'}"></i>
+              </button>
+              <button class="iconbtn js-share" title="Sdílet" data-creator-id="${id}">
+                <i data-lucide="share-2" class="w-5 h-5 text-neutral-700"></i>
+              </button>
+              <button class="iconbtn js-reward" title="Dárek" data-creator-id="${id}">
+                <i data-lucide="gift" class="w-5 h-5 text-neutral-700"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="absolute inset-x-0 bottom-0 p-4">
+            <div class="flex items-center gap-3">
+              <img src="${safeAvatar}" alt="${name}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <div class="font-extrabold text-lg leading-tight text-neutral-900">${name}</div>
+                  ${verified ? `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-500 text-white" title="Ověřeno"><i data-lucide="check" class="w-4 h-4"></i></span>` : ``}
+                </div>
+                <div class="text-sm text-neutral-700 -mt-0.5">
+                  @${handle} • ${city ?? '—'} • <b>${followersLabel ?? '—'}</b> sledujících
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
         <div class="p-4">
-          <div class="flex items-start gap-3 -mt-10">
-            <img src="${safeAvatar}" alt="Profil ${name}" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-neutral-900" />
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-lg leading-tight">${name}</h3>
-                ${
-                  verified
-                    ? '<span class="tag bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30"><i data-lucide="badge-check" class="w-3 h-3"></i> Ověřeno</span>'
-                    : ''
-                }
-              </div>
-              <div class="text-white/60 text-sm">${handle} • ${category}</div>
-              <div class="flex items-center gap-3 mt-2 text-sm text-white/70">
-                ${
-                  followersLabel
-                    ? `
-                  <span class="flex items-center gap-1">
-                    ${
-                      followersObj.mode === 'single'
-                        ? `<i data-lucide="${followersObj.icon}" class="w-4 h-4"></i>`
-                        : aggregateBadge
-                    }
-                    ${followersLabel}${
-                      state.mode === 'max' &&
-                      followersObj.mode !== 'single' &&
-                      followersObj.topPid
-                        ? `<span class="ml-1 inline-flex items-center gap-1 text-xs text-white/60">• Top: ${followersObj.topLabel}</span>`
-                        : ''
-                    }
-                  </span>
-                `
-                    : `
-                  <span class="tag text-white/60 cursor-pointer">
-                    <i data-lucide="plug-zap" class="w-3.5 h-3.5"></i>
-                    ${
-                      state.platform !== 'all'
-                        ? (PLATFORMS.find(p => p.id === state.platform)?.label || 'Platforma') + ' nepřipojen'
-                        : 'Účty nepřipojeny'
-                    }
-                  </span>
-                `
-                }
-                <span class="flex items-center gap-1" data-rating>
-                  <i data-lucide="star" class="w-4 h-4"></i>${rating ? rating.toFixed(1) + '/5' : '—'}
-                </span>
-                <span class="flex items-center gap-1">
-                  <i data-lucide="map-pin" class="w-4 h-4"></i>${city ?? '—'}
-                </span>
-              </div>
-            </div>
+          <div class="flex flex-wrap gap-2 mb-3">
+            ${category ? `<span class="text-xs px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200">${category}</span>` : ''}
+            ${rating ? `<span class="text-xs px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200" data-rating><i data-lucide="star" class="w-3 h-3 inline"></i> ${rating.toFixed(1)}/5</span>` : ''}
+            <span class="text-xs px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200">od ${(price || 0).toLocaleString('cs-CZ')} Kč</span>
           </div>
-          <p class="text-white/70 text-sm mt-3 line-clamp-2">${bio ?? ''}</p>
-          <div class="flex flex-wrap gap-2 mt-3">
-            ${
-              Array.isArray(platforms)
-                ? platforms
-                    .map(
-                      p => {
-                        const platformData = PLATFORMS.find(x => x.id === p);
-                        const label = platformData?.label || p;
-                        const icon = platformData?.icon || 'camera';
-                        const socialUrl = getSocialUrl(p, handle);
-                        return `
-              <a href="${socialUrl}" target="_blank" rel="noopener noreferrer" class="relative group w-8 h-8 rounded-lg border border-white/10 bg-neutral-900/40 flex items-center justify-center hover:bg-white/10 transition cursor-pointer">
-                <i data-lucide="${icon}" class="w-4 h-4"></i>
-                <span class="absolute bottom-full mb-2 px-2 py-1 bg-neutral-900 border border-white/20 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">${label}</span>
-              </a>
-            `;
-                      }
-                    )
-                    .join('')
-                : ''
-            }
-          </div>
-          <div class="mt-4 flex items-center justify-between">
-            <div class="text-sm text-white/70">
-              od <span class="text-white font-semibold">${(price || 0).toLocaleString('cs-CZ')} Kč</span> / post
-            </div>
-            <div class="flex gap-2">
-              <button class="btn btn-light js-open">
-                Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
-              </button>
-              <button class="btn btn-primary js-collab">Chci spolupráci</button>
-            </div>
+
+          <div class="flex items-center gap-2">
+            <button class="flex-1 inline-flex items-center justify-center h-10 rounded-2xl bg-brand-500 text-white font-semibold hover:bg-brand-600 transition js-collab">
+              Nabídnout spolupráci
+            </button>
+            <button class="inline-flex items-center justify-center h-10 px-4 rounded-2xl border border-neutral-300 hover:bg-neutral-100 transition js-open" title="Detail">
+              <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
           </div>
         </div>
       `;
@@ -2555,27 +2471,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Event listener pro uložení z karty
       const saveBtn = el.querySelector('.js-save');
       if (saveBtn) {
-        // Nastavit barvu ikony podle toho, zda je uložen
-        const svg = saveBtn.querySelector('svg');
-        if (svg && savedCreatorIds && savedCreatorIds.includes(id)) {
-          svg.style.fill = 'currentColor';
-          svg.classList.add('text-purple-400');
-        }
-        
         saveBtn.addEventListener('click', async (e) => {
           e.preventDefault();
           e.stopPropagation();
           currentCreatorData = data;
           
-          const svg = saveBtn.querySelector('svg');
+          const icon = saveBtn.querySelector('i[data-lucide="bookmark"]');
           const isSaved = savedCreatorIds && savedCreatorIds.includes(id);
           
           if (isSaved) {
             // Odebrat z uložených
-            await toggleSaveCreator(id, false, svg);
+            await toggleSaveCreator(id, false, icon);
           } else {
             // Přidat do uložených
-            await toggleSaveCreator(id, true, svg);
+            await toggleSaveCreator(id, true, icon);
           }
         });
       }
@@ -2737,13 +2646,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sentinel.textContent = state.page < pageCount ? 'Načítám další…' : 'To je vše ✨';
       }
 
-      // Aktualizuj zvýraznění platform tagů
-      document.querySelectorAll('[data-platform]').forEach(tag => {
-        const platform = tag.getAttribute('data-platform');
+      // Aktualizuj zvýraznění platform chipů
+      document.querySelectorAll('.chip').forEach(chip => {
+        const platform = chip.getAttribute('data-platform');
         if (platform === state.platform) {
-          tag.classList.add('ring-2', 'ring-fuchsia-500');
+          chip.classList.add('is-active');
         } else {
-          tag.classList.remove('ring-2', 'ring-fuchsia-500');
+          chip.classList.remove('is-active');
         }
       });
       
@@ -5545,6 +5454,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.addEventListener('DOMContentLoaded', initMenuRefactored);
     window.addEventListener('kartao-auth-changed', initMenuRefactored);
+  </script>
+
+  <!-- YouTube-style interakce -->
+  <script>
+    // Drawer (mobilní sidebar)
+    const drawer = document.getElementById('drawer');
+    const btnSidebar = document.getElementById('btnSidebar');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const drawerClose = document.getElementById('drawerClose');
+
+    function openDrawer() {
+      if (drawer) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+          if (window.lucide?.createIcons) window.lucide.createIcons();
+        }, 50);
+      }
+    }
+    
+    function closeDrawer() {
+      if (drawer) drawer.classList.add('hidden');
+    }
+    
+    if (btnSidebar) btnSidebar.addEventListener('click', openDrawer);
+    if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+
+    // Search sync mezi top barem a hlavním formulářem
+    const qTop = document.getElementById('qTop');
+    const q = document.getElementById('q');
+    
+    function syncSearch(from, to) {
+      if (to && from) {
+        to.value = from.value;
+        state.q = from.value;
+        writeQS();
+        render();
+      }
+    }
+    
+    if (qTop && q) {
+      qTop.addEventListener('input', () => syncSearch(qTop, q));
+      q.addEventListener('input', () => syncSearch(q, qTop));
+    }
+
+    // Platform chips interakce
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        
+        const platform = chip.getAttribute('data-platform') || 'all';
+        state.platform = platform;
+        
+        // Aktualizovat dropdown pokud existuje
+        const platformSelect = document.getElementById('platform');
+        if (platformSelect) platformSelect.value = platform;
+        
+        writeQS();
+        render();
+      });
+    });
+
+    // Sidebar Uložené tlačítko
+    const sidebarSavedBtn = document.getElementById('sidebarSavedBtn');
+    if (sidebarSavedBtn) {
+      sidebarSavedBtn.addEventListener('click', () => {
+        state.savedOnly = !state.savedOnly;
+        render();
+      });
+    }
+
+    // Year footer
+    const yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+    
+    // Inicializace Lucide po načtení stránky
+    if (window.lucide?.createIcons) {
+      setTimeout(() => window.lucide.createIcons(), 100);
+    }
   </script>
 </body>
 </html>
