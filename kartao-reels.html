@@ -413,6 +413,8 @@
     let userId = null;
     let touchStartY = 0;
     let touchEndY = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
     let searchQuery = '';
     let activeFilters = [];
     let isMinimalMode = false; // Global state for minimal/clean reels mode
@@ -1467,25 +1469,43 @@
       
       container.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
       }, { passive: true });
 
       container.addEventListener('touchend', (e) => {
         touchEndY = e.changedTouches[0].clientY;
+        touchEndX = e.changedTouches[0].clientX;
         handleSwipe();
       }, { passive: true });
     }
 
     function handleSwipe() {
       const swipeThreshold = 50;
-      const diff = touchStartY - touchEndY;
+      const diffY = touchStartY - touchEndY;
+      const diffX = touchStartX - touchEndX;
 
-      if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-          // Swipe up - next reel
-          trackEvent('swipe_up', { from_index: currentIndex });
-        } else {
-          // Swipe down - previous reel
-          trackEvent('swipe_down', { from_index: currentIndex });
+      // Determine if it's horizontal or vertical swipe
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // Horizontal swipe - show virtual card
+        if (Math.abs(diffX) > swipeThreshold) {
+          if (allReels[currentIndex]) {
+            viewProfile(allReels[currentIndex].id);
+            trackEvent('swipe_horizontal_card', { 
+              direction: diffX > 0 ? 'left' : 'right',
+              creator_id: allReels[currentIndex].id 
+            });
+          }
+        }
+      } else {
+        // Vertical swipe
+        if (Math.abs(diffY) > swipeThreshold) {
+          if (diffY > 0) {
+            // Swipe up - next reel
+            trackEvent('swipe_up', { from_index: currentIndex });
+          } else {
+            // Swipe down - previous reel
+            trackEvent('swipe_down', { from_index: currentIndex });
+          }
         }
       }
     }
