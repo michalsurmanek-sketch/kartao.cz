@@ -1110,30 +1110,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function card(i) {
       return `
-        <article class="w-[calc(100vw-2rem)] shrink-0 snap-start sm:w-auto sm:shrink sm:snap-align-none rounded-3xl
+        <article class="w-[calc(100vw-3rem)] shrink-0 snap-start sm:w-auto sm:shrink sm:snap-align-none rounded-3xl
                         border border-neutral-800 bg-neutral-950/60
-                        p-8 hover:bg-neutral-950/80 transition min-h-[400px] flex flex-col justify-between">
+                        p-6 hover:bg-neutral-950/80 transition min-h-[400px] flex flex-col justify-between">
           <div class="flex gap-3">
-            <img src="${i.avatar}" class="h-28 w-28 shrink-0 rounded-2xl object-cover border border-neutral-800"/>
+            <img src="${i.avatar}" class="h-24 w-24 shrink-0 rounded-2xl object-cover border border-neutral-800"/>
             <div class="flex-1 min-w-0">
-              <h3 class="truncate font-extrabold text-xl">${i.name}</h3>
-              <p class="truncate text-base text-neutral-400">${i.handle}</p>
+              <h3 class="truncate font-extrabold text-lg">${i.name}</h3>
+              <p class="truncate text-sm text-neutral-400">${i.handle}</p>
 
-              <div class="mt-4 flex flex-wrap gap-2">
+              <div class="mt-3 flex flex-wrap gap-2">
                 ${i.badges.map(badge).join("")}
               </div>
 
-              <p class="mt-6 text-base text-neutral-400">${i.mutual}</p>
+              <p class="mt-4 text-sm text-neutral-400">${i.mutual}</p>
             </div>
           </div>
 
-          <div class="mt-8 grid grid-cols-2 gap-3">
+          <div class="mt-6 grid grid-cols-2 gap-3">
             <button class="rounded-2xl bg-fuchsia-500/15 border border-fuchsia-500/25
-                           px-4 py-3 text-base font-extrabold text-fuchsia-100">
+                           px-4 py-3 text-sm font-extrabold text-fuchsia-100">
               Přidat do sítě
             </button>
             <button class="rounded-2xl border border-neutral-800 bg-neutral-900/40
-                           px-4 py-3 text-base font-extrabold text-neutral-200">
+                           px-4 py-3 text-sm font-extrabold text-neutral-200">
               Odebrat
             </button>
           </div>
