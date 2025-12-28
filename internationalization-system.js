@@ -27,9 +27,6 @@ class InternationalizationSystem {
         // Setup DOM observer for dynamic content
         this.setupDOMObserver();
         
-        // Setup language switcher
-        this.setupLanguageSwitcher();
-        
         console.log('✅ Internationalization systém připraven');
     }
 
@@ -382,37 +379,7 @@ class InternationalizationSystem {
         this.translatePage();
     }
 
-    setupLanguageSwitcher() {
-        // Create language switcher if not exists
-        if (!document.getElementById('language-switcher')) {
-            this.createLanguageSwitcher();
-        }
 
-        // Update URL when language changes
-        this.addLanguageToURL();
-    }
-
-    createLanguageSwitcher() {
-        const switcher = document.createElement('div');
-        switcher.id = 'language-switcher';
-        switcher.className = 'fixed top-4 right-20 z-40 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2';
-        
-        const select = document.createElement('select');
-        select.className = 'bg-transparent text-white text-sm border-none outline-none cursor-pointer';
-        select.innerHTML = `
-            <option value="cs" ${this.currentLanguage === 'cs' ? 'selected' : ''}>🇨🇿 Čeština</option>
-            <option value="en" ${this.currentLanguage === 'en' ? 'selected' : ''}>🇺🇸 English</option>
-            <option value="de" ${this.currentLanguage === 'de' ? 'selected' : ''}>🇩🇪 Deutsch</option>
-            <option value="sk" ${this.currentLanguage === 'sk' ? 'selected' : ''}>🇸🇰 Slovenčina</option>
-        `;
-        
-        select.addEventListener('change', (e) => {
-            this.setLanguage(e.target.value);
-        });
-
-        switcher.appendChild(select);
-        document.body.appendChild(switcher);
-    }
 
     async setLanguage(language) {
         if (!this.supportedLanguages.includes(language)) {
