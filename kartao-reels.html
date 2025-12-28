@@ -702,33 +702,35 @@
             </button>
 
             <!-- More Options Button -->
-            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 group">
-              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+            <button onclick="toggleBottomInfo(${index})" class="flex flex-col items-center gap-1 group">
+              <div id="moreBtn${index}" class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="more-horizontal" class="h-7 w-7 text-white"></i>
               </div>
             </button>
           </div>
 
           <!-- Bottom Info - Left Side -->
-          <div class="absolute bottom-0 left-0 right-20 p-6 pb-8 z-10">
+          <div id="bottomInfo${index}" class="absolute bottom-0 left-0 right-20 p-6 pb-8 z-10 transition-all duration-300">
             <div class="flex items-center gap-2 mb-2">
               <h3 class="text-lg font-bold truncate drop-shadow-lg">${reel.name}</h3>
               ${badgeHtml}
             </div>
             
-            <p class="text-sm text-white/90 mb-2 drop-shadow-lg">${reel.handle}</p>
-            
-            <p class="text-sm text-white/80 line-clamp-2 mb-3 drop-shadow-lg">${reel.bio || ''}</p>
+            <div id="expandableContent${index}" class="transition-all duration-300 overflow-hidden" style="max-height: 500px; opacity: 1;">
+              <p class="text-sm text-white/90 mb-2 drop-shadow-lg">${reel.handle}</p>
+              
+              <p class="text-sm text-white/80 line-clamp-2 mb-3 drop-shadow-lg">${reel.bio || ''}</p>
 
-            <div class="flex items-center gap-3 text-sm text-white/70">
-              <span class="flex items-center gap-1 drop-shadow-lg">
-                <i data-lucide="users" class="h-4 w-4"></i>
-                ${formatNumber(reel.followers_count)}
-              </span>
-              <div class="flex gap-2 drop-shadow-lg">
-                ${(reel.platforms || []).map(p => `
-                  <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
-                `).join('')}
+              <div class="flex items-center gap-3 text-sm text-white/70">
+                <span class="flex items-center gap-1 drop-shadow-lg">
+                  <i data-lucide="users" class="h-4 w-4"></i>
+                  ${formatNumber(reel.followers_count)}
+                </span>
+                <div class="flex gap-2 drop-shadow-lg">
+                  ${(reel.platforms || []).map(p => `
+                    <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
+                  `).join('')}
+                </div>
               </div>
             </div>
           </div>
@@ -1186,7 +1188,31 @@
       }
     };
 
-    // Show more options
+    // Toggle bottom info panel
+    window.toggleBottomInfo = function(index) {
+      const expandableContent = document.querySelector(`#expandableContent${index}`);
+      const moreBtn = document.querySelector(`#moreBtn${index}`);
+      
+      if (!expandableContent) return;
+      
+      const isExpanded = expandableContent.style.maxHeight !== '0px';
+      
+      if (isExpanded) {
+        // Skrýt obsah
+        expandableContent.style.maxHeight = '0px';
+        expandableContent.style.opacity = '0';
+        expandableContent.style.marginTop = '0';
+        moreBtn.classList.add('bg-white/10');
+      } else {
+        // Zobrazit obsah
+        expandableContent.style.maxHeight = '500px';
+        expandableContent.style.opacity = '1';
+        expandableContent.style.marginTop = '';
+        moreBtn.classList.remove('bg-white/10');
+      }
+    };
+    
+    // Show more options (deprecated - kept for compatibility)
     window.showMoreOptions = function(creatorId) {
       // TODO: Implement options modal
       showToast('Další možnosti - zatím nedostupné');
