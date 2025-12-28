@@ -822,6 +822,13 @@
               <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.saves_count || '7'}</span>
             </button>
 
+            <!-- Card Button - Show Virtual Card -->
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-1 group transition-all duration-300">
+              <div class="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center hover:scale-110 transition-transform shadow-lg">
+                <i data-lucide="credit-card" class="h-7 w-7 text-white"></i>
+              </div>
+            </button>
+
             <!-- More Options Button -->
             <button onclick="toggleBottomInfo(${index})" class="flex flex-col items-center gap-1 group transition-all duration-300">
               <div id="moreBtn${index}" class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
