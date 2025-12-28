@@ -777,13 +777,6 @@
 
           <!-- Right Side Action Panel -->
           <div id="sidePanel${index}" class="absolute right-4 bottom-24 z-20 flex flex-col items-center gap-2">
-            <!-- Profile Avatar Button -->
-            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
-              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-lg overflow-hidden hover:scale-110 transition-transform">
-                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
-              </div>
-            </button>
-
             <!-- Like Button -->
             <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
