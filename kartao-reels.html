@@ -161,6 +161,19 @@
       font-weight: 600;
       box-shadow: 0 0 0 1px rgb(217, 70, 239);
     }
+
+    /* Right side panel styles */
+    .action-button {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .action-button:active {
+      transform: scale(0.9);
+    }
+    
+    .action-count {
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -444,13 +457,17 @@
         const btnContainer = saveBtn.querySelector('div');
 
         if (isSaved) {
-          btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
-          if (heartIcon) heartIcon.className = 'h-6 w-6 fill-red-500 text-red-500';
-          if (btnText) btnText.textContent = 'Uloženo';
+          btnContainer.className = 'h-14 w-14 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
+          if (heartIcon) {
+            heartIcon.className = 'h-7 w-7 fill-red-500 text-red-500';
+          }
+          // Keep likes count unchanged
         } else {
-          btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
-          if (heartIcon) heartIcon.className = 'h-6 w-6';
-          if (btnText) btnText.textContent = 'Uložit';
+          btnContainer.className = 'h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
+          if (heartIcon) {
+            heartIcon.className = 'h-7 w-7 text-white';
+          }
+          // Keep likes count unchanged
         }
       });
       
@@ -643,66 +660,75 @@
             </div>
           </div>
 
-          <!-- Bottom Info -->
-          <div class="absolute bottom-0 left-0 right-0 p-6 pb-8 z-10">
-            <div class="flex gap-4">
-              <!-- Left: Info -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-2">
-                  <h3 class="text-lg font-bold truncate">${reel.name}</h3>
-                  ${badgeHtml}
-                </div>
-                
-                <p class="text-sm text-white/90 mb-2">${reel.handle}</p>
-                
-                <p class="text-sm text-white/80 line-clamp-2 mb-3">${reel.bio || ''}</p>
-
-                <div class="flex items-center gap-3 text-sm text-white/70">
-                  <span class="flex items-center gap-1">
-                    <i data-lucide="users" class="h-4 w-4"></i>
-                    ${formatNumber(reel.followers_count)}
-                  </span>
-                  <div class="flex gap-2">
-                    ${(reel.platforms || []).map(p => `
-                      <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
-                    `).join('')}
-                  </div>
-                </div>
-
-                <div class="flex gap-2 mt-4">
-                  <button onclick="viewProfile('${reel.id}')" class="flex-1 px-4 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition flex items-center justify-center gap-2">
-                    <i data-lucide="user" class="h-4 w-4"></i>
-                    Profil
-                  </button>
-                  <button onclick="contactCreator('${reel.id}')" class="flex-1 px-4 py-2.5 rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-semibold text-sm hover:brightness-110 transition flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="h-4 w-4"></i>
-                    Poptat
-                  </button>
-                </div>
+          <!-- Right Side Action Panel -->
+          <div class="absolute right-4 bottom-24 z-20 flex flex-col items-center gap-5">
+            <!-- Profile Avatar Button -->
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-1.5 group">
+              <div class="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg border-2 border-white shadow-lg overflow-hidden hover:scale-110 transition-transform">
+                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
               </div>
+            </button>
 
-              <!-- Right: Actions -->
-              <div class="flex flex-col items-center gap-6">
-                <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-1 hover:scale-110 transition">
-                  <div class="h-12 w-12 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-white/10'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center">
-                    <i data-lucide="${isSaved ? 'heart' : 'heart'}" class="h-6 w-6 ${isSaved ? 'fill-red-500 text-red-500' : ''}"></i>
-                  </div>
-                  <span class="text-xs text-white/80">${isSaved ? 'Uloženo' : 'Uložit'}</span>
-                </button>
+            <!-- Like Button -->
+            <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-1 group">
+              <div class="h-14 w-14 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="heart" class="h-7 w-7 ${isSaved ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
+              </div>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.likes_count || '37'}</span>
+            </button>
 
-                <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-1 hover:scale-110 transition">
-                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <i data-lucide="share-2" class="h-6 w-6"></i>
-                  </div>
-                  <span class="text-xs text-white/80">Sdílet</span>
-                </button>
+            <!-- Comment Button -->
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-1 group">
+              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="message-circle" class="h-7 w-7 text-white"></i>
+              </div>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.comments_count || '12'}</span>
+            </button>
 
-                <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 hover:scale-110 transition">
-                  <div class="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <i data-lucide="more-horizontal" class="h-6 w-6"></i>
-                  </div>
-                  <span class="text-xs text-white/80">Více</span>
-                </button>
+            <!-- Share Button -->
+            <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-1 group">
+              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="send" class="h-7 w-7 text-white"></i>
+              </div>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.shares_count || '18'}</span>
+            </button>
+
+            <!-- Bookmark Button -->
+            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 group">
+              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="bookmark" class="h-7 w-7 text-white"></i>
+              </div>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.saves_count || '7'}</span>
+            </button>
+
+            <!-- More Options Button -->
+            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 group">
+              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="more-horizontal" class="h-7 w-7 text-white"></i>
+              </div>
+            </button>
+          </div>
+
+          <!-- Bottom Info - Left Side -->
+          <div class="absolute bottom-0 left-0 right-20 p-6 pb-8 z-10">
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-lg font-bold truncate drop-shadow-lg">${reel.name}</h3>
+              ${badgeHtml}
+            </div>
+            
+            <p class="text-sm text-white/90 mb-2 drop-shadow-lg">${reel.handle}</p>
+            
+            <p class="text-sm text-white/80 line-clamp-2 mb-3 drop-shadow-lg">${reel.bio || ''}</p>
+
+            <div class="flex items-center gap-3 text-sm text-white/70">
+              <span class="flex items-center gap-1 drop-shadow-lg">
+                <i data-lucide="users" class="h-4 w-4"></i>
+                ${formatNumber(reel.followers_count)}
+              </span>
+              <div class="flex gap-2 drop-shadow-lg">
+                ${(reel.platforms || []).map(p => `
+                  <i data-lucide="${platformIcons[p] || 'circle'}" class="h-4 w-4"></i>
+                `).join('')}
               </div>
             </div>
           </div>
@@ -864,28 +890,34 @@
           btnContainer.classList.add('heart-burst');
           setTimeout(() => btnContainer.classList.remove('heart-burst'), 500);
           
-          // Fade out text
+          // Fade out text (likes count)
           if (btnText) btnText.classList.add('fade-out-text');
           
           setTimeout(() => {
-            btnContainer.className = 'h-12 w-12 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center';
+            btnContainer.className = 'h-14 w-14 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
             if (heartIcon) {
-              heartIcon.className = 'h-6 w-6 text-red-500';
+              heartIcon.className = 'h-7 w-7 text-red-500';
               heartIcon.style.fill = 'currentColor'; // Force fill
             }
             if (btnText) {
-              btnText.textContent = 'Uloženo';
+              // Increment likes count
+              const currentCount = parseInt(btnText.textContent) || 37;
+              btnText.textContent = currentCount + 1;
               btnText.classList.remove('fade-out-text');
             }
             lucide.createIcons();
           }, 400);
         } else {
-          btnContainer.className = 'h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center';
+          btnContainer.className = 'h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
           if (heartIcon) {
-            heartIcon.className = 'h-6 w-6';
+            heartIcon.className = 'h-7 w-7 text-white';
             heartIcon.style.fill = 'none'; // Remove fill
           }
-          if (btnText) btnText.textContent = 'Uložit';
+          if (btnText) {
+            // Decrement likes count
+            const currentCount = parseInt(btnText.textContent) || 38;
+            btnText.textContent = Math.max(0, currentCount - 1);
+          }
           lucide.createIcons();
         }
       } catch (error) {
