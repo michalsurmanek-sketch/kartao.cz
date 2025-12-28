@@ -782,7 +782,7 @@
               <div class="h-10 w-10 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="heart" class="h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
               </div>
-              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.likes_count || '37'}</span>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${formatNumber(reel.likes_count || 0)}</span>
             </button>
 
             <!-- Comment Button -->
@@ -790,7 +790,7 @@
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="message-circle" class="h-5 w-5 text-white"></i>
               </div>
-              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.comments_count || '12'}</span>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${formatNumber(reel.comments_count || 0)}</span>
             </button>
 
             <!-- Share Button -->
@@ -798,7 +798,7 @@
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="send" class="h-5 w-5 text-white"></i>
               </div>
-              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.shares_count || '18'}</span>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${formatNumber(reel.shares_count || 0)}</span>
             </button>
 
             <!-- Bookmark Button -->
@@ -806,7 +806,7 @@
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="bookmark" class="h-5 w-5 text-white"></i>
               </div>
-              <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.saves_count || '7'}</span>
+              <span class="text-xs font-semibold text-white drop-shadow-lg">${formatNumber(reel.saves_count || 0)}</span>
             </button>
 
             <!-- Card Button - Show Virtual Card -->
@@ -1150,19 +1150,19 @@
             <!-- Stats grid - Larger for fullscreen -->
             <div class="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-4 sm:mb-6 md:mb-8 px-2">
               <div class="rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center bg-white border border-neutral-200 shadow-soft">
-                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.avg_views || '125K'}</div>
+                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${formatNumber(reel.avg_views || 0)}</div>
                 <div class="text-xs sm:text-sm text-neutral-600">Avg. Views</div>
               </div>
               <div class="rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center bg-white border border-neutral-200 shadow-soft">
-                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.avg_likes || '8.5K'}</div>
+                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${formatNumber(reel.avg_likes || 0)}</div>
                 <div class="text-xs sm:text-sm text-neutral-600">Avg. Likes</div>
               </div>
               <div class="rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center bg-white border border-neutral-200 shadow-soft">
-                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.collaborations || '47'}</div>
+                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.collaborations_count || 0}</div>
                 <div class="text-xs sm:text-sm text-neutral-600">Spolupráce</div>
               </div>
               <div class="rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center bg-white border border-neutral-200 shadow-soft">
-                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.rating || '4.9'} ⭐</div>
+                <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-neutral-900">${reel.rating ? reel.rating.toFixed(1) : '0.0'} ⭐</div>
                 <div class="text-xs sm:text-sm text-neutral-600">Rating</div>
               </div>
             </div>
