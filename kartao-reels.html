@@ -283,12 +283,6 @@
         <i data-lucide="x" class="h-6 w-6 text-neutral-700"></i>
       </button>
 
-      <!-- Swipe hint -->
-      <div class="absolute top-6 left-6 z-50 flex items-center gap-2 text-neutral-500 text-sm">
-        <i data-lucide="chevron-left" class="h-4 w-4"></i>
-        <span>Swipe pro zavření</span>
-      </div>
-
       <!-- 3D Card with flip animation - now fullscreen -->
       <div class="relative w-full h-full perspective-1000">
         <div id="virtualCard" class="relative w-full h-full" style="transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);">
@@ -1138,13 +1132,6 @@
                   <i data-lucide="${platformIcons[p] || 'circle'}" class="h-6 w-6 text-neutral-700"></i>
                 </div>
               `).join('')}
-            </div>
-            
-            <!-- QR Code - Larger for fullscreen -->
-            <div class="mb-6">
-              <div class="h-32 w-32 rounded-2xl bg-neutral-100 border border-neutral-200 qr-placeholder flex items-center justify-center overflow-hidden shadow-lg">
-                <div class="text-sm font-mono text-neutral-800 opacity-70 font-bold">SCAN ME</div>
-              </div>
             </div>
             
             <!-- Kartao branding -->
