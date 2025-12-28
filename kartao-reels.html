@@ -1086,16 +1086,14 @@
         <div class="relative w-full h-full bg-white overflow-y-auto">
           <!-- Card content - Clean layout -->
           <div class="relative h-full flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 text-neutral-900 max-w-2xl mx-auto">
-            <!-- Avatar - Larger for fullscreen -->
-            <div class="mb-4 sm:mb-6 md:mb-8">
-              <div class="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-pink-100 to-purple-100 border-2 sm:border-4 border-neutral-200 flex items-center justify-center text-4xl sm:text-5xl font-bold shadow-lg overflow-hidden">
-                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : `<span class="text-brand-600">${reel.name[0]}</span>`}
-              </div>
-            </div>
-
-            <!-- Name and badges -->
+            
+            <!-- Name and badges with Avatar -->
             <div class="text-center mb-4 sm:mb-6 px-2">
-              <div class="flex items-center justify-center gap-2 sm:gap-3 mb-2">
+              <div class="flex items-center justify-center gap-3 sm:gap-4 mb-2">
+                <!-- Avatar before name -->
+                <div class="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-pink-100 to-purple-100 border-2 border-neutral-200 flex items-center justify-center text-xl sm:text-2xl font-bold shadow-lg overflow-hidden flex-shrink-0">
+                  ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : `<span class="text-brand-600">${reel.name[0]}</span>`}
+                </div>
                 <h3 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">${reel.name}</h3>
                 ${reel.verified ? '<div class="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0"><i data-lucide="check" class="h-4 w-4 sm:h-5 sm:w-5 text-white"></i></div>' : ''}
               </div>
@@ -1126,19 +1124,12 @@
             </div>
             
             <!-- Platforms -->
-            <div class="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div class="flex items-center justify-center gap-2 sm:gap-3">
               ${(reel.platforms || ['instagram']).slice(0, 5).map(p => `
                 <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-white border border-neutral-200 flex items-center justify-center shadow-sm">
                   <i data-lucide="${platformIcons[p] || 'circle'}" class="h-5 w-5 sm:h-6 sm:w-6 text-neutral-700"></i>
                 </div>
               `).join('')}
-            </div>
-            
-            <!-- Kartao branding -->
-            <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-neutral-500">
-              <span class="font-medium">KARTAO.CZ</span>
-              <span class="text-neutral-300">•</span>
-              <span class="font-bold text-neutral-700">#${String(reel.id).padStart(6, '0')}</span>
             </div>
           </div>
         </div>
