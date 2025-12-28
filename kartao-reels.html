@@ -701,7 +701,7 @@
           <div class="video-overlay absolute inset-0 pointer-events-none"></div>
 
           <!-- Top Bar -->
-          <div class="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10">
+          <div id="topBar${index}" class="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10 transition-all duration-300">
             <button onclick="window.history.back()" class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition">
               <i data-lucide="arrow-left" class="h-5 w-5"></i>
             </button>
@@ -742,16 +742,16 @@
           </div>
 
           <!-- Right Side Action Panel -->
-          <div class="absolute right-4 bottom-24 z-20 flex flex-col items-center gap-2">
+          <div id="sidePanel${index}" class="absolute right-4 bottom-24 z-20 flex flex-col items-center gap-2">
             <!-- Profile Avatar Button -->
-            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-lg overflow-hidden hover:scale-110 transition-transform">
                 ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
               </div>
             </button>
 
             <!-- Like Button -->
-            <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-0.5 group">
+            <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="heart" class="h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
               </div>
@@ -759,7 +759,7 @@
             </button>
 
             <!-- Comment Button -->
-            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="message-circle" class="h-5 w-5 text-white"></i>
               </div>
@@ -767,7 +767,7 @@
             </button>
 
             <!-- Share Button -->
-            <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+            <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="send" class="h-5 w-5 text-white"></i>
               </div>
@@ -775,7 +775,7 @@
             </button>
 
             <!-- Bookmark Button -->
-            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-0.5 group transition-all duration-300">
               <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="bookmark" class="h-5 w-5 text-white"></i>
               </div>
@@ -783,7 +783,7 @@
             </button>
 
             <!-- More Options Button -->
-            <button onclick="toggleBottomInfo(${index})" class="flex flex-col items-center gap-1 group">
+            <button onclick="toggleBottomInfo(${index})" class="flex flex-col items-center gap-1 group transition-all duration-300">
               <div id="moreBtn${index}" class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
                 <i data-lucide="more-horizontal" class="h-7 w-7 text-white"></i>
               </div>
@@ -1343,26 +1343,63 @@
       }
     };
 
-    // Toggle bottom info panel
+    // Toggle bottom info panel and all UI elements
     window.toggleBottomInfo = function(index) {
       const expandableContent = document.querySelector(`#expandableContent${index}`);
       const moreBtn = document.querySelector(`#moreBtn${index}`);
+      const topBar = document.querySelector(`#topBar${index}`);
+      const sidePanel = document.querySelector(`#sidePanel${index}`);
       
       if (!expandableContent) return;
       
       const isExpanded = expandableContent.style.maxHeight !== '0px';
       
       if (isExpanded) {
-        // Skrýt obsah
+        // Skrýt vše kromě jména a tlačítka s třemi tečkami - čistý reels režim
         expandableContent.style.maxHeight = '0px';
         expandableContent.style.opacity = '0';
         expandableContent.style.marginTop = '0';
+        
+        // Skrýt horní panel
+        if (topBar) {
+          topBar.style.opacity = '0';
+          topBar.style.pointerEvents = 'none';
+        }
+        
+        // Skrýt boční panel kromě tlačítka s třemi tečkami
+        if (sidePanel) {
+          // Skryjeme všechny děti kromě posledního (tlačítko s třemi tečkami)
+          const children = sidePanel.children;
+          for (let i = 0; i < children.length - 1; i++) {
+            children[i].style.opacity = '0';
+            children[i].style.pointerEvents = 'none';
+            children[i].style.transform = 'translateX(100px)';
+          }
+        }
+        
         moreBtn.classList.add('bg-white/10');
       } else {
-        // Zobrazit obsah
+        // Zobrazit vše zpět
         expandableContent.style.maxHeight = '500px';
         expandableContent.style.opacity = '1';
         expandableContent.style.marginTop = '';
+        
+        // Zobrazit horní panel
+        if (topBar) {
+          topBar.style.opacity = '1';
+          topBar.style.pointerEvents = 'auto';
+        }
+        
+        // Zobrazit boční panel
+        if (sidePanel) {
+          const children = sidePanel.children;
+          for (let i = 0; i < children.length; i++) {
+            children[i].style.opacity = '1';
+            children[i].style.pointerEvents = 'auto';
+            children[i].style.transform = 'translateX(0)';
+          }
+        }
+        
         moreBtn.classList.remove('bg-white/10');
       }
     };
