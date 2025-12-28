@@ -726,10 +726,10 @@
         : '';
 
       return `
-        <div class="snap-item relative h-screen w-screen bg-black" data-reel-id="${reel.id}">
+        <div class="snap-item relative h-screen w-full bg-black" data-reel-id="${reel.id}">
           <!-- Video Background -->
           <video 
-            class="absolute inset-0 h-full w-full"
+            class="absolute inset-0 h-full w-full object-cover"
             src="${reel.video_url}"
             loop
             muted
