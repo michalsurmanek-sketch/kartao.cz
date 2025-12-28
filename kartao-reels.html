@@ -457,15 +457,15 @@
         const btnContainer = saveBtn.querySelector('div');
 
         if (isSaved) {
-          btnContainer.className = 'h-14 w-14 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
+          btnContainer.className = 'h-10 w-10 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
           if (heartIcon) {
-            heartIcon.className = 'h-7 w-7 fill-red-500 text-red-500';
+            heartIcon.className = 'h-5 w-5 fill-red-500 text-red-500';
           }
           // Keep likes count unchanged
         } else {
-          btnContainer.className = 'h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
+          btnContainer.className = 'h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
           if (heartIcon) {
-            heartIcon.className = 'h-7 w-7 text-white';
+            heartIcon.className = 'h-5 w-5 text-white';
           }
           // Keep likes count unchanged
         }
@@ -663,40 +663,40 @@
           <!-- Right Side Action Panel -->
           <div class="absolute right-4 bottom-24 z-20 flex flex-col items-center gap-2">
             <!-- Profile Avatar Button -->
-            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-1.5 group">
-              <div class="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg border-2 border-white shadow-lg overflow-hidden hover:scale-110 transition-transform">
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-lg overflow-hidden hover:scale-110 transition-transform">
                 ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
               </div>
             </button>
 
             <!-- Like Button -->
-            <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-1 group">
-              <div class="h-14 w-14 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
-                <i data-lucide="heart" class="h-7 w-7 ${isSaved ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
+            <button id="saveBtn${index}" onclick="toggleSave('${reel.id}', ${index})" class="flex flex-col items-center gap-0.5 group">
+              <div class="h-10 w-10 rounded-full ${isSaved ? 'bg-red-500/20' : 'bg-black/40'} backdrop-blur-sm border ${isSaved ? 'border-red-500/50' : 'border-white/20'} flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="heart" class="h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
               </div>
               <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.likes_count || '37'}</span>
             </button>
 
             <!-- Comment Button -->
-            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-1 group">
-              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
-                <i data-lucide="message-circle" class="h-7 w-7 text-white"></i>
+            <button onclick="viewProfile('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+              <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="message-circle" class="h-5 w-5 text-white"></i>
               </div>
               <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.comments_count || '12'}</span>
             </button>
 
             <!-- Share Button -->
-            <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-1 group">
-              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
-                <i data-lucide="send" class="h-7 w-7 text-white"></i>
+            <button onclick="shareCreator('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+              <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="send" class="h-5 w-5 text-white"></i>
               </div>
               <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.shares_count || '18'}</span>
             </button>
 
             <!-- Bookmark Button -->
-            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-1 group">
-              <div class="h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
-                <i data-lucide="bookmark" class="h-7 w-7 text-white"></i>
+            <button onclick="showMoreOptions('${reel.id}')" class="flex flex-col items-center gap-0.5 group">
+              <div class="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i data-lucide="bookmark" class="h-5 w-5 text-white"></i>
               </div>
               <span class="text-xs font-semibold text-white drop-shadow-lg">${reel.saves_count || '7'}</span>
             </button>
@@ -894,9 +894,9 @@
           if (btnText) btnText.classList.add('fade-out-text');
           
           setTimeout(() => {
-            btnContainer.className = 'h-14 w-14 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
+            btnContainer.className = 'h-10 w-10 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/50 flex items-center justify-center hover:scale-110 transition-transform';
             if (heartIcon) {
-              heartIcon.className = 'h-7 w-7 text-red-500';
+              heartIcon.className = 'h-5 w-5 text-red-500';
               heartIcon.style.fill = 'currentColor'; // Force fill
             }
             if (btnText) {
@@ -908,9 +908,9 @@
             lucide.createIcons();
           }, 400);
         } else {
-          btnContainer.className = 'h-14 w-14 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
+          btnContainer.className = 'h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-transform';
           if (heartIcon) {
-            heartIcon.className = 'h-7 w-7 text-white';
+            heartIcon.className = 'h-5 w-5 text-white';
             heartIcon.style.fill = 'none'; // Remove fill
           }
           if (btnText) {
