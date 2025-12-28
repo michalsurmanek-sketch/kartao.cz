@@ -833,7 +833,11 @@
 
           <!-- Bottom Info - Left Side -->
           <div id="bottomInfo${index}" class="absolute bottom-0 left-0 right-20 p-6 pb-8 z-10 transition-all duration-300">
-            <div class="flex items-center gap-2 mb-2">
+            <div class="flex items-center gap-3 mb-2">
+              <!-- Profile Avatar Box -->
+              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
+              </div>
               <h3 class="text-lg font-bold truncate drop-shadow-lg">${reel.name}</h3>
               ${badgeHtml}
             </div>
