@@ -270,7 +270,7 @@
 <body class="bg-black text-white">
 
   <!-- REELS CONTAINER -->
-  <div id="reelsContainer" class="snap-container h-screen w-screen overflow-y-scroll">
+  <div id="reelsContainer" class="snap-container h-screen w-screen md:w-screen overflow-y-scroll transition-all duration-300">
     <!-- Reels will be dynamically inserted here -->
   </div>
 
@@ -1244,6 +1244,11 @@
       const cardContainer = $('#profileCardContainer');
       cardContainer.classList.add('card-slide-enter');
       
+      // Adjust reels container width on desktop when card is opened
+      const reelsContainer = $('#reelsContainer');
+      reelsContainer.classList.remove('md:w-screen');
+      reelsContainer.classList.add('md:w-1/2');
+      
       // Reset card flip to front
       const card = $('#virtualCard');
       if (card) card.style.transform = 'rotateY(0deg)';
@@ -1269,10 +1274,15 @@
     window.closeProfileModal = function() {
       const modal = $('#profileModal');
       const cardContainer = $('#profileCardContainer');
+      const reelsContainer = $('#reelsContainer');
       
       // Add exit animation
       cardContainer.classList.remove('card-slide-enter');
       cardContainer.classList.add('card-slide-exit');
+      
+      // Restore reels container to full width on desktop
+      reelsContainer.classList.remove('md:w-1/2');
+      reelsContainer.classList.add('md:w-screen');
       
       // Hide after animation
       setTimeout(() => {
