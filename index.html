@@ -1070,11 +1070,11 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- mobil: horizontální scroll (1.5–2 karty) / desktop: 4 karty -->
+        <!-- mobil: horizontální scroll (1 karta) / desktop: 4 karty -->
         <div id="influencersWrap"
-             class="flex gap-4 overflow-x-auto pb-4 sm:pb-6
+             class="flex gap-4 overflow-x-auto pb-4 sm:pb-6 snap-x snap-mandatory
                     sm:grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4
-                    sm:overflow-visible"
+                    sm:overflow-visible sm:snap-none"
              style="scrollbar-width: none; -ms-overflow-style: none;">
         </div>
 
@@ -1134,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function card(i) {
       return `
-        <article class="w-[280px] shrink-0 sm:w-auto sm:shrink rounded-3xl
+        <article class="w-[calc(100vw-2rem)] shrink-0 snap-start sm:w-auto sm:shrink sm:snap-align-none rounded-3xl
                         border border-neutral-800 bg-neutral-950/60
                         p-4 hover:bg-neutral-950/80 transition">
           <div class="flex gap-3">
