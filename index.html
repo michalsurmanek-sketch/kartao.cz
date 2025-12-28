@@ -1135,11 +1135,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function card(i) {
       return `
-        <article class="min-w-[85%] sm:min-w-0 rounded-3xl
+        <article class="w-[calc(100%-3rem)] shrink-0 sm:w-auto sm:shrink rounded-3xl
                         border border-neutral-800 bg-neutral-950/60
                         p-4 hover:bg-neutral-950/80 transition">
           <div class="flex gap-3">
-            <img src="${i.avatar}" class="h-14 w-14 rounded-2xl object-cover border border-neutral-800"/>
+            <img src="${i.avatar}" class="h-14 w-14 shrink-0 rounded-2xl object-cover border border-neutral-800"/>
             <div class="flex-1 min-w-0">
               <h3 class="truncate font-extrabold">${i.name}</h3>
               <p class="truncate text-xs text-neutral-400">${i.handle}</p>
