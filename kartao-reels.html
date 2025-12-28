@@ -1090,9 +1090,9 @@
             <!-- Name and badges with Avatar -->
             <div class="text-center mb-4 sm:mb-6 px-2">
               <div class="flex items-center justify-center gap-3 sm:gap-4 mb-2">
-                <!-- Avatar before name -->
-                <div class="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-pink-100 to-purple-100 border-2 border-neutral-200 flex items-center justify-center text-xl sm:text-2xl font-bold shadow-lg overflow-hidden flex-shrink-0">
-                  ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : `<span class="text-brand-600">${reel.name[0]}</span>`}
+                <!-- Profile Avatar Box (from sidebar) -->
+                <div class="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+                  ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
                 </div>
                 <h3 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">${reel.name}</h3>
                 ${reel.verified ? '<div class="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0"><i data-lucide="check" class="h-4 w-4 sm:h-5 sm:w-5 text-white"></i></div>' : ''}
