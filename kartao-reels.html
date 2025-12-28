@@ -275,9 +275,9 @@
   </div>
 
   <!-- PROFILE CARD MODAL - FULLSCREEN -->
-  <div id="profileModal" class="fixed inset-0 z-[100] hidden">
+  <div id="profileModal" class="fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-1/2 z-[100] hidden pointer-events-none">
     <!-- Fullscreen Card Container with slide animation -->
-    <div id="profileCardContainer" class="absolute inset-0 w-full md:w-1/2 md:right-0 md:left-auto h-full bg-white">
+    <div id="profileCardContainer" class="absolute inset-0 w-full h-full bg-white pointer-events-auto">
       <!-- Close button -->
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white hover:bg-neutral-100 border border-neutral-200 flex items-center justify-center transition shadow-soft">
         <i data-lucide="x" class="h-5 w-5 sm:h-6 sm:w-6 text-neutral-700"></i>
