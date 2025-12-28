@@ -415,6 +415,7 @@
     let touchEndY = 0;
     let searchQuery = '';
     let activeFilters = [];
+    let isMinimalMode = false; // Global state for minimal/clean reels mode
 
     // Demo data with video placeholders
     const demoReels = [
@@ -650,6 +651,11 @@
 
       if (newIndex !== currentIndex) {
         currentIndex = newIndex;
+        
+        // Apply minimal mode to new reel if it's active
+        if (isMinimalMode) {
+          applyMinimalMode(currentIndex, true);
+        }
         
         // Track view
         if (allReels[currentIndex]) {
@@ -1343,8 +1349,8 @@
       }
     };
 
-    // Toggle bottom info panel and all UI elements
-    window.toggleBottomInfo = function(index) {
+    // Apply minimal mode to a specific reel
+    function applyMinimalMode(index, minimal) {
       const expandableContent = document.querySelector(`#expandableContent${index}`);
       const moreBtn = document.querySelector(`#moreBtn${index}`);
       const topBar = document.querySelector(`#topBar${index}`);
@@ -1352,9 +1358,7 @@
       
       if (!expandableContent) return;
       
-      const isExpanded = expandableContent.style.maxHeight !== '0px';
-      
-      if (isExpanded) {
+      if (minimal) {
         // Skrýt vše kromě jména a tlačítka s třemi tečkami - čistý reels režim
         expandableContent.style.maxHeight = '0px';
         expandableContent.style.opacity = '0';
@@ -1368,7 +1372,6 @@
         
         // Skrýt boční panel kromě tlačítka s třemi tečkami
         if (sidePanel) {
-          // Skryjeme všechny děti kromě posledního (tlačítko s třemi tečkami)
           const children = sidePanel.children;
           for (let i = 0; i < children.length - 1; i++) {
             children[i].style.opacity = '0';
@@ -1377,7 +1380,7 @@
           }
         }
         
-        moreBtn.classList.add('bg-white/10');
+        if (moreBtn) moreBtn.classList.add('bg-white/10');
       } else {
         // Zobrazit vše zpět
         expandableContent.style.maxHeight = '500px';
@@ -1400,7 +1403,24 @@
           }
         }
         
-        moreBtn.classList.remove('bg-white/10');
+        if (moreBtn) moreBtn.classList.remove('bg-white/10');
+      }
+    }
+
+    // Toggle bottom info panel and all UI elements
+    window.toggleBottomInfo = function(index) {
+      const expandableContent = document.querySelector(`#expandableContent${index}`);
+      
+      if (!expandableContent) return;
+      
+      const isExpanded = expandableContent.style.maxHeight !== '0px';
+      
+      // Toggle global state
+      isMinimalMode = isExpanded;
+      
+      // Apply to all reels
+      for (let i = 0; i < allReels.length; i++) {
+        applyMinimalMode(i, isMinimalMode);
       }
     };
     
