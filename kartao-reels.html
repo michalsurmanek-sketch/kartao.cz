@@ -277,14 +277,14 @@
   <!-- PROFILE CARD MODAL - FULLSCREEN -->
   <div id="profileModal" class="fixed inset-0 z-[100] hidden">
     <!-- Fullscreen Card Container with slide animation -->
-    <div id="profileCardContainer" class="absolute inset-0 w-full md:w-1/2 md:right-0 md:left-auto h-full bg-black">
+    <div id="profileCardContainer" class="absolute inset-0 w-full md:w-1/2 md:right-0 md:left-auto h-full bg-white">
       <!-- Close button -->
-      <button onclick="closeProfileModal()" class="absolute top-6 right-6 z-50 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition border border-white/20">
-        <i data-lucide="x" class="h-6 w-6 text-white"></i>
+      <button onclick="closeProfileModal()" class="absolute top-6 right-6 z-50 h-12 w-12 rounded-full bg-white hover:bg-neutral-100 border border-neutral-200 flex items-center justify-center transition shadow-soft">
+        <i data-lucide="x" class="h-6 w-6 text-neutral-700"></i>
       </button>
 
       <!-- Swipe hint -->
-      <div class="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/60 text-sm">
+      <div class="absolute top-6 left-6 z-50 flex items-center gap-2 text-neutral-500 text-sm">
         <i data-lucide="chevron-left" class="h-4 w-4"></i>
         <span>Swipe pro zavření</span>
       </div>
@@ -1087,155 +1087,143 @@
       ];
       const colorScheme = colors[reel.name.charCodeAt(0) % colors.length];
 
-      // Front of card - Modern Virtual Card Design (Fullscreen)
+      // Front of card - Modern Virtual Card Design (Clean white style like index2.html)
       content.innerHTML = `
-        <div class="relative w-full h-full card-shimmer" style="background: linear-gradient(135deg, ${colorScheme.from} 0%, ${colorScheme.via} 50%, ${colorScheme.to} 100%);">
-          <!-- Decorative pattern -->
-          <div class="absolute inset-0 opacity-10">
-            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <circle cx="20" cy="20" r="1.5" fill="white"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)"/>
-            </svg>
-          </div>
-          
-          <!-- Card content - Fullscreen layout -->
-          <div class="relative h-full flex flex-col justify-center items-center p-8 text-white max-w-2xl mx-auto">
+        <div class="relative w-full h-full bg-white overflow-y-auto">
+          <!-- Card content - Clean layout -->
+          <div class="relative h-full flex flex-col justify-center items-center p-8 text-neutral-900 max-w-2xl mx-auto">
             <!-- Avatar - Larger for fullscreen -->
             <div class="mb-8">
-              <div class="h-32 w-32 rounded-3xl bg-white/20 backdrop-blur-sm border-4 border-white/40 flex items-center justify-center text-5xl font-bold shadow-2xl overflow-hidden">
-                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : reel.name[0]}
+              <div class="h-32 w-32 rounded-3xl bg-gradient-to-br from-pink-100 to-purple-100 border-4 border-neutral-200 flex items-center justify-center text-5xl font-bold shadow-lg overflow-hidden">
+                ${reel.avatar_url ? `<img src="${reel.avatar_url}" alt="${reel.name}" class="h-full w-full object-cover">` : `<span class="text-brand-600">${reel.name[0]}</span>`}
               </div>
             </div>
 
             <!-- Name and badges -->
             <div class="text-center mb-6">
               <div class="flex items-center justify-center gap-3 mb-2">
-                <h3 class="text-4xl font-bold drop-shadow-2xl">${reel.name}</h3>
-                ${reel.verified ? '<div class="h-8 w-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center"><i data-lucide="check" class="h-5 w-5"></i></div>' : ''}
+                <h3 class="text-4xl font-extrabold tracking-tight">${reel.name}</h3>
+                ${reel.verified ? '<div class="h-8 w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center"><i data-lucide="check" class="h-5 w-5 text-white"></i></div>' : ''}
               </div>
-              <p class="text-white/90 text-lg drop-shadow-lg mb-2">${reel.handle}</p>
+              <p class="text-neutral-600 text-lg mb-2">@${reel.handle}</p>
               ${reel.premium ? `
-                <div class="inline-flex px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 items-center gap-2 mt-2">
-                  <i data-lucide="crown" class="h-5 w-5"></i>
-                  <span class="text-sm font-bold">VIP Member</span>
+                <div class="inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 items-center gap-2 mt-2">
+                  <i data-lucide="crown" class="h-5 w-5 text-pink-600"></i>
+                  <span class="text-sm font-bold text-pink-700">VIP Member</span>
                 </div>
               ` : ''}
             </div>
             
             <!-- Bio -->
             <div class="mb-8 text-center max-w-md">
-              <p class="text-white/95 text-base leading-relaxed drop-shadow-lg">${reel.bio || 'Influencer na Kartao.cz 🚀'}</p>
+              <p class="text-neutral-700 text-base leading-relaxed">${reel.bio || 'Influencer na Kartao.cz 🚀'}</p>
             </div>
             
             <!-- Stats - Grid layout for fullscreen -->
             <div class="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-4xl font-bold drop-shadow-lg mb-1">${formatNumber(reel.followers_count)}</div>
-                <div class="text-sm text-white/80 font-medium">Followers</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-4xl font-bold mb-1 text-neutral-900">${formatNumber(reel.followers_count)}</div>
+                <div class="text-sm text-neutral-600 font-medium">Followers</div>
               </div>
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-4xl font-bold drop-shadow-lg mb-1">${reel.engagement_rate || '4.8'}%</div>
-                <div class="text-sm text-white/80 font-medium">Engagement</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-4xl font-bold mb-1 text-neutral-900">${reel.engagement_rate || '4.8'}%</div>
+                <div class="text-sm text-neutral-600 font-medium">Engagement</div>
               </div>
             </div>
             
             <!-- Platforms -->
             <div class="flex items-center justify-center gap-3 mb-6">
               ${(reel.platforms || ['instagram']).slice(0, 5).map(p => `
-                <div class="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                  <i data-lucide="${platformIcons[p] || 'circle'}" class="h-6 w-6"></i>
+                <div class="h-12 w-12 rounded-xl bg-white border border-neutral-200 flex items-center justify-center shadow-sm">
+                  <i data-lucide="${platformIcons[p] || 'circle'}" class="h-6 w-6 text-neutral-700"></i>
                 </div>
               `).join('')}
             </div>
             
             <!-- QR Code - Larger for fullscreen -->
             <div class="mb-6">
-              <div class="h-32 w-32 rounded-2xl bg-white qr-placeholder flex items-center justify-center overflow-hidden shadow-xl">
-                <div class="text-sm font-mono text-gray-800 opacity-70 font-bold">SCAN ME</div>
+              <div class="h-32 w-32 rounded-2xl bg-neutral-100 border border-neutral-200 qr-placeholder flex items-center justify-center overflow-hidden shadow-lg">
+                <div class="text-sm font-mono text-neutral-800 opacity-70 font-bold">SCAN ME</div>
               </div>
             </div>
             
             <!-- Kartao branding -->
-            <div class="flex items-center gap-4 text-sm text-white/70">
+            <div class="flex items-center gap-4 text-sm text-neutral-500">
               <span class="font-medium">KARTAO.CZ</span>
-              <span class="text-white/40">•</span>
-              <span class="font-bold text-white/90">#${String(reel.id).padStart(6, '0')}</span>
+              <span class="text-neutral-300">•</span>
+              <span class="font-bold text-neutral-700">#${String(reel.id).padStart(6, '0')}</span>
             </div>
           </div>
         </div>
       `;
 
-      // Back of card - Detailed Stats (Fullscreen)
+      // Back of card - Detailed Stats (Clean white style)
       contentBack.innerHTML = `
-        <div class="relative w-full h-full" style="background: linear-gradient(135deg, ${colorScheme.to} 0%, ${colorScheme.via} 50%, ${colorScheme.from} 100%);">
-          <div class="h-full flex flex-col justify-center items-center p-8 text-white max-w-2xl mx-auto">
+        <div class="relative w-full h-full bg-white overflow-y-auto">
+          <div class="h-full flex flex-col justify-center items-center p-8 text-neutral-900 max-w-2xl mx-auto">
             <!-- Header -->
             <div class="flex items-center justify-between w-full mb-8">
-              <h4 class="text-3xl font-bold">Detailní statistiky</h4>
-              <button onclick="flipCard()" class="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-white/30 transition">
-                <i data-lucide="rotate-ccw" class="h-6 w-6"></i>
+              <h4 class="text-3xl font-extrabold tracking-tight">Detailní statistiky</h4>
+              <button onclick="flipCard()" class="h-12 w-12 rounded-xl bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition shadow-sm">
+                <i data-lucide="rotate-ccw" class="h-6 w-6 text-neutral-700"></i>
               </button>
             </div>
             
             <!-- Stats grid - Larger for fullscreen -->
             <div class="grid grid-cols-2 gap-4 w-full mb-8">
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold mb-2">${reel.avg_views || '125K'}</div>
-                <div class="text-sm text-white/80">Avg. Views</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-3xl font-bold mb-2 text-neutral-900">${reel.avg_views || '125K'}</div>
+                <div class="text-sm text-neutral-600">Avg. Views</div>
               </div>
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold mb-2">${reel.avg_likes || '8.5K'}</div>
-                <div class="text-sm text-white/80">Avg. Likes</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-3xl font-bold mb-2 text-neutral-900">${reel.avg_likes || '8.5K'}</div>
+                <div class="text-sm text-neutral-600">Avg. Likes</div>
               </div>
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold mb-2">${reel.collaborations || '47'}</div>
-                <div class="text-sm text-white/80">Spolupráce</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-3xl font-bold mb-2 text-neutral-900">${reel.collaborations || '47'}</div>
+                <div class="text-sm text-neutral-600">Spolupráce</div>
               </div>
-              <div class="stat-badge rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold mb-2">${reel.rating || '4.9'} ⭐</div>
-                <div class="text-sm text-white/80">Rating</div>
+              <div class="rounded-2xl p-6 text-center bg-white border border-neutral-200 shadow-soft">
+                <div class="text-3xl font-bold mb-2 text-neutral-900">${reel.rating || '4.9'} ⭐</div>
+                <div class="text-sm text-neutral-600">Rating</div>
               </div>
             </div>
             
             <!-- Categories -->
             ${reel.categories && reel.categories.length > 0 ? `
               <div class="w-full mb-8">
-                <div class="text-sm text-white/70 font-semibold mb-3 text-center">Kategorie</div>
+                <div class="text-sm text-neutral-600 font-semibold mb-3 text-center">Kategorie</div>
                 <div class="flex flex-wrap gap-3 justify-center">
                   ${reel.categories.slice(0, 8).map(cat => `
-                    <span class="px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-sm font-medium">${cat}</span>
+                    <span class="px-4 py-2 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 text-sm font-medium text-neutral-800">${cat}</span>
                   `).join('')}
                 </div>
               </div>
             ` : ''}
             
             <!-- Footer info -->
-            <div class="pt-6 border-t border-white/20 w-full">
+            <div class="pt-6 border-t border-neutral-200 w-full">
               <div class="flex items-center justify-center gap-4 text-sm">
-                <span class="text-white/70">Member since ${reel.joined_year || '2023'}</span>
-                ${reel.verified ? '<span class="flex items-center gap-2 text-white/90"><i data-lucide="shield-check" class="h-4 w-4"></i>Ověřený profil</span>' : ''}
+                <span class="text-neutral-600">Member since ${reel.joined_year || '2023'}</span>
+                ${reel.verified ? '<span class="flex items-center gap-2 text-neutral-700"><i data-lucide="shield-check" class="h-4 w-4 text-pink-600"></i>Ověřený profil</span>' : ''}
               </div>
             </div>
           </div>
         </div>
       `;
 
-      // Action buttons below card - Larger for fullscreen
+      // Action buttons below card - Clean style
       cardActions.innerHTML = `
-        <button onclick="flipCard()" class="px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-semibold transition flex items-center gap-2 text-lg">
+        <button onclick="flipCard()" class="px-8 py-4 rounded-2xl bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-900 font-semibold transition flex items-center gap-2 text-lg shadow-soft">
           <i data-lucide="rotate-3d" class="h-5 w-5"></i>
           Otočit kartu
         </button>
-        <button onclick="contactCreator('${reel.id}')" class="flex-1 px-8 py-4 rounded-2xl bg-white text-gray-900 hover:bg-white/90 font-bold transition flex items-center justify-center gap-2 shadow-lg text-lg">
+        <button onclick="contactCreator('${reel.id}')" class="flex-1 px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 font-bold transition flex items-center justify-center gap-2 shadow-lg text-lg">
           <i data-lucide="send" class="h-5 w-5"></i>
           Kontaktovat
         </button>
-        <button onclick="toggleSave('${reel.id}', ${allReels.indexOf(reel)}); updateModalSaveButton('${reel.id}')" class="px-8 py-4 rounded-2xl ${savedCreators.has(reel.id) ? 'bg-red-500/20 border-red-400' : 'bg-white/10 border-white/20'} backdrop-blur-md border hover:bg-white/20 transition">
-          <i data-lucide="heart" class="h-6 w-6 ${savedCreators.has(reel.id) ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
+        <button onclick="toggleSave('${reel.id}', ${allReels.indexOf(reel)}); updateModalSaveButton('${reel.id}')" class="px-8 py-4 rounded-2xl ${savedCreators.has(reel.id) ? 'bg-red-50 border-red-300' : 'bg-white border-neutral-200'} border hover:bg-neutral-50 transition shadow-soft">
+          <i data-lucide="heart" class="h-6 w-6 ${savedCreators.has(reel.id) ? 'fill-red-500 text-red-500' : 'text-neutral-700'}"></i>
         </button>
       `;
 
