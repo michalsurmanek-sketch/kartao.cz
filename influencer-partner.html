@@ -17,13 +17,14 @@
 
   <style>
     ::-webkit-scrollbar{height:10px;width:10px}
-    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
-    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.02)}
+    .shadow-soft{box-shadow:0 2px 10px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04)}
 
     .floaty{animation:floaty 7s ease-in-out infinite}
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
     .shine{position:relative;overflow:hidden}
-    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.12) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
+    .shine:before{content:"";position:absolute;inset:-120%;background:linear-gradient(110deg,transparent 35%,rgba(0,0,0,.06) 45%,transparent 55%);transform:translateX(-30%);animation:shine 2.8s ease-in-out infinite}
     @keyframes shine{0%{transform:translateX(-40%)}60%{transform:translateX(40%)}100%{transform:translateX(40%)}}
 
     @media (min-width: 1024px){
@@ -31,37 +32,37 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+<body class="min-h-screen bg-white text-neutral-900 selection:bg-fuchsia-400/30 selection:text-white">
 
   <!-- dekor pozadí -->
   <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
-    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
-    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-100/60 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-100/50 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.04),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.03),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,black_1px,transparent_1px),linear-gradient(to_bottom,black_1px,transparent_1px)] bg-[size:38px_38px]"></div>
   </div>
 
   <!-- HEADER / NAV -->
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/60 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
 
       <a href="/index.html" class="group inline-flex items-center gap-2">
-        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-neutral-200 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
           <i data-lucide="sparkles" class="h-5 w-5"></i>
         </span>
         <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
-        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">influencer partneři</span>
+        <span class="hidden sm:inline text-xs text-neutral-500 group-hover:text-neutral-700 transition">influencer partneři</span>
       </a>
 
       <nav class="hidden xl:flex items-center gap-2 text-sm">
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-marketplace.html">Marketplace</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
-        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/influencer-partneri.html">Influencer partneři</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kartao-marketplace.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-neutral-200 hover:brightness-110 transition" href="/influencer-partneri.html">Influencer partneři</a>
       </nav>
 
       <div class="flex items-center gap-2">
@@ -70,12 +71,12 @@
           <span class="text-sm">Moje karta</span>
         </a>
 
-        <a href="/login.html" class="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <a href="/login.html" class="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
           <i data-lucide="log-in" class="h-4 w-4"></i>
           <span class="text-sm">Přihlásit se</span>
         </a>
 
-        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+        <button id="menuBtn" class="xl:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition" aria-label="Otevřít menu" aria-expanded="false">
           <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
       </div>
@@ -85,18 +86,18 @@
     <!-- mobile menu -->
     <div id="mobileMenu" class="xl:hidden hidden">
       <div class="max-w-7xl mx-auto px-4 pb-4">
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 backdrop-blur-xl p-3">
+        <div class="rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur-xl p-3">
           <div class="grid gap-1 text-sm">
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-marketplace.html">Marketplace</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
-            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/influencer-partneri.html">Influencer partneři</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kartao-marketplace.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-neutral-200" href="/influencer-partneri.html">Influencer partneři</a>
             <a class="mt-2 px-3 py-3 rounded-2xl bg-white text-neutral-950 font-semibold" href="/moje-karta.html">Moje karta</a>
-            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/login.html">Přihlásit se</a>
+            <a class="px-3 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/login.html">Přihlásit se</a>
           </div>
         </div>
       </div>
@@ -106,105 +107,105 @@
   <main class="max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
 
     <!-- HERO -->
-    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/25 via-neutral-950 to-amber-700/18 shadow-[0_20px_90px_rgba(0,0,0,0.58)]">
-      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_12%_18%,rgba(255,0,170,0.30),transparent_40%),radial-gradient(circle_at_84%_72%,rgba(255,180,0,0.22),transparent_48%)]"></div>
+    <section class="relative overflow-hidden rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 shadow-soft">
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_12%_18%,rgba(255,0,170,0.08),transparent_40%),radial-gradient(circle_at_84%_72%,rgba(255,180,0,0.06),transparent_48%)]"></div>
 
       <div class="relative p-8 md:p-12">
         <div class="grid lg:grid-cols-[1.25fr_1fr] gap-10 items-center">
 
           <div class="space-y-6">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
-              <i data-lucide="badge-check" class="h-4 w-4"></i>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-soft border border-neutral-200 text-xs text-neutral-700">
+              <i data-lucide="badge-check" class="h-4 w-4 text-fuchsia-500"></i>
               <span>Influencer partnerství</span>
-              <span class="text-white/40">•</span>
-              <span class="text-white/60">tvůrci & studia</span>
+              <span class="text-neutral-400">•</span>
+              <span class="text-neutral-600">tvůrci & studia</span>
             </div>
 
-            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-neutral-900">
               Více nabídek.
-              <span class="text-white/70">Lepší podmínky.</span>
+              <span class="text-neutral-600">Lepší podmínky.</span>
             </h1>
 
-            <p class="text-white/70 leading-relaxed max-w-2xl">
+            <p class="text-neutral-600 leading-relaxed max-w-2xl">
               Program pro tvůrce, kteří chtějí férový systém spoluprací: ověření metrik, přednostní poptávky,
               kurátorské kampaně a jasný proces bez chaosu v DMs.
             </p>
 
             <div class="flex flex-col sm:flex-row gap-2">
-              <a href="#form" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+              <a href="#form" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
                 <i data-lucide="sparkles" class="h-4 w-4"></i>
                 Chci být partner
               </a>
-              <a href="/upravit-kartu.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <a href="/upravit-kartu.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 transition shadow-sm">
                 <i data-lucide="pencil" class="h-4 w-4"></i>
                 Upravit kartu
               </a>
             </div>
 
             <div class="grid sm:grid-cols-3 gap-3">
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <div class="text-xs text-white/60">Přednostní poptávky</div>
-                <div class="mt-1 text-2xl font-extrabold">VIP leady</div>
+              <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
+                <div class="text-xs text-neutral-600">Přednostní poptávky</div>
+                <div class="mt-1 text-2xl font-extrabold text-neutral-900">VIP leady</div>
               </div>
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <div class="text-xs text-white/60">Ověření profilu</div>
-                <div class="mt-1 text-2xl font-extrabold">Důvěra</div>
+              <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
+                <div class="text-xs text-neutral-600">Ověření profilu</div>
+                <div class="mt-1 text-2xl font-extrabold text-neutral-900">Důvěra</div>
               </div>
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <div class="text-xs text-white/60">Kurátorské kampaně</div>
-                <div class="mt-1 text-2xl font-extrabold">Top výběr</div>
+              <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
+                <div class="text-xs text-neutral-600">Kurátorské kampaně</div>
+                <div class="mt-1 text-2xl font-extrabold text-neutral-900">Top výběr</div>
               </div>
             </div>
           </div>
 
           <!-- side card -->
           <div class="relative">
-            <div class="absolute -inset-6 opacity-40 blur-2xl bg-[radial-gradient(circle_at_30%_20%,rgba(255,0,170,0.35),transparent_45%),radial-gradient(circle_at_70%_80%,rgba(255,180,0,0.25),transparent_55%)]"></div>
+            <div class="absolute -inset-6 opacity-20 blur-2xl bg-[radial-gradient(circle_at_30%_20%,rgba(255,0,170,0.15),transparent_45%),radial-gradient(circle_at_70%_80%,rgba(255,180,0,0.12),transparent_55%)]"></div>
 
-            <div class="relative rounded-3xl border border-white/10 bg-neutral-950/35 p-6 md:p-7">
+            <div class="relative rounded-3xl border border-neutral-200 bg-white p-6 md:p-7 shadow-soft">
               <div class="flex items-center justify-between">
-                <div class="text-sm text-white/70">Co získáš</div>
-                <div class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">Partner</div>
+                <div class="text-sm text-neutral-700 font-medium">Co získáš</div>
+                <div class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-fuchsia-50 to-pink-50 border border-fuchsia-200 text-fuchsia-700 font-semibold">Partner</div>
               </div>
 
               <div class="mt-5 grid gap-3">
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
                   <div class="flex items-start gap-3">
-                    <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center floaty">
+                    <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center floaty">
                       <i data-lucide="shield-check" class="h-5 w-5"></i>
                     </div>
                     <div>
-                      <div class="font-extrabold">Ověření a badge</div>
-                      <div class="text-sm text-white/60 mt-1">Důvěryhodnost + lepší konverze u firem.</div>
+                      <div class="font-extrabold text-neutral-900">Ověření a badge</div>
+                      <div class="text-sm text-neutral-600 mt-1">Důvěryhodnost + lepší konverze u firem.</div>
                     </div>
                   </div>
                 </div>
 
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
                   <div class="flex items-start gap-3">
-                    <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center floaty">
+                    <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center floaty">
                       <i data-lucide="inbox" class="h-5 w-5"></i>
                     </div>
                     <div>
-                      <div class="font-extrabold">Přednostní nabídky</div>
-                      <div class="text-sm text-white/60 mt-1">Leady a kampaně dřív než ostatní.</div>
+                      <div class="font-extrabold text-neutral-900">Přednostní nabídky</div>
+                      <div class="text-sm text-neutral-600 mt-1">Leady a kampaně dřív než ostatní.</div>
                     </div>
                   </div>
                 </div>
 
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
                   <div class="flex items-start gap-3">
-                    <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center floaty">
+                    <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center floaty">
                       <i data-lucide="wallet" class="h-5 w-5"></i>
                     </div>
                     <div>
-                      <div class="font-extrabold">Férové ceny a balíčky</div>
-                      <div class="text-sm text-white/60 mt-1">Šablony balíčků + rychlejší domluva.</div>
+                      <div class="font-extrabold text-neutral-900">Férové ceny a balíčky</div>
+                      <div class="text-sm text-neutral-600 mt-1">Šablony balíčků + rychlejší domluva.</div>
                     </div>
                   </div>
                 </div>
 
-                <div class="text-xs text-white/50 leading-relaxed">
+                <div class="text-xs text-neutral-400 leading-relaxed">
                   Tip: Pokud máš hotový mediakit a ceník, přilož je do poznámky (odkaz).
                 </div>
               </div>
@@ -221,148 +222,148 @@
       <div class="space-y-6">
         <div>
           <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Proč být Influencer partner</h2>
-          <p class="text-white/70 mt-2">Vytáhneme tě do výběrů, zrychlíme domluvy a dáme ti důvěru v očích značek.</p>
+          <p class="text-neutral-600 mt-2">Vytáhneme tě do výběrů, zrychlíme domluvy a dáme ti důvěru v očích značek.</p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
             <div class="flex items-start gap-3">
-              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center">
                 <i data-lucide="trending-up" class="h-5 w-5"></i>
               </div>
               <div>
-                <div class="font-extrabold">Více relevantních poptávek</div>
-                <div class="text-sm text-white/60 mt-1">Značky tě uvidí dřív a častěji.</div>
+                <div class="font-extrabold text-neutral-900">Více relevantních poptávek</div>
+                <div class="text-sm text-neutral-600 mt-1">Značky tě uvidí dřív a častěji.</div>
               </div>
             </div>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
             <div class="flex items-start gap-3">
-              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center">
                 <i data-lucide="badge-check" class="h-5 w-5"></i>
               </div>
               <div>
-                <div class="font-extrabold">Badge + ověřená data</div>
-                <div class="text-sm text-white/60 mt-1">Lepší důvěra = lepší dealy.</div>
+                <div class="font-extrabold text-neutral-900">Badge + ověřená data</div>
+                <div class="text-sm text-neutral-600 mt-1">Lepší důvěra = lepší dealy.</div>
               </div>
             </div>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
             <div class="flex items-start gap-3">
-              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center">
                 <i data-lucide="file-text" class="h-5 w-5"></i>
               </div>
               <div>
-                <div class="font-extrabold">Jasné podmínky</div>
-                <div class="text-sm text-white/60 mt-1">Brief, termíny, scope – bez zmatků.</div>
+                <div class="font-extrabold text-neutral-900">Jasné podmínky</div>
+                <div class="text-sm text-neutral-600 mt-1">Brief, termíny, scope – bez zmatků.</div>
               </div>
             </div>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
             <div class="flex items-start gap-3">
-              <div class="h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center">
+              <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center">
                 <i data-lucide="megaphone" class="h-5 w-5"></i>
               </div>
               <div>
-                <div class="font-extrabold">Kurátorské výběry</div>
-                <div class="text-sm text-white/60 mt-1">Top karty týdne, tematické kampaně.</div>
+                <div class="font-extrabold text-neutral-900">Kurátorské výběry</div>
+                <div class="text-sm text-neutral-600 mt-1">Top karty týdne, tematické kampaně.</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- PROCESS -->
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+        <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-8">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <div class="text-sm text-white/60">Jak se stát partnerem</div>
+              <div class="text-sm text-neutral-500">Jak se stát partnerem</div>
               <div class="text-xl md:text-2xl font-extrabold">3 rychlé kroky</div>
             </div>
-            <a href="#form" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <a href="#form" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
               <i data-lucide="arrow-down" class="h-4 w-4"></i>
               Chci to
             </a>
           </div>
 
           <div class="mt-6 grid md:grid-cols-3 gap-3">
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <div class="text-xs text-white/60">Krok 1</div>
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+              <div class="text-xs text-neutral-500">Krok 1</div>
               <div class="mt-1 font-extrabold">Vyplníš přihlášku</div>
-              <div class="text-sm text-white/60 mt-2">Platformy, témata, linky, orientační ceník.</div>
+              <div class="text-sm text-neutral-500 mt-2">Platformy, témata, linky, orientační ceník.</div>
             </div>
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <div class="text-xs text-white/60">Krok 2</div>
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+              <div class="text-xs text-neutral-500">Krok 2</div>
               <div class="mt-1 font-extrabold">Ověříme profil</div>
-              <div class="text-sm text-white/60 mt-2">Základní kontrola a přidání badge.</div>
+              <div class="text-sm text-neutral-500 mt-2">Základní kontrola a přidání badge.</div>
             </div>
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <div class="text-xs text-white/60">Krok 3</div>
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+              <div class="text-xs text-neutral-500">Krok 3</div>
               <div class="mt-1 font-extrabold">Začneš brát kampaně</div>
-              <div class="text-sm text-white/60 mt-2">Dostaneš nabídky a kurátorské výběry.</div>
+              <div class="text-sm text-neutral-500 mt-2">Dostaneš nabídky a kurátorské výběry.</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- TIERS (sticky) -->
-      <aside class="rounded-3xl border border-white/10 bg-white/5 p-6 sticky-col">
+      <aside class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6 sticky-col">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-sm text-white/60">Úrovně programu</div>
+            <div class="text-sm text-neutral-500">Úrovně programu</div>
             <div class="text-xl font-extrabold">Partnerství</div>
           </div>
-          <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">výběr</span>
+          <span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">výběr</span>
         </div>
 
         <div class="mt-5 grid gap-3">
-          <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+          <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-5">
             <div class="flex items-center justify-between">
-              <div class="font-extrabold">Start</div>
-              <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">pro růst</span>
+              <div class="font-extrabold text-neutral-900">Start</div>
+              <span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">pro růst</span>
             </div>
-            <div class="mt-3 text-sm text-white/70">Základní ověření a vstup do výběrů.</div>
-            <ul class="mt-4 space-y-2 text-sm text-white/70">
+            <div class="mt-3 text-sm text-neutral-600">Základní ověření a vstup do výběrů.</div>
+            <ul class="mt-4 space-y-2 text-sm text-neutral-600">
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Badge partner</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Zařazení do shortlistů</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Základní podpora</li>
             </ul>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950/40 to-amber-700/15 p-5">
+          <div class="rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950/40 to-amber-700/15 p-5">
             <div class="flex items-center justify-between">
-              <div class="font-extrabold">Pro</div>
-              <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">doporučeno</span>
+              <div class="font-extrabold text-neutral-900">Pro</div>
+              <span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">doporučeno</span>
             </div>
-            <div class="mt-3 text-sm text-white/70">Více leadů a prioritní výběry.</div>
-            <ul class="mt-4 space-y-2 text-sm text-white/70">
+            <div class="mt-3 text-sm text-neutral-600">Více leadů a prioritní výběry.</div>
+            <ul class="mt-4 space-y-2 text-sm text-neutral-600">
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Přednostní nabídky</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Kurátorské kampaně</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Šablony balíčků & ceníku</li>
             </ul>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-5">
+          <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-5">
             <div class="flex items-center justify-between">
-              <div class="font-extrabold">Elite</div>
-              <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">top karty</span>
+              <div class="font-extrabold text-neutral-900">Elite</div>
+              <span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">top karty</span>
             </div>
-            <div class="mt-3 text-sm text-white/70">Pro tvůrce s výkonem a stabilní kvalitou.</div>
-            <ul class="mt-4 space-y-2 text-sm text-white/70">
+            <div class="mt-3 text-sm text-neutral-600">Pro tvůrce s výkonem a stabilní kvalitou.</div>
+            <ul class="mt-4 space-y-2 text-sm text-neutral-600">
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>TOP výběry týdne</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Priorita u VIP partnerů</li>
               <li class="flex gap-2"><i data-lucide="check" class="h-4 w-4 mt-0.5"></i>Individuální nastavení</li>
             </ul>
           </div>
 
-          <a href="#form" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <a href="#form" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
             <i data-lucide="sparkles" class="h-4 w-4"></i>
             Přihlásit se
           </a>
 
-          <div class="text-xs text-white/50 leading-relaxed">
+          <div class="text-xs text-neutral-400 leading-relaxed">
             Úrovně jsou orientační. Zařazení vychází z kvality profilu a poptávky.
           </div>
         </div>
@@ -370,55 +371,55 @@
     </section>
 
     <!-- FAQ -->
-    <section class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+    <section class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-8">
       <div class="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div class="text-sm text-white/60">FAQ</div>
+          <div class="text-sm text-neutral-500">FAQ</div>
           <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Nejčastější otázky</h2>
         </div>
-        <a href="#form" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <a href="#form" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
           <i data-lucide="mail" class="h-4 w-4"></i>
           Přihlásit se
         </a>
       </div>
 
       <div class="mt-6 grid md:grid-cols-2 gap-3">
-        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+        <details class="group rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
           <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
             <span class="font-semibold">Kolik stojí influencer partnerství?</span>
-            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-neutral-500 group-open:rotate-180 transition"></i>
           </summary>
-          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+          <div class="text-sm text-neutral-600 mt-3 leading-relaxed">
             Základní zařazení je o kvalitě profilu. Vyšší úrovně jsou podle výkonu a poptávky (nastavíme individuálně).
           </div>
         </details>
 
-        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+        <details class="group rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
           <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
             <span class="font-semibold">Co znamená ověření profilu?</span>
-            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-neutral-500 group-open:rotate-180 transition"></i>
           </summary>
-          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+          <div class="text-sm text-neutral-600 mt-3 leading-relaxed">
             Kontrolujeme základní konzistenci metrik a obsah. Cíl je důvěra pro značky.
           </div>
         </details>
 
-        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+        <details class="group rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
           <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
             <span class="font-semibold">Můžu být partner i s menším publikem?</span>
-            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-neutral-500 group-open:rotate-180 transition"></i>
           </summary>
-          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+          <div class="text-sm text-neutral-600 mt-3 leading-relaxed">
             Ano. Mikrotvůrci často fungují nejlíp. Důležitá je kvalita a engagement.
           </div>
         </details>
 
-        <details class="group rounded-3xl border border-white/10 bg-white/5 p-5">
+        <details class="group rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
           <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
             <span class="font-semibold">Kdy mi začnou chodit poptávky?</span>
-            <i data-lucide="chevron-down" class="h-5 w-5 text-white/60 group-open:rotate-180 transition"></i>
+            <i data-lucide="chevron-down" class="h-5 w-5 text-neutral-500 group-open:rotate-180 transition"></i>
           </summary>
-          <div class="text-sm text-white/70 mt-3 leading-relaxed">
+          <div class="text-sm text-neutral-600 mt-3 leading-relaxed">
             Jakmile je karta kompletní a profil je zařazen – poptávky jsou podle oboru a sezónnosti.
           </div>
         </details>
@@ -428,14 +429,14 @@
     <!-- FORM -->
     <section id="form" class="grid lg:grid-cols-[1fr_420px] gap-6 items-start">
 
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6 md:p-8">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <div class="text-sm text-white/60">Nezávazně</div>
+            <div class="text-sm text-neutral-500">Nezávazně</div>
             <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Přihláška do programu</h2>
-            <p class="text-white/70 mt-2">Vyplň základní info – ozveme se s dalším krokem a doporučením úrovně.</p>
+            <p class="text-neutral-600 mt-2">Vyplň základní info – ozveme se s dalším krokem a doporučením úrovně.</p>
           </div>
-          <div class="h-12 w-12 rounded-2xl bg-neutral-950/40 border border-white/10 grid place-items-center floaty">
+          <div class="h-12 w-12 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center floaty">
             <i data-lucide="badge-check" class="h-6 w-6"></i>
           </div>
         </div>
@@ -443,23 +444,23 @@
         <form id="infForm" class="mt-6 grid gap-3">
           <div class="grid md:grid-cols-2 gap-3">
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">Jméno / přezdívka</span>
-              <input id="name" required type="text" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="Např. Lucy" />
+              <span class="text-sm text-neutral-600">Jméno / přezdívka</span>
+              <input id="name" required type="text" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" placeholder="Např. Lucy" />
             </label>
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">E-mail</span>
-              <input id="email" required type="email" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="name@email.cz" />
+              <span class="text-sm text-neutral-600">E-mail</span>
+              <input id="email" required type="email" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" placeholder="name@email.cz" />
             </label>
           </div>
 
           <div class="grid md:grid-cols-2 gap-3">
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">Telefon</span>
-              <input id="phone" type="tel" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="+420…" />
+              <span class="text-sm text-neutral-600">Telefon</span>
+              <input id="phone" type="tel" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" placeholder="+420…" />
             </label>
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">Region</span>
-              <select id="region" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <span class="text-sm text-neutral-600">Region</span>
+              <select id="region" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
                 <option value="">Vyber</option>
                 <option value="cz">ČR</option>
                 <option value="sk">SK</option>
@@ -469,7 +470,7 @@
           </div>
 
           <label class="grid gap-1">
-            <span class="text-sm text-white/70">Platformy (multi)</span>
+            <span class="text-sm text-neutral-600">Platformy (multi)</span>
             <div class="flex flex-wrap gap-2" id="plats">
               <button type="button" class="p" data-p="instagram">Instagram</button>
               <button type="button" class="p" data-p="tiktok">TikTok</button>
@@ -480,14 +481,14 @@
           </label>
 
           <label class="grid gap-1">
-            <span class="text-sm text-white/70">Link na profil / portfólio</span>
-            <input id="links" required type="text" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="https://instagram.com/... | https://tiktok.com/..." />
+            <span class="text-sm text-neutral-600">Link na profil / portfólio</span>
+            <input id="links" required type="text" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" placeholder="https://instagram.com/... | https://tiktok.com/..." />
           </label>
 
           <div class="grid md:grid-cols-2 gap-3">
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">Téma / niche</span>
-              <select id="niche" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <span class="text-sm text-neutral-600">Téma / niche</span>
+              <select id="niche" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
                 <option value="">Vyber</option>
                 <option>Beauty</option>
                 <option>Fitness</option>
@@ -501,8 +502,8 @@
               </select>
             </label>
             <label class="grid gap-1">
-              <span class="text-sm text-white/70">Followers (orientačně)</span>
-              <select id="followers" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+              <span class="text-sm text-neutral-600">Followers (orientačně)</span>
+              <select id="followers" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
                 <option value="">Vyber</option>
                 <option value="0_5k">0 – 5k</option>
                 <option value="5_20k">5k – 20k</option>
@@ -513,7 +514,7 @@
           </div>
 
           <label class="grid gap-1">
-            <span class="text-sm text-white/70">Co umíš dodat (multi)</span>
+            <span class="text-sm text-neutral-600">Co umíš dodat (multi)</span>
             <div class="flex flex-wrap gap-2" id="deliver">
               <button type="button" class="d" data-d="reels">Reels / short video</button>
               <button type="button" class="d" data-d="story">Stories</button>
@@ -524,96 +525,96 @@
           </label>
 
           <label class="grid gap-1">
-            <span class="text-sm text-white/70">Poznámka / ceník / mediakit (odkaz)</span>
-            <textarea id="note" rows="4" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" placeholder="Krátce popiš publikum, jazyk, spolupráce, a přidej odkazy na mediakit/drive..."></textarea>
+            <span class="text-sm text-neutral-600">Poznámka / ceník / mediakit (odkaz)</span>
+            <textarea id="note" rows="4" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" placeholder="Krátce popiš publikum, jazyk, spolupráce, a přidej odkazy na mediakit/drive..."></textarea>
           </label>
 
-          <label class="flex items-start gap-2 text-sm text-white/70 mt-1">
+          <label class="flex items-start gap-2 text-sm text-neutral-600 mt-1">
             <input id="gdpr" required type="checkbox" class="h-4 w-4 mt-0.5" />
             <span>Souhlasím se zpracováním údajů pro účely kontaktování ohledně influencer partnerství.</span>
           </label>
 
-          <button id="submitBtn" type="submit" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <button id="submitBtn" type="submit" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
             <i data-lucide="send" class="h-4 w-4"></i>
             Odeslat přihlášku
           </button>
 
-          <div class="text-xs text-white/50">
+          <div class="text-xs text-neutral-400">
             Odesláním nevzniká závazek. Ozveme se s dalším postupem.
           </div>
         </form>
       </div>
 
-      <aside class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-7 sticky-col">
-        <div class="text-sm text-white/60">Aby to prošlo rychle</div>
+      <aside class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-7 sticky-col">
+        <div class="text-sm text-neutral-500">Aby to prošlo rychle</div>
         <div class="mt-2 text-xl font-extrabold">Doporučení</div>
-        <ul class="mt-4 space-y-3 text-sm text-white/70">
+        <ul class="mt-4 space-y-3 text-sm text-neutral-600">
           <li class="flex gap-2"><i data-lucide="check-circle-2" class="h-4 w-4 mt-0.5"></i>Vyplň linky na profily</li>
           <li class="flex gap-2"><i data-lucide="check-circle-2" class="h-4 w-4 mt-0.5"></i>Doplň niche a formáty</li>
           <li class="flex gap-2"><i data-lucide="check-circle-2" class="h-4 w-4 mt-0.5"></i>Přidej mediakit / ceník</li>
         </ul>
 
-        <div class="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5">
-          <div class="font-extrabold">Rychlý link</div>
-          <div class="text-sm text-white/70 mt-2">Nemáš ještě kartu? Začni tady:</div>
+        <div class="mt-6 rounded-3xl border border-neutral-200 bg-white shadow-soft p-5">
+          <div class="font-extrabold text-neutral-900">Rychlý link</div>
+          <div class="text-sm text-neutral-600 mt-2">Nemáš ještě kartu? Začni tady:</div>
           <div class="mt-3 flex flex-col gap-2 text-sm">
             <a class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" href="/zacit-jako-tvurce.html">
               <i data-lucide="sparkles" class="h-4 w-4"></i>
               Začít jako tvůrce
             </a>
-            <a class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" href="/kontakt.html">
+            <a class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition" href="/kontakt.html">
               <i data-lucide="contact" class="h-4 w-4"></i>
               Kontakt
             </a>
           </div>
         </div>
 
-        <div class="mt-4 text-xs text-white/50 leading-relaxed">
-          Technicky: formulář ukládá lead do Supabase tabulky <span class="text-white/70">influencer_partner_leads</span>.
+        <div class="mt-4 text-xs text-neutral-400 leading-relaxed">
+          Technicky: formulář ukládá lead do Supabase tabulky <span class="text-neutral-600">influencer_partner_leads</span>.
         </div>
       </aside>
     </section>
 
   </main>
 
-  <footer class="border-t border-white/10">
+  <footer class="border-t border-neutral-200">
     <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
       <div class="space-y-3">
         <div class="font-extrabold text-lg">Kartao.cz</div>
-        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
-        <div class="flex items-center gap-3 text-white/60">
-          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+        <div class="text-sm text-neutral-500">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-neutral-500">
+          <a class="hover:text-neutral-900" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
         </div>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Informace</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/mapa-webu.html">Mapa webu</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro firmy</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/vip-partner.html">VIP partner</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/vip-partner.html">VIP partner</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Kartao partneři</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/influencer-partneri.html">Influencer partneři</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/vip-partner.html">VIP partner</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/influencer-partneri.html">Influencer partneři</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/vip-partner.html">VIP partner</a>
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 pb-10">
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
-        <div class="text-xs text-white/50">Stránka: <span class="text-white/70">influencer-partneri.html</span></div>
+      <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-neutral-500">© <span id="year"></span> Kartao.cz</div>
+        <div class="text-xs text-neutral-400">Stránka: <span class="text-neutral-600">influencer-partneri.html</span></div>
       </div>
     </div>
   </footer>
@@ -641,7 +642,7 @@
       if (!el){
         el = document.createElement('div');
         el.id = 'toast';
-        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-neutral-200 text-neutral-700 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
         document.body.appendChild(el);
       }
       el.textContent = msg;
@@ -656,7 +657,7 @@
         const active = b.dataset.active === '1';
         b.className = b.className.split(' ').filter(x=>!x.startsWith('p-') && !x.startsWith('bg-') && !x.startsWith('border-') && !x.startsWith('text-') && !x.startsWith('hover:')).join(' ');
         b.className = (b.className + ' text-xs px-3 py-2 rounded-full border transition ' +
-          (active ? 'bg-white text-neutral-950 border-white' : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-white')).trim();
+          (active ? 'bg-white text-neutral-950 border-white' : 'bg-white shadow-soft border-neutral-200 hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900')).trim();
       });
     }
 
