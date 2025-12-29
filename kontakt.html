@@ -307,7 +307,7 @@
 
     <!-- MAPA (volitelné) -->
     <section class="rounded-3xl border border-neutral-200 bg-white overflow-hidden shadow-soft">
-      <div class="p-6 md:p-8 pb-0 flex items-center justify-between gap-4">
+      <div class="p-6 md:p-8 flex items-center justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold tracking-tight">Kde jsme</h2>
         </div>
@@ -315,22 +315,22 @@
           <i data-lucide="map-pin" class="h-5 w-5 text-fuchsia-500"></i>
         </div>
       </div>
-      <div class="grid lg:grid-cols-[1fr_1.2fr] gap-0">
-        <div class="p-6 md:p-8 border-t lg:border-t-0 lg:border-r border-neutral-200">
-          <div class="rounded-2xl bg-neutral-50 border border-neutral-200 p-5 space-y-2">
-            <div class="text-sm text-neutral-600">Adresa</div>
-            <div class="font-semibold">Uherské Hradiště</div>
-            <div class="text-neutral-600">Česká republika</div>
-          </div>
-        </div>
-        <div class="border-t border-neutral-200 lg:border-t-0">
-          <iframe
-            title="Mapa"
-            class="w-full h-[360px] lg:h-full"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=17.445%2C49.0547%2C17.475%2C49.0847&layer=mapnik&marker=49.0697%2C17.4600"
-          ></iframe>
+      
+      <div class="border-t border-neutral-200">
+        <iframe
+          title="Mapa"
+          class="w-full h-[480px]"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=17.445%2C49.0547%2C17.475%2C49.0847&layer=mapnik&marker=49.0697%2C17.4600"
+        ></iframe>
+      </div>
+      
+      <div class="p-6 md:p-8 border-t border-neutral-200">
+        <div class="rounded-2xl bg-neutral-50 border border-neutral-200 p-5 space-y-2 max-w-md">
+          <div class="text-sm text-neutral-600">Adresa</div>
+          <div class="font-semibold">Uherské Hradiště</div>
+          <div class="text-neutral-600">Česká republika</div>
         </div>
       </div>
     </section>
