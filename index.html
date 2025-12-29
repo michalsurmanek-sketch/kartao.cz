@@ -774,23 +774,36 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="font-semibold">Nastavení</span>
           </a>
 
-          <div class="pt-4">
+          <div id="companyQuickActions" class="pt-4 hidden">
             <div class="px-3 text-xs font-semibold text-white/40 uppercase tracking-wider">Rychlé akce</div>
             <div class="mt-2 space-y-2">
-              <button class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
+              <a href="firma-nova-kampan.html" class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
                 <span class="flex items-center gap-3">
                   <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i data-lucide="plus" class="w-5 h-5"></i></span>
                   <span class="font-semibold">Zadat kampaň</span>
                 </span>
                 <i data-lucide="chevron-right" class="w-5 h-5 text-white/50"></i>
-              </button>
-              <button class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
+              </a>
+              <a href="saved-creators.html" class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
                 <span class="flex items-center gap-3">
                   <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i data-lucide="bookmark" class="w-5 h-5"></i></span>
                   <span class="font-semibold">Uložené</span>
                 </span>
                 <i data-lucide="chevron-right" class="w-5 h-5 text-white/50"></i>
-              </button>
+              </a>
+            </div>
+          </div>
+
+          <div id="creatorQuickActions" class="pt-4 hidden">
+            <div class="px-3 text-xs font-semibold text-white/40 uppercase tracking-wider">Rychlé akce</div>
+            <div class="mt-2 space-y-2">
+              <a id="creatorCardAction" href="moje-karta.html" class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i id="creatorCardIcon" data-lucide="sparkles" class="w-5 h-5"></i></span>
+                  <span id="creatorCardText" class="font-semibold">Založit kartu</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-white/50"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -5457,6 +5470,60 @@ document.addEventListener('DOMContentLoaded', () => {
         linkEl.href = 'moje-karta.html';
         iconEl.innerHTML = '<i data-lucide="id-card" class="w-4 h-4"></i>';
         if (window.lucide?.createIcons) window.lucide.createIcons();
+      }
+
+      // Zobrazit sekci "Rychlé akce" pouze pro firmy
+      const quickActionsEl = document.getElementById('companyQuickActions');
+      if (quickActionsEl) {
+        if (role === 'firma') {
+          quickActionsEl.classList.remove('hidden');
+        } else {
+          quickActionsEl.classList.add('hidden');
+        }
+      }
+
+      // Zobrazit sekci "Rychlé akce" pro tvůrce a zkontrolovat, jestli má kartu
+      const creatorQuickActionsEl = document.getElementById('creatorQuickActions');
+      if (creatorQuickActionsEl && (role === 'creator' || role === 'influencer')) {
+        creatorQuickActionsEl.classList.remove('hidden');
+        
+        // Zkontrolovat, jestli už má tvůrce kartu
+        (async () => {
+          try {
+            if (!window.supabaseClient) return;
+            
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) return;
+
+            const { data: creatorCard } = await window.supabaseClient
+              .from('creators')
+              .select('id')
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            const cardActionEl = document.getElementById('creatorCardAction');
+            const cardTextEl = document.getElementById('creatorCardText');
+            const cardIconEl = document.getElementById('creatorCardIcon');
+
+            if (creatorCard) {
+              // Má kartu - zobrazit "Upravit kartu"
+              cardTextEl.textContent = 'Upravit kartu';
+              cardActionEl.href = 'moje-karta.html';
+              cardIconEl.setAttribute('data-lucide', 'edit');
+            } else {
+              // Nemá kartu - zobrazit "Založit kartu"
+              cardTextEl.textContent = 'Založit kartu';
+              cardActionEl.href = 'moje-karta.html';
+              cardIconEl.setAttribute('data-lucide', 'sparkles');
+            }
+            
+            if (window.lucide?.createIcons) window.lucide.createIcons();
+          } catch (error) {
+            console.error('Chyba při kontrole karty tvůrce:', error);
+          }
+        })();
+      } else if (creatorQuickActionsEl) {
+        creatorQuickActionsEl.classList.add('hidden');
       }
     });
   </script>
