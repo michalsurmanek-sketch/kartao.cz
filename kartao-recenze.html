@@ -21,51 +21,52 @@
 
   <style>
     ::-webkit-scrollbar{height:10px;width:10px}
-    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
-    ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:999px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.02)}
+    .shadow-soft{box-shadow:0 2px 10px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04)}
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+<body class="min-h-screen bg-white text-neutral-900 selection:bg-fuchsia-400/30 selection:text-white">
 
   <!-- dekor pozadí -->
   <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-600/20 blur-[90px]"></div>
-    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-500/15 blur-[90px]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.12),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.10),transparent_45%)]"></div>
-    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+    <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-fuchsia-100/60 blur-[90px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-amber-100/50 blur-[90px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,0,170,0.03),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.02),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,black_1px,transparent_1px),linear-gradient(to_bottom,black_1px,transparent_1px)] bg-[size:38px_38px]"></div>
   </div>
 
   <!-- HEADER / NAV (sjednocený) -->
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/85 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
 
       <a href="/index.html" class="group inline-flex items-center gap-2">
-        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-neutral-200 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
           <i data-lucide="sparkles" class="h-5 w-5"></i>
         </span>
         <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
-        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
+        <span class="hidden sm:inline text-xs text-neutral-500 group-hover:text-neutral-700 transition">síť influencerů</span>
       </a>
 
       <nav class="hidden lg:flex items-center gap-2 text-sm">
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/magazin.html">Magazín</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
-        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/kartao-recenze.html">Recenze</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
-        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/kartao-recenze.html">Recenze</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-neutral-200 hover:brightness-110 transition" href="/vip.html">VIP</a>
       </nav>
 
       <div class="flex items-center gap-2">
-        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
           <i data-lucide="log-in" class="h-4 w-4"></i>
           <span class="text-sm">Přihlásit se</span>
         </a>
 
-        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition" aria-label="Otevřít menu" aria-expanded="false">
           <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
       </div>
@@ -73,18 +74,18 @@
 
     <div id="mobileMenu" class="lg:hidden hidden">
       <div class="max-w-6xl mx-auto px-4 pb-4">
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/85 backdrop-blur-xl p-3">
+        <div class="rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur-xl p-3">
           <div class="grid gap-1 text-sm">
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/magazin.html">Magazín</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
-            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/kartao-recenze.html">Recenze</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
-            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
-            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/login.html">Přihlásit se</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/kartao-recenze.html">Recenze</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-neutral-200" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/login.html">Přihlásit se</a>
           </div>
         </div>
       </div>
@@ -95,32 +96,32 @@
   <main class="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-12">
 
     <!-- HERO -->
-    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
-      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+    <section class="relative overflow-hidden rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 shadow-soft">
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.08),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.06),transparent_45%)]"></div>
       <div class="relative p-8 md:p-12">
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           <div class="space-y-4 max-w-2xl">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
-              <i data-lucide="star" class="h-4 w-4"></i>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-soft border border-neutral-200 text-xs text-neutral-700">
+              <i data-lucide="star" class="h-4 w-4 text-amber-500"></i>
               <span>Recenze</span>
-              <span class="text-white/40">•</span>
-              <span class="text-white/60">důvěra & transparentnost</span>
+              <span class="text-neutral-400">•</span>
+              <span class="text-neutral-600">důvěra & transparentnost</span>
             </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Ověřené hodnocení spoluprací</h1>
-            <p class="text-white/70 leading-relaxed">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-900">Ověřené hodnocení spoluprací</h1>
+            <p class="text-neutral-600 leading-relaxed">
               Recenze na Kartao.cz pomáhají zvednout kvalitu trhu. Po dokončení spolupráce může značka i tvůrce ohodnotit průběh,
               komunikaci a výsledky. Cíl je jednoduchý: méně chaosu, více důvěry.
             </p>
             <div class="flex flex-wrap gap-2">
-              <a href="#pridat" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+              <a href="#pridat" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
                 <i data-lucide="plus" class="h-4 w-4"></i>
                 Přidat recenzi
               </a>
-              <a href="#seznam" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <a href="#seznam" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 transition shadow-sm">
                 <i data-lucide="list" class="h-4 w-4"></i>
                 Zobrazit recenze
               </a>
-              <a href="/kontakt.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+              <a href="/kontakt.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 transition shadow-sm">
                 <i data-lucide="mail" class="h-4 w-4"></i>
                 Nahlásit problém
               </a>
@@ -129,39 +130,39 @@
 
           <!-- rating summary -->
           <div class="w-full lg:w-[420px]">
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 space-y-4">
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-5 space-y-4">
               <div class="flex items-center justify-between">
-                <div class="text-sm text-white/70">Souhrn hodnocení</div>
-                <div class="text-xs text-white/50">demo</div>
+                <div class="text-sm text-neutral-600">Souhrn hodnocení</div>
+                <div class="text-xs text-neutral-400">demo</div>
               </div>
 
               <div class="flex items-end justify-between gap-4">
                 <div>
-                  <div class="text-4xl font-extrabold">4,8</div>
-                  <div class="text-sm text-white/60">Průměrné hodnocení</div>
+                  <div class="text-4xl font-extrabold text-neutral-900">4,8</div>
+                  <div class="text-sm text-neutral-600">Průměrné hodnocení</div>
                 </div>
                 <div class="text-right">
-                  <div class="inline-flex items-center gap-1 text-amber-200">
+                  <div class="inline-flex items-center gap-1 text-amber-400">
                     <i data-lucide="star" class="h-4 w-4 fill-current"></i>
                     <i data-lucide="star" class="h-4 w-4 fill-current"></i>
                     <i data-lucide="star" class="h-4 w-4 fill-current"></i>
                     <i data-lucide="star" class="h-4 w-4 fill-current"></i>
                     <i data-lucide="star" class="h-4 w-4"></i>
                   </div>
-                  <div class="text-xs text-white/50 mt-1">na základě 128 recenzí</div>
+                  <div class="text-xs text-neutral-400 mt-1">na základě 128 recenzí</div>
                 </div>
               </div>
 
               <div class="grid gap-2">
-                <div class="text-xs text-white/60">Komunikace</div>
-                <div class="h-2 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[92%] bg-white"></div></div>
-                <div class="text-xs text-white/60 mt-2">Dodržení termínů</div>
-                <div class="h-2 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[88%] bg-white"></div></div>
-                <div class="text-xs text-white/60 mt-2">Kvalita výstupů</div>
-                <div class="h-2 rounded-full bg-white/10 overflow-hidden"><div class="h-full w-[94%] bg-white"></div></div>
+                <div class="text-xs text-neutral-600">Komunikace</div>
+                <div class="h-2 rounded-full bg-neutral-100 overflow-hidden"><div class="h-full w-[92%] bg-gradient-to-r from-fuchsia-500 to-pink-500"></div></div>
+                <div class="text-xs text-neutral-600 mt-2">Dodržení termínů</div>
+                <div class="h-2 rounded-full bg-neutral-100 overflow-hidden"><div class="h-full w-[88%] bg-gradient-to-r from-fuchsia-500 to-pink-500"></div></div>
+                <div class="text-xs text-neutral-600 mt-2">Kvalita výstupů</div>
+                <div class="h-2 rounded-full bg-neutral-100 overflow-hidden"><div class="h-full w-[94%] bg-gradient-to-r from-fuchsia-500 to-pink-500"></div></div>
               </div>
 
-              <div class="text-xs text-white/50 leading-relaxed">
+              <div class="text-xs text-neutral-400 leading-relaxed">
                 Tohle je demo souhrn. Napojení na reálná data pak uděláme z databáze (kampaně → recenze).
               </div>
             </div>
@@ -172,24 +173,24 @@
     </section>
 
     <!-- FILTRY + HLEDÁNÍ -->
-    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+    <section class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6 md:p-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold tracking-tight">Najdi recenzi</h2>
-          <p class="text-white/70 mt-2">Filtruj podle typu profilu a hledej podle jména nebo kampaně.</p>
+          <p class="text-neutral-600 mt-2">Filtruj podle typu profilu a hledej podle jména nebo kampaně.</p>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
           <div class="relative flex-1 min-w-[220px]">
-            <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
-            <input id="q" type="text" placeholder="Hledat (tvůrce, značka, kampaň)…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+            <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"></i>
+            <input id="q" type="text" placeholder="Hledat (tvůrce, značka, kampaň)…" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 pl-11 pr-4 py-3 outline-none focus:border-fuchsia-400" />
           </div>
-          <select id="type" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+          <select id="type" class="rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
             <option value="all">Vše</option>
             <option value="brand">Značky</option>
             <option value="creator">Tvůrci</option>
           </select>
-          <select id="sort" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+          <select id="sort" class="rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
             <option value="new">Nejnovější</option>
             <option value="top">Nejlepší</option>
             <option value="low">Nejhorší</option>
@@ -203,21 +204,21 @@
       <div class="flex items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Recenze (ukázka)</h2>
-          <p class="text-white/70 mt-2">Zatím demo data – připravené na napojení na tvůj systém.</p>
+          <p class="text-neutral-600 mt-2">Zatím demo data – připravené na napojení na tvůj systém.</p>
         </div>
-        <div class="text-sm text-white/60"><span id="count">0</span> výsledků</div>
+        <div class="text-sm text-neutral-500"><span id="count">0</span> výsledků</div>
       </div>
 
       <div id="list" class="grid gap-4"></div>
 
-      <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+      <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div class="space-y-2">
-            <div class="text-sm text-white/60">Chceš, aby recenze byly opravdu férové?</div>
+            <div class="text-sm text-neutral-500">Chceš, aby recenze byly opravdu férové?</div>
             <div class="text-xl md:text-2xl font-extrabold">Recenze může přidat jen někdo, kdo dokončil spolupráci.</div>
-            <div class="text-white/70">Tím se minimalizuje spam a falešné hodnocení.</div>
+            <div class="text-neutral-600">Tím se minimalizuje spam a falešné hodnocení.</div>
           </div>
-          <a href="/zadat-kampan.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <a href="/zadat-kampan.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
             <i data-lucide="arrow-right" class="h-4 w-4"></i>
             Zadat kampaň
           </a>
@@ -226,13 +227,13 @@
     </section>
 
     <!-- PŘIDAT RECENZI (DEMO FORM) -->
-    <section id="pridat" class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+    <section id="pridat" class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6 md:p-8">
       <div class="flex items-start justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold tracking-tight">Přidat recenzi (demo)</h2>
-          <p class="text-white/70 mt-2">Bez backendu – uloží se do LocalStorage (jen pro ukázku). Později napojíme na kampaně.</p>
+          <p class="text-neutral-600 mt-2">Bez backendu – uloží se do LocalStorage (jen pro ukázku). Později napojíme na kampaně.</p>
         </div>
-        <div class="hidden md:flex h-11 w-11 rounded-2xl bg-neutral-950/40 border border-white/10 items-center justify-center">
+        <div class="hidden md:flex h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 items-center justify-center">
           <i data-lucide="plus" class="h-5 w-5"></i>
         </div>
       </div>
@@ -240,36 +241,36 @@
       <form id="reviewForm" class="mt-6 grid gap-4" novalidate>
         <div class="grid md:grid-cols-2 gap-4">
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Kdo hodnotí</span>
-            <select id="fromType" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <span class="text-sm text-neutral-600">Kdo hodnotí</span>
+            <select id="fromType" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
               <option value="brand">Značka</option>
               <option value="creator">Tvůrce</option>
             </select>
           </label>
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Jméno / profil</span>
-            <input id="fromName" type="text" placeholder="Např. BrandXYZ / @tvurce" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" required />
+            <span class="text-sm text-neutral-600">Jméno / profil</span>
+            <input id="fromName" type="text" placeholder="Např. BrandXYZ / @tvurce" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required />
           </label>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Koho hodnotí</span>
-            <select id="toType" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <span class="text-sm text-neutral-600">Koho hodnotí</span>
+            <select id="toType" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
               <option value="creator">Tvůrce</option>
               <option value="brand">Značka</option>
             </select>
           </label>
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Jméno / profil</span>
-            <input id="toName" type="text" placeholder="Např. @tvurce / BrandXYZ" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" required />
+            <span class="text-sm text-neutral-600">Jméno / profil</span>
+            <input id="toName" type="text" placeholder="Např. @tvurce / BrandXYZ" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required />
           </label>
         </div>
 
         <div class="grid md:grid-cols-3 gap-4">
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Hodnocení</span>
-            <select id="stars" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25">
+            <span class="text-sm text-neutral-600">Hodnocení</span>
+            <select id="stars" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
               <option value="5">★★★★★ (5)</option>
               <option value="4">★★★★☆ (4)</option>
               <option value="3">★★★☆☆ (3)</option>
@@ -278,40 +279,40 @@
             </select>
           </label>
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Kampaň (nepovinné)</span>
-            <input id="campaign" type="text" placeholder="Např. Vánoce 2025" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+            <span class="text-sm text-neutral-600">Kampaň (nepovinné)</span>
+            <input id="campaign" type="text" placeholder="Např. Vánoce 2025" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" />
           </label>
           <label class="grid gap-2">
-            <span class="text-sm text-white/70">Datum</span>
-            <input id="date" type="date" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+            <span class="text-sm text-neutral-600">Datum</span>
+            <input id="date" type="date" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" />
           </label>
         </div>
 
         <label class="grid gap-2">
-          <span class="text-sm text-white/70">Text recenze</span>
-          <textarea id="text" rows="5" placeholder="Jak probíhala komunikace? Dodržení termínů? Výsledky?" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-white/25" required></textarea>
+          <span class="text-sm text-neutral-600">Text recenze</span>
+          <textarea id="text" rows="5" placeholder="Jak probíhala komunikace? Dodržení termínů? Výsledky?" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required></textarea>
         </label>
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-          <div class="text-sm text-white/60">Demo: uloží se jen u tebe v prohlížeči.</div>
+          <div class="text-sm text-neutral-500">Demo: uloží se jen u tebe v prohlížeči.</div>
           <div class="flex gap-2">
-            <button type="button" id="reset" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <button type="button" id="reset" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
               <i data-lucide="trash-2" class="h-4 w-4"></i>
               Vymazat
             </button>
-            <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-sm">
               <i data-lucide="save" class="h-4 w-4"></i>
               Uložit recenzi
             </button>
           </div>
         </div>
 
-        <div id="err" class="hidden rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-white/80">
+        <div id="err" class="hidden rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-neutral-700">
           <div class="flex items-start gap-2">
             <i data-lucide="alert-triangle" class="h-4 w-4 mt-0.5"></i>
             <div>
               <div class="font-semibold">Zkontroluj prosím formulář</div>
-              <div id="errTxt" class="text-white/70 mt-1">Doplň povinná pole.</div>
+              <div id="errTxt" class="text-neutral-600 mt-1">Doplň povinná pole.</div>
             </div>
           </div>
         </div>
@@ -321,49 +322,49 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="border-t border-white/10">
+  <footer class="border-t border-neutral-200">
     <div class="max-w-6xl mx-auto px-4 py-10 grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
       <div class="space-y-3 col-span-3 md:col-span-1">
         <div class="font-extrabold text-lg">Kartao.cz</div>
-        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
-        <div class="flex items-center gap-3 text-white/60">
-          <a class="hover:text-white" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
+        <div class="text-sm text-neutral-500">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-neutral-500">
+          <a class="hover:text-neutral-900" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
         </div>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Informace</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/podminky.html">Podmínky použití</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/podminky.html">Podmínky použití</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro firmy</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/faq.html">FAQ</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/vip.html">VIP tvůrci</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/faq.html">FAQ</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro tvůrce</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/cenik.html">Ceník</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/cenik.html">Ceník</a>
       </div>
     </div>
 
     <div class="max-w-6xl mx-auto px-4 pb-10">
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+      <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-neutral-500">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
       </div>
     </div>
   </footer>
@@ -409,8 +410,8 @@
 
     function badge(type){
       return type === 'brand'
-        ? '<span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">Značka</span>'
-        : '<span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">Tvůrce</span>';
+        ? '<span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">Značka</span>'
+        : '<span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">Tvůrce</span>';
     }
 
     function render(){
@@ -449,7 +450,7 @@
       list.innerHTML = data.map(r => {
         const when = r.date ? new Date(r.date).toLocaleDateString('cs-CZ') : '';
         return `
-          <article class="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <article class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div class="space-y-2">
                 <div class="flex flex-wrap items-center gap-2">
@@ -459,17 +460,17 @@
                   ${badge(r.toType)}
                   <div class="font-semibold">${escapeHtml(r.toName)}</div>
                 </div>
-                <div class="text-sm text-white/60">${r.campaign ? `Kampaň: <span class=\"text-white/80\">${escapeHtml(r.campaign)}</span>` : 'Kampaň: <span class="text-white/40">neuvedeno</span>'} ${when ? `<span class="text-white/30">•</span> <span>${when}</span>` : ''}</div>
+                <div class="text-sm text-neutral-500">${r.campaign ? `Kampaň: <span class=\"text-neutral-700\">${escapeHtml(r.campaign)}</span>` : 'Kampaň: <span class="text-neutral-300">neuvedeno</span>'} ${when ? `<span class="text-white/30">•</span> <span>${when}</span>` : ''}</div>
               </div>
               <div class="text-right">
                 <div class="text-lg font-bold">${r.stars}/5</div>
                 <div class="text-sm">${starsHtml(r.stars)}</div>
               </div>
             </div>
-            <p class="text-white/70 mt-4 leading-relaxed">${escapeHtml(r.text)}</p>
+            <p class="text-neutral-600 mt-4 leading-relaxed">${escapeHtml(r.text)}</p>
           </article>
         `;
-      }).join('') || `<div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70">Nic nenalezeno. Zkus změnit filtr nebo vyhledávání.</div>`;
+      }).join('') || `<div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-600">Nic nenalezeno. Zkus změnit filtr nebo vyhledávání.</div>`;
 
       lucide.createIcons();
     }
