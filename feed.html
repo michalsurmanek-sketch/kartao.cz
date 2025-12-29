@@ -28,46 +28,38 @@
     .shadow-soft{box-shadow:0 2px 10px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04)}
   </style>
 </head>
-<body class="min-h-screen bg-white text-neutral-900 selection:bg-fuchsia-400/30 selection:text-white">
-
-  <!-- dekor pozadí -->
-  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-100/60 blur-[100px]"></div>
-    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-100/50 blur-[100px]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.04),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.03),transparent_45%)]"></div>
-    <div class="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,black_1px,transparent_1px),linear-gradient(to_bottom,black_1px,transparent_1px)] bg-[size:38px_38px]"></div>
-  </div>
+<body class="min-h-screen bg-gradient-to-br from-neutral-950 via-slate-950 to-fuchsia-950 text-white">
 
   <!-- HEADER / NAV (sjednocený) -->
-  <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/85 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
 
       <a href="/index.html" class="group inline-flex items-center gap-2">
-        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-500/20">
-          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-amber-400 shadow-soft">
+          <i data-lucide="crown" class="h-5 w-5"></i>
         </span>
         <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
-        <span class="hidden sm:inline text-xs text-neutral-500 group-hover:text-neutral-700 transition">síť influencerů</span>
+        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">síť influencerů</span>
       </a>
 
       <nav class="hidden lg:flex items-center gap-2 text-sm">
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/index.html">Marketplace</a>
-        <a class="px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/feed.html">Feed</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kampane.html">Kampaně</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/chat.html">Chat</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/magazin.html">Magazín</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kartao-o-nas.html">O nás</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kartao-recenze.html">Recenze</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white shadow-soft text-neutral-700 hover:text-neutral-900 transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-2xl bg-white/10/10 border border-white/20" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/kartao-recenze.html">Recenze</a>
+        <a class="px-3 py-2 rounded-2xl hover:bg-white/10/5 text-white/90 hover:text-white transition" href="/kontakt.html">Kontakt</a>
         <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30 transition" href="/vip.html">VIP</a>
       </nav>
 
       <div class="flex items-center gap-2">
-        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
+        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/10 transition">
           <i data-lucide="log-in" class="h-4 w-4"></i>
           <span class="text-sm">Přihlásit se</span>
         </a>
-        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition" aria-label="Otevřít menu" aria-expanded="false">
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/10 transition" aria-label="Otevřít menu" aria-expanded="false">
           <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
       </div>
@@ -76,18 +68,18 @@
 
     <div id="mobileMenu" class="lg:hidden hidden">
       <div class="max-w-6xl mx-auto px-4 pb-4">
-        <div class="rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur-xl p-3">
+        <div class="rounded-3xl border border-white/10 bg-white/10/90 backdrop-blur-xl p-3">
           <div class="grid gap-1 text-sm">
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/index.html">Marketplace</a>
-            <a class="px-3 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/feed.html">Feed</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kampane.html">Kampaně</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/chat.html">Chat</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/magazin.html">Magazín</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kartao-o-nas.html">O nás</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kartao-recenze.html">Recenze</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white shadow-soft" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl bg-white/10/10 border border-white/20" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/kartao-recenze.html">Recenze</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-white/10/5" href="/kontakt.html">Kontakt</a>
             <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-500/20" href="/vip.html">VIP</a>
-            <a class="mt-2 px-3 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200" href="/login.html">Přihlásit se</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/10/10 border border-white/20" href="/login.html">Přihlásit se</a>
           </div>
         </div>
       </div>
@@ -97,31 +89,30 @@
   <!-- CONTENT -->
   <main class="max-w-6xl mx-auto px-4 py-8 md:py-10 space-y-8">
     <!-- Breadcrumbs -->
-    <nav class="flex items-center space-x-2 text-sm text-neutral-600">
-      <a href="index.html" class="hover:text-neutral-900 transition-colors">
+    <nav class="flex items-center space-x-2 text-sm text-white/60">
+      <a href="index.html" class="hover:text-white transition-colors">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
         </svg>
       </a>
-      <span class="text-neutral-400">›</span>
-      <span class="text-neutral-900 font-medium">Feed</span>
+      <span class="text-white/40">›</span>
+      <span class="text-white font-medium">Feed</span>
     </nav>
     <!-- /Breadcrumbs -->
     <!-- HERO + OVLÁDÁNÍ -->
-    <section class="relative overflow-hidden rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 shadow-soft">
-      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.06),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.04),transparent_45%)]"></div>
+    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-950/80 shadow-soft">
       <div class="relative p-6 md:p-10">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:items-center lg:justify-between gap-6">
 
           <div class="space-y-3 max-w-2xl">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-soft border border-neutral-200 text-xs text-neutral-700">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/40 text-xs text-fuchsia-200">
               <i data-lucide="rss" class="h-4 w-4"></i>
               <span>Feed</span>
-              <span class="text-neutral-300">•</span>
-              <span class="text-neutral-500">novinky & ukázky</span>
+              <span class="text-white/30">•</span>
+              <span class="text-white/60">novinky & ukázky</span>
             </div>
-            <h1 class="text-3xl md:text-4xl text-neutral-900 font-extrabold tracking-tight">Co se děje na Kartao</h1>
-            <p class="text-neutral-600 leading-relaxed">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Co se děje na Kartao</h1>
+            <p class="text-white/70 leading-relaxed">
               Přehled novinek, ukázek spoluprací a příspěvků od tvůrců i značek. Tohle je demo feed – připravený na napojení na databázi.
             </p>
 
@@ -130,11 +121,11 @@
                 <i data-lucide="plus" class="h-4 w-4"></i>
                 Přidat příspěvek
               </button>
-              <a href="/index.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
+              <a href="/index.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/15 transition">
                 <i data-lucide="search" class="h-4 w-4"></i>
                 Najít tvůrce
               </a>
-              <a href="/zadat-kampan.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white border-0 shadow-lg shadow-fuchsia-500/30 hover:shadow-fuchsia-500/40 transition">
+              <a href="/zadat-kampan.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/40 transition">
                 <i data-lucide="megaphone" class="h-4 w-4"></i>
                 Zadat kampaň
               </a>
@@ -143,18 +134,18 @@
 
           <!-- Filtry / hledání -->
           <div class="w-full lg:w-[460px]">
-            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 md:p-5 space-y-3">
+            <div class="rounded-3xl border border-white/10 bg-neutral-950/70 shadow-soft p-4 md:p-5 space-y-3">
               <div class="flex items-center justify-between">
-                <div class="text-sm text-neutral-600">Filtr feedu</div>
-                <div class="text-xs text-neutral-400">demo</div>
+                <div class="text-sm text-white/80">Filtr feedu</div>
+                <div class="text-xs text-white/40">demo</div>
               </div>
 
               <div class="grid sm:grid-cols-[1fr_auto] gap-2">
                 <div class="relative">
-                  <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"></i>
-                  <input id="q" type="text" placeholder="Hledat (jméno, hashtag, text)…" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 pl-11 pr-4 py-3 outline-none focus:border-fuchsia-400" />
+                  <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40"></i>
+                  <input id="q" type="text" placeholder="Hledat (jméno, hashtag, text)…" class="w-full rounded-2xl bg-white/10/5 border border-white/10 pl-11 pr-4 py-3 text-white placeholder:text-white/40 outline-none focus:border-fuchsia-400" />
                 </div>
-                <select id="sort" class="rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
+                <select id="sort" class="rounded-2xl bg-white/10/5 border border-white/10 px-4 py-3 text-white outline-none focus:border-fuchsia-400">
                   <option value="new">Nejnovější</option>
                   <option value="top">Nejvíc lajků</option>
                   <option value="saved">Uložené</option>
@@ -169,7 +160,7 @@
                 <button data-filter="showcase" class="chip">Ukázky</button>
               </div>
 
-              <div class="text-xs text-neutral-400">Tip: napiš do hledání třeba <span class="text-neutral-600">#reels</span>, <span class="text-neutral-600">#fitness</span> nebo jméno.</div>
+              <div class="text-xs text-white/40">Tip: napiš do hledání třeba <span class="text-white/60">#reels</span>, <span class="text-white/60">#fitness</span> nebo jméno.</div>
             </div>
           </div>
 
@@ -178,13 +169,13 @@
     </section>
 
     <!-- "STORIES" ŘÁDEK -->
-    <section class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 md:p-5">
+    <section class="rounded-3xl border border-white/10 bg-neutral-950/70 shadow-soft p-4 md:p-5">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <div class="text-sm text-neutral-500">Rychlé profily</div>
+          <div class="text-sm text-white/50">Rychlé profily</div>
           <div class="font-extrabold text-lg">Tvůrci právě aktivní</div>
         </div>
-        <a href="/index.html" class="text-sm text-neutral-600 hover:text-neutral-900 inline-flex items-center gap-2">
+        <a href="/index.html" class="text-sm text-white/60 hover:text-white inline-flex items-center gap-2">
           Zobrazit marketplace
           <i data-lucide="arrow-right" class="h-4 w-4"></i>
         </a>
@@ -199,21 +190,21 @@
       <div class="space-y-4">
         <div class="flex items-end justify-between gap-4">
           <div>
-            <h2 class="text-2xl md:text-3xl text-neutral-900 font-extrabold tracking-tight">Příspěvky</h2>
-            <p class="text-neutral-600 mt-2">Demo příspěvky + tvoje (LocalStorage). Připravené na reálná data.</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Příspěvky</h2>
+            <p class="text-white/60 mt-2">Demo příspěvky + tvoje (LocalStorage). Připravené na reálná data.</p>
           </div>
-          <div class="text-sm text-neutral-500"><span id="count">0</span> výsledků</div>
+          <div class="text-sm text-white/40"><span id="count">0</span> výsledků</div>
         </div>
 
         <div id="feed" class="grid gap-4"></div>
 
-        <div id="loadWrap" class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div id="loadWrap" class="rounded-3xl border border-white/10 bg-neutral-950/50 p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div class="text-sm text-neutral-500">Nekonečné scrollování?</div>
+            <div class="text-sm text-white/50">Nekonečné scrollování?</div>
             <div class="text-xl font-extrabold">Tady jen na klik.</div>
-            <div class="text-neutral-600 mt-1">Na backendu to pak bude paginace / infinite scroll.</div>
+            <div class="text-white/60 mt-1">Na backendu to pak bude paginace / infinite scroll.</div>
           </div>
-          <button id="loadMore" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+          <button id="loadMore" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:shadow-lg hover:shadow-fuchsia-500/30 transition">
             <i data-lucide="refresh-cw" class="h-4 w-4"></i>
             Načíst další
           </button>
@@ -223,37 +214,37 @@
       <!-- SIDEBAR -->
       <aside class="space-y-4">
         <!-- trending -->
-        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 shadow-soft p-6">
           <div class="flex items-center justify-between gap-3">
             <div>
-              <div class="text-sm text-neutral-500">Trendy</div>
+              <div class="text-sm text-white/50">Trendy</div>
               <div class="font-extrabold text-lg">Hashtagy</div>
             </div>
-            <i data-lucide="trending-up" class="h-5 w-5 text-neutral-600"></i>
+            <i data-lucide="trending-up" class="h-5 w-5 text-white/60"></i>
           </div>
           <div id="tags" class="mt-4 flex flex-wrap gap-2"></div>
-          <div class="mt-3 text-xs text-neutral-400">Klikni na hashtag a rovnou se vyplní hledání.</div>
+          <div class="mt-3 text-xs text-white/40">Klikni na hashtag a rovnou se vypl ní hledání.</div>
         </div>
 
         <!-- quick actions -->
-        <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/50 p-6">
           <div class="flex items-center justify-between gap-3">
             <div>
-              <div class="text-sm text-neutral-500">Rychlé akce</div>
+              <div class="text-sm text-white/50">Rychlé akce</div>
               <div class="font-extrabold text-lg">Start spolupráce</div>
             </div>
-            <i data-lucide="zap" class="h-5 w-5 text-neutral-600"></i>
+            <i data-lucide="zap" class="h-5 w-5 text-amber-400"></i>
           </div>
           <div class="mt-4 grid gap-2">
-            <a class="px-4 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition inline-flex items-center justify-between" href="/zadat-kampan.html">
+            <a class="px-4 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:shadow-lg hover:shadow-fuchsia-500/30 transition inline-flex items-center justify-between" href="/zadat-kampan.html">
               <span class="inline-flex items-center gap-2"><i data-lucide="megaphone" class="h-4 w-4"></i>Zadat kampaň</span>
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </a>
-            <a class="px-4 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition inline-flex items-center justify-between" href="/moje-karta.html">
+            <a class="px-4 py-3 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/15 transition inline-flex items-center justify-between" href="/moje-karta.html">
               <span class="inline-flex items-center gap-2"><i data-lucide="id-card" class="h-4 w-4"></i>Moje karta</span>
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </a>
-            <a class="px-4 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition inline-flex items-center justify-between" href="/vip.html">
+            <a class="px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 hover:shadow-lg hover:shadow-amber-500/30 transition inline-flex items-center justify-between" href="/vip.html">
               <span class="inline-flex items-center gap-2"><i data-lucide="crown" class="h-4 w-4"></i>VIP</span>
               <i data-lucide="arrow-right" class="h-4 w-4"></i>
             </a>
@@ -261,17 +252,17 @@
         </div>
 
         <!-- saved info -->
-        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/70 shadow-soft p-6">
           <div class="flex items-center gap-3">
-            <div class="h-11 w-11 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center">
+            <div class="h-11 w-11 rounded-2xl bg-neutral-950/50 border border-white/10 grid place-items-center">
               <i data-lucide="bookmark" class="h-5 w-5"></i>
             </div>
             <div>
               <div class="font-bold text-lg">Uložené</div>
-              <div class="text-sm text-neutral-500">Přepni řazení na „Uložené“</div>
+              <div class="text-sm text-white/60">Přepni řazení na „Uložené“</div>
             </div>
           </div>
-          <div class="mt-4 text-sm text-neutral-600">Ideální pro značky: ulož si tvůrce a ukázky a vrať se k nim později.</div>
+          <div class="mt-4 text-sm text-white/70">Ideální pro značky: ulož si tvůrce a ukázky a vrať se k nim později.</div>
         </div>
       </aside>
     </section>
@@ -279,49 +270,49 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="border-t border-neutral-200">
+  <footer class="border-t border-white/10">
     <div class="max-w-6xl mx-auto px-4 py-10 grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
       <div class="space-y-3 col-span-3 md:col-span-1">
         <div class="font-extrabold text-lg">Kartao.cz</div>
-        <div class="text-sm text-neutral-500">Digitální ekosystém spoluprací.</div>
-        <div class="flex items-center gap-3 text-neutral-500">
-          <a class="hover:text-neutral-900" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
-          <a class="hover:text-neutral-900" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
-          <a class="hover:text-neutral-900" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
-          <a class="hover:text-neutral-900" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
-          <a class="hover:text-neutral-900" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
+        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-white/60">
+          <a class="hover:text-white" href="#" aria-label="Facebook"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+          <a class="hover:text-white" href="#" aria-label="Pinterest"><i data-lucide="pin" class="h-5 w-5"></i></a>
         </div>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Informace</div>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-o-nas.html">O nás</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kontakt.html">Kontakt</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kartao-recenze.html">Recenze</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/mapa-webu.html">Mapa webu</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/podminky.html">Podmínky použití</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/podminky.html">Podmínky použití</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro firmy</div>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/zadat-kampan.html">Zadat kampaň</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/kampane.html">Kampaně</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/vip.html">VIP tvůrci</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/faq.html">FAQ</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/faq.html">FAQ</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro tvůrce</div>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/moje-karta.html">Moje karta</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/upravit-kartu.html">Upravit kartu</a>
-        <a class="block text-sm text-neutral-500 hover:text-neutral-900" href="/cenik.html">Ceník</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-white/60 hover:text-white" href="/cenik.html">Ceník</a>
       </div>
     </div>
 
     <div class="max-w-6xl mx-auto px-4 pb-10">
-      <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div class="text-xs text-neutral-500">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
+      <div class="rounded-3xl border border-white/10 bg-white/10 shadow-soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz – digitální ekosystém spoluprací.</div>
       </div>
     </div>
   </footer>
@@ -330,18 +321,18 @@
   <div id="modal" class="fixed inset-0 z-50 hidden">
     <div id="modalBackdrop" class="absolute inset-0 bg-black/60"></div>
     <div class="absolute inset-0 flex items-end sm:items-center justify-center p-3">
-      <div class="w-full sm:max-w-xl rounded-3xl border border-neutral-200 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.75)] overflow-hidden">
-        <div class="p-5 border-b border-neutral-200 flex items-center justify-between gap-3">
+      <div class="w-full sm:max-w-xl rounded-3xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.75)] overflow-hidden">
+        <div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <div class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 grid place-items-center">
+            <div class="h-10 w-10 rounded-2xl bg-white/10/10 border border-white/20 grid place-items-center">
               <i data-lucide="plus" class="h-5 w-5"></i>
             </div>
             <div>
               <div class="font-extrabold">Přidat příspěvek</div>
-              <div class="text-xs text-neutral-500">Demo ukládání do LocalStorage</div>
+              <div class="text-xs text-white/60">Demo ukládání do LocalStorage</div>
             </div>
           </div>
-          <button id="modalClose" class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition grid place-items-center" aria-label="Zavřít">
+          <button id="modalClose" class="h-10 w-10 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/10 transition grid place-items-center" aria-label="Zavřít">
             <i data-lucide="x" class="h-5 w-5"></i>
           </button>
         </div>
@@ -349,8 +340,8 @@
         <form id="postForm" class="p-5 grid gap-4" novalidate>
           <div class="grid sm:grid-cols-2 gap-3">
             <label class="grid gap-2">
-              <span class="text-sm text-neutral-600">Typ</span>
-              <select id="pType" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400">
+              <span class="text-sm text-white/70">Typ</span>
+              <select id="pType" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-fuchsia-400">
                 <option value="creator">Tvůrce</option>
                 <option value="brand">Značka</option>
                 <option value="campaign">Kampaň</option>
@@ -358,45 +349,45 @@
               </select>
             </label>
             <label class="grid gap-2">
-              <span class="text-sm text-neutral-600">Jméno / profil</span>
-              <input id="pAuthor" type="text" placeholder="Např. @lucy.fit / BrandXYZ" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required />
+              <span class="text-sm text-white/70">Jméno / profil</span>
+              <input id="pAuthor" type="text" placeholder="Např. @lucy.fit / BrandXYZ" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-fuchsia-400" required />
             </label>
           </div>
 
           <label class="grid gap-2">
-            <span class="text-sm text-neutral-600">Titulek</span>
-            <input id="pTitle" type="text" placeholder="Krátký titulek příspěvku" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required />
+            <span class="text-sm text-white/70">Titulek</span>
+            <input id="pTitle" type="text" placeholder="Krátký titulek příspěvku" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-fuchsia-400" required />
           </label>
 
           <label class="grid gap-2">
-            <span class="text-sm text-neutral-600">Text</span>
-            <textarea id="pText" rows="5" placeholder="Co je nového? Přidej #hashtagy…" class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" required></textarea>
+            <span class="text-sm text-white/70">Text</span>
+            <textarea id="pText" rows="5" placeholder="Co je nového? Přidej #hashtagy…" class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-fuchsia-400" required></textarea>
           </label>
 
           <label class="grid gap-2">
-            <span class="text-sm text-neutral-600">Obrázek URL (nepovinné)</span>
-            <input id="pImg" type="url" placeholder="https://..." class="w-full rounded-2xl bg-neutral-50 border border-neutral-200 px-4 py-3 outline-none focus:border-fuchsia-400" />
+            <span class="text-sm text-white/70">Obrázek URL (nepovinné)</span>
+            <input id="pImg" type="url" placeholder="https://..." class="w-full rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-3 outline-none focus:border-fuchsia-400" />
             <span class="text-xs text-neutral-400">Tip: později napojíme upload. Teď jen odkaz.</span>
           </label>
 
-          <div id="pErr" class="hidden rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-neutral-700">
+          <div id="pErr" class="hidden rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-white/90">
             <div class="flex items-start gap-2">
               <i data-lucide="alert-triangle" class="h-4 w-4 mt-0.5"></i>
               <div>
                 <div class="font-semibold">Zkontroluj formulář</div>
-                <div id="pErrTxt" class="text-neutral-600 mt-1">Doplň povinná pole.</div>
+                <div id="pErrTxt" class="text-white/70 mt-1">Doplň povinná pole.</div>
               </div>
             </div>
           </div>
 
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-            <div class="text-sm text-neutral-500">Příspěvek se uloží jen u tebe v prohlížeči.</div>
+            <div class="text-sm text-white/60">Příspěvek se uloží jen u tebe v prohlížeči.</div>
             <div class="flex gap-2">
-              <button type="button" id="pReset" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition">
+              <button type="button" id="pReset" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/10 transition">
                 <i data-lucide="trash-2" class="h-4 w-4"></i>
                 Vymazat
               </button>
-              <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+              <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/10 text-neutral-950 font-semibold hover:brightness-95 transition">
                 <i data-lucide="save" class="h-4 w-4"></i>
                 Uložit
               </button>
@@ -425,7 +416,7 @@
 
     // chips style
     document.querySelectorAll('.chip').forEach(ch => {
-      ch.classList.add('px-3','py-2','rounded-2xl','text-sm','border','border-neutral-200','bg-white shadow-soft','hover:bg-neutral-100','transition');
+      ch.classList.add('px-3','py-2','rounded-2xl','text-sm','border','border-white/10','bg-white/10 shadow-soft','hover:bg-white/10/10','transition');
     });
 
     // --- DATA ---
@@ -520,7 +511,7 @@
     }
 
     function typeBadge(type){
-      const common = 'text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600';
+      const common = 'text-xs px-2 py-1 rounded-full bg-white/10/10 border border-white/20 text-white/70';
       if(type==='creator') return `<span class="${common}">Tvůrce</span>`;
       if(type==='brand') return `<span class="${common}">Značka</span>`;
       if(type==='campaign') return `<span class="${common}">Kampaň</span>`;
@@ -548,11 +539,11 @@
         return `
           <button class="shrink-0 group text-left" data-story="${escapeHtml(s.name)}" title="Otevřít profil (demo)">
             <div class="h-14 w-14 rounded-2xl p-[1px] bg-gradient-to-br from-fuchsia-500 to-pink-500">
-              <div class="h-full w-full rounded-2xl bg-white border border-neutral-200 grid place-items-center">
-                <div class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 grid place-items-center font-extrabold">${escapeHtml(s.letter)}</div>
+              <div class="h-full w-full rounded-2xl bg-white/10 border border-white/10 grid place-items-center">
+                <div class="h-10 w-10 rounded-2xl bg-white/10/10 border border-white/20 grid place-items-center font-extrabold">${escapeHtml(s.letter)}</div>
               </div>
             </div>
-            <div class="mt-2 text-xs text-neutral-600 group-hover:text-neutral-900 truncate w-[72px]">${escapeHtml(s.name)}</div>
+            <div class="mt-2 text-xs text-white/70 group-hover:text-white truncate w-[72px]">${escapeHtml(s.name)}</div>
             <div class="text-[11px] text-white/45 truncate w-[72px]">#${escapeHtml(s.tag)}</div>
           </button>
         `;
@@ -564,7 +555,7 @@
     const tagList = ['#reels','#fitness','#beauty','#lifestyle','#tech','#travel','#unboxing','#report','#spoluprace','#brand'];
     function renderTags(){
       tagsEl.innerHTML = tagList.map(t => `
-        <button data-tag="${escapeHtml(t)}" class="px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-100 transition text-sm text-neutral-700">${escapeHtml(t)}</button>
+        <button data-tag="${escapeHtml(t)}" class="px-3 py-2 rounded-2xl bg-white/10/10 border border-white/20 hover:bg-white/10/10 transition text-sm text-white/90">${escapeHtml(t)}</button>
       `).join('');
     }
 
@@ -581,11 +572,11 @@
     function setChipActive(){
       document.querySelectorAll('[data-filter]').forEach(b => {
         const on = b.getAttribute('data-filter') === activeFilter;
-        b.classList.toggle('bg-white', on);
+        b.classList.toggle('bg-white/10', on);
         b.classList.toggle('text-neutral-950', on);
         b.classList.toggle('font-semibold', on);
-        if(on){ b.classList.remove('bg-white shadow-soft'); }
-        else { b.classList.add('bg-white shadow-soft'); b.classList.remove('text-neutral-950'); }
+        if(on){ b.classList.remove('bg-white/10 shadow-soft'); }
+        else { b.classList.add('bg-white/10 shadow-soft'); b.classList.remove('text-neutral-950'); }
       });
     }
 
@@ -637,34 +628,34 @@
         const likes = p.baseLikes + (p.userLiked ? 1 : 0);
         const when = timeAgo(p.createdAt);
         const imgHtml = p.img ? `
-          <div class="mt-4 overflow-hidden rounded-2xl border border-neutral-200 bg-black/20">
+          <div class="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
             <img src="${escapeHtml(p.img)}" alt="" class="w-full max-h-[420px] object-cover" loading="lazy" onerror="this.closest('div').remove()" />
           </div>
         ` : '';
 
         return `
-          <article class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
+          <article class="rounded-3xl border border-white/10 bg-white/10 shadow-soft p-6">
             <div class="flex items-start justify-between gap-4">
               <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
                   ${typeBadge(p.type)}
-                  <div class="inline-flex items-center gap-2 text-sm text-neutral-600">
-                    <span class="h-7 w-7 rounded-2xl bg-neutral-50 border border-neutral-200 grid place-items-center font-extrabold">${escapeHtml(String(p.author||'?').trim().slice(0,1).toUpperCase())}</span>
+                  <div class="inline-flex items-center gap-2 text-sm text-white/70">
+                    <span class="h-7 w-7 rounded-2xl bg-neutral-950/50 border border-white/10 grid place-items-center font-extrabold">${escapeHtml(String(p.author||'?').trim().slice(0,1).toUpperCase())}</span>
                     <span class="font-semibold text-white">${escapeHtml(p.author)}</span>
                   </div>
                   <span class="text-white/30">•</span>
                   <div class="text-xs text-neutral-400">${escapeHtml(when)}</div>
                 </div>
                 <h3 class="mt-3 font-extrabold text-lg leading-snug">${escapeHtml(p.title)}</h3>
-                <p class="text-neutral-600 mt-2 leading-relaxed">${linkifyHashtags(escapeHtml(p.text))}</p>
+                <p class="text-white/70 mt-2 leading-relaxed">${linkifyHashtags(escapeHtml(p.text))}</p>
                 ${imgHtml}
               </div>
 
               <div class="shrink-0 flex flex-col items-end gap-2">
-                <button class="saveBtn h-10 w-10 rounded-2xl border border-neutral-200 bg-white shadow-soft hover:bg-neutral-100 transition grid place-items-center" data-save="${escapeHtml(p.id)}" aria-label="Uložit">
+                <button class="saveBtn h-10 w-10 rounded-2xl border border-white/10 bg-white/10 shadow-soft hover:bg-white/10/10 transition grid place-items-center" data-save="${escapeHtml(p.id)}" aria-label="Uložit">
                   <i data-lucide="bookmark${p.userSaved ? '-check' : ''}" class="h-5 w-5"></i>
                 </button>
-                <button class="moreBtn h-10 w-10 rounded-2xl border border-neutral-200 bg-white shadow-soft hover:bg-neutral-100 transition grid place-items-center" data-more="${escapeHtml(p.id)}" aria-label="Více">
+                <button class="moreBtn h-10 w-10 rounded-2xl border border-white/10 bg-white/10 shadow-soft hover:bg-white/10/10 transition grid place-items-center" data-more="${escapeHtml(p.id)}" aria-label="Více">
                   <i data-lucide="more-vertical" class="h-5 w-5"></i>
                 </button>
               </div>
@@ -672,18 +663,18 @@
 
             <div class="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div class="flex items-center gap-2">
-                <button class="likeBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-neutral-200 ${p.userLiked ? 'bg-white text-neutral-950 font-semibold' : 'bg-white shadow-soft hover:bg-neutral-100'} transition" data-like="${escapeHtml(p.id)}">
+                <button class="likeBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 ${p.userLiked ? 'bg-white/10 text-neutral-950 font-semibold' : 'bg-white/10 shadow-soft hover:bg-white/10/10'} transition" data-like="${escapeHtml(p.id)}">
                   <i data-lucide="heart" class="h-4 w-4"></i>
                   <span>Líbí</span>
-                  <span class="text-xs ${p.userLiked ? 'text-neutral-950/70' : 'text-neutral-500'}">${likes}</span>
+                  <span class="text-xs ${p.userLiked ? 'text-neutral-950/70' : 'text-white/60'}">${likes}</span>
                 </button>
-                <button class="shareBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-neutral-200 bg-white shadow-soft hover:bg-neutral-100 transition" data-share="${escapeHtml(p.id)}">
+                <button class="shareBtn inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/10 shadow-soft hover:bg-white/10/10 transition" data-share="${escapeHtml(p.id)}">
                   <i data-lucide="share-2" class="h-4 w-4"></i>
                   Sdílet
                 </button>
               </div>
 
-              <div class="flex items-center gap-2 text-sm text-neutral-500">
+              <div class="flex items-center gap-2 text-sm text-white/60">
                 <i data-lucide="message-circle" class="h-4 w-4"></i>
                 <span>Komentáře: <span class="text-neutral-300">demo</span></span>
               </div>
@@ -691,7 +682,7 @@
           </article>
         `;
       }).join('') || `
-        <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-600">Nic nenalezeno. Zkus jiný filtr nebo hledání.</div>
+        <div class="rounded-3xl border border-white/10 bg-neutral-950/50 p-6 text-white/70">Nic nenalezeno. Zkus jiný filtr nebo hledání.</div>
       `;
 
       // hide load more if done
@@ -883,7 +874,7 @@
     const toastEl = document.createElement('div');
     toastEl.className = 'fixed left-1/2 -translate-x-1/2 bottom-4 z-[60] hidden';
     toastEl.innerHTML = `
-      <div class="rounded-2xl border border-neutral-200 bg-white backdrop-blur-xl px-4 py-3 text-sm text-white shadow-[0_20px_80px_rgba(0,0,0,0.6)] flex items-center gap-2">
+      <div class="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl px-4 py-3 text-sm text-white shadow-[0_20px_80px_rgba(0,0,0,0.6)] flex items-center gap-2">
         <i data-lucide="check" class="h-4 w-4"></i>
         <span id="toastTxt">Hotovo</span>
       </div>
