@@ -4916,6 +4916,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (isHidden) {
             settingsSubmenu.classList.remove('hidden');
             settingsChevron.style.transform = 'rotate(180deg)';
+            
+            // Scrolluj sidebar dolů, aby bylo vidět celé menu
+            setTimeout(() => {
+              const sidebar = document.querySelector('aside.sidebar, aside');
+              if (sidebar) {
+                settingsToggle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 100);
           } else {
             settingsSubmenu.classList.add('hidden');
             settingsChevron.style.transform = 'rotate(0deg)';
