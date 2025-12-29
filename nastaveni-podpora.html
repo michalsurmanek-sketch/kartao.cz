@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podpora & Nápověda - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shadow-soft {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* FAQ accordion styling */
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item.active {
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+        
+        .faq-chevron {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* File upload area */
+        .upload-area {
+            border: 2px dashed #d4d4d8;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area.dragover {
+            border-color: #d946ef;
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+        }
+
+        /* Contact method cards */
+        .contact-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Search highlight */
+        .search-highlight {
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-neutral-600 hover:text-neutral-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-neutral-900">Podpora & Nápověda</h1>
+                        <p class="text-sm text-neutral-600 mt-1">Jsme tu, abychom vám pomohli</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Zpět
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm text-neutral-600">
+            <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
+            <span>›</span>
+            <a href="index.html#nastaveni" class="hover:text-neutral-900">Nastavení</a>
+            <span>›</span>
+            <span class="text-neutral-900 font-medium">Podpora</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+        
+        <!-- Quick Help Search -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-neutral-900 mb-2">Jak vám můžeme pomoci?</h2>
+                    <p class="text-sm text-neutral-600">Vyhledejte v naší dokumentaci nebo nás kontaktujte</p>
+                </div>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="help-search"
+                        placeholder="Zadejte klíčová slova, např. 'jak přidat kredit' nebo 'resetovat heslo'"
+                        class="w-full px-6 py-4 pl-14 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent text-neutral-900"
+                    >
+                    <svg class="w-6 h-6 text-neutral-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <div id="search-results" class="hidden mt-4 p-4 bg-gradient-to-r from-fuchsia-50 to-pink-50 rounded-lg border border-fuchsia-200">
+                    <p class="text-sm text-neutral-600 mb-2">💡 Nalezené články:</p>
+                    <div class="space-y-2">
+                        <!-- Results will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Methods -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">📞</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Kontaktujte podporu</h2>
+                    <p class="text-sm text-neutral-600">Vyberte si nejpohodlnější způsob komunikace</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Live Chat -->
+                <div class="contact-card bg-gradient-to-br from-fuchsia-50 to-pink-50 rounded-xl p-6 border-2 border-fuchsia-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                            </svg>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center space-x-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span>ONLINE</span>
+                        </span>
+                    </div>
+                    <h3 class="font-bold text-neutral-900 mb-2">💬 Live Chat</h3>
+                    <p class="text-sm text-neutral-600 mb-4">Okamžitá odpověď od našeho týmu</p>
+                    <ul class="text-xs text-neutral-600 mb-4 space-y-1">
+                        <li>⚡ Průměrná doba odezvy: 2 min</li>
+                        <li>🕐 Dostupnost: Po-Pá 8:00-20:00</li>
+                        <li>💯 Nejrychlejší způsob pomoci</li>
+                    </ul>
+                    <button id="open-chat" class="w-full px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Spustit chat
+                    </button>
+                </div>
+
+                <!-- Email Support -->
+                <div class="contact-card bg-white rounded-xl p-6 border-2 border-neutral-200 hover:border-fuchsia-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs text-neutral-500">24h odezva</span>
+                    </div>
+                    <h3 class="font-bold text-neutral-900 mb-2">📧 E-mail</h3>
+                    <p class="text-sm text-neutral-600 mb-4">Detailní odpověď na složitější dotazy</p>
+                    <ul class="text-xs text-neutral-600 mb-4 space-y-1">
+                        <li>📨 podpora@kartao.cz</li>
+                        <li>🕐 Odpověď do 24 hodin</li>
+                        <li>📎 Možnost přiložit soubory</li>
+                    </ul>
+                    <a href="mailto:podpora@kartao.cz" class="block w-full px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 text-center rounded-lg transition-colors font-medium">
+                        Napsat e-mail
+                    </a>
+                </div>
+
+                <!-- Phone Support -->
+                <div class="contact-card bg-white rounded-xl p-6 border-2 border-neutral-200 hover:border-fuchsia-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                        </div>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">VIP</span>
+                    </div>
+                    <h3 class="font-bold text-neutral-900 mb-2">📞 Telefon</h3>
+                    <p class="text-sm text-neutral-600 mb-4">Pro VIP klienty a naléhavé případy</p>
+                    <ul class="text-xs text-neutral-600 mb-4 space-y-1">
+                        <li>☎️ +420 123 456 789</li>
+                        <li>🕐 Po-Pá 9:00-17:00</li>
+                        <li>⭐ Jen pro VIP členy</li>
+                    </ul>
+                    <a href="tel:+420123456789" class="block w-full px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 text-center rounded-lg transition-colors font-medium">
+                        Zavolat nyní
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-700 font-medium">💡 Tip pro rychlejší pomoc</p>
+                        <p class="text-sm text-blue-600 mt-1">Před kontaktováním podpory zkuste vyhledat řešení v našem FAQ nebo centru nápovědy níže.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">❓</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Často kladené otázky (FAQ)</h2>
+                    <p class="text-sm text-neutral-600">Odpovědi na nejčastější dotazy</p>
+                </div>
+            </div>
+
+            <!-- FAQ Categories -->
+            <div class="space-y-3">
+                <div class="border-b border-neutral-200 pb-3">
+                    <h3 class="font-bold text-neutral-900 mb-3 flex items-center space-x-2">
+                        <span>💰</span>
+                        <span>Kredity a platby</span>
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Jak mohu zakoupit kredity?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600">
+                                    Kredity můžete zakoupit přímo v aplikaci v sekci "Kredity". Klikněte na tlačítko "Koupit kredity", vyberte si balíček a dokončete platbu kartou nebo převodem. Kredity budou připsány okamžitě po zpracování platby.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Mají kredity dobu platnosti?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600">
+                                    Ne, zakoupené kredity nemají žádnou dobu platnosti a zůstávají na vašem účtu, dokud je nevyužijete. Kredity nepropadají ani při neaktivitě účtu.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Mohu dostat refundaci za nevyužité kredity?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600">
+                                    Nevyužité kredity bohužel nelze vrátit za peníze. V případě zrušení účtu budou kredity ztraceny, proto doporučujeme před smazáním účtu kredity využít.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-b border-neutral-200 pb-3">
+                    <h3 class="font-bold text-neutral-900 mb-3 flex items-center space-x-2">
+                        <span>👤</span>
+                        <span>Účet a zabezpečení</span>
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Jak si změním heslo?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600">
+                                    Přejděte do Nastavení → Zabezpečení → Změna hesla. Zadejte současné heslo a dvakrát nové heslo. Doporučujeme používat silné heslo s minimálně 8 znaky včetně čísel a speciálních znaků.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Jak aktivovat dvoufázové ověření (2FA)?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600 mb-2">
+                                    V sekci Nastavení → Zabezpečení najdete možnost 2FA. Můžete si vybrat z několika metod:
+                                </p>
+                                <ul class="text-sm text-neutral-600 space-y-1 ml-4">
+                                    <li>• SMS kódy na váš telefon</li>
+                                    <li>• E-mailové kódy</li>
+                                    <li>• Autentizační aplikace (Google Authenticator, Authy)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-b border-neutral-200 pb-3">
+                    <h3 class="font-bold text-neutral-900 mb-3 flex items-center space-x-2">
+                        <span>🎯</span>
+                        <span>Kampaně a spolupráce</span>
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Jak vytvořím novou kampaň?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600">
+                                    V hlavním menu klikněte na "Kampaně" → "Vytvořit kampaň". Vyplňte základní informace (název, rozpočet, cílová skupina), přidejte brief a publikujte kampaň. Tvůrci se k ní mohou následně přihlásit.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-neutral-900 mb-3 flex items-center space-x-2">
+                        <span>⚙️</span>
+                        <span>Technické problémy</span>
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <div class="faq-item border border-neutral-200 rounded-lg overflow-hidden">
+                            <button class="faq-question w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors">
+                                <span class="text-left font-medium text-neutral-900">Stránka se mi nenačítá, co mám dělat?</span>
+                                <svg class="faq-chevron w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="faq-answer px-4 pb-3">
+                                <p class="text-sm text-neutral-600 mb-2">Zkuste následující kroky:</p>
+                                <ol class="text-sm text-neutral-600 space-y-1 ml-4 list-decimal">
+                                    <li>Obnovte stránku (F5 nebo Ctrl+R)</li>
+                                    <li>Vymažte cache prohlížeče</li>
+                                    <li>Zkuste jiný prohlížeč</li>
+                                    <li>Zkontrolujte internetové připojení</li>
+                                    <li>Pokud problém přetrvává, kontaktujte podporu</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-neutral-200 text-center">
+                <p class="text-sm text-neutral-600 mb-3">Nenašli jste odpověď na svou otázku?</p>
+                <a href="#report-problem" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                    Položit vlastní dotaz →
+                </a>
+            </div>
+        </div>
+
+        <!-- Report Problem -->
+        <div id="report-problem" class="bg-white rounded-xl shadow-soft p-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🐛</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Nahlásit problém</h2>
+                    <p class="text-sm text-neutral-600">Popište chybu nebo problém, se kterým se setkáváte</p>
+                </div>
+            </div>
+
+            <form id="report-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Typ problému *</label>
+                        <select class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent" required>
+                            <option value="">Vyberte typ problému</option>
+                            <option value="bug">🐛 Technická chyba / Bug</option>
+                            <option value="payment">💳 Problém s platbou</option>
+                            <option value="account">👤 Problém s účtem</option>
+                            <option value="campaign">🎯 Problém s kampaní</option>
+                            <option value="credits">💰 Problém s kredity</option>
+                            <option value="performance">⚡ Výkon / Rychlost</option>
+                            <option value="other">📝 Jiné</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Priorita</label>
+                        <select class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                            <option value="low">🟢 Nízká - Běžný dotaz</option>
+                            <option value="medium" selected>🟡 Střední - Potřebuji pomoc</option>
+                            <option value="high">🔴 Vysoká - Naléhavý problém</option>
+                            <option value="critical">🚨 Kritická - Nemohu používat službu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Předmět *</label>
+                    <input 
+                        type="text" 
+                        placeholder="Stručný popis problému"
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Podrobný popis *</label>
+                    <textarea 
+                        rows="6"
+                        placeholder="Popište co nejpodrobněji, co se stalo, jakou chybu vidíte, co jste dělali před tím..."
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent resize-none"
+                        required
+                    ></textarea>
+                    <p class="text-xs text-neutral-500 mt-1">💡 Tip: Čím podrobnější popis, tím rychleji vám pomůžeme</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Technické informace (volitelné)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input 
+                            type="text" 
+                            placeholder="Prohlížeč (např. Chrome 120)"
+                            class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm"
+                        >
+                        <input 
+                            type="text" 
+                            placeholder="Operační systém (např. Windows 11)"
+                            class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm"
+                        >
+                        <input 
+                            type="text" 
+                            placeholder="Zařízení (např. Desktop)"
+                            class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm"
+                        >
+                    </div>
+                </div>
+
+                <!-- File Upload Area -->
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Screenshots / Soubory</label>
+                    <div class="upload-area rounded-lg p-8 text-center cursor-pointer">
+                        <input type="file" id="file-upload" multiple accept="image/*,.pdf,.doc,.docx" class="hidden">
+                        <div class="space-y-2">
+                            <svg class="w-12 h-12 text-neutral-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="text-sm font-medium text-neutral-900">Přetáhněte soubory sem nebo klikněte pro výběr</p>
+                            <p class="text-xs text-neutral-500">PNG, JPG, PDF (max. 10 MB)</p>
+                        </div>
+                    </div>
+                    <div id="file-list" class="mt-3 space-y-2">
+                        <!-- Uploaded files will appear here -->
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-blue-700 font-medium">📸 Tip pro rychlejší řešení</p>
+                            <p class="text-sm text-blue-600 mt-1">Přiložte screenshot chyby nebo obrazovky, kde problém nastává. Výrazně to urychlí diagnostiku.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 pt-4 border-t border-neutral-200">
+                    <input type="checkbox" id="copy-email" class="w-4 h-4 text-fuchsia-500 focus:ring-fuchsia-500 rounded">
+                    <label for="copy-email" class="text-sm text-neutral-600">
+                        Poslat mi kopii hlášení na e-mail
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3">
+                    <button type="button" class="px-6 py-3 text-neutral-600 hover:text-neutral-900 transition-colors">
+                        Zrušit
+                    </button>
+                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Odeslat hlášení
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Help search functionality
+        const helpSearch = document.getElementById('help-search');
+        const searchResults = document.getElementById('search-results');
+
+        helpSearch.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            
+            if (query.length > 2) {
+                searchResults.classList.remove('hidden');
+                // Simulate search results
+                const results = [
+                    { title: 'Jak mohu zakoupit kredity?', category: 'Kredity', url: '#' },
+                    { title: 'Změna hesla', category: 'Zabezpečení', url: '#' },
+                    { title: 'Aktivace dvoufázového ověření', category: 'Zabezpečení', url: '#' }
+                ];
+                
+                const resultsHTML = results.map(r => `
+                    <a href="${r.url}" class="block p-2 hover:bg-white rounded text-sm">
+                        <span class="text-neutral-900 font-medium">${r.title}</span>
+                        <span class="text-neutral-500 text-xs ml-2">${r.category}</span>
+                    </a>
+                `).join('');
+                
+                searchResults.querySelector('div').innerHTML = resultsHTML;
+            } else {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // FAQ accordion
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const item = this.closest('.faq-item');
+                const wasActive = item.classList.contains('active');
+                
+                // Close all items
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                
+                // Open clicked item if it wasn't active
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Open chat
+        document.getElementById('open-chat').addEventListener('click', function() {
+            alert('Live chat se otevírá...\n\nV produkční verzi by se zde otevřelo okno s live chatem (např. Intercom, Tawk.to, nebo vlastní řešení).');
+            console.log('Opening live chat...');
+        });
+
+        // File upload
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('file-upload');
+        const fileList = document.getElementById('file-list');
+        let uploadedFiles = [];
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`Soubor ${file.name} je příliš velký (max. 10 MB)`);
+                    return;
+                }
+                
+                uploadedFiles.push(file);
+                addFileToList(file);
+            });
+        }
+
+        function addFileToList(file) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'flex items-center justify-between p-3 bg-neutral-50 rounded-lg';
+            fileItem.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <svg class="w-5 h-5 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-neutral-900">${file.name}</p>
+                        <p class="text-xs text-neutral-500">${(file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                </div>
+                <button type="button" class="text-red-500 hover:text-red-700 transition-colors" onclick="this.parentElement.remove()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            `;
+            fileList.appendChild(fileItem);
+        }
+
+        // Form submission
+        document.getElementById('report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            console.log('Submitting problem report...');
+            
+            // Show success message
+            alert('✅ Hlášení problému bylo odesláno!\n\nNáš tým vás bude kontaktovat do 24 hodin.\n\nČíslo tiket: #' + Math.floor(Math.random() * 100000));
+            
+            // Reset form
+            this.reset();
+            fileList.innerHTML = '';
+            uploadedFiles = [];
+        });
+    </script>
+
+</body>
+</html>
