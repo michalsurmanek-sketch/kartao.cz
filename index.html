@@ -806,6 +806,19 @@ document.addEventListener('DOMContentLoaded', () => {
               </a>
             </div>
           </div>
+
+          <div id="guestQuickActions" class="pt-4 hidden">
+            <div class="px-3 text-xs font-semibold text-white/40 uppercase tracking-wider">Rychlé akce</div>
+            <div class="mt-2 space-y-2">
+              <a href="login.html" class="w-full flex items-center justify-between px-3 py-2 rounded-2xl border border-white/10 hover:bg-white/5 transition">
+                <span class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i data-lucide="user-plus" class="w-5 h-5"></i></span>
+                  <span class="font-semibold">Registrace</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-white/50"></i>
+              </a>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -5442,13 +5455,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- Dynamická změna podle role (TVŮJ KÓD) -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Role je určující, email nerozhoduje
-      let role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
-      // Pokud je role v sessionStorage, synchronizuj ji do localStorage
-      if (sessionStorage.getItem('kartaoRole')) {
-        localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
-        role = sessionStorage.getItem('kartaoRole');
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Kontrola přihlášení
+      let isLoggedIn = false;
+      let role = 'guest';
+      
+      try {
+        if (window.supabaseClient) {
+          const { data: { user } } = await window.supabaseClient.auth.getUser();
+          if (user) {
+            isLoggedIn = true;
+            role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
+            // Pokud je role v sessionStorage, synchronizuj ji do localStorage
+            if (sessionStorage.getItem('kartaoRole')) {
+              localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
+              role = sessionStorage.getItem('kartaoRole');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Chyba při kontrole přihlášení:', error);
       }
 
       const linkEl = document.getElementById('userCardLink');
@@ -5456,74 +5482,81 @@ document.addEventListener('DOMContentLoaded', () => {
       const subtitleEl = document.getElementById('userCardSubtitle');
       const iconEl = document.getElementById('userCardIcon');
 
-      if (!linkEl || !titleEl || !subtitleEl || !iconEl) return;
-
-      if (role === 'firma') {
-        titleEl.textContent = 'Moje firma';
-        subtitleEl.textContent = 'Firemní profil & správa';
-        linkEl.href = 'moje-firma.html';
-        iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
-        if (window.lucide?.createIcons) window.lucide.createIcons();
-      } else {
-        titleEl.textContent = 'Moje karta';
-        subtitleEl.textContent = 'Profil & ovládání účtu';
-        linkEl.href = 'moje-karta.html';
-        iconEl.innerHTML = '<i data-lucide="id-card" class="w-4 h-4"></i>';
-        if (window.lucide?.createIcons) window.lucide.createIcons();
-      }
-
-      // Zobrazit sekci "Rychlé akce" pouze pro firmy
-      const quickActionsEl = document.getElementById('companyQuickActions');
-      if (quickActionsEl) {
+      if (linkEl && titleEl && subtitleEl && iconEl) {
         if (role === 'firma') {
-          quickActionsEl.classList.remove('hidden');
+          titleEl.textContent = 'Moje firma';
+          subtitleEl.textContent = 'Firemní profil & správa';
+          linkEl.href = 'moje-firma.html';
+          iconEl.innerHTML = '<i data-lucide="building-2" class="w-4 h-4"></i>';
+          if (window.lucide?.createIcons) window.lucide.createIcons();
         } else {
-          quickActionsEl.classList.add('hidden');
+          titleEl.textContent = 'Moje karta';
+          subtitleEl.textContent = 'Profil & ovládání účtu';
+          linkEl.href = 'moje-karta.html';
+          iconEl.innerHTML = '<i data-lucide="id-card" class="w-4 h-4"></i>';
+          if (window.lucide?.createIcons) window.lucide.createIcons();
         }
       }
 
-      // Zobrazit sekci "Rychlé akce" pro tvůrce a zkontrolovat, jestli má kartu
+      // Zobrazit správnou sekci "Rychlé akce" podle role
+      const companyQuickActionsEl = document.getElementById('companyQuickActions');
       const creatorQuickActionsEl = document.getElementById('creatorQuickActions');
-      if (creatorQuickActionsEl && (role === 'creator' || role === 'influencer')) {
-        creatorQuickActionsEl.classList.remove('hidden');
-        
-        // Zkontrolovat, jestli už má tvůrce kartu
-        (async () => {
+      const guestQuickActionsEl = document.getElementById('guestQuickActions');
+
+      // Skrýt všechny sekce
+      if (companyQuickActionsEl) companyQuickActionsEl.classList.add('hidden');
+      if (creatorQuickActionsEl) creatorQuickActionsEl.classList.add('hidden');
+      if (guestQuickActionsEl) guestQuickActionsEl.classList.add('hidden');
+
+      if (!isLoggedIn) {
+        // Není přihlášen - zobrazit registraci
+        if (guestQuickActionsEl) {
+          guestQuickActionsEl.classList.remove('hidden');
+        }
+      } else if (role === 'firma') {
+        // Firma - zobrazit "Zadat kampaň" a "Uložené"
+        if (companyQuickActionsEl) {
+          companyQuickActionsEl.classList.remove('hidden');
+        }
+      } else if (role === 'creator' || role === 'influencer') {
+        // Tvůrce - zobrazit "Založit/Upravit kartu"
+        if (creatorQuickActionsEl) {
+          creatorQuickActionsEl.classList.remove('hidden');
+          
+          // Zkontrolovat, jestli už má tvůrce kartu
           try {
-            if (!window.supabaseClient) return;
-            
-            const { data: { user } } = await window.supabaseClient.auth.getUser();
-            if (!user) return;
+            if (window.supabaseClient) {
+              const { data: { user } } = await window.supabaseClient.auth.getUser();
+              if (user) {
+                const { data: creatorCard } = await window.supabaseClient
+                  .from('creators')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .maybeSingle();
 
-            const { data: creatorCard } = await window.supabaseClient
-              .from('creators')
-              .select('id')
-              .eq('user_id', user.id)
-              .maybeSingle();
+                const cardActionEl = document.getElementById('creatorCardAction');
+                const cardTextEl = document.getElementById('creatorCardText');
+                const cardIconEl = document.getElementById('creatorCardIcon');
 
-            const cardActionEl = document.getElementById('creatorCardAction');
-            const cardTextEl = document.getElementById('creatorCardText');
-            const cardIconEl = document.getElementById('creatorCardIcon');
-
-            if (creatorCard) {
-              // Má kartu - zobrazit "Upravit kartu"
-              cardTextEl.textContent = 'Upravit kartu';
-              cardActionEl.href = 'moje-karta.html';
-              cardIconEl.setAttribute('data-lucide', 'edit');
-            } else {
-              // Nemá kartu - zobrazit "Založit kartu"
-              cardTextEl.textContent = 'Založit kartu';
-              cardActionEl.href = 'moje-karta.html';
-              cardIconEl.setAttribute('data-lucide', 'sparkles');
+                if (creatorCard) {
+                  // Má kartu - zobrazit "Upravit kartu"
+                  cardTextEl.textContent = 'Upravit kartu';
+                  cardActionEl.href = 'moje-karta.html';
+                  cardIconEl.setAttribute('data-lucide', 'edit');
+                } else {
+                  // Nemá kartu - zobrazit "Založit kartu"
+                  cardTextEl.textContent = 'Založit kartu';
+                  cardActionEl.href = 'moje-karta.html';
+                  cardIconEl.setAttribute('data-lucide', 'sparkles');
+                }
+                
+                if (window.lucide?.createIcons) window.lucide.createIcons();
+              }
             }
-            
-            if (window.lucide?.createIcons) window.lucide.createIcons();
           } catch (error) {
             console.error('Chyba při kontrole karty tvůrce:', error);
           }
-        })();
-      } else if (creatorQuickActionsEl) {
-        creatorQuickActionsEl.classList.add('hidden');
+        }
       }
     });
   </script>
