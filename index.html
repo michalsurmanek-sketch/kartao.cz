@@ -627,10 +627,38 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i data-lucide="home" class="w-5 h-5"></i></span>
             <span class="font-semibold">Domů</span>
           </a>
-          <a class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20" href="#">
-            <span class="w-9 h-9 rounded-2xl bg-fuchsia-500/20 grid place-items-center text-fuchsia-400"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
-            <span class="font-semibold">Marketplace</span>
-          </a>
+          
+          <!-- MARKETPLACE S SUBMENU -->
+          <div class="marketplace-menu">
+            <button id="marketplace-toggle" class="w-full flex items-center gap-3 px-3 py-2 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 hover:bg-fuchsia-500/15 transition">
+              <span class="w-9 h-9 rounded-2xl bg-fuchsia-500/20 grid place-items-center text-fuchsia-400"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+              <span class="font-semibold flex-1 text-left">Marketplace</span>
+              <i id="marketplace-chevron" data-lucide="chevron-down" class="w-5 h-5 text-white/50 transition-transform"></i>
+            </button>
+            
+            <!-- Submenu -->
+            <div id="marketplace-submenu" class="hidden pl-12 pr-3 mt-1 space-y-1">
+              <a href="kartao-marketplace.html?filter=companies" class="block px-3 py-2 rounded-xl hover:bg-white/5 text-sm transition">
+                <span class="flex items-center gap-2">
+                  <i data-lucide="building-2" class="w-4 h-4"></i>
+                  Tržiště firem
+                </span>
+              </a>
+              <a href="kartao-marketplace.html?filter=creators" class="block px-3 py-2 rounded-xl hover:bg-white/5 text-sm transition">
+                <span class="flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                  Tržiště tvůrců
+                </span>
+              </a>
+              <a href="kartao-marketplace.html?filter=products" class="block px-3 py-2 rounded-xl hover:bg-white/5 text-sm transition">
+                <span class="flex items-center gap-2">
+                  <i data-lucide="package" class="w-4 h-4"></i>
+                  Tržiště produktů
+                </span>
+              </a>
+            </div>
+          </div>
+          
           <a class="flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-white/5" href="#">
             <span class="w-9 h-9 rounded-2xl bg-white/10 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5"></i></span>
             <span class="font-semibold">Chat</span>
@@ -4630,6 +4658,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
       syncInputsFromState();
       writeQS();
+      
+      // ==========================================
+      // MARKETPLACE TOGGLE MENU
+      // ==========================================
+      const marketplaceToggle = document.getElementById('marketplace-toggle');
+      const marketplaceSubmenu = document.getElementById('marketplace-submenu');
+      const marketplaceChevron = document.getElementById('marketplace-chevron');
+      
+      if (marketplaceToggle && marketplaceSubmenu && marketplaceChevron) {
+        marketplaceToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          // Toggle zobrazení submenu
+          const isHidden = marketplaceSubmenu.classList.contains('hidden');
+          
+          if (isHidden) {
+            marketplaceSubmenu.classList.remove('hidden');
+            marketplaceChevron.style.transform = 'rotate(180deg)';
+          } else {
+            marketplaceSubmenu.classList.add('hidden');
+            marketplaceChevron.style.transform = 'rotate(0deg)';
+          }
+        });
+      }
       
       // ==========================================
       // DŮLEŽITÉ: Event listeners MUSÍ být PŘED await loadAllCreators()
