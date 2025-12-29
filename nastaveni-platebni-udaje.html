@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platební údaje - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shadow-soft {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Credit card styling */
+        .credit-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .credit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .credit-card.primary {
+            background: linear-gradient(135deg, #d946ef 0%, #ec4899 100%);
+        }
+        
+        /* Radio button for default card */
+        .radio-card {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .radio-card:checked {
+            border-color: white;
+            background: white;
+        }
+        
+        .radio-card:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #d946ef;
+            border-radius: 50%;
+        }
+        
+        /* Transaction row hover */
+        .transaction-row {
+            transition: all 0.2s ease;
+        }
+        
+        .transaction-row:hover {
+            background: #fafafa;
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-neutral-600 hover:text-neutral-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-neutral-900">Platební údaje</h1>
+                        <p class="text-sm text-neutral-600 mt-1">Spravujte platební metody a fakturační údaje</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Zpět
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm text-neutral-600">
+            <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
+            <span>›</span>
+            <a href="index.html#nastaveni" class="hover:text-neutral-900">Nastavení</a>
+            <span>›</span>
+            <span class="text-neutral-900 font-medium">Platební údaje</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+        
+        <!-- Payment Cards Management -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <span class="text-xl">💳</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-neutral-900">Platební karty</h2>
+                        <p class="text-sm text-neutral-600">Spravujte své platební metody</p>
+                    </div>
+                </div>
+                <button id="add-card-btn" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                    + Přidat kartu
+                </button>
+            </div>
+            
+            <!-- Saved Cards -->
+            <div class="space-y-4">
+                <!-- Primary Card -->
+                <div class="credit-card primary rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center space-x-2">
+                                <input type="radio" name="default-card" class="radio-card" checked>
+                                <span class="text-sm font-medium">Výchozí karta</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-white/20 rounded text-xs font-medium">VISA</span>
+                                <button class="text-white/80 hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-2xl font-mono tracking-wider">•••• •••• •••• 4242</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-white/70 mb-1">Držitel karty</p>
+                                <p class="font-medium">Jan Novák</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-white/70 mb-1">Platnost</p>
+                                <p class="font-medium">12/26</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Card -->
+                <div class="credit-card rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center space-x-2">
+                                <input type="radio" name="default-card" class="radio-card">
+                                <span class="text-sm font-medium text-white/80">Nastavit jako výchozí</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-white/20 rounded text-xs font-medium">MASTERCARD</span>
+                                <button class="text-white/80 hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-2xl font-mono tracking-wider">•••• •••• •••• 8888</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-white/70 mb-1">Držitel karty</p>
+                                <p class="font-medium">Jan Novák</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-white/70 mb-1">Platnost</p>
+                                <p class="font-medium">09/27</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Card Form (Hidden by default) -->
+            <div id="add-card-form" class="hidden mt-6 p-6 bg-gradient-to-br from-fuchsia-50 to-pink-50 rounded-xl border-2 border-dashed border-fuchsia-300">
+                <h3 class="text-lg font-bold text-neutral-900 mb-4">Přidat novou kartu</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Číslo karty</label>
+                        <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Jméno na kartě</label>
+                        <input type="text" placeholder="Jan Novák" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Platnost (MM/RR)</label>
+                        <input type="text" placeholder="12/26" maxlength="5" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">CVV</label>
+                        <input type="text" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="flex items-center justify-end space-x-3 mt-6">
+                    <button id="cancel-card-btn" class="px-4 py-2 text-neutral-600 hover:text-neutral-900 transition-colors">
+                        Zrušit
+                    </button>
+                    <button class="px-6 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Přidat kartu
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-700 font-medium">🔒 Bezpečné platby</p>
+                        <p class="text-sm text-blue-600 mt-1">Všechny platební údaje jsou šifrovány a chráněny podle PCI DSS standardů</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Information -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🧾</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Fakturační údaje</h2>
+                    <p class="text-sm text-neutral-600">Údaje pro vystavování faktur</p>
+                </div>
+            </div>
+            
+            <form class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">
+                            Typ plátce
+                        </label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="payer-type" value="individual" checked class="w-4 h-4 text-fuchsia-500 focus:ring-fuchsia-500">
+                                <span class="text-neutral-900">Fyzická osoba</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="payer-type" value="company" class="w-4 h-4 text-fuchsia-500 focus:ring-fuchsia-500">
+                                <span class="text-neutral-900">Firma</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Jméno / Název firmy *</label>
+                        <input type="text" value="Jan Novák" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Příjmení (pro FO)</label>
+                        <input type="text" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">IČO</label>
+                        <input type="text" placeholder="12345678" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">DIČ</label>
+                        <input type="text" placeholder="CZ12345678" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Ulice a číslo popisné *</label>
+                        <input type="text" placeholder="Václavské náměstí 1" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Město *</label>
+                        <input type="text" placeholder="Praha" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">PSČ *</label>
+                        <input type="text" placeholder="110 00" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Země *</label>
+                        <select class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                            <option value="CZ" selected>Česká republika</option>
+                            <option value="SK">Slovensko</option>
+                            <option value="PL">Polsko</option>
+                            <option value="DE">Německo</option>
+                            <option value="AT">Rakousko</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-neutral-200">
+                    <button type="button" class="px-4 py-2 text-neutral-600 hover:text-neutral-900 transition-colors">
+                        Zrušit změny
+                    </button>
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Uložit fakturační údaje
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Payment History -->
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <span class="text-xl">📊</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-neutral-900">Platební historie</h2>
+                        <p class="text-sm text-neutral-600">Přehled vašich transakcí</p>
+                    </div>
+                </div>
+                <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium">
+                    Exportovat PDF
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-3 mb-6 pb-6 border-b border-neutral-200">
+                <select class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm">
+                    <option>Všechny transakce</option>
+                    <option>Platby kreditů</option>
+                    <option>Předplatné</option>
+                    <option>Jednorázové</option>
+                </select>
+                <select class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm">
+                    <option>Posledních 30 dní</option>
+                    <option>Posledních 90 dní</option>
+                    <option>Poslední rok</option>
+                    <option>Vše</option>
+                </select>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-neutral-200">
+                            <th class="text-left py-3 px-4 text-sm font-medium text-neutral-600">Datum</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-neutral-600">Popis</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-neutral-600">Metoda</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-neutral-600">Stav</th>
+                            <th class="text-right py-3 px-4 text-sm font-medium text-neutral-600">Částka</th>
+                            <th class="text-center py-3 px-4 text-sm font-medium text-neutral-600">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100">
+                        <tr class="transaction-row">
+                            <td class="py-4 px-4 text-sm text-neutral-900">28.12.2024</td>
+                            <td class="py-4 px-4">
+                                <p class="text-sm font-medium text-neutral-900">Nákup kreditů</p>
+                                <p class="text-xs text-neutral-500">500 kreditů</p>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">VISA</span>
+                                    </div>
+                                    <span class="text-sm text-neutral-600">••42</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Zaplaceno</span>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <p class="text-sm font-bold text-neutral-900">1 250 Kč</p>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <button class="text-fuchsia-500 hover:text-fuchsia-700 text-sm font-medium">
+                                    Faktura ↓
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="transaction-row">
+                            <td class="py-4 px-4 text-sm text-neutral-900">15.12.2024</td>
+                            <td class="py-4 px-4">
+                                <p class="text-sm font-medium text-neutral-900">VIP předplatné</p>
+                                <p class="text-xs text-neutral-500">Měsíční poplatek</p>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-5 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">MC</span>
+                                    </div>
+                                    <span class="text-sm text-neutral-600">••88</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Zaplaceno</span>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <p class="text-sm font-bold text-neutral-900">990 Kč</p>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <button class="text-fuchsia-500 hover:text-fuchsia-700 text-sm font-medium">
+                                    Faktura ↓
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="transaction-row">
+                            <td class="py-4 px-4 text-sm text-neutral-900">01.12.2024</td>
+                            <td class="py-4 px-4">
+                                <p class="text-sm font-medium text-neutral-900">Nákup kreditů</p>
+                                <p class="text-xs text-neutral-500">200 kreditů</p>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">VISA</span>
+                                    </div>
+                                    <span class="text-sm text-neutral-600">••42</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Zaplaceno</span>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <p class="text-sm font-bold text-neutral-900">500 Kč</p>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <button class="text-fuchsia-500 hover:text-fuchsia-700 text-sm font-medium">
+                                    Faktura ↓
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="transaction-row">
+                            <td class="py-4 px-4 text-sm text-neutral-900">20.11.2024</td>
+                            <td class="py-4 px-4">
+                                <p class="text-sm font-medium text-neutral-900">Platba zamítnuta</p>
+                                <p class="text-xs text-neutral-500">Nedostatek prostředků</p>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-5 bg-gradient-to-r from-orange-500 to-red-500 rounded flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">MC</span>
+                                    </div>
+                                    <span class="text-sm text-neutral-600">••88</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">Zamítnuto</span>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <p class="text-sm font-bold text-neutral-900">750 Kč</p>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <button class="text-neutral-400 text-sm font-medium cursor-not-allowed">
+                                    —
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="transaction-row">
+                            <td class="py-4 px-4 text-sm text-neutral-900">15.11.2024</td>
+                            <td class="py-4 px-4">
+                                <p class="text-sm font-medium text-neutral-900">VIP předplatné</p>
+                                <p class="text-xs text-neutral-500">Měsíční poplatek</p>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">VISA</span>
+                                    </div>
+                                    <span class="text-sm text-neutral-600">••42</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Zaplaceno</span>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <p class="text-sm font-bold text-neutral-900">990 Kč</p>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <button class="text-fuchsia-500 hover:text-fuchsia-700 text-sm font-medium">
+                                    Faktura ↓
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-6 pt-6 border-t border-neutral-200">
+                <p class="text-sm text-neutral-600">Zobrazeno 5 z 24 transakcí</p>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 border border-neutral-300 rounded text-neutral-400 cursor-not-allowed">
+                        ← Předchozí
+                    </button>
+                    <button class="px-3 py-1 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded hover:shadow-lg transition-shadow">
+                        Další →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Add card form toggle
+        const addCardBtn = document.getElementById('add-card-btn');
+        const cancelCardBtn = document.getElementById('cancel-card-btn');
+        const addCardForm = document.getElementById('add-card-form');
+
+        addCardBtn.addEventListener('click', () => {
+            addCardForm.classList.remove('hidden');
+            addCardForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        cancelCardBtn.addEventListener('click', () => {
+            addCardForm.classList.add('hidden');
+        });
+
+        // Card number formatting
+        const cardNumberInput = document.querySelector('input[placeholder="1234 5678 9012 3456"]');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
+        }
+
+        // Expiry date formatting
+        const expiryInput = document.querySelector('input[placeholder="12/26"]');
+        if (expiryInput) {
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // Default card radio selection
+        const radioCards = document.querySelectorAll('input[name="default-card"]');
+        radioCards.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    const cardElement = this.closest('.credit-card');
+                    document.querySelectorAll('.credit-card').forEach(card => {
+                        card.classList.remove('primary');
+                    });
+                    cardElement.classList.add('primary');
+                    console.log('Default card changed');
+                }
+            });
+        });
+
+        // Payer type toggle
+        const payerTypeRadios = document.querySelectorAll('input[name="payer-type"]');
+        payerTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                console.log('Payer type:', this.value);
+                // Here you could show/hide fields based on payer type
+            });
+        });
+
+        // Form submission
+        const billingForm = document.querySelector('form');
+        billingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Saving billing information...');
+            alert('Fakturační údaje uloženy!');
+        });
+
+        // Export PDF
+        const exportBtn = document.querySelector('button:contains("Exportovat PDF")');
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.includes('Exportovat PDF')) {
+                btn.addEventListener('click', () => {
+                    console.log('Exporting payment history to PDF...');
+                    alert('Export platební historie do PDF');
+                });
+            }
+        });
+
+        // Invoice download
+        const invoiceButtons = document.querySelectorAll('button[class*="Faktura"]');
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.includes('Faktura')) {
+                btn.addEventListener('click', () => {
+                    console.log('Downloading invoice...');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
