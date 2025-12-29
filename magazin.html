@@ -32,46 +32,46 @@
     .line-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   </style>
 </head>
-<body class="min-h-screen bg-neutral-950 text-white selection:bg-fuchsia-400/30 selection:text-white">
+<body class="min-h-screen bg-white text-neutral-900 selection:bg-fuchsia-400/30 selection:text-fuchsia-900">
 
   <!-- dekor pozadí -->
   <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
-    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-500/15 blur-[100px]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.14),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.11),transparent_45%)]"></div>
-    <div class="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:38px_38px]"></div>
+    <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-100 blur-[100px]"></div>
+    <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-100 blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.03),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.03),transparent_45%)]"></div>
+    <div class="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:38px_38px]"></div>
   </div>
 
   <!-- HEADER / NAV (sjednocený) -->
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/85 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
 
       <a href="/index.html" class="group inline-flex items-center gap-2">
-        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-600/30 to-amber-500/20 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset]">
-          <i data-lucide="sparkles" class="h-5 w-5"></i>
+        <span class="grid place-items-center h-9 w-9 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-500 shadow-sm">
+          <i data-lucide="sparkles" class="h-5 w-5 text-white"></i>
         </span>
-        <span class="font-extrabold tracking-tight text-lg">Kartao.cz</span>
-        <span class="hidden sm:inline text-xs text-white/60 group-hover:text-white/80 transition">magazín</span>
+        <span class="font-extrabold tracking-tight text-lg bg-gradient-to-r from-fuchsia-500 to-pink-500 bg-clip-text text-transparent">Kartao.cz</span>
+        <span class="hidden sm:inline text-xs text-neutral-600 group-hover:text-neutral-900 transition">magazín</span>
       </a>
 
       <nav class="hidden lg:flex items-center gap-2 text-sm">
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/index.html">Marketplace</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/feed.html">Feed</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kampane.html">Kampaně</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/chat.html">Chat</a>
-        <a class="px-3 py-2 rounded-2xl bg-white/5 border border-white/10" href="/magazin.html">Magazín</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kartao-o-nas.html">O nás</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/kontakt.html">Kontakt</a>
-        <a class="px-3 py-2 rounded-2xl hover:bg-white/5 text-white/80 hover:text-white transition" href="/leaderboards-dashboard.html">Leaderboards</a>
-        <a class="px-3 py-2 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition" href="/vip.html">VIP</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/index.html">Marketplace</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/feed.html">Feed</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/kampane.html">Kampaně</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/chat.html">Chat</a>
+        <a class="px-3 py-2 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 font-medium" href="/magazin.html">Magazín</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/kartao-o-nas.html">O nás</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/kontakt.html">Kontakt</a>
+        <a class="px-3 py-2 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition" href="/leaderboards-dashboard.html">Leaderboards</a>
+        <a class="px-3 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white hover:brightness-110 transition" href="/vip.html">VIP</a>
       </nav>
 
       <div class="flex items-center gap-2">
-        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+        <a href="/login.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-100 border border-neutral-200 hover:bg-neutral-200 transition">
           <i data-lucide="log-in" class="h-4 w-4"></i>
           <span class="text-sm">Přihlásit se</span>
         </a>
-        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" aria-label="Otevřít menu" aria-expanded="false">
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-full bg-neutral-100 border border-neutral-200 hover:bg-neutral-200 transition" aria-label="Otevřít menu" aria-expanded="false">
           <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
       </div>
@@ -80,18 +80,18 @@
 
     <div id="mobileMenu" class="lg:hidden hidden">
       <div class="max-w-6xl mx-auto px-4 pb-4">
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/85 backdrop-blur-xl p-3">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-lg p-3">
           <div class="grid gap-1 text-sm">
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/index.html">Marketplace</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/feed.html">Feed</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kampane.html">Kampaně</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/chat.html">Chat</a>
-            <a class="px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/magazin.html">Magazín</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kartao-o-nas.html">O nás</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/kontakt.html">Kontakt</a>
-            <a class="px-3 py-3 rounded-2xl hover:bg-white/5" href="/leaderboards-dashboard.html">Leaderboards</a>
-            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10" href="/vip.html">VIP</a>
-            <a class="mt-2 px-3 py-3 rounded-2xl bg-white/5 border border-white/10" href="/login.html">Přihlásit se</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/index.html">Marketplace</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/feed.html">Feed</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/kampane.html">Kampaně</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/chat.html">Chat</a>
+            <a class="px-3 py-3 rounded-2xl bg-neutral-100 border border-neutral-200 font-medium" href="/magazin.html">Magazín</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/kartao-o-nas.html">O nás</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/kontakt.html">Kontakt</a>
+            <a class="px-3 py-3 rounded-2xl hover:bg-neutral-100" href="/leaderboards-dashboard.html">Leaderboards</a>
+            <a class="px-3 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white" href="/vip.html">VIP</a>
+            <a class="mt-2 px-3 py-3 rounded-2xl bg-neutral-100 border border-neutral-200" href="/login.html">Přihlásit se</a>
           </div>
         </div>
       </div>
@@ -102,34 +102,34 @@
   <main class="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-10">
 
     <!-- HERO -->
-    <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/20 via-neutral-950 to-amber-700/15 shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
-      <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.18),transparent_45%)]"></div>
+    <section class="relative overflow-hidden rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 shadow-soft">
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_10%_20%,rgba(255,0,170,0.08),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,180,0,0.06),transparent_45%)]"></div>
       <div class="relative p-8 md:p-12">
         <div class="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-end">
           <div class="space-y-4">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
-              <i data-lucide="newspaper" class="h-4 w-4"></i>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-neutral-200 text-xs text-neutral-700 shadow-sm">
+              <i data-lucide="newspaper" class="h-4 w-4 text-fuchsia-500"></i>
               <span>Kartao Magazín</span>
-              <span class="text-white/40">•</span>
-              <span class="text-white/60">návody, trendy, case study</span>
+              <span class="text-neutral-400">•</span>
+              <span class="text-neutral-600">návody, trendy, case study</span>
             </div>
 
             <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              Obsah, který ti zvedne <span class="text-white/70">spolupráce</span>.
+              Obsah, který ti zvedne <span class="text-neutral-600">spolupráce</span>.
             </h1>
-            <p class="text-white/70 leading-relaxed max-w-2xl">
+            <p class="text-neutral-600 leading-relaxed max-w-2xl">
               Praktické tipy pro tvůrce i značky: jak nastavit cenu, jak psát brief, jak měřit výkon a jak dělat kampaně bez chaosu.
               V budoucnu napojíme na Supabase (auto články, kategorie, autory, trendy).
             </p>
 
             <!-- Search -->
-            <div class="rounded-3xl border border-white/10 bg-neutral-950/35 p-3">
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-sm p-3">
               <div class="grid md:grid-cols-[1fr_auto] gap-3">
                 <div class="relative">
-                  <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
-                  <input id="q" type="text" placeholder="Hledej článek… (např. pricing, IG reels, brief)" class="w-full rounded-2xl bg-neutral-950/85 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-white/25" />
+                  <i data-lucide="search" class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"></i>
+                  <input id="q" type="text" placeholder="Hledej článek… (např. pricing, IG reels, brief)" class="w-full rounded-2xl bg-white border border-neutral-300 pl-11 pr-4 py-3 outline-none focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-100" />
                 </div>
-                <button id="openFilters" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+                <button id="openFilters" class="shine inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition shadow-lg shadow-fuchsia-500/20">
                   <i data-lucide="sparkles" class="h-4 w-4"></i>
                   Procházet
                 </button>
@@ -139,44 +139,44 @@
           </div>
 
           <!-- Hero side (newsletter + stats) -->
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7">
+          <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6 md:p-7">
             <div class="flex items-center justify-between">
-              <div class="text-sm text-white/70">Newsletter</div>
-              <div class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">1× týdně</div>
+              <div class="text-sm text-neutral-700 font-medium">Newsletter</div>
+              <div class="text-xs px-2 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-600">1× týdně</div>
             </div>
 
-            <div class="mt-4 rounded-3xl border border-white/10 bg-neutral-950/35 p-5">
+            <div class="mt-4 rounded-3xl border border-neutral-200 bg-neutral-50 p-5">
               <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center">
-                  <i data-lucide="mail" class="h-5 w-5"></i>
+                <div class="h-11 w-11 rounded-2xl bg-white border border-neutral-200 grid place-items-center">
+                  <i data-lucide="mail" class="h-5 w-5 text-fuchsia-500"></i>
                 </div>
                 <div>
                   <div class="font-extrabold">Tipy + trendy</div>
-                  <div class="text-sm text-white/60 mt-1">Krátce, prakticky. Pro tvůrce i firmy.</div>
+                  <div class="text-sm text-neutral-600 mt-1">Krátce, prakticky. Pro tvůrce i firmy.</div>
                 </div>
               </div>
 
               <div class="mt-4 grid gap-2">
-                <input id="email" type="email" placeholder="tvuj@email.cz" class="w-full rounded-2xl bg-neutral-950/85 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
-                <button id="subscribe" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition w-full">
+                <input id="email" type="email" placeholder="tvuj@email.cz" class="w-full rounded-2xl bg-white border border-neutral-300 px-4 py-3 outline-none focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-100" />
+                <button id="subscribe" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 transition w-full shadow-lg shadow-fuchsia-500/20">
                   <i data-lucide="arrow-right" class="h-4 w-4"></i>
                   Přihlásit se
                 </button>
-                <div class="text-xs text-white/50 leading-relaxed">Demo: uloží e-mail lokálně. Později pošleme do Supabase.</div>
+                <div class="text-xs text-neutral-500 leading-relaxed">Demo: uloží e-mail lokálně. Později pošleme do Supabase.</div>
               </div>
             </div>
 
             <div class="mt-4 grid grid-cols-3 gap-3">
-              <div class="rounded-3xl border border-white/10 bg-neutral-950/35 p-4">
-                <div class="text-xs text-white/60">Článků</div>
+              <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-4">
+                <div class="text-xs text-neutral-600">Článků</div>
                 <div class="mt-1 text-2xl font-extrabold" id="statArticles">0</div>
               </div>
-              <div class="rounded-3xl border border-white/10 bg-neutral-950/35 p-4">
-                <div class="text-xs text-white/60">Uložené</div>
+              <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-4">
+                <div class="text-xs text-neutral-600">Uložené</div>
                 <div class="mt-1 text-2xl font-extrabold" id="statSaved">0</div>
               </div>
-              <div class="rounded-3xl border border-white/10 bg-neutral-950/35 p-4">
-                <div class="text-xs text-white/60">Přečteno</div>
+              <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-4">
+                <div class="text-xs text-neutral-600">Přečteno</div>
                 <div class="mt-1 text-2xl font-extrabold" id="statRead">0</div>
               </div>
             </div>
@@ -194,17 +194,17 @@
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Nejnovější</h2>
-            <p class="text-white/70 mt-2">Klikni pro detail, ulož si článek nebo ho sdílej.</p>
+            <p class="text-neutral-600 mt-2">Klikni pro detail, ulož si článek nebo ho sdílej.</p>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <select id="sort" class="rounded-2xl bg-neutral-950/50 border border-white/10 px-4 py-2.5 outline-none focus:border-white/25 text-sm">
+            <select id="sort" class="rounded-2xl bg-white border border-neutral-300 px-4 py-2.5 outline-none focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-100 text-sm">
               <option value="new" selected>Nejnovější</option>
               <option value="trending">Trending</option>
               <option value="readTime">Nejkratší čtení</option>
               <option value="saved">Nejvíc uložené</option>
             </select>
-            <button id="reset" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm">
+            <button id="reset" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-neutral-200 hover:bg-neutral-50 transition text-sm shadow-sm">
               <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
               Reset
             </button>
@@ -221,17 +221,17 @@
         <div id="grid" class="grid sm:grid-cols-2 gap-4"></div>
 
         <!-- Empty -->
-        <div id="empty" class="hidden rounded-3xl border border-white/10 bg-neutral-950/40 p-8 text-white/70">Nic nenalezeno. Zkus změnit filtr.</div>
+        <div id="empty" class="hidden rounded-3xl border border-neutral-200 bg-neutral-50 p-8 text-neutral-600">Nic nenalezeno. Zkus změnit filtr.</div>
 
         <!-- Bottom CTA -->
-        <div class="rounded-3xl border border-white/10 bg-neutral-950/40 p-6 md:p-8">
+        <div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 md:p-8">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div class="space-y-2">
-              <div class="text-sm text-white/60">Chceš článek do Magazínu?</div>
+              <div class="text-sm text-neutral-600">Chceš článek do Magazínu?</div>
               <div class="text-xl md:text-2xl font-extrabold">Pošli tip a my to proměníme v obsah.</div>
-              <div class="text-white/70">Tvůrci: best practices. Firmy: case studies a brief template.</div>
+              <div class="text-neutral-600">Tvůrci: best practices. Firmy: case studies a brief template.</div>
             </div>
-            <a href="/kontakt.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+            <a href="/kontakt.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 shadow-lg shadow-fuchsia-500/20 transition">
               <i data-lucide="pen" class="h-4 w-4"></i>
               Navrhnout téma
             </a>
@@ -243,34 +243,34 @@
       <aside class="space-y-4">
 
         <!-- Categories -->
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-sm text-white/60">Filtry</div>
+              <div class="text-sm text-neutral-600">Filtry</div>
               <h3 class="text-xl font-extrabold">Kategorie</h3>
             </div>
-            <div class="text-xs text-white/50">klik</div>
+            <div class="text-xs text-neutral-500">klik</div>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2" id="cats"></div>
         </div>
 
         <!-- Trending -->
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-extrabold">Trending</h3>
-            <div class="text-xs text-white/50">dnes</div>
+            <div class="text-xs text-neutral-500">dnes</div>
           </div>
           <div class="mt-4 grid gap-3" id="trend"></div>
         </div>
 
         <!-- Saved -->
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-extrabold">Uložené</h3>
-            <button id="openSaved" class="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition">Otevřít</button>
+            <button id="openSaved" class="text-xs px-3 py-1.5 rounded-full bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition">Otevřít</button>
           </div>
-          <div class="mt-3 text-sm text-white/70">Zbaví tě to chaosu. Ulož si články na později.</div>
+          <div class="mt-3 text-sm text-neutral-600">Zbaví tě to chaosu. Ulož si články na později.</div>
         </div>
 
       </aside>
@@ -280,48 +280,48 @@
 
   <!-- MODAL: Article detail -->
   <div id="modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
-    <div id="modalBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div id="modalBackdrop" class="absolute inset-0 bg-black/50"></div>
     <div class="absolute inset-0 overflow-y-auto">
       <div class="min-h-full px-4 py-10 grid place-items-center">
-        <div class="w-full max-w-3xl rounded-3xl border border-white/10 bg-neutral-950/92 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
-          <div class="p-6 md:p-8 border-b border-white/10">
+        <div class="w-full max-w-3xl rounded-3xl border border-neutral-200 bg-white backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div class="p-6 md:p-8 border-b border-neutral-200">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-2">
-                <div class="text-sm text-white/60" id="mMeta">Magazín</div>
+                <div class="text-sm text-neutral-600" id="mMeta">Magazín</div>
                 <div class="text-2xl md:text-3xl font-extrabold" id="mTitle">—</div>
-                <div class="text-white/70" id="mSub">—</div>
+                <div class="text-neutral-600" id="mSub">—</div>
               </div>
-              <button id="closeModal" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+              <button id="closeModal" class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" aria-label="Zavřít">
                 <i data-lucide="x" class="h-5 w-5"></i>
               </button>
             </div>
           </div>
 
           <div class="p-6 md:p-8 space-y-6">
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-6">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex flex-wrap gap-2" id="mTags"></div>
-                <div class="text-xs text-white/50" id="mRead">—</div>
+                <div class="text-xs text-neutral-500" id="mRead">—</div>
               </div>
-              <div class="mt-4 text-white/80 leading-relaxed whitespace-pre-wrap" id="mBody"></div>
+              <div class="mt-4 text-neutral-700 leading-relaxed whitespace-pre-wrap" id="mBody"></div>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-2">
-              <button id="mSave" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <button id="mSave" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition">
                 <i data-lucide="bookmark" class="h-4 w-4"></i>
                 Uložit
               </button>
-              <button id="mShare" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition">
+              <button id="mShare" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 shadow-lg shadow-fuchsia-500/20 transition">
                 <i data-lucide="share-2" class="h-4 w-4"></i>
                 Sdílet
               </button>
-              <a href="/kartao-marketplace.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/20 border border-white/10 hover:brightness-110 transition">
+              <a href="/kartao-marketplace.html" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white border border-neutral-200 hover:brightness-110 transition">
                 <i data-lucide="sparkles" class="h-4 w-4"></i>
                 Jít do Marketplace
               </a>
             </div>
 
-            <div class="text-xs text-white/50">Demo: detail je lokální. Později: URL slug, komentáře, auto podobné články (AI doporučení).</div>
+            <div class="text-xs text-neutral-500">Demo: detail je lokální. Později: URL slug, komentáře, auto podobné články (AI doporučení).</div>
           </div>
 
         </div>
@@ -331,26 +331,26 @@
 
   <!-- DRAWER: Saved -->
   <div id="drawer" class="fixed inset-0 z-50 hidden">
-    <div id="drawerBackdrop" class="absolute inset-0 bg-black/70"></div>
-    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-neutral-950/92 backdrop-blur-xl border-l border-white/10 shadow-[0_30px_120px_rgba(0,0,0,0.7)]">
-      <div class="p-5 border-b border-white/10 flex items-center justify-between gap-3">
+    <div id="drawerBackdrop" class="absolute inset-0 bg-black/50"></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-white backdrop-blur-xl border-l border-neutral-200 shadow-[0_30px_120px_rgba(0,0,0,0.7)]">
+      <div class="p-5 border-b border-neutral-200 flex items-center justify-between gap-3">
         <div>
-          <div class="text-sm text-white/60">Uložené</div>
+          <div class="text-sm text-neutral-600">Uložené</div>
           <div class="text-xl font-extrabold">Články na později</div>
         </div>
-        <button id="drawerClose" class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" aria-label="Zavřít">
+        <button id="drawerClose" class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" aria-label="Zavřít">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
       <div class="p-5 space-y-4 overflow-y-auto h-[calc(100%-76px)]">
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex items-start gap-3">
-          <i data-lucide="lightbulb" class="h-5 w-5 text-white/70 mt-0.5"></i>
-          <div class="text-sm text-white/70">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 flex items-start gap-3">
+          <i data-lucide="lightbulb" class="h-5 w-5 text-neutral-600 mt-0.5"></i>
+          <div class="text-sm text-neutral-600">
             Tip: Ulož si 3–5 článků a jednou týdně to projdi. Ušetří ti to nervy.
           </div>
         </div>
         <div id="drawerList" class="grid gap-3"></div>
-        <div id="drawerEmpty" class="hidden rounded-3xl border border-white/10 bg-neutral-950/40 p-6 text-white/70">
+        <div id="drawerEmpty" class="hidden rounded-3xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-600">
           Zatím tu nic není. Ulož si pár článků.
         </div>
       </div>
@@ -358,44 +358,44 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="border-t border-white/10">
+  <footer class="border-t border-neutral-200">
     <div class="max-w-6xl mx-auto px-4 py-10 grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
       <div class="space-y-3 col-span-3 md:col-span-1">
         <div class="font-extrabold text-lg">Kartao.cz</div>
-        <div class="text-sm text-white/60">Digitální ekosystém spoluprací.</div>
-        <div class="flex items-center gap-3 text-white/60">
-          <a class="hover:text-white" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
-          <a class="hover:text-white" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
+        <div class="text-sm text-neutral-600">Digitální ekosystém spoluprací.</div>
+        <div class="flex items-center gap-3 text-neutral-600">
+          <a class="hover:text-neutral-900" href="#" aria-label="Instagram"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="YouTube"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+          <a class="hover:text-neutral-900" href="#" aria-label="TikTok"><i data-lucide="video" class="h-5 w-5"></i></a>
         </div>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Informace</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-o-nas.html">O nás</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kontakt.html">Kontakt</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kartao-recenze.html">Recenze</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/mapa-webu.html">Mapa webu</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/kartao-o-nas.html">O nás</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/kontakt.html">Kontakt</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/kartao-recenze.html">Recenze</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/mapa-webu.html">Mapa webu</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro firmy</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/zadat-kampan.html">Zadat kampaň</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/kampane.html">Kampaně</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/vip.html">VIP tvůrci</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/zadat-kampan.html">Zadat kampaň</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/kampane.html">Kampaně</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/vip.html">VIP tvůrci</a>
       </div>
 
       <div class="space-y-2">
         <div class="text-sm font-semibold">Pro tvůrce</div>
-        <a class="block text-sm text-white/60 hover:text-white" href="/moje-karta.html">Moje karta</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/upravit-kartu.html">Upravit kartu</a>
-        <a class="block text-sm text-white/60 hover:text-white" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/moje-karta.html">Moje karta</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/upravit-kartu.html">Upravit kartu</a>
+        <a class="block text-sm text-neutral-600 hover:text-neutral-900" href="/zacit-jako-tvurce.html">Začít jako tvůrce</a>
       </div>
     </div>
 
     <div class="max-w-6xl mx-auto px-4 pb-10">
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div class="text-xs text-white/60">© <span id="year"></span> Kartao.cz</div>
+      <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="text-xs text-neutral-600">© <span id="year"></span> Kartao.cz</div>
       </div>
     </div>
   </footer>
@@ -598,7 +598,7 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
     }
 
     function pill(label, active=false){
-      return `text-xs px-3 py-2 rounded-full border transition ${active ? 'bg-white text-neutral-950 border-white' : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-white'}`;
+      return `text-xs px-3 py-2 rounded-full border transition ${active ? 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white border-fuchsia-500' : 'bg-white shadow-soft border-neutral-200 hover:bg-neutral-50 text-neutral-600 hover:text-neutral-900'}`;
     }
 
     function fmtDate(d){
@@ -636,34 +636,34 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
     }
 
     function tagHtml(txt){
-      return `<span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">${escapeHtml(txt)}</span>`;
+      return `<span class="text-xs px-2 py-1 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600">${escapeHtml(txt)}</span>`;
     }
 
     function cardSmall(a){
       const isSaved = saved.has(a.id);
       return `
-      <article class="group rounded-3xl border border-white/10 bg-white/5 hover:bg-white/[0.06] transition overflow-hidden">
+      <article class="group rounded-3xl border border-neutral-200 bg-white shadow-soft hover:bg-white/[0.06] transition overflow-hidden">
         <div class="p-5">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <div class="text-xs text-white/60">${fmtDate(a.date)} • ${a.minutes} min • ${escapeHtml(cats.find(c=>c.k===a.cat)?.t || a.cat)}</div>
+              <div class="text-xs text-neutral-600">${fmtDate(a.date)} • ${a.minutes} min • ${escapeHtml(cats.find(c=>c.k===a.cat)?.t || a.cat)}</div>
               <div class="mt-1 font-extrabold text-lg leading-snug">${escapeHtml(a.title)}</div>
             </div>
-            <button class="saveBtn h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" data-save="${a.id}" title="Uložit">
+            <button class="saveBtn h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" data-save="${a.id}" title="Uložit">
               <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" class="h-5 w-5"></i>
             </button>
           </div>
 
-          <div class="mt-3 text-sm text-white/70 leading-relaxed line-clamp-3">${escapeHtml(a.excerpt || '')}</div>
+          <div class="mt-3 text-sm text-neutral-600 leading-relaxed line-clamp-3">${escapeHtml(a.excerpt || '')}</div>
 
           <div class="mt-3 flex flex-wrap gap-2">${(a.tags||[]).slice(0,3).map(tagHtml).join('')}</div>
 
           <div class="mt-4 flex gap-2">
-            <button class="openBtn w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" data-open="${a.id}">
+            <button class="openBtn w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 shadow-lg shadow-fuchsia-500/20 transition" data-open="${a.id}">
               <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
               Číst
             </button>
-            <button class="shareBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" data-share="${a.id}">
+            <button class="shareBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition" data-share="${a.id}">
               <i data-lucide="share-2" class="h-4 w-4"></i>
               Sdílet
             </button>
@@ -675,35 +675,35 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
     function cardFeatured(a){
       const isSaved = saved.has(a.id);
       return `
-      <article class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-700/18 via-neutral-950 to-amber-700/12 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-        <div class="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_18%_22%,rgba(255,0,170,0.22),transparent_45%),radial-gradient(circle_at_86%_78%,rgba(255,180,0,0.16),transparent_55%)]"></div>
+      <article class="relative overflow-hidden rounded-3xl border border-neutral-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 shadow-soft">
+        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_18%_22%,rgba(255,0,170,0.08),transparent_45%),radial-gradient(circle_at_86%_78%,rgba(255,180,0,0.06),transparent_55%)]"></div>
         <div class="relative p-6 md:p-7">
           <div class="flex items-start justify-between gap-3">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-soft border border-neutral-200 text-xs text-neutral-700">
               <i data-lucide="sparkles" class="h-4 w-4"></i>
               <span>Featured</span>
-              <span class="text-white/40">•</span>
-              <span class="text-white/60">${escapeHtml(cats.find(c=>c.k===a.cat)?.t || a.cat)}</span>
+              <span class="text-neutral-400">•</span>
+              <span class="text-neutral-600">${escapeHtml(cats.find(c=>c.k===a.cat)?.t || a.cat)}</span>
             </div>
-            <button class="saveBtn h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" data-save="${a.id}" title="Uložit">
+            <button class="saveBtn h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" data-save="${a.id}" title="Uložit">
               <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" class="h-5 w-5"></i>
             </button>
           </div>
 
           <div class="mt-4">
-            <div class="text-xs text-white/60">${fmtDate(a.date)} • ${a.minutes} min • trending ${a.trending}</div>
+            <div class="text-xs text-neutral-600">${fmtDate(a.date)} • ${a.minutes} min • trending ${a.trending}</div>
             <h3 class="mt-2 text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">${escapeHtml(a.title)}</h3>
-            <p class="mt-3 text-white/70 leading-relaxed line-clamp-2">${escapeHtml(a.excerpt||'')}</p>
+            <p class="mt-3 text-neutral-600 leading-relaxed line-clamp-2">${escapeHtml(a.excerpt||'')}</p>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2">${(a.tags||[]).slice(0,5).map(tagHtml).join('')}</div>
 
           <div class="mt-5 flex flex-wrap gap-2">
-            <button class="shine openBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-neutral-950 font-semibold hover:brightness-95 transition" data-open="${a.id}">
+            <button class="shine openBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold hover:brightness-110 shadow-lg shadow-fuchsia-500/20 transition" data-open="${a.id}">
               <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
               Číst článek
             </button>
-            <button class="shareBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition" data-share="${a.id}">
+            <button class="shareBtn inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition" data-share="${a.id}">
               <i data-lucide="share-2" class="h-4 w-4"></i>
               Sdílet
             </button>
@@ -720,7 +720,7 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
 
       $('#activeChips').innerHTML = chips.join('');
       $$('#activeChips .ac').forEach(b => {
-        b.className = 'ac text-xs px-3 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition';
+        b.className = 'ac text-xs px-3 py-2 rounded-full bg-white shadow-soft border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition';
         b.onclick = () => {
           const v = b.dataset.ac;
           if (v === 'cat') state.cat = 'all';
@@ -741,7 +741,7 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
       $$('#cats .catBtn').forEach(b => {
         const active = b.dataset.cat === state.cat;
         b.className = 'catBtn inline-flex items-center gap-2 px-3 py-2 rounded-2xl border transition text-sm ' +
-          (active ? 'bg-white text-neutral-950 border-white' : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/70 hover:text-white');
+          (active ? 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white border-fuchsia-500' : 'bg-white shadow-soft border-neutral-200 hover:bg-neutral-50 text-neutral-600 hover:text-neutral-900');
         b.onclick = () => { state.cat = b.dataset.cat; render(); };
       });
 
@@ -750,15 +750,15 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
       $('#trend').innerHTML = list.map((a, idx) => {
         const isSaved = saved.has(a.id);
         return `
-          <button class="w-full text-left rounded-3xl border border-white/10 bg-neutral-950/35 hover:bg-neutral-950/50 transition p-4" data-open="${a.id}">
+          <button class="w-full text-left rounded-3xl border border-neutral-200 bg-white hover:bg-neutral-50 transition p-4 shadow-sm" data-open="${a.id}">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <div class="text-xs text-white/60">#${idx+1} • ${a.minutes} min</div>
+                <div class="text-xs text-neutral-600">#${idx+1} • ${a.minutes} min</div>
                 <div class="mt-1 font-semibold leading-snug">${escapeHtml(a.title)}</div>
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">${a.trending}</span>
-                <span class="text-xs text-white/50">${isSaved ? '★' : ''}</span>
+                <span class="text-xs px-2 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-700">${a.trending}</span>
+                <span class="text-xs text-fuchsia-500">${isSaved ? '★' : ''}</span>
               </div>
             </div>
           </button>
@@ -854,18 +854,18 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
     function openDrawer(){
       const items = Array.from(saved).map(id => demo.find(x => x.id === id)).filter(Boolean);
       $('#drawerList').innerHTML = items.map(a => `
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
+        <div class="rounded-3xl border border-neutral-200 bg-white shadow-soft p-4">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <div class="text-xs text-white/60">${fmtDate(a.date)} • ${a.minutes} min</div>
+              <div class="text-xs text-neutral-600">${fmtDate(a.date)} • ${a.minutes} min</div>
               <div class="mt-1 font-extrabold">${escapeHtml(a.title)}</div>
-              <div class="text-sm text-white/70 mt-1 line-clamp-2">${escapeHtml(a.excerpt||'')}</div>
+              <div class="text-sm text-neutral-600 mt-1 line-clamp-2">${escapeHtml(a.excerpt||'')}</div>
             </div>
             <div class="flex items-center gap-2">
-              <button class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" onclick="window.__open('${a.id}')" title="Číst">
+              <button class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" onclick="window.__open('${a.id}')" title="Číst">
                 <i data-lucide="arrow-up-right" class="h-5 w-5"></i>
               </button>
-              <button class="h-10 w-10 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition grid place-items-center" onclick="window.__remove('${a.id}')" title="Odebrat">
+              <button class="h-10 w-10 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition grid place-items-center" onclick="window.__remove('${a.id}')" title="Odebrat">
                 <i data-lucide="trash-2" class="h-5 w-5"></i>
               </button>
             </div>
@@ -894,7 +894,7 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
     // quick tags
     $('#quickTags').innerHTML = quickTags.map(t => `<button class="qt" data-qt="${t.toLowerCase()}">${escapeHtml(t)}</button>`).join('');
     $$('#quickTags .qt').forEach(b => {
-      b.className = 'qt inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-white/80 hover:text-white';
+      b.className = 'qt inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-white shadow-soft border border-neutral-200 hover:bg-neutral-50 transition text-neutral-700 hover:text-neutral-900';
       b.onclick = () => {
         const v = b.dataset.qt;
         // map to internal tags roughly
@@ -944,7 +944,7 @@ Výsledek: víc objednávek a nižší cena za konverzi.`
       if (!el){
         el = document.createElement('div');
         el.id = 'toast';
-        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-neutral-950/90 border border-white/10 text-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.6)]';
+        el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-white border border-neutral-200 text-neutral-900 shadow-lg';
         document.body.appendChild(el);
       }
       el.textContent = msg;
