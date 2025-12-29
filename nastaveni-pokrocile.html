@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokročilé nastavení - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shadow-soft {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Toggle switch styling */
+        .toggle-checkbox {
+            appearance: none;
+            width: 48px;
+            height: 24px;
+            background: #d4d4d8;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-checkbox:checked {
+            background: linear-gradient(135deg, #d946ef 0%, #ec4899 100%);
+        }
+        
+        .toggle-checkbox::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle-checkbox:checked::after {
+            transform: translateX(24px);
+        }
+
+        /* Danger zone pulsing */
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .danger-pulse {
+            animation: pulse-red 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-neutral-600 hover:text-neutral-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-neutral-900">Pokročilé nastavení</h1>
+                        <p class="text-sm text-neutral-600 mt-1">Experimentální funkce a pokročilé možnosti</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Zpět
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm text-neutral-600">
+            <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
+            <span>›</span>
+            <a href="index.html#nastaveni" class="hover:text-neutral-900">Nastavení</a>
+            <span>›</span>
+            <span class="text-neutral-900 font-medium">Pokročilé</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+
+        <!-- Warning Banner -->
+        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 mb-6">
+            <div class="flex items-start space-x-3">
+                <svg class="w-6 h-6 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <p class="text-sm text-yellow-900 font-bold">⚠️ Upozornění</p>
+                    <p class="text-sm text-yellow-800 mt-1">Tato sekce obsahuje experimentální funkce a pokročilé možnosti. Změny zde mohou ovlivnit fungování vaší aplikace.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Developer Mode -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">👨‍💻</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Vývojářský režim</h2>
+                    <p class="text-sm text-neutral-600">Nástroje pro vývojáře a debugging</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Vývojářský režim</p>
+                        <p class="text-sm text-neutral-600 mt-1">Zobrazit technické informace a debug nástroje</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Console logging</p>
+                        <p class="text-sm text-neutral-600 mt-1">Logování API požadavků do konzole prohlížeče</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Source maps</p>
+                        <p class="text-sm text-neutral-600 mt-1">Povolit source maps pro lepší debugging</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+            </div>
+        </div>
+
+        <!-- Experimental Features -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🧪</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Experimentální funkce</h2>
+                    <p class="text-sm text-neutral-600">Beta funkce před oficiálním vydáním</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-medium text-neutral-900">AI asistent pro kampaně</p>
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">BETA</span>
+                        </div>
+                        <p class="text-sm text-neutral-600 mt-1">AI návrhy pro optimalizaci kampaní a výběr influencerů</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-medium text-neutral-900">Nový dashboard design</p>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">PREVIEW</span>
+                        </div>
+                        <p class="text-sm text-neutral-600 mt-1">Vyzkoušejte redesignovaný dashboard s novými funkcemi</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-medium text-neutral-900">Real-time collaboration</p>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">ALPHA</span>
+                        </div>
+                        <p class="text-sm text-neutral-600 mt-1">Spolupracujte na kampaních v reálném čase s týmem</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-medium text-neutral-900">Advanced analytics</p>
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">BETA</span>
+                        </div>
+                        <p class="text-sm text-neutral-600 mt-1">Rozšířené statistiky s prediktivní analýzou</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+            </div>
+        </div>
+
+        <!-- Performance & Optimization -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">⚡</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Výkon a optimalizace</h2>
+                    <p class="text-sm text-neutral-600">Nastavení výkonu aplikace</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Hardware accelerace</p>
+                        <p class="text-sm text-neutral-600 mt-1">Použít GPU pro rychlejší vykreslování</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Lazy loading obrázků</p>
+                        <p class="text-sm text-neutral-600 mt-1">Načítat obrázky jen když jsou viditelné</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox" checked>
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors cursor-pointer">
+                    <div>
+                        <p class="font-medium text-neutral-900">Prefetch dat</p>
+                        <p class="text-sm text-neutral-600 mt-1">Předběžně načítat data pro rychlejší navigaci</p>
+                    </div>
+                    <input type="checkbox" class="toggle-checkbox">
+                </label>
+
+                <div class="p-4 border border-neutral-200 rounded-lg">
+                    <label class="block mb-3">
+                        <p class="font-medium text-neutral-900 mb-1">Kvalita obrázků</p>
+                        <p class="text-sm text-neutral-600 mb-3">Vyšší kvalita = více dat, nižší kvalita = rychlejší načítání</p>
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <input type="range" min="1" max="3" value="2" class="flex-1 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex space-x-2 text-xs">
+                            <span class="px-2 py-1 bg-neutral-100 rounded">Nízká</span>
+                            <span class="px-2 py-1 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded font-medium">Střední</span>
+                            <span class="px-2 py-1 bg-neutral-100 rounded">Vysoká</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data & Storage -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">💾</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Data a úložiště</h2>
+                    <p class="text-sm text-neutral-600">Správa lokálních dat a cache</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-neutral-700">Cache velikost</p>
+                        <p class="text-sm font-bold text-neutral-900">42.3 MB</p>
+                    </div>
+                    <div class="w-full bg-neutral-200 rounded-full h-2 mb-3">
+                        <div class="bg-gradient-to-r from-fuchsia-500 to-pink-500 h-2 rounded-full" style="width: 35%"></div>
+                    </div>
+                    <p class="text-xs text-neutral-500">35% z 120 MB limitu</p>
+                </div>
+
+                <button class="w-full px-4 py-3 border-2 border-neutral-300 hover:border-fuchsia-300 text-neutral-700 hover:text-neutral-900 rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Vymazat cache</span>
+                </button>
+
+                <button class="w-full px-4 py-3 border-2 border-neutral-300 hover:border-fuchsia-300 text-neutral-700 hover:text-neutral-900 rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    <span>Vyčistit lokální úložiště</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- System Information -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">ℹ️</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Systémové informace</h2>
+                    <p class="text-sm text-neutral-600">Technické detaily o vaší instalaci</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">Verze aplikace</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">v2.5.3</p>
+                </div>
+                
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">API verze</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">v1.8.2</p>
+                </div>
+                
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">Prohlížeč</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">Chrome 120.0.0</p>
+                </div>
+                
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">Operační systém</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">Windows 11</p>
+                </div>
+                
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">Poslední synchronizace</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">před 5 minutami</p>
+                </div>
+                
+                <div class="p-3 bg-neutral-50 rounded-lg">
+                    <p class="text-xs text-neutral-500 mb-1">User ID</p>
+                    <p class="font-mono text-sm font-medium text-neutral-900">usr_a1b2c3d4e5</p>
+                </div>
+            </div>
+
+            <button class="w-full mt-4 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors font-medium text-sm">
+                Kopírovat diagnostické informace
+            </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-300 rounded-xl p-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center danger-pulse">
+                    <span class="text-xl">⚠️</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-red-900">Nebezpečná zóna</h2>
+                    <p class="text-sm text-red-700">Akce s trvalými důsledky</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <button class="w-full px-4 py-3 bg-white border-2 border-red-300 hover:border-red-400 text-red-700 hover:text-red-900 rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    <span>Obnovit tovární nastavení</span>
+                </button>
+
+                <button class="w-full px-4 py-3 bg-white border-2 border-red-300 hover:border-red-400 text-red-700 hover:text-red-900 rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span>Vymazat všechna data</span>
+                </button>
+
+                <button class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Smazat účet</span>
+                </button>
+            </div>
+
+            <div class="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                <p class="text-xs text-red-800">
+                    ⚠️ <strong>Upozornění:</strong> Tyto akce jsou nevratné. Před pokračováním si ujistěte, že rozumíte důsledkům.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Toggle switches
+        const toggles = document.querySelectorAll('.toggle-checkbox');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                console.log('Setting toggled:', this.checked);
+            });
+        });
+
+        // Clear cache button
+        document.querySelector('button:contains("Vymazat cache")')?.addEventListener('click', function() {
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.includes('Vymazat cache')) {
+                    btn.addEventListener('click', () => {
+                        if (confirm('Opravdu chcete vymazat cache? Aplikace se může načítat pomaleji.')) {
+                            console.log('Clearing cache...');
+                            alert('Cache byla vymazána!');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Factory reset
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.includes('Obnovit tovární nastavení')) {
+                btn.addEventListener('click', () => {
+                    if (confirm('Opravdu chcete obnovit tovární nastavení? Všechna přizpůsobení budou ztracena.')) {
+                        console.log('Resetting to factory settings...');
+                        alert('Nastavení byla obnovena na výchozí!');
+                    }
+                });
+            }
+            
+            if (btn.textContent.includes('Vymazat všechna data')) {
+                btn.addEventListener('click', () => {
+                    if (confirm('VAROVÁNÍ: Tímto smažete všechna lokální data! Tuto akci nelze vrátit zpět.\n\nOpravdu pokračovat?')) {
+                        console.log('Deleting all data...');
+                        alert('Všechna lokální data byla smazána!');
+                    }
+                });
+            }
+        });
+
+        // Copy diagnostics
+        document.querySelector('button:contains("Kopírovat diagnostické informace")')?.addEventListener('click', function() {
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.includes('Kopírovat diagnostické informace')) {
+                    btn.addEventListener('click', () => {
+                        const diagnostics = {
+                            appVersion: 'v2.5.3',
+                            apiVersion: 'v1.8.2',
+                            browser: 'Chrome 120.0.0',
+                            os: 'Windows 11',
+                            userId: 'usr_a1b2c3d4e5'
+                        };
+                        
+                        navigator.clipboard.writeText(JSON.stringify(diagnostics, null, 2));
+                        alert('Diagnostické informace zkopírovány do schránky!');
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

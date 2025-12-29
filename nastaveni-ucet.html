@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Účet - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shadow-soft {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Avatar upload hover effect */
+        .avatar-upload {
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-upload:hover {
+            transform: scale(1.05);
+        }
+        
+        .avatar-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .avatar-upload:hover .avatar-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-neutral-600 hover:text-neutral-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-neutral-900">Nastavení účtu</h1>
+                        <p class="text-sm text-neutral-600 mt-1">Spravujte své osobní údaje a profil</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Zpět
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm text-neutral-600">
+            <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
+            <span>›</span>
+            <a href="index.html#nastaveni" class="hover:text-neutral-900">Nastavení</a>
+            <span>›</span>
+            <span class="text-neutral-900 font-medium">Účet</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+        
+        <!-- Profile Picture -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">📸</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Profilová fotka</h2>
+                    <p class="text-sm text-neutral-600">Vaše veřejná profilová fotografie</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-6">
+                <div class="relative">
+                    <div class="avatar-upload w-32 h-32 rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center text-white text-4xl font-bold cursor-pointer overflow-hidden">
+                        <img id="avatar-preview" src="" alt="" class="hidden w-full h-full object-cover">
+                        <span id="avatar-initials">JN</span>
+                        <div class="avatar-overlay absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <input type="file" id="avatar-upload" accept="image/*" class="hidden">
+                </div>
+                
+                <div class="flex-1">
+                    <h3 class="font-medium text-neutral-900 mb-2">Změnit fotografii</h3>
+                    <p class="text-sm text-neutral-600 mb-4">Klikněte na obrázek nebo nahrajte nový soubor. Doporučená velikost: 400x400px</p>
+                    <div class="flex space-x-3">
+                        <button id="upload-btn" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                            Nahrát novou
+                        </button>
+                        <button id="remove-btn" class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors font-medium">
+                            Odstranit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">👤</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Základní údaje</h2>
+                    <p class="text-sm text-neutral-600">Vaše osobní informace</p>
+                </div>
+            </div>
+            
+            <form class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Jméno *</label>
+                        <input type="text" value="Jan" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">Příjmení *</label>
+                        <input type="text" value="Novák" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Uživatelské jméno (handle) *</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500">@</span>
+                        <input type="text" value="jannovak" class="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent" required>
+                    </div>
+                    <p class="text-xs text-neutral-500 mt-1">Vaše veřejná adresa: kartao.cz/@jannovak</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">E-mail *</label>
+                    <div class="flex space-x-3">
+                        <input type="email" value="jan.novak@email.cz" class="flex-1 px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent" required>
+                        <span class="px-4 py-3 bg-green-100 text-green-700 rounded-lg flex items-center space-x-2 text-sm font-medium">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Ověřeno</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Telefon</label>
+                    <input type="tel" value="+420 123 456 789" class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Bio / O mně</label>
+                    <textarea rows="4" placeholder="Krátký popis o sobě, vaší práci nebo zájmech..." class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent resize-none">Profesionální marketér s 5+ lety zkušeností v influencer marketingu.</textarea>
+                    <p class="text-xs text-neutral-500 mt-1">160 / 500 znaků</p>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-neutral-200">
+                    <button type="button" class="px-4 py-2 text-neutral-600 hover:text-neutral-900 transition-colors">
+                        Zrušit změny
+                    </button>
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Uložit změny
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Social Links -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🔗</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Sociální sítě</h2>
+                    <p class="text-sm text-neutral-600">Propojte své sociální profily</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="instagram.com/username" class="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm">
+                    <button class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors text-sm font-medium">
+                        Propojit
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="youtube.com/@username" class="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm">
+                    <button class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors text-sm font-medium">
+                        Propojit
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="tiktok.com/@username" class="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-sm">
+                    <button class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors text-sm font-medium">
+                        Propojit
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </div>
+                    <input type="text" value="twitter.com/jannovak" class="flex-1 px-4 py-2 border-2 border-green-300 bg-green-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    <button class="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Propojeno</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Stats -->
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">📊</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Statistiky účtu</h2>
+                    <p class="text-sm text-neutral-600">Vaše aktivita na platformě</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gradient-to-br from-fuchsia-50 to-pink-50 rounded-lg border border-fuchsia-200">
+                    <p class="text-2xl font-bold text-neutral-900">15.1.2024</p>
+                    <p class="text-sm text-neutral-600 mt-1">Členem od</p>
+                </div>
+                
+                <div class="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                    <p class="text-2xl font-bold text-neutral-900">42</p>
+                    <p class="text-sm text-neutral-600 mt-1">Kampaně</p>
+                </div>
+                
+                <div class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                    <p class="text-2xl font-bold text-neutral-900">1,250</p>
+                    <p class="text-sm text-neutral-600 mt-1">Kredity</p>
+                </div>
+                
+                <div class="p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="text-2xl font-bold text-neutral-900">VIP</span>
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white text-xs font-bold rounded-full">✨</span>
+                    </div>
+                    <p class="text-sm text-neutral-600">Členství</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Avatar upload
+        const avatarUpload = document.getElementById('avatar-upload');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarInitials = document.getElementById('avatar-initials');
+        const uploadBtn = document.getElementById('upload-btn');
+        const removeBtn = document.getElementById('remove-btn');
+
+        document.querySelector('.avatar-upload').addEventListener('click', () => {
+            avatarUpload.click();
+        });
+
+        uploadBtn.addEventListener('click', () => {
+            avatarUpload.click();
+        });
+
+        avatarUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                    avatarPreview.classList.remove('hidden');
+                    avatarInitials.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeBtn.addEventListener('click', function() {
+            avatarPreview.classList.add('hidden');
+            avatarInitials.classList.remove('hidden');
+            avatarPreview.src = '';
+            avatarUpload.value = '';
+        });
+
+        // Bio character counter
+        const bioTextarea = document.querySelector('textarea[placeholder*="Krátký popis"]');
+        const charCounter = bioTextarea.nextElementSibling;
+        
+        bioTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCounter.textContent = `${length} / 500 znaků`;
+            
+            if (length > 500) {
+                charCounter.classList.add('text-red-500');
+                charCounter.classList.remove('text-neutral-500');
+            } else {
+                charCounter.classList.remove('text-red-500');
+                charCounter.classList.add('text-neutral-500');
+            }
+        });
+    </script>
+
+</body>
+</html>

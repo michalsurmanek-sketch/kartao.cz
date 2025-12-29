@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrace - Kartao.cz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shadow-soft {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Integration card hover */
+        .integration-card {
+            transition: all 0.3s ease;
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* API key reveal */
+        .api-key {
+            font-family: monospace;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-neutral-600 hover:text-neutral-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-neutral-900">Integrace a propojení</h1>
+                        <p class="text-sm text-neutral-600 mt-1">Propojte Kartao.cz s dalšími nástroji</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Zpět
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm text-neutral-600">
+            <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
+            <span>›</span>
+            <a href="index.html#nastaveni" class="hover:text-neutral-900">Nastavení</a>
+            <span>›</span>
+            <span class="text-neutral-900 font-medium">Integrace</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+        
+        <!-- Connected Services -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🔌</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">Propojené služby</h2>
+                    <p class="text-sm text-neutral-600">Spravujte připojení k externím platformám</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Google Analytics -->
+                <div class="integration-card bg-white border-2 border-neutral-200 rounded-xl p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+                                GA
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-neutral-900">Google Analytics</h3>
+                                <p class="text-xs text-neutral-500">Analytika a tracking</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aktivní</span>
+                    </div>
+                    <p class="text-sm text-neutral-600 mb-4">Sledujte výkon kampaní a návštěvnost vašeho profilu.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-neutral-500">Tracking ID: UA-123456789-1</span>
+                        <button class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg text-sm transition-colors">
+                            Nastavit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slack -->
+                <div class="integration-card bg-white border-2 border-neutral-200 rounded-xl p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-neutral-900">Slack</h3>
+                                <p class="text-xs text-neutral-500">Notifikace a komunikace</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aktivní</span>
+                    </div>
+                    <p class="text-sm text-neutral-600 mb-4">Dostávejte upozornění o nových kampaních přímo do Slacku.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-neutral-500">Kanál: #kartao-notifications</span>
+                        <button class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg text-sm transition-colors">
+                            Nastavit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zapier -->
+                <div class="integration-card bg-white border-2 border-dashed border-neutral-300 rounded-xl p-6 hover:border-fuchsia-300">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                                Z
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-neutral-900">Zapier</h3>
+                                <p class="text-xs text-neutral-500">Automatizace workflow</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-neutral-100 text-neutral-500 text-xs font-bold rounded-full">Neaktivní</span>
+                    </div>
+                    <p class="text-sm text-neutral-600 mb-4">Propojte Kartao.cz s tisíci dalších aplikací.</p>
+                    <button class="w-full px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Připojit Zapier
+                    </button>
+                </div>
+
+                <!-- Mailchimp -->
+                <div class="integration-card bg-white border-2 border-dashed border-neutral-300 rounded-xl p-6 hover:border-fuchsia-300">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center text-white font-bold">
+                                MC
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-neutral-900">Mailchimp</h3>
+                                <p class="text-xs text-neutral-500">E-mail marketing</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-neutral-100 text-neutral-500 text-xs font-bold rounded-full">Neaktivní</span>
+                    </div>
+                    <p class="text-sm text-neutral-600 mb-4">Synchronizujte kontakty a vytvářejte kampaně.</p>
+                    <button class="w-full px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                        Připojit Mailchimp
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Keys -->
+        <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🔑</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">API klíče</h2>
+                    <p class="text-sm text-neutral-600">Přístup k Kartao.cz API pro vlastní integrace</p>
+                </div>
+            </div>
+
+            <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-700 font-medium">📖 API Dokumentace</p>
+                        <p class="text-sm text-blue-600 mt-1">
+                            Kompletní dokumentaci API naleznete na <a href="#" class="underline font-medium">docs.kartao.cz/api</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Production API Key -->
+                <div class="p-4 border-2 border-neutral-200 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-bold text-neutral-900 flex items-center space-x-2">
+                                <span>🔐 Production API Key</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aktivní</span>
+                            </h3>
+                            <p class="text-xs text-neutral-500 mt-1">Pro produkční prostředí</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors">
+                            Zrušit
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <code class="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-300 rounded-lg text-sm api-key font-mono">
+                            sk_live_•••••••••••••••••••••••••4a8b
+                        </code>
+                        <button class="px-4 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                        <button class="px-4 py-3 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between text-xs text-neutral-500">
+                        <span>Vytvořeno: 15.1.2024</span>
+                        <span>Poslední použití: před 2 dny</span>
+                    </div>
+                </div>
+
+                <!-- Development API Key -->
+                <div class="p-4 border-2 border-dashed border-neutral-300 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-bold text-neutral-900 flex items-center space-x-2">
+                                <span>🧪 Development API Key</span>
+                                <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Testovací</span>
+                            </h3>
+                            <p class="text-xs text-neutral-500 mt-1">Pro vývoj a testování</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <code class="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-300 rounded-lg text-sm api-key font-mono">
+                            sk_test_•••••••••••••••••••••••••9f2c
+                        </code>
+                        <button class="px-4 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                        <button class="px-4 py-3 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between text-xs text-neutral-500">
+                        <span>Vytvořeno: 20.12.2024</span>
+                        <span>Poslední použití: před 5 minutami</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="w-full mt-6 px-4 py-3 border-2 border-dashed border-neutral-300 hover:border-fuchsia-300 text-neutral-700 hover:text-neutral-900 rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Vytvořit nový API klíč</span>
+            </button>
+        </div>
+
+        <!-- Webhooks -->
+        <div class="bg-white rounded-xl shadow-soft p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <span class="text-xl">🪝</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-neutral-900">Webhooky</h2>
+                        <p class="text-sm text-neutral-600">Nastavte automatické notifikace o událostech</p>
+                    </div>
+                </div>
+                <button class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium">
+                    + Přidat webhook
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Webhook 1 -->
+                <div class="p-4 border border-neutral-200 rounded-lg hover:border-fuchsia-300 transition-colors">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="font-medium text-neutral-900">Campaign Created</h3>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center space-x-1">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                    <span>Aktivní</span>
+                                </span>
+                            </div>
+                            <code class="text-xs text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
+                                https://api.example.com/webhooks/kartao/campaigns
+                            </code>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg text-sm transition-colors">
+                                Upravit
+                            </button>
+                            <button class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors">
+                                Smazat
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 text-xs text-neutral-500">
+                        <span>Události: campaign.created, campaign.updated</span>
+                        <span>•</span>
+                        <span>Poslední trigger: před 3 hodinami</span>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div class="p-8 border-2 border-dashed border-neutral-200 rounded-lg text-center">
+                    <div class="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-neutral-600 mb-3">Přidejte další webhook pro sledování událostí</p>
+                    <button class="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium text-sm">
+                        Vytvořit webhook
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // API key reveal/hide
+        const eyeButtons = document.querySelectorAll('button svg[d*="M15 12a3"]').forEach((svg, index) => {
+            const button = svg.parentElement;
+            const apiKeyElement = button.parentElement.querySelector('.api-key');
+            let revealed = false;
+            
+            button.addEventListener('click', function() {
+                revealed = !revealed;
+                if (revealed) {
+                    // Show full key (simulated)
+                    if (index === 0) {
+                        apiKeyElement.textContent = 'pk_live_example1234567890abcdefXYZ';
+                    } else {
+                        apiKeyElement.textContent = 'pk_test_example0987654321zyxwvutsrABC';
+                    }
+                } else {
+                    // Hide key
+                    if (index === 0) {
+                        apiKeyElement.textContent = 'pk_live_•••••••••••••••••••••••••XYZ';
+                    } else {
+                        apiKeyElement.textContent = 'pk_test_•••••••••••••••••••••••••ABC';
+                    }
+                }
+            });
+        });
+
+        // Copy API key
+        document.querySelectorAll('button svg[d*="M8 16H6"]').forEach(svg => {
+            svg.parentElement.addEventListener('click', function() {
+                const apiKey = this.parentElement.querySelector('.api-key').textContent;
+                navigator.clipboard.writeText(apiKey);
+                
+                // Show feedback
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>';
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                }, 2000);
+            });
+        });
+    </script>
+
+</body>
+</html>
