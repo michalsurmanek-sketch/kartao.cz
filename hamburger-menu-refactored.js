@@ -60,7 +60,10 @@ class HamburgerMenu {
       // Pro jistotu odstraní display:none pokud by byl někde nastaven
       this.menuPanel.style.display = 'block';
     }, 10);
+    // Prevence scrollování stránky když je menu otevřené
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
     this.menuToggle.setAttribute('aria-expanded', 'true');
     this.menuPanel.focus();
   }
@@ -74,7 +77,10 @@ class HamburgerMenu {
       // Vrátí z-index a display do původního stavu
       this.menuPanel.style.zIndex = '';
       this.menuPanel.style.display = '';
+      // Obnovení scrollování
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
       this.menuToggle.setAttribute('aria-expanded', 'false');
     }, 300);
   }
@@ -138,16 +144,23 @@ class HamburgerMenu {
         { href: 'magazin.html', icon: 'newspaper', text: 'Magazín' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { type: 'divider' },
-        { type: 'section', text: 'Nastavení' },
-        { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet', isSubmenu: true },
-        { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení', isSubmenu: true },
-        { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace', isSubmenu: true },
-        { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference', isSubmenu: true },
-        { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje', isSubmenu: true },
-        { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace', isSubmenu: true },
-        { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí', isSubmenu: true },
-        { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora', isSubmenu: true },
-        { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé', isSubmenu: true },
+        { 
+          type: 'submenu-toggle',
+          icon: 'settings',
+          text: 'Nastavení',
+          submenuId: 'settings-submenu-mobile',
+          submenu: [
+            { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet' },
+            { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení' },
+            { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace' },
+            { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference' },
+            { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje' },
+            { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace' },
+            { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí' },
+            { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora' },
+            { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé' }
+          ]
+        },
         { type: 'divider' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
       ],
@@ -159,16 +172,23 @@ class HamburgerMenu {
         { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
         { type: 'divider' },
-        { type: 'section', text: 'Nastavení' },
-        { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet', isSubmenu: true },
-        { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení', isSubmenu: true },
-        { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace', isSubmenu: true },
-        { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference', isSubmenu: true },
-        { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje', isSubmenu: true },
-        { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace', isSubmenu: true },
-        { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí', isSubmenu: true },
-        { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora', isSubmenu: true },
-        { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé', isSubmenu: true },
+        { 
+          type: 'submenu-toggle',
+          icon: 'settings',
+          text: 'Nastavení',
+          submenuId: 'settings-submenu-mobile',
+          submenu: [
+            { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet' },
+            { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení' },
+            { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace' },
+            { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference' },
+            { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje' },
+            { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace' },
+            { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí' },
+            { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora' },
+            { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé' }
+          ]
+        },
         { type: 'divider' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
       ],
@@ -177,12 +197,24 @@ class HamburgerMenu {
     return menu.map(item => {
       if (item.type === 'divider') {
         return `<div class="my-2 border-t border-white/10"></div>`;
-      } else if (item.type === 'section') {
-        return `<div class="px-4 py-2 mt-3 text-xs font-semibold text-white/50 uppercase tracking-wider">${item.text}</div>`;
+      } else if (item.type === 'submenu-toggle') {
+        const submenuItems = item.submenu.map(subitem => 
+          `<a href="${subitem.href}" class="block px-4 py-2 rounded-xl hover:bg-white/10 text-white/80 flex items-center gap-3 text-sm pl-10"><span class="text-base">${subitem.emoji}</span><span>${subitem.text}</span></a>`
+        ).join('');
+        return `
+          <div class="settings-menu-mobile">
+            <button data-submenu-toggle="${item.submenuId}" class="group w-full text-left px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3">
+              <i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i>
+              <span class="flex-1">${item.text}</span>
+              <i data-lucide="chevron-down" class="submenu-chevron w-4 h-4 text-white/50 transition-transform"></i>
+            </button>
+            <div id="${item.submenuId}" class="hidden pl-2 mt-1 space-y-1">
+              ${submenuItems}
+            </div>
+          </div>
+        `;
       } else if (item.action === 'logout') {
         return `<button data-action="logout" class="group w-full text-left block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3 mt-2"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></button>`;
-      } else if (item.isSubmenu) {
-        return `<a href="${item.href}" class="group block px-4 py-2 rounded-xl hover:bg-white/10 text-white/80 flex items-center gap-3 text-sm pl-6"><span class="text-base">${item.emoji}</span><span>${item.text}</span></a>`;
       } else {
         return `<a href="${item.href}" class="group block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></a>`;
       }
@@ -202,6 +234,34 @@ class HamburgerMenu {
         window.location.href = 'index.html';
       }
       this.close();
+      return;
+    }
+
+    // Handle submenu toggle
+    const toggleBtn = e.target.closest('button[data-submenu-toggle]');
+    if (toggleBtn) {
+      const submenuId = toggleBtn.dataset.submenuToggle;
+      const submenu = document.getElementById(submenuId);
+      const chevron = toggleBtn.querySelector('.submenu-chevron');
+      
+      if (submenu) {
+        submenu.classList.toggle('hidden');
+        if (chevron) {
+          chevron.style.transform = submenu.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        }
+      }
+      return;
+    }
+
+    // Handle link clicks - scroll to top and close menu
+    const link = e.target.closest('a[href]');
+    if (link) {
+      // Zavře menu před přechodem
+      this.close();
+      // Počká než se menu zavře a pak scrolluje nahoru
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     }
   }
 }
