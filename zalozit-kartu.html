@@ -1175,21 +1175,6 @@
       
       const form = document.getElementById("creatorForm");
 
-      function updateFirebaseStatus(online) {
-        if (online) {
-          statusIcon.className = "h-2.5 w-2.5 rounded-full bg-emerald-400";
-          statusIcon.style.animation = "none";
-          statusText.textContent = "Firebase ONLINE – můžeš ukládat kartu";
-          statusEl.style.borderColor = "rgba(52,211,153,0.5)";
-          statusEl.style.backgroundColor = "rgba(22,163,74,0.15)";
-        } else {
-          statusIcon.className = "h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse";
-          statusText.textContent = "⚠️ Firebase OFFLINE – nepůjde uložit kartu!";
-          statusEl.style.borderColor = "rgba(248,113,113,0.5)";
-          statusEl.style.backgroundColor = "rgba(127,29,29,0.25)";
-        }
-      }
-
       // Kontrola připojení
       let isOnline = false;
       
@@ -1197,36 +1182,32 @@
         const sb = window.supabaseClient || window.sb;
         if (!sb) {
           console.warn("⚠️ Supabase není dostupné");
-          updateFirebaseStatus(false);
           return false;
         }
         
         try {
-          // Jednoduchý test - ping Supabase
-          const { error } = await sb
-            .from('_ping')
-            .upsert({ id: 'test', t: Date.now() });
+          // Jednoduchý test - kontrola auth
+          const { data, error } = await sb.auth.getSession();
           
           if (!isOnline) {
             isOnline = true;
-            updateFirebaseStatus(true);
             console.log("✅ Supabase ONLINE");
           }
           return true;
         } catch (err) {
           if (isOnline || isOnline === false) {
             isOnline = false;
-            updateFirebaseStatus(false);
-            console.error("❌ Firebase OFFLINE:", err.message);
+            console.error("❌ Supabase OFFLINE:", err.message);
+          }
+          return false;
+        }
+      }
           }
           return false;
         }
       }
 
-      // Opakovaná kontrola každé 2s
-      setInterval(checkFirebaseConnection, 2000);
-
-      // První kontrola ihned po načtení (s čekáním na Firebase init a auth)
+      // První kontrola při načtení
       let initAttempts = 0;
       let authReady = false;
       
