@@ -880,10 +880,17 @@
       if (inputId === 'avatarFile') {
         const liveAvatar = document.getElementById('preview-avatar-live');
         const placeholder = document.getElementById('preview-avatar-placeholder');
-        if (liveAvatar && placeholder) {
+        if (liveAvatar) {
           liveAvatar.src = url;
           liveAvatar.classList.remove('hidden');
+          liveAvatar.style.display = 'block';
+        }
+        if (placeholder) {
           placeholder.style.display = 'none';
+        }
+        // Reinicializuj ikony
+        if (window.lucide) {
+          lucide.createIcons();
         }
       }
       
@@ -891,9 +898,12 @@
       if (inputId === 'coverFile') {
         const liveCover = document.getElementById('preview-cover-live');
         const placeholder = document.getElementById('preview-cover-placeholder');
-        if (liveCover && placeholder) {
+        if (liveCover) {
           liveCover.src = url;
           liveCover.classList.remove('hidden');
+          liveCover.style.display = 'block';
+        }
+        if (placeholder) {
           placeholder.style.display = 'none';
         }
       }
