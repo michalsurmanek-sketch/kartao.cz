@@ -5623,6 +5623,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const guestQuickActionsEl = document.getElementById('guestQuickActions');
       const settingsMenuDesktop = document.getElementById('settings-menu-desktop');
 
+      console.log('🔍 Boční menu DEBUG:', {
+        isLoggedIn,
+        role,
+        settingsMenuDesktop: !!settingsMenuDesktop,
+        companyQuickActionsEl: !!companyQuickActionsEl,
+        creatorQuickActionsEl: !!creatorQuickActionsEl,
+        guestQuickActionsEl: !!guestQuickActionsEl
+      });
+
       // Skrýt všechny sekce
       if (companyQuickActionsEl) companyQuickActionsEl.classList.add('hidden');
       if (creatorQuickActionsEl) creatorQuickActionsEl.classList.add('hidden');
@@ -5631,13 +5640,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!isLoggedIn) {
         // Není přihlášen - zobrazit registraci, skrýt nastavení
+        console.log('✋ Nepřihlášený uživatel - zobrazuji registraci');
         if (guestQuickActionsEl) {
           guestQuickActionsEl.classList.remove('hidden');
         }
       } else {
         // Je přihlášen - zobrazit nastavení, skrýt registraci
+        console.log('✅ Přihlášený uživatel - zobrazuji nastavení');
         if (settingsMenuDesktop) {
           settingsMenuDesktop.classList.remove('hidden');
+          console.log('✅ Sekce nastavení zobrazena');
+        } else {
+          console.error('❌ Element settings-menu-desktop nenalezen!');
         }
         
         if (role === 'firma') {
@@ -5646,42 +5660,43 @@ document.addEventListener('DOMContentLoaded', () => {
             companyQuickActionsEl.classList.remove('hidden');
           }
         } else if (role === 'creator' || role === 'influencer') {
-        // Tvůrce - zobrazit "Založit/Upravit kartu"
-        if (creatorQuickActionsEl) {
-          creatorQuickActionsEl.classList.remove('hidden');
-          
-          // Zkontrolovat, jestli už má tvůrce kartu
-          try {
-            if (window.supabaseClient) {
-              const { data: { user } } = await window.supabaseClient.auth.getUser();
-              if (user) {
-                const { data: creatorCard } = await window.supabaseClient
-                  .from('creators')
-                  .select('id')
-                  .eq('user_id', user.id)
-                  .maybeSingle();
+          // Tvůrce - zobrazit "Založit/Upravit kartu"
+          if (creatorQuickActionsEl) {
+            creatorQuickActionsEl.classList.remove('hidden');
+            
+            // Zkontrolovat, jestli už má tvůrce kartu
+            try {
+              if (window.supabaseClient) {
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                if (user) {
+                  const { data: creatorCard } = await window.supabaseClient
+                    .from('creators')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
 
-                const cardActionEl = document.getElementById('creatorCardAction');
-                const cardTextEl = document.getElementById('creatorCardText');
-                const cardIconEl = document.getElementById('creatorCardIcon');
+                  const cardActionEl = document.getElementById('creatorCardAction');
+                  const cardTextEl = document.getElementById('creatorCardText');
+                  const cardIconEl = document.getElementById('creatorCardIcon');
 
-                if (creatorCard) {
-                  // Má kartu - zobrazit "Upravit kartu"
-                  cardTextEl.textContent = 'Upravit kartu';
-                  cardActionEl.href = 'moje-karta.html';
-                  cardIconEl.setAttribute('data-lucide', 'edit');
-                } else {
-                  // Nemá kartu - zobrazit "Založit kartu"
-                  cardTextEl.textContent = 'Založit kartu';
-                  cardActionEl.href = 'moje-karta.html';
-                  cardIconEl.setAttribute('data-lucide', 'sparkles');
+                  if (creatorCard) {
+                    // Má kartu - zobrazit "Upravit kartu"
+                    cardTextEl.textContent = 'Upravit kartu';
+                    cardActionEl.href = 'moje-karta.html';
+                    cardIconEl.setAttribute('data-lucide', 'edit');
+                  } else {
+                    // Nemá kartu - zobrazit "Založit kartu"
+                    cardTextEl.textContent = 'Založit kartu';
+                    cardActionEl.href = 'moje-karta.html';
+                    cardIconEl.setAttribute('data-lucide', 'sparkles');
+                  }
+                  
+                  if (window.lucide?.createIcons) window.lucide.createIcons();
                 }
-                
-                if (window.lucide?.createIcons) window.lucide.createIcons();
               }
+            } catch (error) {
+              console.error('Chyba při kontrole karty tvůrce:', error);
             }
-          } catch (error) {
-            console.error('Chyba při kontrole karty tvůrce:', error);
           }
         }
       }
