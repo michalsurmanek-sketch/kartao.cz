@@ -755,21 +755,21 @@
             
             <!-- Galerie náhled -->
             <div id="preview-gallery" class="grid grid-cols-3 gap-2 pt-2 hidden">
-              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-                <img id="preview-gal1-live" src="" alt="G1" class="w-full h-full object-cover hidden" />
-                <div class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
+              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden relative">
+                <img id="preview-gal1-live" src="" alt="G1" class="w-full h-full object-cover absolute inset-0 hidden" />
+                <div id="preview-gal1-placeholder" class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
                   <i data-lucide="image" class="w-4 h-4"></i>
                 </div>
               </div>
-              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-                <img id="preview-gal2-live" src="" alt="G2" class="w-full h-full object-cover hidden" />
-                <div class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
+              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden relative">
+                <img id="preview-gal2-live" src="" alt="G2" class="w-full h-full object-cover absolute inset-0 hidden" />
+                <div id="preview-gal2-placeholder" class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
                   <i data-lucide="image" class="w-4 h-4"></i>
                 </div>
               </div>
-              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-                <img id="preview-gal3-live" src="" alt="G3" class="w-full h-full object-cover hidden" />
-                <div class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
+              <div class="aspect-square rounded-lg bg-white/5 border border-white/10 overflow-hidden relative">
+                <img id="preview-gal3-live" src="" alt="G3" class="w-full h-full object-cover absolute inset-0 hidden" />
+                <div id="preview-gal3-placeholder" class="w-full h-full flex items-center justify-center text-white/20 text-[10px]">
                   <i data-lucide="image" class="w-4 h-4"></i>
                 </div>
               </div>
@@ -859,7 +859,7 @@
         if (liveAvatar && placeholder) {
           liveAvatar.src = url;
           liveAvatar.classList.remove('hidden');
-          placeholder.classList.add('hidden');
+          placeholder.style.display = 'none';
         }
       }
       
@@ -870,23 +870,27 @@
         if (liveCover && placeholder) {
           liveCover.src = url;
           liveCover.classList.remove('hidden');
-          placeholder.classList.add('hidden');
+          placeholder.style.display = 'none';
         }
       }
       
       // Galerie
       const galMap = {
-        'gal1File': 'preview-gal1-live',
-        'gal2File': 'preview-gal2-live',
-        'gal3File': 'preview-gal3-live'
+        'gal1File': { img: 'preview-gal1-live', placeholder: 'preview-gal1-placeholder' },
+        'gal2File': { img: 'preview-gal2-live', placeholder: 'preview-gal2-placeholder' },
+        'gal3File': { img: 'preview-gal3-live', placeholder: 'preview-gal3-placeholder' }
       };
       
       if (galMap[inputId]) {
-        const liveGal = document.getElementById(galMap[inputId]);
+        const liveGal = document.getElementById(galMap[inputId].img);
+        const placeholder = document.getElementById(galMap[inputId].placeholder);
         const gallery = document.getElementById('preview-gallery');
         if (liveGal) {
           liveGal.src = url;
           liveGal.classList.remove('hidden');
+        }
+        if (placeholder) {
+          placeholder.style.display = 'none';
         }
         if (gallery) {
           gallery.classList.remove('hidden');
