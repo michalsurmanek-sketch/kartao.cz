@@ -1156,29 +1156,14 @@
     document.addEventListener("DOMContentLoaded", () => {
       if (window.lucide?.createIcons) lucide.createIcons();
 
-      // 🔥 VYČISTIT FIRESTORE PERSISTENCE CACHE
-      if (window.indexedDB) {
-        try {
-          const dbDeleteRequest = indexedDB.deleteDatabase('firestore/kartao-97df7/[DEFAULT]');
-          dbDeleteRequest.onsuccess = () => console.log("🗑️ Firestore IndexedDB cache vymazána");
-          dbDeleteRequest.onerror = () => console.warn("⚠️ Nepodařilo se vymazat IndexedDB");
-          
-          // Další možné databáze
-          indexedDB.deleteDatabase('firebaseLocalStorageDb');
-        } catch (e) {
-          console.warn("⚠️ IndexedDB delete error:", e.message);
-        }
-      }
-
-      // 🔥 FIREBASE STATUS MONITOR
-      // Status odstraněn
+      // Supabase init check
       
       const form = document.getElementById("creatorForm");
 
       // Kontrola připojení
       let isOnline = false;
       
-      async function checkFirebaseConnection() {
+      async function checkSupabaseConnection() {
         const sb = window.supabaseClient || window.sb;
         if (!sb) {
           console.warn("⚠️ Supabase není dostupné");
@@ -1191,23 +1176,19 @@
           
           if (!isOnline) {
             isOnline = true;
-            console.log("✅ Supabase ONLINE");
+            console.log("✅ Supabase připojeno");
           }
           return true;
         } catch (err) {
           if (isOnline || isOnline === false) {
             isOnline = false;
-            console.error("❌ Supabase OFFLINE:", err.message);
-          }
-          return false;
-        }
-      }
+            console.error("❌ Supabase nedostupné:", err.message);
           }
           return false;
         }
       }
 
-      // První kontrola při načtení
+      // Inicializace Supabase
       let initAttempts = 0;
       let authReady = false;
       
