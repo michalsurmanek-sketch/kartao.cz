@@ -4942,6 +4942,17 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsChevron.style.transform = 'rotate(0deg)';
           }
         });
+        
+        // Přidání scroll to top při kliknutí na odkazy v settings submenu
+        settingsSubmenu.addEventListener('click', (e) => {
+          const link = e.target.closest('a[href]');
+          if (link) {
+            // Počká na navigaci a pak scrolluje nahoru
+            setTimeout(() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+          }
+        });
       }
       
       // ==========================================
