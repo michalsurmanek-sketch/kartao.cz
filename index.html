@@ -5575,26 +5575,36 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- Dynamická změna podle role (TVŮJ KÓD) -->
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🔍 Boční menu: Začínám inicializaci...');
+      
+      // Počkat na auth systém
+      let attempts = 0;
+      while (!window.kartaoAuth?.isReady && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      
+      console.log('🔍 Auth systém ready:', window.kartaoAuth?.isReady);
+      console.log('🔍 Přihlášený user:', window.kartaoAuth?.user?.email);
+      console.log('🔍 Profil:', window.kartaoAuth?.profile);
+      
       // Kontrola přihlášení
-      let isLoggedIn = false;
+      let isLoggedIn = !!window.kartaoAuth?.user;
       let role = 'guest';
       
-      try {
-        if (window.supabaseClient) {
-          const { data: { user } } = await window.supabaseClient.auth.getUser();
-          if (user) {
-            isLoggedIn = true;
-            role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'influencer';
-            // Pokud je role v sessionStorage, synchronizuj ji do localStorage
-            if (sessionStorage.getItem('kartaoRole')) {
-              localStorage.setItem('userRole', sessionStorage.getItem('kartaoRole'));
-              role = sessionStorage.getItem('kartaoRole');
-            }
-          }
+      if (isLoggedIn) {
+        // Zjistit roli z profilu
+        if (window.kartaoAuth.profile?.is_company) {
+          role = 'firma';
+        } else if (window.kartaoAuth.profile) {
+          role = 'creator';
+        } else {
+          // Fallback na localStorage/sessionStorage
+          role = window.currentUserRole || localStorage.getItem('userRole') || sessionStorage.getItem('kartaoRole') || 'creator';
         }
-      } catch (error) {
-        console.error('Chyba při kontrole přihlášení:', error);
       }
+      
+      console.log('🔍 isLoggedIn:', isLoggedIn, 'role:', role);
 
       const linkEl = document.getElementById('userCardLink');
       const titleEl = document.getElementById('userCardTitle');
