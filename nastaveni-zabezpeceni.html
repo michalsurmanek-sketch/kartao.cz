@@ -14,14 +14,16 @@
   <script src="auth-header.js"></script>
   <script>
     // Auth protection - redirect if not logged in
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(() => {
-        const user = window.kartaoAuth?.user;
-        if (!user) {
+    function checkAuth() {
+      if (window.kartaoAuth?.isReady) {
+        if (!window.kartaoAuth.user) {
           window.location.href = 'login.html';
         }
-      }, 500);
-    });
+      } else {
+        setTimeout(checkAuth, 100);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', checkAuth);
   </script>
 
   <style>
