@@ -730,6 +730,9 @@
             <button disabled class="w-8 h-8 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center cursor-not-allowed">
               <i data-lucide="share-2" class="w-4 h-4 text-white"></i>
             </button>
+            <button disabled class="w-8 h-8 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center cursor-not-allowed">
+              <i data-lucide="gift" class="w-4 h-4 text-white"></i>
+            </button>
           </div>
         </div>
 
@@ -785,15 +788,20 @@
             <!-- Dynamicky naplněno -->
           </div>
 
-          <!-- Cena -->
+          <!-- Cena a tlačítka -->
           <div class="mt-4 flex items-center justify-between">
             <div class="text-sm text-white/70">
               od <span id="preview-price" class="text-white font-semibold">0 Kč</span> / post
             </div>
-            <button disabled class="btn btn-light cursor-not-allowed opacity-50">
-              Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
-            </button>
+            <div class="flex gap-2">
+              <button disabled class="btn btn-light cursor-not-allowed opacity-50">
+                Zobrazit kartu <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
+          <button disabled class="btn btn-primary w-full mt-3 cursor-not-allowed opacity-50">
+            Chci spolupráci
+          </button>
         </div>
       </div>
       
