@@ -5641,11 +5641,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (role === 'firma') {
-        // Firma - zobrazit "Zadat kampaň" a "Uložené"
-        if (companyQuickActionsEl) {
-          companyQuickActionsEl.classList.remove('hidden');
-        }
-      } else if (role === 'creator' || role === 'influencer') {
+          // Firma - zobrazit "Zadat kampaň" a "Uložené"
+          if (companyQuickActionsEl) {
+            companyQuickActionsEl.classList.remove('hidden');
+          }
+        } else if (role === 'creator' || role === 'influencer') {
         // Tvůrce - zobrazit "Založit/Upravit kartu"
         if (creatorQuickActionsEl) {
           creatorQuickActionsEl.classList.remove('hidden');
