@@ -137,6 +137,18 @@ class HamburgerMenu {
         { href: 'credits-dashboard.html', icon: 'coins', text: 'Kredity' },
         { href: 'magazin.html', icon: 'newspaper', text: 'Magazín' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
+        { type: 'divider' },
+        { type: 'section', text: 'Nastavení' },
+        { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet', isSubmenu: true },
+        { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení', isSubmenu: true },
+        { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace', isSubmenu: true },
+        { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference', isSubmenu: true },
+        { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje', isSubmenu: true },
+        { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace', isSubmenu: true },
+        { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí', isSubmenu: true },
+        { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora', isSubmenu: true },
+        { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé', isSubmenu: true },
+        { type: 'divider' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
       ],
       company: [
@@ -146,13 +158,31 @@ class HamburgerMenu {
         { href: 'ai-analytics-firmy.html', icon: 'trending-up', text: 'AI Analytics' },
         { href: 'fakturace-doklady.html', icon: 'file-text', text: 'Fakturace' },
         { href: 'kontakt.html', icon: 'mail', text: 'Podpora' },
+        { type: 'divider' },
+        { type: 'section', text: 'Nastavení' },
+        { href: 'nastaveni-ucet.html', emoji: '🎯', text: 'Účet', isSubmenu: true },
+        { href: 'nastaveni-zabezpeceni.html', emoji: '🔐', text: 'Zabezpečení', isSubmenu: true },
+        { href: 'nastaveni-notifikace.html', emoji: '🔔', text: 'Notifikace', isSubmenu: true },
+        { href: 'nastaveni-preference.html', emoji: '🎨', text: 'Preference', isSubmenu: true },
+        { href: 'nastaveni-platebni-udaje.html', emoji: '💳', text: 'Platební údaje', isSubmenu: true },
+        { href: 'nastaveni-integrace.html', emoji: '🔌', text: 'Integrace', isSubmenu: true },
+        { href: 'nastaveni-soukromi.html', emoji: '🔏', text: 'Soukromí', isSubmenu: true },
+        { href: 'nastaveni-podpora.html', emoji: '❓', text: 'Podpora', isSubmenu: true },
+        { href: 'nastaveni-pokrocile.html', emoji: '⚙️', text: 'Pokročilé', isSubmenu: true },
+        { type: 'divider' },
         { action: 'logout', icon: 'log-out', text: 'Odhlásit' }
       ],
     };
     const menu = links[this.type] || links.guest;
     return menu.map(item => {
-      if (item.action === 'logout') {
+      if (item.type === 'divider') {
+        return `<div class="my-2 border-t border-white/10"></div>`;
+      } else if (item.type === 'section') {
+        return `<div class="px-4 py-2 mt-3 text-xs font-semibold text-white/50 uppercase tracking-wider">${item.text}</div>`;
+      } else if (item.action === 'logout') {
         return `<button data-action="logout" class="group w-full text-left block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3 mt-2"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></button>`;
+      } else if (item.isSubmenu) {
+        return `<a href="${item.href}" class="group block px-4 py-2 rounded-xl hover:bg-white/10 text-white/80 flex items-center gap-3 text-sm pl-6"><span class="text-base">${item.emoji}</span><span>${item.text}</span></a>`;
       } else {
         return `<a href="${item.href}" class="group block px-4 py-2 rounded-xl hover:bg-white/10 text-white/90 flex items-center gap-3"><i data-lucide="${item.icon}" class="w-5 h-5 text-white/70"></i><span>${item.text}</span></a>`;
       }
