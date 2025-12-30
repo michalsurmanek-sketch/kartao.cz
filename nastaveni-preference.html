@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preference a personalizace - Kartao.cz</title>    
-    <!-- Shared Auth -->
+    <title>Preference a personalizace - Kartao.cz</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="firebase-init.js"></script>
     <script src="auth-unified.js"></script>
     <script src="auth-header.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .shadow-soft {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
         }
-        
-        /* Custom radio button styling */
         .radio-custom {
             appearance: none;
             width: 20px;
@@ -44,8 +41,6 @@
             background: white;
             border-radius: 50%;
         }
-        
-        /* Custom checkbox styling */
         .checkbox-custom {
             appearance: none;
             width: 20px;
@@ -57,12 +52,10 @@
             position: relative;
             transition: all 0.3s ease;
         }
-        
         .checkbox-custom:checked {
             border-color: #d946ef;
             background: linear-gradient(135deg, #d946ef 0%, #ec4899 100%);
         }
-        
         .checkbox-custom:checked::after {
             content: '✓';
             position: absolute;
@@ -73,8 +66,6 @@
             font-size: 14px;
             font-weight: bold;
         }
-        
-        /* Draggable module styling */
         .module-item {
             transition: all 0.3s ease;
             cursor: move;
@@ -91,8 +82,6 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
-    
-    <!-- Header -->
     <div class="bg-white border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">

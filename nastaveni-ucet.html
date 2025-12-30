@@ -4,41 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Účet - Kartao.cz</title>
-    
-    <!-- Shared Auth -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="firebase-init.js"></script>
     <script src="auth-unified.js"></script>
     <script src="auth-header.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .shadow-soft {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
         }
-        
-        /* Avatar upload hover effect */
         .avatar-upload {
             transition: all 0.3s ease;
         }
-        
         .avatar-upload:hover {
             transform: scale(1.05);
         }
-        
         .avatar-overlay {
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
         .avatar-upload:hover .avatar-overlay {
             opacity: 1;
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
-    
-    <!-- Header -->
     <div class="bg-white border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">
@@ -59,8 +49,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Breadcrumbs -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center space-x-2 text-sm text-neutral-600">
             <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
@@ -70,11 +58,7 @@
             <span class="text-neutral-900 font-medium">Účet</span>
         </nav>
     </div>
-
-    <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
-        
-        <!-- Profile Picture -->
         <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-10 h-10 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-lg flex items-center justify-center">

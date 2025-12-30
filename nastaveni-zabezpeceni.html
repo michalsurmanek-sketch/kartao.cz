@@ -5,17 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zabezpečení – Nastavení | Kartao.cz</title>
   <meta name="description" content="Zabezpečení účtu - změna hesla, dvoufaktorové ověřování, správa zařízení." />
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Ikony (Lucide) -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- Shared Auth -->
   <script src="supabase-config.js"></script>
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
@@ -29,16 +21,12 @@
   </style>
 </head>
 <body class="min-h-screen bg-white text-neutral-900 selection:bg-fuchsia-400/30">
-
-  <!-- dekor pozadí -->
   <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden">
     <div class="absolute -top-40 -left-40 h-[560px] w-[560px] rounded-full bg-fuchsia-100/60 blur-[100px]"></div>
     <div class="absolute -bottom-40 -right-40 h-[560px] w-[560px] rounded-full bg-amber-100/50 blur-[100px]"></div>
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,0,170,0.04),transparent_42%),radial-gradient(circle_at_82%_70%,rgba(255,180,0,0.03),transparent_45%)]"></div>
     <div class="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,black_1px,transparent_1px),linear-gradient(to_bottom,black_1px,transparent_1px)] bg-[size:38px_38px]"></div>
   </div>
-
-  <!-- HEADER / NAV -->
   <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
       <a href="/index.html" class="group inline-flex items-center gap-2">
@@ -54,11 +42,7 @@
       </a>
     </div>
   </header>
-
-  <!-- MAIN -->
   <main class="max-w-4xl mx-auto px-4 py-8">
-
-    <!-- BREADCRUMBS -->
     <div class="flex items-center gap-2 text-sm text-neutral-600 mb-6">
       <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
       <i data-lucide="chevron-right" class="h-4 w-4"></i>
@@ -66,8 +50,6 @@
       <i data-lucide="chevron-right" class="h-4 w-4"></i>
       <span class="text-neutral-900 font-semibold">Zabezpečení</span>
     </div>
-
-    <!-- NADPIS -->
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">
         <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-500 grid place-items-center text-white">
@@ -79,10 +61,7 @@
         </div>
       </div>
     </div>
-
     <div class="space-y-6">
-
-      <!-- 1. ZMĚNA HESLA -->
       <section class="rounded-3xl border border-neutral-200 bg-white shadow-soft overflow-hidden">
         <div class="p-6 border-b border-neutral-200 bg-neutral-50">
           <div class="flex items-center gap-3">

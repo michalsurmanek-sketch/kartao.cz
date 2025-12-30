@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Podpora & Nápověda - Kartao.cz</title>    
-    <!-- Shared Auth -->
+    <title>Podpora & Nápověda - Kartao.cz</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="firebase-init.js"></script>
     <script src="auth-unified.js"></script>
     <script src="auth-header.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .shadow-soft {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
         }
-        
-        /* FAQ accordion styling */
         .faq-item {
             transition: all 0.3s ease;
         }
@@ -41,8 +38,6 @@
         .faq-item.active .faq-chevron {
             transform: rotate(180deg);
         }
-
-        /* File upload area */
         .upload-area {
             border: 2px dashed #d4d4d8;
             transition: all 0.3s ease;
@@ -52,8 +47,6 @@
             border-color: #d946ef;
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
         }
-
-        /* Contact method cards */
         .contact-card {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -63,8 +56,6 @@
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
-
-        /* Search highlight */
         .search-highlight {
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
             padding: 2px 4px;
@@ -73,8 +64,6 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-fuchsia-50 via-white to-pink-50 min-h-screen">
-    
-    <!-- Header -->
     <div class="bg-white border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
             <div class="flex items-center justify-between">
@@ -95,8 +84,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Breadcrumbs -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <nav class="flex items-center space-x-2 text-xs text-neutral-600">
             <a href="index.html" class="hover:text-neutral-900">Hlavní stránka</a>
