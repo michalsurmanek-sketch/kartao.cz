@@ -12,6 +12,17 @@
   <script src="supabase-init.js"></script>
   <script src="auth-unified.js"></script>
   <script src="auth-header.js"></script>
+  <script>
+    // Auth protection - redirect if not logged in
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        const user = window.kartaoAuth?.user;
+        if (!user) {
+          window.location.href = 'login.html';
+        }
+      }, 500);
+    });
+  </script>
 
   <style>
     ::-webkit-scrollbar{height:10px;width:10px}
