@@ -1279,47 +1279,27 @@
       }
       
       // Používáme GLOBÁLNÍ proměnné (window.isSubmitting, window.formHasData, window.authChecked)
-      
-      // 🔥 BLOKOVAT REDIRECT NA TÉTO STRÁNCE ÚPLNĚ
-      window.PREVENT_AUTH_REDIRECT = true;
 
       kartaoAuth.onAuthStateChanged(async (user) => {
-        console.log("Auth state changed:", user ? user.id : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData, "PREVENT:", window.PREVENT_AUTH_REDIRECT);
+        console.log("Auth state changed:", user ? user.id : null, "isSubmitting:", window.isSubmitting, "formHasData:", window.formHasData);
         
-        // 🛡️ ABSOLUTNÍ OCHRANA #1: Na zalozit-kartu.html NIKDY nepřesměrovávat pokud není user
-        if (window.PREVENT_AUTH_REDIRECT && !user && window.authChecked) {
-          console.warn("🛡️🛡️🛡️ PREVENT_AUTH_REDIRECT=true + user=null + authChecked=true → BLOKUJI REDIRECT!");
-          showStatus("⚠️ Přihlášení se ztratilo. Obnovuji stránku...", false);
-          // Místo redirectu na login, zkus reload (možná se auth obnoví)
-          setTimeout(() => window.location.reload(), 2000);
-          return; // KONEC, nic dalšího
-        }
-        
-        // OCHRANA 2: Pokud právě ukládáme, ignoruj auth změny
+        // OCHRANA: Pokud právě ukládáme, ignoruj auth změny
         if (window.isSubmitting) {
           console.log("🛡️ Auth change během submitu - IGNORUJI (isSubmitting=true)");
           return;
         }
         
-        // OCHRANA 3: Pokud je formulář vyplněný, neodhlašuj
+        // OCHRANA: Pokud je formulář vyplněný a user se odhlásil, neodhlašuj
         if (!user && window.formHasData) {
           console.warn("🛡️ Auth change to null ale formulář má data - IGNORUJI");
-          showStatus("⚠️ Ztraceno připojení, ale zůstáváš přihlášen. Zkus odeslat znovu.", false);
+          showStatus("⚠️ Ztraceno připojení, ale data zůstávají. Zkus odeslat znovu.", false);
           return;
         }
         
-        // První načtení stránky bez přihlášení
+        // První načtení stránky bez přihlášení - přesměruj na login
         if (!user && !window.authChecked) {
           window.authChecked = true;
           console.log("⚠️ První check: user=null, přesměrovávám na login");
-          
-          // 🛡️ Pokud je PREVENT_AUTH_REDIRECT=true, NEredirectovat!
-          if (window.PREVENT_AUTH_REDIRECT) {
-            console.error("🛑 PREVENT_AUTH_REDIRECT=true → BLOKUJI redirect na login!");
-            showStatus("⚠️ Přihlášení selhalo. Zkus reload stránky (F5).", false);
-            return;
-          }
-          
           showStatus(
             "Pro založení karty se musíš přihlásit. Přesměrovávám na login…",
             false
